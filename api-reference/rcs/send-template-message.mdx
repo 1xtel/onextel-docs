@@ -1,0 +1,734 @@
+---
+title: "Send an RCS Template Message"
+description: "Send an approved RCS template, optionally personalized with custom parameters, via the OneXtel Omni platform."
+---
+
+Once an RCS template is created and approved (see [RCS Templates](/api-reference/rcs/templates)),
+send it to a recipient by referencing its `templateCode` in a Send Message request. This is the
+same `/oapi/send_sms` endpoint used for [non-template RCS messages](/api-reference/rcs/send-messages) —
+the message is routed by the shape of `contentMessage`.
+
+**Endpoint:** `POST https://api.onexaura.com/oapi/send_sms`
+
+<ParamField header="apikey" type="string" required>
+  Your OneXtel API key.
+</ParamField>
+
+<ParamField header="Content-Type" type="string" required>
+  Must be `application/json`.
+</ParamField>
+
+## cURL
+
+```bash
+curl --location 'https://api.onexaura.com/oapi/send_sms' \
+--header 'apikey: <api_key>' \
+--header 'Content-Type: application/json' \
+--data '{
+    "rcs": [
+        {
+            "sender": "<sender_bot_id>",
+            "recipient": "<recipient_phone_number>",
+            "messageType": "Transactional",
+            "contentMessage": {
+                "templateMessage": {
+                    "templateCode": "SP_testing_demo",
+                    "customParams": "{\"custom_param1\":\"Namaste\",\"custom_param2\":\"Name\"}"
+                }
+            },
+            "custref1": "",
+            "custref2": "",
+            "custref3": "",
+            "custref4": "",
+            "custref5": ""
+        }
+    ],
+    "prefix": "+91"
+}'
+```
+
+## Request body
+
+<ParamField body="rcs" type="array" required>
+  Wrapper array of one or more message objects. Supports up to 500 objects per request
+  (many-to-many use case).
+</ParamField>
+
+<ParamField body="prefix" type="string">
+  Country code prefix applied to recipient numbers (e.g. `+91`). Optional per the Postman
+  collection; documented as mandatory in the PDF's common parameters table — see Gaps.
+</ParamField>
+
+<ParamField body="campaignName" type="string">
+  Optional campaign identifier for reporting/tracking.
+</ParamField>
+
+<ParamField body="urlShortener" type="object">
+  Optional object used only if links in the message body need shortening/tracking. See fields
+  below.
+</ParamField>
+
+### Inside each `rcs` message object
+
+<ParamField body="messageType" type="string" required>
+  Type of message: `Promotional`, `Transactional`, or `OTP`.
+</ParamField>
+
+<ParamField body="recipient" type="string" required>
+  Recipient phone number, without prefix. Can also be an array to support a one-to-many use
+  case, containing up to 500 numbers in a single request.
+</ParamField>
+
+<ParamField body="sender" type="string" required>
+  Sender bot ID or sender phone number.
+</ParamField>
+
+<ParamField body="contentMessage" type="object" required>
+  Holds the message payload. For a template message, this contains a `templateMessage` object
+  (documented below). `contentMessage` can alternatively hold `text` or `richCard` for
+  non-template messages.
+</ParamField>
+
+<ParamField body="ttl" type="string">
+  Time-to-live for the message (e.g. `"1200s"`). Only applicable in some transactional
+  messages.
+</ParamField>
+
+<ParamField body="expireTime" type="string">
+  Optional absolute expiry timestamp for the message, ISO 8601 (e.g.
+  `"2024-10-02T15:01:23Z"`).
+</ParamField>
+
+<ParamField body="custref1" type="string">
+  Optional custom reference field.
+</ParamField>
+<ParamField body="custref2" type="string">
+  Optional custom reference field.
+</ParamField>
+<ParamField body="custref3" type="string">
+  Optional custom reference field.
+</ParamField>
+<ParamField body="custref4" type="string">
+  Optional custom reference field.
+</ParamField>
+<ParamField body="custref5" type="string">
+  Optional custom reference field.
+</ParamField>
+<ParamField body="custref6" type="string">
+  Optional custom reference field. Appears in plain-text message examples; not shown in every
+  template example — see Gaps.
+</ParamField>
+
+### Inside `contentMessage.templateMessage`
+
+<ParamField body="templateCode" type="string" required>
+  Template identifier, matching the `name` used when the template was created (e.g.
+  `"my_template_otp"`).
+</ParamField>
+
+<ParamField body="customParams" type="string">
+  A JSON string of key-value pairs replacing the template's placeholder variables (e.g.
+  `[custom_param]`). Not required for templates with no placeholders.
+</ParamField>
+
+### Optional `urlShortener` object
+
+<ParamField body="flag" type="integer">
+  `1` = enable URL shortening, `0` = disable. Mandatory if URL shortening is required in the
+  message body.
+</ParamField>
+
+<ParamField body="urlDetails" type="array">
+  Array of URL-shortening definitions. Each entry defines `longUrl`, `senderId`/`domain`, and
+  `track_user`.
+</ParamField>
+
+**Fields inside each `urlDetails` entry:**
+
+<ParamField body="longUrl" type="string" required>
+  The original (full) URL you want to shortened. Mandatory if `urlShortener.flag` is set to
+  `1`.
+</ParamField>
+
+<ParamField body="senderId" type="string">
+  The sender ID or bot ID associated with the message (matches your RCS sender). Named
+  `senderId` in the Send Message examples and `domain` in the parameter reference table for
+  the same field — see Gaps.
+</ParamField>
+
+<ParamField body="domain" type="string">
+  The domain used for the shortened URL.
+</ParamField>
+
+<ParamField body="track_user" type="boolean">
+  Whether to enable user-level click tracking (e.g. `true` or `1`). Default: disabled.
+</ParamField>
+
+<ParamField body="expiry" type="string">
+  Optional expiry for the shortened URL.
+</ParamField>
+
+## Examples
+
+### Basic template reference
+
+The minimal payload references an approved template by `templateCode` with no personalization:
+
+```json
+{
+  "rcs": [
+    {
+      "messageType": "Transactional/OTP/Promotional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "update_related_temp"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+### Template with custom parameters
+
+Use `customParams` to fill placeholders defined in the template's `textMessageContent`,
+`cardDescription`, etc.:
+
+```json
+{
+  "rcs": [
+    {
+      "messageType": "Promotional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "My_template_demo",
+          "customParams": "{\"custom_param\":\"John\"}"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91",
+  "urlShortener": {
+    "flag": 0,
+    "urlDetails": [
+      {
+        "longUrl": "",
+        "senderId": "<sender_id>",
+        "domain": " ",
+        "track_user": 1
+      }
+    ]
+  }
+}
+```
+
+Text templates built with a specific action type (reply, dialer, URL, location, calendar) are
+sent the same way — only `templateCode` and `customParams` change to match the template's
+placeholders:
+
+<CodeGroup>
+
+```json Reply Action
+{
+  "rcs": [
+    {
+      "messageType": "Promotional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "text_with_reply_temp",
+          "customParams": "{\"custom_param\":\"Name\"}"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+```json Dialer Action
+{
+  "rcs": [
+    {
+      "messageType": "Promotional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "text_with_dialertemp",
+          "customParams": "{\"custom_param\":\"Name\"}"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+```json URL Action
+{
+  "rcs": [
+    {
+      "messageType": "Transactional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "template_customPa",
+          "customParams": "{\"custom_param\":\"Name\"}"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+```json Location Query
+{
+  "rcs": [
+    {
+      "messageType": "Transactional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "template_query",
+          "customParams": "{\"custom_param\":\"Name\"}"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+```json Share Location
+{
+  "rcs": [
+    {
+      "messageType": "Promotional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "text_shareLoc_temp",
+          "customParams": "{\"custom_param\":\"Name\"}"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+```json Calendar Event
+{
+  "rcs": [
+    {
+      "messageType": "Promotional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "calendar_event",
+          "customParams": "{\"custom_param\":\"Name\"},{\"custom_param2\":\"Thursday\"}"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+</CodeGroup>
+
+<Note>
+The `customParams` value in the Calendar Event example is documented in the source PDF as
+`"{\"custom_param\":\"Name\"},{\"custom_param2\":\"Thursday\"}"` — two comma-separated objects
+rather than one JSON object with two keys. This looks like a documentation typo, but it is
+reproduced as-is per the fidelity rule. See Gaps.
+</Note>
+
+### Media template (with custom params or actions)
+
+Templates of type `text_message_with_media` are sent identically — only `templateCode` (and
+optional `customParams`) differ per action type:
+
+<CodeGroup>
+
+```json Reply Action
+{
+  "rcs": [
+    {
+      "messageType": "Transactional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "media_with_reply"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+```json Dialer Action
+{
+  "rcs": [
+    {
+      "messageType": "Transactional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "template_dialeractio"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+```json URL Action
+{
+  "rcs": [
+    {
+      "messageType": "Transactional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "template_URL_ACTION"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+```json Location (lat/long)
+{
+  "rcs": [
+    {
+      "messageType": "Transactional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "template_LATLONG"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+```json Location Query
+{
+  "rcs": [
+    {
+      "messageType": "Transactional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "template_EWLOC"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+```json Share Location
+{
+  "rcs": [
+    {
+      "messageType": "Transactional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "template_SHARELOC"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+</CodeGroup>
+
+### Rich card standalone template
+
+```json Promotional
+{
+  "rcs": [
+    {
+      "messageType": "Transactional/OTP/Promotional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "rich_card_promo",
+          "customParams": "{\"custom_param\":\"Name\"}"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+Additional rich-card-standalone action variants follow the same shape with a different
+`templateCode` — e.g. `rich_card_replyac` (reply), `richCardDialerAction` (dialer),
+`rich_card_URL` (URL), `rich_card_location` (location, also shown with `expireTime`),
+`LocationQuery` (location query), `standAloneShLocation` (share location), and
+`richCardStandCalend` (calendar event).
+
+### Rich card carousel template
+
+```json
+{
+  "rcs": [
+    {
+      "messageType": "Transactional/OTP/Promotional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "richCardCarouselP"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+**Only custom parameters:**
+
+```json
+{
+  "rcs": [
+    {
+      "messageType": "Transactional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "SP_carousel_temp",
+          "customParams": "{\"custom_param\":\"Hi\",\"custom_param1\":\"Name\",\"custom_param2\":\"5000\",\"custom_param3\":\"Aug 30\"}"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+**With parameters in suggestions:**
+
+```json
+{
+  "rcs": [
+    {
+      "messageType": "Transactional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "SP_testing_demo",
+          "customParams": "{\"custom_param1\":\"Namaste\",\"custom_param2\":\"Name\"}"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+**Calendar event in a carousel:**
+
+```json
+{
+  "rcs": [
+    {
+      "messageType": "Promotional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_bot_Id>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "CarouselCalendarEve",
+          "customParams": "{\"name\":\"Name\"}"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+### Dynamic query with tracking (URL shortener + TTL)
+
+```json
+{
+  "rcs": [
+    {
+      "messageType": "Promotional",
+      "recipient": "<recipient_phone_number>",
+      "sender": "<sender_phone_number>",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "<template_name>",
+          "customParams": "{\"url\":\"<url>\"}"
+        },
+        "ttl": "10s"
+      }
+    }
+  ],
+  "prefix": "+91",
+  "urlShortener": {
+    "flag": 1
+  }
+}
+```
+
+<Note>
+In this example the source PDF nests `ttl` inside `contentMessage` rather than as a sibling
+of `contentMessage` at the message-object level (as shown in the Common Parameters table and
+all other examples on this page). Reproduced as documented — see Gaps.
+</Note>
+
+## Response
+
+```json
+[
+  {
+    "messageId": "33mXmXf0myfFe7lA1QpPcDJcVaH",
+    "code": 200,
+    "status": "success"
+  }
+]
+```
+
+<ResponseField name="messageId" type="string">
+  Unique identifier for the submitted message. Use it to correlate delivery reports.
+</ResponseField>
+
+<ResponseField name="code" type="integer">
+  Result code. `200` indicates the message was accepted.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Result status, e.g. `success`.
+</ResponseField>

@@ -1,0 +1,268 @@
+---
+title: "WhatsApp API — 365cx.io (Legacy)"
+description: "Archived: legacy WhatsApp token generation, message send, and delivery-callback APIs hosted on 365cx.io."
+---
+
+<Warning>
+  Legacy V1 documentation, archived for reference. This documents a separate legacy API
+  surface hosted on `365cx.io`, distinct from the current OnexAura WhatsApp Business API.
+  For current WhatsApp APIs, see the [API Reference](/api-reference/omnichannel/overview). See
+  [Legacy overview](/legacy/overview) for context.
+</Warning>
+
+## Overview
+
+This legacy platform provided WhatsApp messaging integration via `365cx.io`. An authentication
+token generated via the login API remained valid for one hour, with validity extending as long
+as it continued to be used.
+
+The legacy nav also listed connector pages for CleverTap, MoEngage, WebEngage, and Shopify
+WhatsApp plugins; those pages were not retrieved with substantive content — see `GAPS`.
+
+## Generate token
+
+`POST https://365cx.io/account/enterprise/login`
+
+<ParamField body="email" type="string" required>Login email address.</ParamField>
+<ParamField body="password" type="string" required>Login password.</ParamField>
+<ParamField body="longTermToken" type="boolean">If true, the token does not expire after 1 hour.</ParamField>
+
+<CodeGroup>
+
+```json Success response
+{
+    "response": {
+        "uId": 100,
+        "token": "VFl6Zz6ZMezrz+12+8CqIHRZdtxxxxxxxxxxxxxxxx"
+    },
+    "message": {
+        "code": 0,
+        "message": "Login success"
+    },
+    "status": true
+}
+```
+
+```json Failure response
+{
+    "message": {
+        "code": 1403,
+        "message": "Login failed! wrong email id and password combination"
+    },
+    "status": false
+}
+```
+
+</CodeGroup>
+
+## Send message APIs
+
+All send-message APIs share the same endpoint and a common set of parameters.
+
+`POST https://365cx.io/chatbird/api/message/send`
+
+Header: `authentication-token` — the token from Generate Token.
+
+### Mandatory parameters
+
+<ParamField body="from" type="string" required>Sender's phone number.</ParamField>
+<ParamField body="to" type="string" required>Recipient's phone number.</ParamField>
+<ParamField body="journeyId" type="string" required>
+  Unique journey identifier. Found in the 365cx.io platform under **Flow Builder → Streams →
+  Configurations → webhook URL**.
+</ParamField>
+<ParamField body="templateId" type="string" required>Template identifier.</ParamField>
+
+### Optional parameters
+
+<ParamField body="deptId" type="string">Department identifier.</ParamField>
+<ParamField body="callbackUrl" type="string">Delivery callback URL.</ParamField>
+<ParamField body="metaData" type="object">Custom tags (`tag1`, `tag2`, `tag3`) for filtering.</ParamField>
+
+### Text message
+
+```json
+{
+    "from": "xx",
+    "to": "xx",
+    "journeyId": "xx",
+    "message": {
+        "template": {
+            "templateId": "xx"
+        }
+    },
+    "deptId": "xx",
+    "callbackUrl": "xx",
+    "metaData": {
+        "tag1": "xx",
+        "tag2": "xx",
+        "tag3": "xx"
+    }
+}
+```
+
+### Text, variables, dynamic header, buttons
+
+Additional parameters:
+
+<ParamField body="message.template.headerParameterValues" type="object">
+  Variables in header content. Mandatory if the header is dynamic.
+</ParamField>
+<ParamField body="message.template.parameterValues" type="object">
+  Variables in body content. Mandatory if the template has variables.
+</ParamField>
+<ParamField body="message.template.buttons" type="array">
+  Button objects with `type` (`URL`, `Quick_Reply`, or `Phone_Number`), `text` (button label),
+  and `payload` (URL, reply, or phone number — mandatory for dynamic URLs).
+</ParamField>
+
+```json
+{
+    "from": "xx",
+    "to": "xx",
+    "journeyId": "xx",
+    "message": {
+        "template": {
+            "templateId": "xx",
+            "headerParameterValues": { "0": "xx" },
+            "parameterValues": { "0": "xx" },
+            "buttons": [
+                { "type": "xx", "text": "xx", "payload": "xx" }
+            ]
+        }
+    },
+    "deptId": "xx",
+    "callbackUrl": "xx",
+    "metaData": { "tag1": "xx", "tag2": "xx", "tag3": "xx" }
+}
+```
+
+### Media message
+
+Additional parameters:
+
+<ParamField body="message.template.media.type" type="string">`IMAGE`, `DOC`, or `VIDEO`. Mandatory if the template has media.</ParamField>
+<ParamField body="message.template.media.url" type="string">Media file URL. Mandatory if the template has media.</ParamField>
+<ParamField body="message.template.media.fileName" type="string">Media file name (optional).</ParamField>
+
+```json
+{
+    "from": "xxxxxxxx",
+    "to": "xxxxxxxx",
+    "journeyId": "xxxxxxxx",
+    "message": {
+        "template": {
+            "templateId": "xxxxxxxx",
+            "media": { "type": "xx", "url": "xxxxxxxx", "fileName": "xxxxxxxx" }
+        }
+    },
+    "deptId": "xx",
+    "callbackUrl": "xx",
+    "metaData": { "tag1": "xx", "tag2": "xx", "tag3": "xx" }
+}
+```
+
+### Media, variables, and buttons combined
+
+```json
+{
+    "from": "xx",
+    "to": "xx",
+    "journeyId": "xx",
+    "message": {
+        "template": {
+            "templateId": "xx",
+            "parameterValues": { "0": "xx" },
+            "media": { "type": "xx", "url": "xx", "fileName": "xx" },
+            "buttons": [
+                { "type": "xx", "text": "xx", "payload": "xx" }
+            ]
+        }
+    },
+    "deptId": "xx",
+    "callbackUrl": "xx",
+    "metaData": { "tag1": "xx", "tag2": "xx", "tag3": "xx" }
+}
+```
+
+### Carousel message
+
+Sends multi-card carousel messages with media and buttons per card.
+
+```json
+{
+    "from": "xx",
+    "to": "xx",
+    "journeyId": "xx",
+    "message": {
+        "template": {
+            "templateId": "xx",
+            "cards": [
+                {
+                    "media": { "type": "xx", "url": "xx" },
+                    "buttons": [
+                        { "type": "xx", "payload": "xx" }
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
+
+## Response codes
+
+| Code | Meaning |
+| --- | --- |
+| `100` | Success |
+| `101` | Failure — journey not found (invalid `journeyId`) |
+
+```json Success (code 100)
+{
+    "message": null,
+    "code": 100,
+    "status": true,
+    "data": { "id": "669e5778a8f5d50aad723e7c" }
+}
+```
+
+## Delivery events (callback)
+
+```json
+{
+    "context": { "id": "xxxxxxxx" },
+    "from": "xxxxxxxx",
+    "to": "xxxxxxxx",
+    "type": "event",
+    "event": { "status": "DELIVERED" },
+    "error": { "code": "0", "message": "Failed Retry" },
+    "conversation": { "id": "xxxxxxxx", "type": "marketing", "billable": true },
+    "timestamp": "xxxxxxxx"
+}
+```
+
+`event.status` values: `READ`, `DELIVERED`, `SENT`, `FAILED`.
+
+## Delivery reports
+
+The platform's Delivery Report gives an overview of all messages sent across channels,
+filterable by resource type (API), channel type and name, time range, and message tags
+(`tag1`, `tag2`, `tag3`).
+
+## Live agent satisfaction rating API
+
+`POST https://365cx.io/whatsapp/chat/feedback`
+
+<ParamField body="chatId" type="string" required>Unique chat identifier.</ParamField>
+<ParamField body="customerPhoneNumber" type="string" required>End user's phone number.</ParamField>
+<ParamField body="rating" type="string" required>Rating value provided by the user.</ParamField>
+
+```json
+{
+    "chatId": "${chatId}",
+    "customerPhoneNumber": "${_sys.phoneNumber}",
+    "rating": "${rating}"
+}
+```
+
+Enables agent performance tracking within the Converse Reports dashboard on 365cx.io.

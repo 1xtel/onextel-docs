@@ -1,0 +1,236 @@
+---
+title: "Fetch WhatsApp Templates"
+description: "Retrieve WhatsApp message templates and their approval status from OneXtel or directly from Meta via the Clevertap fetch endpoint."
+---
+
+Two endpoints return your WhatsApp templates: the primary OneXtel `/templates/fetch`
+endpoint (filterable, paginated), and a Meta-passthrough endpoint used for Clevertap
+integrations.
+
+## OneXtel Fetch Templates
+
+### Endpoint
+
+```text
+POST /templates/fetch
+```
+
+### Headers
+
+<ParamField header="apikey" type="string" required>
+  API key generated for the TUC.
+</ParamField>
+<ParamField header="accept" type="string">
+  `application/json`
+</ParamField>
+<ParamField header="Content-Type" type="string" required>
+  `application/json`
+</ParamField>
+
+### Request body
+
+<ParamField body="channel" type="string" required>
+  Messaging channel. Must be `WhatsApp` (the source shows both `"Whatsapp"` and
+  `"WhatsApp"` casing across examples).
+</ParamField>
+<ParamField body="wabaId" type="string" required>
+  WhatsApp Business Account (WABA) identifier.
+</ParamField>
+<ParamField body="pageNo" type="integer" required>
+  Page number for pagination. Must be a non-negative integer.
+</ParamField>
+<ParamField body="limit" type="integer" required>
+  Number of records to return per page.
+</ParamField>
+<ParamField body="category" type="string">
+  Template category filter, e.g. `Marketing`, `Utility`, `Authentication`.
+</ParamField>
+<ParamField body="createdDate" type="string">
+  Filters templates created on or after the given time. Local datetime format
+  `YYYY-MM-DDTHH:mm:ss`.
+</ParamField>
+<ParamField body="templateName" type="string">
+  WhatsApp template name to filter by.
+</ParamField>
+<ParamField body="language" type="string">
+  Template language code, e.g. `en_US`.
+</ParamField>
+<ParamField body="status" type="string">
+  Template lifecycle status filter: `Approved`, `Pending`, or `Rejected`.
+</ParamField>
+
+<Note>
+The Postman collection's Fetch Templates request comments out `start_date`, `end_date`,
+`templateName`, `status`, `language`, and `createdDate` as example-only fields alongside
+the always-sent `channel`, `wabaId`, `pageNo`, and `limit`. The source PDF's field table
+lists `createdDate` (not `start_date`/`end_date`) as the optional date filter — the
+`start_date`/`end_date` pair in Postman's inline comment is not documented anywhere else
+and may be stale or unimplemented. Treat `createdDate` as authoritative.
+</Note>
+
+### cURL
+
+```bash
+curl --location 'https://api.onexaura.com/templates/fetch' \
+--header 'apikey: YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data '{
+    "channel": "Whatsapp",
+    "wabaId": "YOUR_WABA_ID",
+    "category": "Marketing",
+    "createdDate": "2025-10-22T12:02:28",
+    "templateName": "lto_00012",
+    "language": "en_US",
+    "status": "pending",
+    "pageNo": 0,
+    "limit": 5
+}'
+```
+
+### Response
+
+```json
+{
+  "page_details": {
+    "pageNo": 0,
+    "limit": 5
+  },
+  "data": [
+    {
+      "id": "1521226662554788",
+      "name": "lto_00012",
+      "status": "Pending",
+      "category": "MARKETING",
+      "language": "en_US",
+      "components": [
+        {
+          "text": "Hi {{1}},\n\nYour new order with id - {{2}} has been placed successfully. \n\nPlease check below to see the status of your updates.",
+          "type": "BODY",
+          "example": {
+            "body_text": [["sarthak", "23432"]]
+          }
+        },
+        {
+          "type": "LIMITED_TIME_OFFER",
+          "limited_time_offer": {
+            "text": "Expiring offer!",
+            "has_expiration": true
+          }
+        },
+        {
+          "type": "BUTTONS",
+          "buttons": [
+            {
+              "text": "Copy offer code",
+              "type": "COPY_CODE",
+              "example": ["50OFF"]
+            },
+            {
+              "url": "https://bitly.com/{{1}}",
+              "text": "Visit website",
+              "type": "URL",
+              "example": ["EXAMPLE"]
+            }
+          ]
+        }
+      ],
+      "parameter_format": "POSITIONAL",
+      "created_on": "2025-10-22T12:02:28.963",
+      "updated_on": "2025-10-31T06:21:05.142",
+      "previous_category": null,
+      "quality_score": null
+    }
+  ]
+}
+```
+
+<ResponseField name="page_details" type="object">
+  Echoes back the pagination request.
+  <Expandable title="page_details">
+    <ResponseField name="page_details.pageNo" type="integer">
+      Page number returned.
+    </ResponseField>
+    <ResponseField name="page_details.limit" type="integer">
+      Page size returned.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+<ResponseField name="data" type="array">
+  Array of template objects matching the filter.
+  <Expandable title="template object">
+    <ResponseField name="id" type="string">
+      Meta template ID.
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Template name.
+    </ResponseField>
+    <ResponseField name="status" type="string">
+      Approval status: `Approved`, `Pending`, or `Rejected`.
+    </ResponseField>
+    <ResponseField name="category" type="string">
+      Template category, e.g. `MARKETING`.
+    </ResponseField>
+    <ResponseField name="language" type="string">
+      Template language code.
+    </ResponseField>
+    <ResponseField name="components" type="array">
+      Full component definition as originally submitted (BODY, header, footer,
+      LIMITED_TIME_OFFER, BUTTONS, etc. — matches the create-template component shapes).
+    </ResponseField>
+    <ResponseField name="parameter_format" type="string">
+      `POSITIONAL` or `NAMED`.
+    </ResponseField>
+    <ResponseField name="created_on" type="string">
+      Template creation timestamp.
+    </ResponseField>
+    <ResponseField name="updated_on" type="string">
+      Last status/update timestamp.
+    </ResponseField>
+    <ResponseField name="previous_category" type="string | null">
+      Prior category if the template category was changed by Meta; `null` otherwise.
+    </ResponseField>
+    <ResponseField name="quality_score" type="string | null">
+      Meta quality rating; `null` if not yet scored.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Clevertap Fetch Templates
+
+A separate GET endpoint returns templates directly in Meta's native format, intended for
+Clevertap integrations.
+
+### Endpoint
+
+```text
+GET /oapi/meta/templates/fetch
+```
+
+### Headers
+
+<ParamField header="apikey" type="string" required>
+  API key for the TUC.
+</ParamField>
+<ParamField header="wabaid" type="string" required>
+  WhatsApp Business Account ID.
+</ParamField>
+
+### Query parameters
+
+<ParamField query="limit" type="integer">
+  Maximum number of templates to return. Example: `500`.
+</ParamField>
+
+### cURL
+
+```bash
+curl --location 'https://api.onexaura.com/oapi/meta/templates/fetch?limit=500' \
+--header 'apikey: YOUR_API_KEY' \
+--header 'wabaid: YOUR_WABA_ID'
+```
+
+<Note>
+The source Postman collection defines only the request for this endpoint — no sample
+response body is included for the Clevertap fetch. Response shape is expected to mirror
+Meta's native template list format but this is not confirmed in the source material.
+</Note>

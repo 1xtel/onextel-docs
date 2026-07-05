@@ -1,0 +1,186 @@
+---
+title: "Callback: Button Clicks"
+description: "Callback payload structure for inbound WhatsApp button interactions submitted under incoming message events."
+---
+
+When an end user taps a button in a WhatsApp message, the OnexAura platform posts a
+Button Click callback to your configured endpoint. Button clicks are inbound button
+interactions submitted under incoming message events, so the payload follows the same
+structure as [Incoming Messages](/api-reference/whatsapp/callback-incoming-messages)
+with a `button` object in place of the message content objects.
+
+<Note>
+The payload below is the structural skeleton exactly as documented: each field's value
+shows its JSON path, not sample data. The source does not define field meanings, data
+types, or enumerated values — all descriptions on this page are **inferred from the
+field names and paths** and all leaf fields are documented as `string` because the
+source shows every value as a string placeholder.
+</Note>
+
+## Payload format
+
+```json
+{
+  "custref1": "custref1",
+  "custref2": "custref2",
+  "custref3": "custref3",
+  "custref4": "custref4",
+  "custref5": "custref5",
+  "entry": [
+    {
+      "id": "entry.id",
+      "changes": [
+        {
+          "value": {
+            "messages": [
+              {
+                "id": "entry.changes.value.messages.id",
+                "timestamp": "entry.changes.value.messages.timestamp",
+                "type": "entry.changes.value.messages.type",
+                "context": {
+                  "id": "entry.changes.value.messages.context.id",
+                  "from": "entry.changes.value.messages.context.from"
+                },
+                "from": "entry.changes.value.messages.from",
+                "button": {
+                  "text": "entry.changes.value.messages.button.text",
+                  "payload": "entry.changes.value.messages.button.payload"
+                }
+              }
+            ],
+            "metadata": {
+              "display_phone_number": "entry.changes.value.metadata.display_phone_number",
+              "phone_number_id": "entry.changes.value.metadata.phone_number_id"
+            },
+            "messaging_product": "entry.changes.value.messaging_product",
+            "contacts": [
+              {
+                "profile": {
+                  "name": "entry.changes.value.contacts.profile.name"
+                },
+                "wa_id": "entry.changes.value.contacts.wa_id"
+              }
+            ]
+          },
+          "field": "entry.changes.field"
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Field reference
+
+<ResponseField name="custref1" type="string">
+  Custom reference field 1, echoed back from the original send request. See
+  [custom reference passthrough](/api-reference/whatsapp/callback-events#custom-reference-passthrough).
+</ResponseField>
+<ResponseField name="custref2" type="string">
+  Custom reference field 2, echoed back from the original send request.
+</ResponseField>
+<ResponseField name="custref3" type="string">
+  Custom reference field 3, echoed back from the original send request.
+</ResponseField>
+<ResponseField name="custref4" type="string">
+  Custom reference field 4, echoed back from the original send request.
+</ResponseField>
+<ResponseField name="custref5" type="string">
+  Custom reference field 5, echoed back from the original send request.
+</ResponseField>
+
+<ResponseField name="entry" type="array of object">
+  Container array for the callback event (inferred).
+  <Expandable title="entry[] properties">
+    <ResponseField name="id" type="string">
+      Identifier of the entry (inferred from field name; the source does not state what
+      this identifies).
+    </ResponseField>
+    <ResponseField name="changes" type="array of object">
+      Array of change events within this entry (inferred).
+      <Expandable title="changes[] properties">
+        <ResponseField name="value" type="object">
+          The event data for this change (inferred).
+          <Expandable title="value properties">
+            <ResponseField name="messages" type="array of object">
+              Inbound message objects carrying the button interaction (inferred).
+              <Expandable title="messages[] properties">
+                <ResponseField name="id" type="string">
+                  Identifier of the inbound message (inferred).
+                </ResponseField>
+                <ResponseField name="timestamp" type="string">
+                  Timestamp of the button click message (inferred; format not specified
+                  in the source).
+                </ResponseField>
+                <ResponseField name="type" type="string">
+                  Type of the inbound message (inferred; possible values not listed in
+                  the source).
+                </ResponseField>
+                <ResponseField name="from" type="string">
+                  Sender of the inbound message (inferred; presumably the end user's
+                  WhatsApp number).
+                </ResponseField>
+                <ResponseField name="context" type="object">
+                  Context referencing the message that contained the button (inferred).
+                  <Expandable title="context properties">
+                    <ResponseField name="id" type="string">
+                      Identifier of the referenced message (inferred).
+                    </ResponseField>
+                    <ResponseField name="from" type="string">
+                      Sender of the referenced message (inferred).
+                    </ResponseField>
+                  </Expandable>
+                </ResponseField>
+                <ResponseField name="button" type="object">
+                  Details of the button the user tapped (inferred).
+                  <Expandable title="button properties">
+                    <ResponseField name="text" type="string">
+                      Display text of the button that was clicked (inferred).
+                    </ResponseField>
+                    <ResponseField name="payload" type="string">
+                      Payload configured for the button (inferred).
+                    </ResponseField>
+                  </Expandable>
+                </ResponseField>
+              </Expandable>
+            </ResponseField>
+            <ResponseField name="metadata" type="object">
+              Metadata about the business number that received the interaction
+              (inferred).
+              <Expandable title="metadata properties">
+                <ResponseField name="display_phone_number" type="string">
+                  Display phone number of the business (inferred).
+                </ResponseField>
+                <ResponseField name="phone_number_id" type="string">
+                  Phone number identifier of the business (inferred).
+                </ResponseField>
+              </Expandable>
+            </ResponseField>
+            <ResponseField name="messaging_product" type="string">
+              Messaging product for the event (inferred).
+            </ResponseField>
+            <ResponseField name="contacts" type="array of object">
+              Contact details of the user who clicked the button (inferred).
+              <Expandable title="contacts[] properties">
+                <ResponseField name="profile" type="object">
+                  Contact profile information (inferred).
+                  <Expandable title="profile properties">
+                    <ResponseField name="name" type="string">
+                      Profile name of the contact (inferred).
+                    </ResponseField>
+                  </Expandable>
+                </ResponseField>
+                <ResponseField name="wa_id" type="string">
+                  WhatsApp ID of the contact (inferred).
+                </ResponseField>
+              </Expandable>
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+        <ResponseField name="field" type="string">
+          Field name describing the change (inferred).
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>

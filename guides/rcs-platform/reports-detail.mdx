@@ -1,0 +1,211 @@
+---
+title: "Detail Reports"
+description: "Message-level outgoing template, non-template, incoming, and URL click detail reports for RCS in OneXtel."
+---
+
+The **Detail Report** subtab (**Channels > RCS > Reports > Detail Report**)
+provides a complete log of all outgoing RCS template messages, tracking
+delivery status, failure reasons, and interaction details for each message.
+Filters at the top help refine results by date, TUC, and category. For
+aggregate metrics, see
+[Summary Reports](/guides/rcs-platform/reports-summary).
+
+## Outgoing Template Detail Report
+
+The report for template-based outgoing messages.
+
+| Field | Description |
+|---|---|
+| **Date & Time** | Date and time when the message was sent. |
+| **Sender Profile** | Sender ID or profile used for sending the message. |
+| **Message ID** | Unique ID assigned to each message. |
+| **Source** | How the message was triggered (e.g., API). |
+| **API Key** | Key used to authenticate the message. |
+| **Customer Number** | Recipient's mobile number. |
+| **Country** | Recipient's country. |
+| **Template Name** | Name of the message template used. |
+| **Category** | Category of the template (e.g., Basic, Promotional). |
+| **Message Type** | Type of message sent. |
+| **Status** | Status of the message. |
+| **Sent/Delivered/Read** | Delivery and read status of the message. |
+| **Failed** | Number of failed messages with date and time. |
+| **Failed Code** | Error code for the failed message. |
+| **Failed Description** | Reason for the failure. |
+| **URL Clicks** | Number of URL clicks if included in the message. |
+| **Button Clicks** | Whether any buttons were clicked. |
+| **Credits** | Number of credits consumed. |
+| **Custom Params** | Custom parameters associated with the message. |
+
+### Procedure
+
+<Steps>
+  <Step title="Open Channels > RCS > Reports">
+    In the left pane of the RCS platform, click **Channels**, select
+    **RCS**, then click the **Reports** tab. The RCS Report details
+    appear.
+  </Step>
+  <Step title="Open Outgoing Template">
+    Under the **Detail Report** subtab, click **Outgoing Template**.
+  </Step>
+  <Step title="Select date, TUC, and category">
+    Select the required date and time from the dropdown list. By default,
+    the report displays data for **Today**. Select specific **TUC** or
+    **All TUC** from the dropdown list. Select **Category** from the
+    dropdown list.
+  </Step>
+  <Step title="Apply filters">
+    Click the **red tick** icon to apply filters. The report for the
+    selected date and time appears.
+  </Step>
+  <Step title="Reset (optional)">
+    Click **Reset** to clear any applied filters.
+  </Step>
+  <Step title="Export (optional)">
+    Click **Download** to export the report.
+  </Step>
+</Steps>
+
+## Outgoing Non-Template Detail Report
+
+The report for non-template-based outgoing messages. Field definitions
+match the Outgoing Template report (Date & Time, Sender Profile, Message
+ID, Source, API Key, Customer Number, Country, Template Name, Category,
+Message Type, Status, Sent/Delivered/Read, Failed, Failed Code, Failed
+Description, URL Clicks, Button Clicks, Credits, Custom Params).
+
+### Procedure
+
+<Steps>
+  <Step title="Open Channels > RCS > Reports">
+    In the left pane of the RCS platform, click **Channels**, select
+    **RCS**, then click the **Reports** tab. The RCS Report details
+    appear.
+  </Step>
+  <Step title="Open Outgoing Non-Template">
+    Under the **Detail Report** subtab, click **Outgoing Non-Template**.
+  </Step>
+  <Step title="Select date, TUC, and category">
+    Select the required date and time from the dropdown list. By default,
+    the report displays data for **Today**. Select specific **TUC** or
+    **All TUC** from the dropdown list. Select **Category** from the
+    dropdown list.
+  </Step>
+  <Step title="Apply filters">
+    Click the **red tick** icon to apply filters. The report for the
+    selected date and time appears.
+  </Step>
+  <Step title="Reset (optional)">
+    Click **Reset** to clear any applied filters.
+  </Step>
+  <Step title="Export (optional)">
+    Click **Download** to export the report.
+  </Step>
+</Steps>
+
+## Incoming Detailed Report
+
+The report for messages received from customers or users on the OneXtel
+RCS channel.
+
+| Field | Description |
+|---|---|
+| **Message ID** | Unique ID assigned to each incoming message. |
+| **Message Type** | Type of message received (e.g., Promotional/Transactional/OTP). |
+| **Date & Time** | Date and time when the message was received. |
+| **Sender Profile** | Sender profile through which the message was received. |
+| **Customer Number** | Customer's mobile number from which the message was received. |
+| **Contact Name** | Contact's name, if available. |
+| **Context ID** | Conversation or session context for the received message. |
+| **Country** | Country of the sender. |
+| **Is CSW** | Whether the message is part of a CSW (Customer Support Window). |
+| **Message Content** | Text or media content received in the message. |
+| **Content ID** | Unique ID linked to the message content. |
+| **Content Title** | Title of the content, if applicable. |
+| **Content Text** | Message text content. |
+| **Content Payload** | Additional payload information related to the content. |
+
+### Procedure
+
+<Steps>
+  <Step title="Open Channels > RCS > Reports">
+    In the left pane of the RCS platform, click **Channels**, select
+    **RCS**, then click the **Reports** tab. The RCS report details
+    appear.
+  </Step>
+  <Step title="Open Incoming">
+    Under the **Detail Report** subtab, click **Incoming**.
+  </Step>
+  <Step title="Select date and TUC">
+    Select the required Date & Time from the dropdown list. By default,
+    the report displays data for **Today**. Select a specific **TUC** or
+    **All TUC** from the dropdown list.
+  </Step>
+  <Step title="Apply filters">
+    Click the **red tick icon** to apply filters. The report for the
+    selected date and time appears.
+  </Step>
+  <Step title="Reset (optional)">
+    Click **Reset** to clear all applied filters.
+  </Step>
+  <Step title="Export (optional)">
+    Click **Download** to export the report.
+  </Step>
+</Steps>
+
+## URL Detailed Report
+
+The URL Detailed Report tracks detailed URL click activities of outgoing
+RCS messages. It displays information related to each shortened URL, such
+as the number of clicks, device details, and campaign information.
+
+| Field | Description |
+|---|---|
+| **Short URL** | Shortened URL generated for tracking purposes. |
+| **Original URL** | Original destination link corresponding to the shortened URL. |
+| **Click Time** | Date and time when the URL was clicked. |
+| **Campaign** | Campaign name under which the message was sent. |
+| **Template** | Message template used for sending the URL. |
+| **Message Type** | Type of message (e.g., promotional, transactional). |
+| **Country** | Country from where the click originated. |
+| **Device & Browser** | Device and browser details of the user who clicked the URL. |
+| **IP Address** | IP address of the user who clicked the URL. |
+| **Location** | Geographical location (if available) based on IP. |
+| **Sender Profile** | Sender profile used for sending the message. |
+| **Message ID** | Unique ID assigned to the message containing the URL. |
+| **Campaign Instance** | Campaign instance reference, if applicable. |
+| **Template Type** | Type of message template (e.g., rich card standalone). |
+| **Billing Category** | Billing type (e.g., rich_media). |
+| **Custom Parameters** | Custom parameters added for campaign tracking. |
+| **API Key** | Key used to trigger the message via API. |
+| **Source** | Source through which the message was sent (e.g., API). |
+
+### Procedure
+
+<Steps>
+  <Step title="Open Channels > RCS > Reports">
+    In the left pane of the RCS platform, click **Channels**, select
+    **RCS**, then click the **Reports** subtab.
+  </Step>
+  <Step title="Open URL Detailed">
+    Under the **Detail Report** section, click **URL Detailed**.
+  </Step>
+  <Step title="Select date and TUC">
+    Select the required Date & Time from the dropdown list. By default,
+    the report displays data for **Today**. Select a specific TUC or
+    choose **All TUC** from the list.
+  </Step>
+  <Step title="Filter by URL (optional)">
+    Enter the **Original URL** if you want to filter specific links.
+  </Step>
+  <Step title="Apply filters">
+    Click the **red tick icon** to apply the selected filters. The
+    detailed report for the selected date and time, with URL click
+    statistics, appears.
+  </Step>
+  <Step title="Reset (optional)">
+    Click **Reset** to clear all applied filters.
+  </Step>
+  <Step title="Export (optional)">
+    Click **Download** to export the report.
+  </Step>
+</Steps>

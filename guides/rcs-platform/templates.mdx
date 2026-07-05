@@ -1,0 +1,107 @@
+---
+title: "RCS Templates"
+description: "Create and manage pre-approved RCS message templates in the OneXtel platform."
+---
+
+The Templates section manages predefined message formats for OneXtel RCS
+communication. Templates ensure consistency, compliance, and faster
+delivery of business messages. RCS templates help businesses create
+structured, interactive messages that are reviewed and approved before
+being sent to end-users, ensuring both quality and compliance.
+
+<Note>
+  This page covers creating and managing templates in the portal. For
+  using a template inside a campaign (variable mapping, recipients,
+  scheduling), see [RCS Campaigns](/guides/rcs-campaigns/overview).
+</Note>
+
+## View templates
+
+<Steps>
+  <Step title="Open Channels">
+    In the left pane of the RCS platform, click **Channels**.
+  </Step>
+  <Step title="Select RCS">
+    Select **RCS**.
+  </Step>
+  <Step title="Open Templates">
+    Click the **Templates** subtab.
+
+    The Templates details page is displayed with the following columns.
+  </Step>
+  <Step title="Export the list (optional)">
+    Click **Download** to export the report.
+  </Step>
+</Steps>
+
+| Column | Description |
+|---|---|
+| **Template Name** | The unique identifier assigned to each RCS template. |
+| **Type** | Defines the format of the template: **Rich Card Standalone** (single rich message with media, text, and buttons) or **Rich Card Carousel** (multiple rich cards displayed in a scrollable format). |
+| **Status** | The current approval stage: **Pending** (submitted for review but not yet approved), **Approved** (verified and available for use), or **Rejected** (not approved). |
+| **Actions** | **Preview** — allows previewing the configured template. |
+
+The Templates view also supports **Search**, filtering by **Profile** and
+**Message Type**, and a **Filter** control.
+
+## Add a template
+
+Adding a template allows users to design and submit new RCS message
+formats by defining content, layout, and type.
+
+<Steps>
+  <Step title="Open Channels > RCS > Templates">
+    In the left pane of the RCS platform, click **Channels**, select
+    **RCS**, then click the **Templates** subtab.
+  </Step>
+  <Step title="Start a new template">
+    Click **+Add Template**. The Add Template form is displayed.
+  </Step>
+  <Step title="Enter the template details">
+    Fill in the fields below.
+  </Step>
+</Steps>
+
+### Template fields
+
+| Field | Description | Validations |
+|---|---|---|
+| **Profile** | Select the sender profile (e.g., `yahoosp12`) under which the template will be created. | — |
+| **Message Type** | Choose the type of message — Promotional / Transactional / OTP. | — |
+| **Template Name/Code** | Enter a unique name for the template. | Only letters, numbers, and underscores are allowed (no space or special characters). |
+| **Template Type** | Select **Rich Card Stand Alone** (single card with image, text, and buttons), **Rich Card Carousel** (multiple cards in a swipe-able format), or **Text Message** (simple text-based message). | — |
+
+### Rich card fields
+
+| Field | Description | Validations |
+|---|---|---|
+| **Select Card Orientation** | Choose how the card appears — **Vertical** (content stacked vertically) or **Horizontal** (card displayed in horizontal format). | — |
+| **Select Media Height** | Set the height of the media (image/video) — **Short** or **Medium**. | — |
+| **Image/Video** | Upload media to display in the card. | Image: 3:1 aspect ratio, max 2 MB, optimal 1440×480 px. Video: max 10 MB (MP4, MPEG) with thumbnail. |
+| **Card Title** | Provide a title for the card. Variables can be added if required. | Max 200 characters. |
+| **Card Description** | Enter a detailed description of the card. Variables can also be inserted. | Max 2000 characters. |
+
+### Suggested actions / reply buttons
+
+| Field | Description |
+|---|---|
+| **Type of Action** | **Reply** — lets the user respond with quick reply text. **Dialer Action** — lets the user respond with a call (provide a phone number). **URL Action** — lets the user open a webpage (provide the URL link). **Dynamic Link Tracking** — tracks the count of links opened or clicked, and through which application (Browser or WebView); helps monitor user engagement by defining button text, tracking data, and link details for better campaign analysis. |
+| **Suggestion Text** | The button label users will see (max 25 characters). Example: Buy Now, Know More. |
+| **Suggestion Postback** | The backend value or keyword (max 120 characters) sent when the user clicks the button. Helps identify the action server-side. |
+| **Add Variable** | Insert variables into the text or postback for dynamic content. |
+
+## Submit for approval
+
+<Steps>
+  <Step title="Submit">
+    Click **Submit for Approval**.
+  </Step>
+  <Step title="Confirm">
+    In the confirmation pop-up, mark the checkbox and click **Submit**.
+
+    The template is submitted to the OneXtel RCS platform for approval.
+  </Step>
+  <Step title="Export (optional)">
+    Click **Download** to export the report.
+  </Step>
+</Steps>

@@ -1,0 +1,68 @@
+---
+title: "Additional Settings"
+description: "Enable URL shortening and message expiry for an RCS campaign on the OnexAura portal."
+---
+
+The **Additional Settings** section of the campaign creation form contains two
+optional features: **URL Shortener in Body** and **Message Expiry**. Click
+**Additional Settings** in the campaign form to expand it.
+
+## URL Shortener in Body
+
+Shortens URLs contained in the message body, optionally capturing the
+recipient's location when the short link is clicked.
+
+<Steps>
+  <Step title="Enable the shortener">
+    Select the **URL Shortener in Body** checkbox. The **Short URL** dialog
+    opens.
+  </Step>
+  <Step title="Configure the short URL">
+    Enter the following fields:
+
+    | Field | Description |
+    | --- | --- |
+    | **URL** | Select the long URL to be shortened from the dropdown list. |
+    | **Get Location** | Select the checkbox to capture the recipient's location when the short link is clicked. |
+    | **Shorten all URLs in the message** | Select the radio button to shorten every URL present in the message body. |
+    | **Shorten URLs in specific variables only** | Use this option to shorten only the URLs placed in selected variable fields. |
+
+    The dialog also shows the **Selected Template** and the variables
+    available in it (e.g., `link`).
+  </Step>
+  <Step title="Apply">
+    Click **Short** to apply, or **Cancel** to close without shortening.
+  </Step>
+</Steps>
+
+## Message Expiry
+
+Sets when your RCS message should expire. Once expired, the message is revoked
+and cannot be delivered.
+
+<Steps>
+  <Step title="Enable message expiry">
+    Select the **Message Expiry** checkbox. The **Message Expiry Settings**
+    dialog opens.
+  </Step>
+  <Step title="Choose the expiry type">
+    | Expiry type | Behavior |
+    | --- | --- |
+    | **Duration from send time (TTL)** | Message expires after a set duration from the time it's sent. |
+    | **Absolute expiry time** | Message expires at a specific date and time. |
+  </Step>
+  <Step title="Set the duration (TTL)">
+    For TTL expiry, enter the expiry duration value in **Duration (TTL)**
+    (e.g., `3.5s`, `30m`, `2h`, `1d`) and choose the unit of time from the
+    **Time Unit** dropdown (Seconds, Minutes, Hours, Days).
+  </Step>
+  <Step title="Save">
+    Click **Save Expiry Settings** to save the configured expiry settings, or
+    **Cancel** to close the dialog without saving changes.
+  </Step>
+</Steps>
+
+## Next step
+
+Continue to [Schedule and launch](/guides/rcs-campaigns/schedule-and-launch)
+to configure batching, repetition, and execution timing.

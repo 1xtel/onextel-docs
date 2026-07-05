@@ -1,0 +1,97 @@
+---
+title: "Variable Mapping and Additional Settings"
+description: "Fill WhatsApp template placeholders with static or dynamic values, and configure URL shortening for the message body."
+---
+
+Variable mapping controls how values such as Name, OTP, URL, and other fields are inserted into the message template during campaign creation. The platform supports two types of variable mapping: **Static** and **Dynamic**.
+
+This page follows on from [Create a WhatsApp campaign](/guides/whatsapp/campaign-create). Click **Variable Mapping** in the campaign builder to open this section.
+
+## The variable mapping panel
+
+The panel has two areas:
+
+- **Data Sources** (left) — **File Columns** extracted from your uploaded recipient file (for example `phone_number`, `name`, `OTP`, `url`) and **Static Values** you define yourself.
+- **Body Variables** (right) — the template's placeholders (`{{1}}`, `{{2}}`, `{{3}}`, …) waiting to be filled.
+
+A progress bar at the top shows how many variables are mapped (for example, "3 of 3 variables mapped (100%)"), and the template preview on the right updates as you map. When every placeholder is filled, the panel shows **All variables mapped successfully**.
+
+## Static mapping
+
+Use static mapping when the value should remain the same for all recipients — ideal for fixed URLs, brand names, or common text.
+
+<Steps>
+  <Step title="Open Variable Mapping">
+    Click **Variable Mapping**.
+  </Step>
+  <Step title="Enter the fixed value">
+    In **Static Values**, enter the fixed value.
+  </Step>
+  <Step title="Add the value">
+    Click **+**. The value appears in the Static Values list.
+  </Step>
+  <Step title="Map it to a placeholder">
+    Drag the static value into the required placeholder (for example `{{3}}`).
+  </Step>
+  <Step title="Verify">
+    The same value will appear for all recipients.
+  </Step>
+</Steps>
+
+## Dynamic mapping
+
+Use dynamic mapping when the value should change per recipient, pulled directly from the uploaded file — perfect for OTPs, names, and links.
+
+<Steps>
+  <Step title="Review file columns">
+    In **File Columns**, view the fields extracted from your uploaded recipient file.
+  </Step>
+  <Step title="Map the first column">
+    Drag the required column (for example, `name`) to the placeholder `{{1}}`.
+  </Step>
+  <Step title="Map the remaining columns">
+    Drag another column (for example, `address`) to `{{2}}`, and drag the `phone_number` column to `{{3}}`.
+  </Step>
+  <Step title="Done">
+    All variables auto-populate per recipient during execution.
+  </Step>
+</Steps>
+
+<Tip>
+You can mix both types in one campaign — for example, a dynamic `name` in `{{1}}` and a static brand URL in `{{2}}`.
+</Tip>
+
+## Additional Settings
+
+Click **Additional Settings** in the campaign builder. This section contains the **URL Shortener in Body** and **Message Expiry** options.
+
+### URL Shortener in Body
+
+<Steps>
+  <Step title="Enable the shortener">
+    Select the **URL Shortener in Body** checkbox. The **Short URL** dialog opens.
+  </Step>
+  <Step title="Configure the short URL">
+    Complete the fields described below.
+  </Step>
+  <Step title="Apply">
+    Click **Short** to apply, or **Cancel** to discard.
+  </Step>
+</Steps>
+
+| Field | Description |
+| --- | --- |
+| **URL** | Select the long URL to be shortened from the dropdown list. |
+| **Get Location** | Select the checkbox to capture the recipient's location when the short link is clicked. |
+| **Shorten all URLs in the message** | Select this radio button to shorten every URL present in the message body. |
+| **Shorten URLs in specific variables only** | Use this option to shorten only the URLs placed in selected variable fields. |
+
+The dialog also shows the selected template and the variables available in it (for example, `Selected Template: url_vi_shorten1`, `Variables available: link`).
+
+<Note>
+The **Message Expiry** checkbox appears alongside URL Shortener in Body in Additional Settings, but its configuration is not described in the source manual.
+</Note>
+
+## Next step
+
+Continue to [batching, scheduling, and launch](/guides/whatsapp/campaign-launch) to control how and when the campaign is sent.

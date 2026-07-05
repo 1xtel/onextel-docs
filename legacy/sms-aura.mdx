@@ -1,0 +1,295 @@
+---
+title: "SMS AURA V1 (Legacy)"
+description: "Archived: the legacy Aura SMS platform overview and api.onex-aura.com send/report APIs."
+---
+
+<Warning>
+  Legacy V1 documentation, archived for reference. For current SMS APIs, see the
+  [API Reference](/api-reference/omnichannel/overview). See [Legacy overview](/legacy/overview) for context.
+</Warning>
+
+## Platform overview
+
+Aura was OneXtel's SMS platform for sending messages via the web interface or API, checking
+message status, and generating reports.
+
+### Terminology
+
+- **TUC (Tenant User Customer):** A primary account that manages SMS delivery independently.
+- **Child TUC (Child Tenant User Customer):** A secondary account that operates under a primary
+  TUC account.
+- **Reseller / Sub-account module:** Multi-account management for SMS services.
+- **Credits:** Messaging capacity where one credit equals one 160-character message. Unicode or
+  longer content consumes more than one credit.
+- **UU ID:** A unique identifier assigned to each individual message transmission.
+
+## Generating an API key
+
+<Steps>
+  <Step title="Open the API section">
+    Use the left sidebar to navigate to the API section.
+  </Step>
+  <Step title="Choose Generate API">
+    Two options appear: **Show API** (view existing keys) and **+ Generate API** (create a new key).
+  </Step>
+  <Step title="Configure the key">
+    In the popup, select the account type from the dropdown.
+  </Step>
+  <Step title="Optional: Scrub DND">
+    Check **Scrub DND** to exclude Do Not Disturb numbers from SMS sent via this API key.
+  </Step>
+  <Step title="Optional: label">
+    Provide a descriptive label for the key for organizational reference.
+  </Step>
+  <Step title="Optional: enable Automatch">
+    Click **Match Template** to allow automatic template matching without passing
+    `templateid`/`entityid` on each request, then email support@onextel.com with account
+    credentials to complete backend activation.
+  </Step>
+  <Step title="Submit">
+    Click **Submit**. The system confirms "Your API key is now successfully generated."
+  </Step>
+</Steps>
+
+## Authentication
+
+All endpoints below use API-key authentication, passed as the `key` parameter in the query
+string or JSON payload. Base domain: `https://api.onex-aura.com`.
+
+## Mandatory parameters
+
+These parameters apply to all send-SMS endpoints except the XML API:
+
+<ParamField query="key" type="string" required>Authentication token generated in Aura.</ParamField>
+<ParamField query="from" type="string" required>Registered sender identifier per DLT.</ParamField>
+<ParamField query="to" type="string" required>Recipient phone number.</ParamField>
+<ParamField query="body" type="string" required>Message content.</ParamField>
+<ParamField query="templateid" type="string" required>Unique template ID registered under DLT.</ParamField>
+<ParamField query="entityid" type="string" required>Unique entity ID registered under DLT.</ParamField>
+
+<Note>
+  With Automatch enabled, `entityid` and `templateid` become optional — the system
+  auto-matches message content to registered templates. Contact support@onextel.com to enable.
+</Note>
+
+## Send SMS APIs
+
+### GET — basic
+
+`GET /api/sms`
+
+```bash
+curl "https://api.onex-aura.com/api/sms?key=YOUR_API_KEY&from=SENDERID&to=919999999999&body=Hello&templateid=xx&entityid=xx"
+```
+
+Optional: `campaign_name`.
+
+### POST — basic
+
+`POST /api/sms`
+Header: `Content-Type: text/plain`
+Body: `{{xx}},{{xx}}`
+
+Optional: `campaign_name`.
+
+### GET — multi-part
+
+`GET /api/sms2`
+
+Optional parameter: `sms_part` (`true`/`false`) — returns message part count and unique IDs.
+
+### GET — custom parameters
+
+`GET /api/sms3`
+
+Optional parameters: `custref1`, `custref2`.
+
+### POST — custom parameters (JSON)
+
+`POST /api/sms3`
+Header: `Content-Type: application/json`
+
+```json
+{
+    "key": "xx",
+    "from": "xx",
+    "to": ["xx", "xx"],
+    "body": "xx",
+    "templateid": "xx",
+    "entityid": "xx",
+    "custref1": "xx",
+    "custref2": "xx"
+}
+```
+
+### POST — JSON body
+
+`POST /api/jsms`
+Header: `Content-Type: application/json`
+
+```json
+{
+    "key": "xx",
+    "from": "xx",
+    "to": ["xx", "xx"],
+    "body": "xx",
+    "templateid": "xx",
+    "entityid": "xx",
+    "custref1": "xx",
+    "custref2": "xx"
+}
+```
+
+### POST — multiple templates, 1 custom parameter
+
+`POST /api/jsmslist`
+Header: `Content-Type: application/json`
+
+```json
+{
+    "key": "xx",
+    "listsms": [
+        {
+            "from": "xx",
+            "to": "xx",
+            "body": "xx",
+            "templateid": "xx",
+            "entityid": "xx",
+            "clientsmsid": "xx"
+        }
+    ]
+}
+```
+
+### POST — multiple templates, 2 custom parameters
+
+`POST /api/jsmslist2`
+Header: `Content-Type: application/json`
+
+```json
+{
+    "key": "xx",
+    "listsms": [
+        {
+            "from": "xx",
+            "to": "xx",
+            "body": "xx",
+            "templateid": "xx",
+            "entityid": "xx",
+            "clientsmsid": "xx",
+            "campaignid": "xx"
+        }
+    ]
+}
+```
+
+### POST — multiple message types, single key
+
+`POST /api/jsmslist3`
+Header: `Content-Type: application/json`
+
+Supports Service Implicit, Service Explicit, and Promotional message types in one request.
+
+```json
+{
+    "key": "xx",
+    "listsms": [
+        {
+            "from": "xx",
+            "to": "xx",
+            "body": "xx",
+            "templateid": "xx",
+            "entityid": "xx",
+            "clientsmsid": "xx"
+        }
+    ]
+}
+```
+
+### XML API
+
+`POST /api/pushsmsxml`
+Header: `Content-Type: application/xml`
+
+```xml
+<API>
+    <Authentication>
+        <User>xx</User>
+        <Authkey>xx</Authkey>
+    </Authentication>
+    <Data>
+        <Sender>xx</Sender>
+        <MobileNum>
+            <Mobile>xx</Mobile>
+        </MobileNum>
+        <Message>xx</Message>
+        <TemplateId>xx</TemplateId>
+        <EntityId>xx</EntityId>
+        <ReferenceId>xx</ReferenceId>
+    </Data>
+</API>
+```
+
+| XML element | Required |
+| --- | --- |
+| `Authkey` | Yes |
+| `Sender` | Yes |
+| `Mobile` | Yes |
+| `Message` | Yes |
+| `TemplateId` | No |
+| `EntityId` | No |
+| `ReferenceId` | No |
+
+## Reports APIs
+
+### Message report
+
+`GET /api/report`
+
+```bash
+curl "http://api.onex-aura.com/api/report?key=YOUR_API_KEY&uid=UUID"
+```
+
+<ParamField query="key" type="string" required>API key.</ParamField>
+<ParamField query="uid" type="string" required>Unique Aura message ID.</ParamField>
+
+### Summary report
+
+`GET /api/summary`
+
+```bash
+curl "http://api.onex-aura.com/api/summary?key=YOUR_API_KEY&fromdate=20240101&todate=20240131"
+```
+
+<ParamField query="key" type="string" required>API key.</ParamField>
+<ParamField query="fromdate" type="string" required>Start date, `YYYYMMDD` format.</ParamField>
+<ParamField query="todate" type="string" required>End date, `YYYYMMDD` format.</ParamField>
+<ParamField query="campaign_name" type="string">Filter by campaign name.</ParamField>
+
+### Balance check
+
+`GET /api/bal`
+
+```bash
+curl "http://api.onex-aura.com/api/bal?key=YOUR_API_KEY"
+```
+
+<ParamField query="key" type="string" required>API key.</ParamField>
+
+### Balance transfer
+
+`GET /api/transfer`
+
+```bash
+curl "https://api.onex-aura.com/api/transfer?key=YOUR_API_KEY&to=CHILD_TUC_ID&amount=100"
+```
+
+<ParamField query="key" type="string" required>API key.</ParamField>
+<ParamField query="to" type="string" required>Child TUC ID.</ParamField>
+<ParamField query="amount" type="string" required>Credit amount to transfer.</ParamField>
+
+<Note>
+  Source page listed a base domain of `https://api.onex-aura.com` (note the hyphen), which
+  differs from the current platform's `https://api.onexaura.com` referenced in the Postman
+  collection. This is documented as it appeared on the legacy site — see `GAPS`.
+</Note>

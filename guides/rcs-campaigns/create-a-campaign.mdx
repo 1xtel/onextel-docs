@@ -1,0 +1,121 @@
+---
+title: "Create an RCS Campaign"
+description: "Start a new RCS campaign: set the title and channel, add recipients, and choose the sender profile and template."
+---
+
+OneXtel RCS Campaign sends rich and interactive messages with images, buttons,
+and carousels directly to customers' native messaging apps. It enhances
+communication through a branded, app-like experience and provides analytics to
+track delivery and engagement.
+
+Creating a campaign is a single form with collapsible sections. This page
+covers the first three sections — campaign title and channel, **Recipient
+Details**, and **Sender Details**. The remaining sections are covered in
+[Variable mapping](/guides/rcs-campaigns/variable-mapping),
+[Additional settings](/guides/rcs-campaigns/additional-settings), and
+[Schedule and launch](/guides/rcs-campaigns/schedule-and-launch).
+
+## Start a new campaign
+
+<Steps>
+  <Step title="Open Channels">
+    In the left pane of the WhatsApp-RCS platform, click **Channels**.
+  </Step>
+  <Step title="Select a channel">
+    Select a channel.
+  </Step>
+  <Step title="Open Campaigns">
+    Click **Campaigns**. The campaigns dashboard appears.
+  </Step>
+  <Step title="Create the campaign">
+    Click **+New Campaign**.
+  </Step>
+  <Step title="Enter a unique title">
+    Enter the **Campaign Title** and click **Check**. Ensure the title is
+    unique; otherwise, the platform displays an alert if the title already
+    exists.
+
+    <Note>
+      Once a unique title is entered, the remaining menus (Recipient Details,
+      Sender Details, Variable Mapping, Additional Settings, Batching) become
+      accessible. A phone-style **Template Preview** panel on the right updates
+      as you complete the sender details.
+    </Note>
+  </Step>
+  <Step title="Select the channel">
+    Select the **RCS** messaging channel for the campaign.
+  </Step>
+</Steps>
+
+## Add recipients
+
+Click **Recipient Details**, then select a method for adding recipient numbers.
+
+### Recipient methods
+
+<Tabs>
+  <Tab title="Copy/Paste">
+    Allows manual entry or pasting of recipient phone numbers directly into the
+    text area.
+
+    1. Select **Copy/Paste**.
+    2. Enter phone numbers separated by commas or new lines in the text box.
+       For example: `+919876543210, 919876543211, 919876543212`.
+    3. Click **Save** to add the numbers or **Clear** to remove them.
+  </Tab>
+  <Tab title="Upload">
+    Enables uploading recipient numbers using CSV, Excel, or text files.
+
+    1. Select **Upload**.
+    2. Click **Browse** and choose a file (`.txt`, `.csv`, `.xls`).
+    3. After uploading, a pop-up appears to select the Recipient Number Column.
+    4. Choose the correct column (e.g., `phone_number`) and click
+       **Confirm Selection**.
+  </Tab>
+  <Tab title="Phonebook">
+    Enables selecting recipients from existing phonebook groups saved in the
+    platform.
+
+    1. Select **Phonebook**.
+    2. From the **Phonebook Group** dropdown, choose the desired group or
+       contact list.
+  </Tab>
+</Tabs>
+
+### Recipient options
+
+Below the recipient method, the following options control how the recipient
+list is processed:
+
+| Option | Description | Purpose |
+| --- | --- | --- |
+| **Default Country Code** | Applies the selected default country code to all uploaded recipient numbers. | Useful when uploaded numbers do not include country codes — for example, adding `+91` to all numbers for India. |
+| **Remove Duplicate** | Removes duplicate phone numbers across all uploaded files and lists. | Ensures each recipient receives the message only once. This option is enabled by default. |
+| **Exclude Numbers** | Allows uploading files containing numbers to be excluded from the campaign. | Prevents sending messages to specific numbers, such as unsubscribed or blocked contacts. |
+
+## Enter sender details
+
+Click **Sender Details**, then enter the following fields:
+
+<Steps>
+  <Step title="Sender Profile">
+    Identifies the sender or business account through which the campaign will
+    be sent. Select the sender ID or profile (e.g., `yahoosp12`) from the
+    dropdown list.
+  </Step>
+  <Step title="Message Type">
+    Ensures the campaign follows the correct message type and compliance
+    rules. Select the category of message (e.g., **Promotional**,
+    **Transactional**, **OTP**) from the dropdown list.
+  </Step>
+  <Step title="Template">
+    Defines the content format and structure of the message being sent. Select
+    the approved message template (e.g., `test_video_template`) for the
+    campaign from the dropdown list.
+  </Step>
+</Steps>
+
+## Next step
+
+Continue to [Variable mapping](/guides/rcs-campaigns/variable-mapping) to fill
+in the template variables.

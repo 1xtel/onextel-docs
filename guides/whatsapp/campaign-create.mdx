@@ -1,0 +1,123 @@
+---
+title: "Create a WhatsApp Campaign"
+description: "Start a new WhatsApp campaign on the OnexAura portal: set the title and channel, add recipients, and configure sender details."
+---
+
+A WhatsApp campaign sends rich, interactive messages — with images, buttons, and carousels — directly to your customers on WhatsApp, using pre-approved templates through the verified WhatsApp Business API.
+
+This page covers the first half of the campaign builder: title, channel, recipients, and sender details. Continue with [variable mapping](/guides/whatsapp/campaign-variable-mapping) and [batching, scheduling, and launch](/guides/whatsapp/campaign-launch) to finish and send.
+
+## Start a new campaign
+
+<Steps>
+  <Step title="Open Channels">
+    In the left pane of the platform, click **Channels**.
+  </Step>
+  <Step title="Select a channel">
+    Select the **WhatsApp** channel.
+  </Step>
+  <Step title="Open Campaigns">
+    Click **Campaigns**. The campaigns dashboard appears.
+  </Step>
+  <Step title="Create the campaign">
+    Click **+ New Campaign**. The New Campaign page opens with a template preview panel on the right.
+  </Step>
+  <Step title="Enter a unique campaign title">
+    Enter the **Campaign Title** and click **Check**. The title must be unique — the platform displays an alert if the title already exists.
+
+    Once a unique title is entered, the remaining sections (Recipient Details, Sender Details, Variable Mapping, Additional Settings, Batching) become accessible.
+  </Step>
+  <Step title="Select the channel">
+    Under **Select Channel**, select **WhatsApp** as the messaging channel for the campaign.
+  </Step>
+</Steps>
+
+<Note>
+The template preview on the right stays empty until the sender details are completed.
+</Note>
+
+## Add recipients
+
+Click **Recipient Details** and select one of the three recipient methods.
+
+<Tabs>
+  <Tab title="Copy/Paste">
+    Manually enter or paste recipient phone numbers directly into the text area.
+
+    <Steps>
+      <Step title="Select Copy/Paste">
+        Under **Method**, select **Copy/Paste**.
+      </Step>
+      <Step title="Enter the numbers">
+        Enter phone numbers separated by commas or new lines in the text box. Example: `+1234567890, 9876543210, 5551234567`. Include country codes for international numbers.
+      </Step>
+      <Step title="Save">
+        Click **Save** to add the numbers, or **Clear** to remove them.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Upload">
+    Upload recipient numbers using CSV, Excel, or text files.
+
+    <Steps>
+      <Step title="Select Upload">
+        Under **Method**, select **Upload**.
+      </Step>
+      <Step title="Choose a file">
+        Click **Browse** and choose a file (`.txt`, `.csv`, `.xls`).
+      </Step>
+      <Step title="Select the recipient number column">
+        After uploading, a pop-up appears to select the Recipient Number Column.
+      </Step>
+      <Step title="Confirm">
+        Choose the correct column (for example, `phone_number`) and click **Confirm Selection**.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Phonebook">
+    Select recipients from existing phonebook groups saved in the platform.
+
+    <Steps>
+      <Step title="Select Phonebook">
+        Under **Method**, select **Phonebook**.
+      </Step>
+      <Step title="Choose a group">
+        From the **Phonebook Group** dropdown, choose the desired group or contact list.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+### Recipient options
+
+Below the recipient method, the following options refine the recipient list:
+
+| Option | Description | Purpose |
+| --- | --- | --- |
+| **Default Country Code** | Applies the selected default country code to all uploaded recipient numbers. | Useful when uploaded numbers do not include country codes — for example, adding `+91` to all numbers for India. |
+| **Remove Duplicate** | Removes duplicate phone numbers across all uploaded files and lists. | Ensures each recipient receives the message only once. Enabled by default. |
+| **Exclude Numbers** | Upload files containing numbers to be excluded from the campaign. | Prevents sending messages to specific numbers, such as unsubscribed or blocked contacts. |
+
+## Configure sender details
+
+Click **Sender Details** and complete the following fields:
+
+<Steps>
+  <Step title="Select the WABA ID">
+    Select the required WhatsApp Business Account (WABA) ID from the dropdown list, then verify the ID displayed below for confirmation. Each WABA ID is unique to an organization and is used for sending the campaign.
+  </Step>
+  <Step title="Select the template">
+    Choose the desired template from the list. The template is the pre-approved WhatsApp message template used in the campaign — it includes the format, language, and message content. Ensure the selected template is approved and matches the campaign purpose.
+  </Step>
+  <Step title="Select the phone numbers">
+    Select the phone numbers from the dropdown list and confirm the selected number appears in the list below. This dropdown lists the sender's registered phone numbers associated with the selected WABA ID; messages are sent from this number.
+  </Step>
+</Steps>
+
+<Note>
+Templates must already be created and approved on the WhatsApp Business Account — the campaign builder only lets you select from existing approved templates.
+</Note>
+
+## Next step
+
+Continue to [variable mapping](/guides/whatsapp/campaign-variable-mapping) to fill the template's placeholders with static or per-recipient values.

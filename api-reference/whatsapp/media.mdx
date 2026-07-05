@@ -1,0 +1,179 @@
+---
+title: "Media"
+description: "Upload media for use in WhatsApp messages, fetch a media URL by ID, and download media by URL."
+---
+
+Use these endpoints to upload media files (images, documents, videos) for use in
+template and session WhatsApp messages, and to retrieve or download previously
+uploaded media.
+
+<Note>
+The OneXtel WhatsApp API Guide PDF documents the Media Upload endpoint as `POST /wa/mediaupload`.
+The OnexAura Postman collection documents it as `POST /oapi/wa/mediaupload`. Per the
+authoring convention, the Postman collection is treated as authoritative for this page;
+the discrepancy is also listed in the gaps for this extraction.
+</Note>
+
+## Media Upload
+
+```
+POST /oapi/wa/mediaupload
+```
+
+<ParamField header="apikey" type="string" required>
+  API key generated for the TUC associated with the sending phone number.
+</ParamField>
+<ParamField header="accept" type="string">
+  `application/json`
+</ParamField>
+
+Uploads a local file (multipart) or a remote file URL and returns a media ID/URL you
+can reference from send-message payloads (e.g. `image.id`, `document.id`).
+
+### Request parameters
+
+<ParamField body="phone_number" type="string" required>
+  WhatsApp phone number (with country code) for which media is being uploaded.
+</ParamField>
+<ParamField body="file" type="file" required>
+  Media file to upload (image, document, video, etc.), sent as multipart form data.
+</ParamField>
+
+<Note>
+The Postman collection's Media Upload request only submits `phone_number` and `file` as
+form fields. The PDF's Create Template API section separately documents an optional `url`
+form field (remote file URL to upload from an external source) as an alternative to `file`
+for media used in templates — it is not confirmed whether `url` is accepted on this same
+`/oapi/wa/mediaupload` endpoint for session-message media uploads.
+</Note>
+
+### Sample cURL request
+
+```bash
+curl --location 'https://api.onexaura.com/oapi/wa/mediaupload' \
+--header 'accept: application/json' \
+--header 'apikey: YOUR_API_KEY' \
+--form 'phone_number="919217160065"' \
+--form 'file=@"<media file name>"'
+```
+
+### Sample JSON payload
+
+```json
+{
+  "phone_number": "919217160065",
+  "file": "binary file data"
+}
+```
+
+### Sample response payload
+
+<ResponseField name="id" type="string">
+  Media ID assigned to the uploaded file.
+</ResponseField>
+<ResponseField name="status" type="string">
+  `"success"` on successful upload.
+</ResponseField>
+<ResponseField name="http_status" type="integer">
+  HTTP status code of the upload operation.
+</ResponseField>
+<ResponseField name="onextel_media_url" type="string">
+  Hosted URL of the uploaded media file.
+</ResponseField>
+
+```json Response
+{
+    "id": "27015499406910550",
+    "status": "success",
+    "http_status": 200,
+    "onextel_media_url": "https://warcssm.1xtel.co/media/media/543e3517-9efc-4e72-8c0c-5027530f1cc7/titan20.jpeg"
+}
+```
+
+### Error codes
+
+| Error | Response | Error Description |
+|---|---|---|
+| Invalid Method | 405 | Method Not Allowed |
+| Missing ApiKey | 114 (200) | NO VALID AUTH_KEY FOUND |
+| Invalid ApiKey | 200 | AUTHENTICATION FAILURE |
+| Missing Content-Type | 400 | Missing Content-Type / Missing form data |
+| Invalid Content-Type | 400 | Content-Type must be multipart/form-data or application |
+| Missing phone_number | 400 | phone_number is mandatory |
+| Neither a file nor URL is provided | 400 | Either the file or the URL must be provided |
+| Both the file and URL are provided | 400 | Only one file or URL can be provided |
+| Invalid Json | 400 | Invalid JSON |
+| Upstream Req Failure | 503 | Reason of Failure can be multiple |
+| Upstream service unavailable | 503 | Service unavailable |
+| Unknown Request | 500 | Internal server error - unexpected arguments |
+
+---
+
+## Fetch Media URL
+
+```
+GET /oapi/wa/media
+```
+
+<ParamField header="apiKey" type="string" required>
+  API key generated for the TUC associated with the sending phone number.
+</ParamField>
+
+Retrieves the hosted URL for a previously uploaded media item by its media ID.
+
+### Query parameters
+
+<ParamField query="mediaId" type="string" required>
+  Media ID returned from the Media Upload endpoint.
+</ParamField>
+<ParamField query="phoneNumber" type="string" required>
+  WhatsApp sender phone number associated with the media.
+</ParamField>
+
+### Sample cURL request
+
+```bash
+curl --location 'https://api.onexaura.com/oapi/wa/media?mediaId=YOUR_MEDIA_ID&phoneNumber=919999999999' \
+--header 'apiKey: YOUR_API_KEY'
+```
+
+<Note>
+The source Postman collection request does not include a saved response example for this
+endpoint. The response body/schema is not documented — this is listed as a gap.
+</Note>
+
+---
+
+## Download Media
+
+```
+GET /oapi/wa/download-media
+```
+
+<ParamField header="apiKey" type="string" required>
+  API key generated for the TUC associated with the sending phone number.
+</ParamField>
+
+Downloads the media file content for a given hosted media URL.
+
+### Query parameters
+
+<ParamField query="mediaUrl" type="string" required>
+  Hosted media URL (e.g. the `onextel_media_url` value returned from Media Upload, or the
+  URL returned from Fetch Media URL).
+</ParamField>
+<ParamField query="phoneNumber" type="string" required>
+  WhatsApp sender phone number associated with the media.
+</ParamField>
+
+### Sample cURL request
+
+```bash
+curl --location 'https://api.onexaura.com/oapi/wa/download-media?mediaUrl=YOUR_MEDIA_URL&phoneNumber=919999999999' \
+--header 'apiKey: YOUR_API_KEY'
+```
+
+<Note>
+The source Postman collection request does not include a saved response example for this
+endpoint. The response content type and body are not documented — this is listed as a gap.
+</Note>

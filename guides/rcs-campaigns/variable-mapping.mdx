@@ -1,0 +1,76 @@
+---
+title: "Variable Mapping"
+description: "Map static values or per-recipient file columns into RCS template variables during campaign creation."
+---
+
+Variable mapping controls how values such as Name, OTP, URL, and other fields
+are inserted into the message template during campaign creation. The platform
+supports two types of variable mapping: **Static** and **Dynamic**.
+
+To open this section, click **Variable Mapping** in the campaign creation form.
+
+## The Variable Mapping panel
+
+The panel is split into:
+
+- **Data Sources** (left): lists the **File Columns** extracted from your
+  uploaded recipient file (e.g., `phone_number`, `name`, `OTP`, `url`) and a
+  **Static Values** input for fixed values.
+- **Suggestion Variables** (right): one slot per variable in the selected
+  template (e.g., `link`). Drag a data source into each slot.
+- **Progress indicators** (bottom): Total Variables, Mapped, and Progress
+  percentage. When every variable is mapped, the panel shows
+  **All variables mapped successfully** and progress reads 100%.
+
+The phone-style preview on the right reflects the mapped values.
+
+## Static mapping
+
+Use static mapping when the value should remain the same for all recipients.
+Ideal for fixed URLs, brand names, or common text.
+
+<Steps>
+  <Step title="Open Variable Mapping">
+    Click **Variable Mapping**.
+  </Step>
+  <Step title="Enter the fixed value">
+    In **Static Values**, enter the fixed value (URL, name, or OTP).
+  </Step>
+  <Step title="Add the value">
+    Click **+**. The value appears in the Static Values list.
+  </Step>
+  <Step title="Map the variable">
+    Drag the static value to the **Suggestion Variables** field.
+  </Step>
+</Steps>
+
+## Dynamic mapping
+
+Use dynamic mapping when the value should change per recipient, pulled
+directly from the uploaded file. Perfect for OTPs, names, links, and similar
+per-recipient values.
+
+<Steps>
+  <Step title="Review the file columns">
+    In **File Columns**, view the fields extracted from the uploaded recipient
+    file.
+  </Step>
+  <Step title="Map the column">
+    Drag the required column (e.g., `name`, `otp`, `url`) into the variable
+    field under **Suggestion Variables**.
+  </Step>
+  <Step title="Values populate at send time">
+    Each row auto-populates during execution — every recipient receives the
+    value from their own row in the file.
+  </Step>
+</Steps>
+
+<Tip>
+  You can mix mapping types in one campaign: map some variables to static
+  values and others to file columns.
+</Tip>
+
+## Next step
+
+Continue to [Additional settings](/guides/rcs-campaigns/additional-settings)
+to configure URL shortening and message expiry.

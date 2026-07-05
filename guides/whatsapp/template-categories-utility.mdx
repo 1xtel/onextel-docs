@@ -1,0 +1,155 @@
+---
+title: "Utility Templates"
+description: "Meta's category guidelines for WhatsApp utility message templates: the non-promotional requirement, allowed objectives, and essential-or-critical use cases."
+---
+
+[Utility templates](https://developers.facebook.com/docs/whatsapp/updates-to-pricing/new-template-guidelines#utility-templates)
+**must be non-promotional**, not containing any promotional or persuasive intent.
+They must also be either:
+
+- **specific to or requested by the user** (clearly related to their order,
+  account, services or transactions), **or**
+- **essential or critical to the user** (for example, to ensure user safety).
+
+<Warning>
+  Businesses can only send template messages to users who have subscribed to
+  receive messages from them on WhatsApp.
+</Warning>
+
+## Message objectives
+
+### Opt-in management on WhatsApp
+
+**Business goal:** confirm opt-in to receive messages on WhatsApp as a follow up
+to opt-in collected via other channels (e.g. website, email), or confirm opt-out.
+
+Example utility templates:
+
+- `Thanks for confirming opt-in! You'll now receive notifications via WhatsApp.`
+- `Thank you for confirming your opt-out preference. You will no longer receive messages from us on WhatsApp.`
+
+### Order management
+
+**Business goal:** confirm, update or cancel an order or transaction with a
+customer, using specific order or transaction details in the body of your
+message.
+
+<Warning>
+  These messages should not promote, recommend, upsell or cross-sell products;
+  include offers; or attempt to secure renewals.
+</Warning>
+
+Example utility templates:
+
+- `Thank you! Your order {{order_number}} is confirmed. We will let you know once your package is on its way.`
+- `Hooray! Your package from order {{order_number}} is on its way. Your tracking number is {{tracking_ID}} and expected delivery date is {{date}}.`
+- `Unfortunately, one item from your order {{number}} is backordered. We will follow up with an estimated ship date. If you wish to cancel and receive a refund, please click below.`
+- `We have received your item from order {{order_number}}. Your refund for ${{amount}} has been processed. Thank you for your business.`
+
+### Account alerts or updates
+
+**Business goal:** send important or time-sensitive updates or alerts or other
+information specific to purchased or subscribed products/services.
+
+<Warning>
+  These messages should not promote, recommend, upsell or cross-sell products;
+  include offers; or attempt to secure renewals.
+</Warning>
+
+Example utility templates:
+
+- `Daily update for account ending in {{four_digit_number}}: Your available balance is {{amount}}.`
+- `Reminder: Your monthly payment for {{service}} will be billed on {{date}} to the {{card}} you have saved on file.`
+- `You only have {{number}} minutes remaining in your plan. Remember to top up your account by {{date}} to avoid disruptions.`
+- `To finish setting up your {{new_profile}}, you need to upload a {{photo}}. Please click below to upload.`
+- `Please note, we have updated our {{customer_service}} phone number to {{number}}. Please save this and call if we can be of support.`
+
+### Feedback surveys
+
+**Business goal:** collect feedback on previous orders, transactions or
+engagements with customers.
+
+<Warning>
+  Specificity of the order or interaction to which these relate is necessary. A
+  general/generic survey or request for feedback will not be approved as
+  utility.
+</Warning>
+
+Example utility templates:
+
+- `We have delivered your order {{order_number}}! Please let us know if there was any issue by reaching out below.`
+- `Your feedback ensures we continually {{improve}}. Please click below to share your thoughts on your {{recent_visit}} at our {{store}} location. Thank you in advance!`
+- `You chatted with us {{online}} recently about order {{order_number}}. How was your experience? Click below to fill out a short survey.`
+
+### Continue a conversation on WhatsApp
+
+**Business goal:** send a message to begin an interaction on WhatsApp that began
+in another channel.
+
+<Warning>
+  These messages should not be initiated without a user having requested the
+  conversation to be moved to WhatsApp.
+</Warning>
+
+Example utility templates:
+
+- `Hi! I see you requested support via our {{online_chat}}. I am the virtual assistant on WhatsApp. How can I help?`
+- `Hi {{name}}, we are following up on your call with customer service on {{issue}}. Your case has progressed to the next step. Please log into your account to continue.`
+
+## Essential or critical to the user
+
+For a utility template to be deemed **essential or critical to the user**, it
+*must* reflect one of the use cases below and *must* also be non-promotional
+(not containing any promotional or persuasive intent).
+
+### Public safety
+
+| Use case | Example template |
+| --- | --- |
+| Severe weather | `There is a {{tornado}} alert in your area. We recommend you remain indoors until {{time}} today.` |
+| Crisis response | `We activated support services for the {{crisis}} in the {{zip code}} area. Live updates on our site, available below.` |
+
+### Public service
+
+| Use case | Example template |
+| --- | --- |
+| Health emergency | `The {{city}} has just declared a health emergency due to {{issue}}. We will follow up with more details once available.` |
+| Health awareness | `Stay up-to-date with your health. Stop by {{location}} by {{time}} to get your free COVID-19 {{vaccine}}. Bring your {{vaccination_card}} and identification document.` |
+| Voting registration | `To vote on {{date}}, please ensure your voter {{registration card}} is active. Please click the URL below to understand steps required to renew, if needed. Please disregard this message if your {{registration card}} will be active.` |
+| Disbursements | `Your {{welfare}} disbursement balance is {{amount}}. Kindly note it will expire on {{date}}.` |
+
+### Public disruption
+
+| Use case | Example template |
+| --- | --- |
+| System outages | `We have detected a system outage that impacts zip code {{code}}. We expect to restore service by {{time_and_date}}. We apologize for the inconvenience.` |
+| Operation disruption | `This is to notify you that {{trains}} at our {{location}} station are halted due to {{issue}}. Please avoid the area as we work to rectify.` |
+
+### Account or product protection
+
+| Use case | Example template |
+| --- | --- |
+| Fraud awareness | `We have detected an increase in {{ATM fraud}}. To protect your card ending in {{1234}}, please consider updating your PIN. Click below to see the step-by-step.` |
+| Product recalls | `The {{product}} you ordered on {{date}} has been recalled. Please click below to let us know how you would like to proceed.` |
+| Warranty alerts | `Thank you for your purchase of {{product}}. Your warranty is active as of {{date}}. Our {{product manuals}} are below, for your reference.` |
+
+### Legal / regulatory compliance
+
+| Use case | Example template |
+| --- | --- |
+| Identity compliance | `This is to notify you that you need to upgrade to a {{updated_identification_card}} by {{date}}. To avoid any inconveniences when travelling, please ensure you make an appointment at your local {{office}}.` |
+| Privacy disclosures | `We updated our privacy policy on {{date}}. Please click the button below to learn more.` |
+
+## Template Library
+
+Effective June 1, 2024, businesses on Cloud API can use approved utility
+templates from the
+[Template Library](https://developers.facebook.com/docs/whatsapp/cloud-api/guides/send-message-templates/template-library).
+
+<Note>
+  Examples are illustrative only; templates containing similar content or
+  content including this example text may be categorized differently based on
+  their exact content. Templates that mix utility content with promotional
+  content are categorized as marketing — see
+  [Marketing templates](/guides/whatsapp/template-categories-marketing).
+</Note>

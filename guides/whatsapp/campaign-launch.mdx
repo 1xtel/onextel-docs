@@ -1,0 +1,140 @@
+---
+title: "Batching, Scheduling, and Launch"
+description: "Split a WhatsApp campaign into batches, set up repeats, choose immediate or scheduled execution, and launch."
+---
+
+The final sections of the campaign builder control delivery timing: **Batching** decides how recipients are grouped, **Repeat Campaign** sets recurring sends, and **Schedule** decides when the campaign starts.
+
+This page follows on from [variable mapping](/guides/whatsapp/campaign-variable-mapping).
+
+## Batching
+
+Click **Batching**. Batching controls how messages are sent to recipients — either all at once or in smaller, scheduled groups (batches). The **Batching Configuration** panel shows the **Total Recipients** count (for example, 19,999) and a **Batches Preview** table that updates as you configure.
+
+Three batching methods are available:
+
+<Tabs>
+  <Tab title="All">
+    Sends the message to all recipients in a single batch. Best suited for smaller campaigns or when all recipients should receive the message simultaneously.
+
+    - **All** is selected by default.
+    - The system automatically creates one batch containing all recipients.
+
+    Example: 19,999 recipients → Batch 1: 19,999 recipients.
+  </Tab>
+  <Tab title="Split">
+    Automatically divides the total recipients into multiple smaller batches (maximum 10). Helps distribute large campaigns over intervals to avoid message congestion.
+
+    <Steps>
+      <Step title="Select Split">
+        Select the **Split** option.
+      </Step>
+      <Step title="Set the number of batches">
+        Enter the **Number of Batches** (for example, 3).
+      </Step>
+      <Step title="Set the interval">
+        Set the **Interval Between Batches** in `HH:MM:SS` format (for example, `00:30:00` for 30 minutes).
+      </Step>
+      <Step title="Review the preview">
+        The system displays a preview of batches with the recipient count and schedule time.
+      </Step>
+    </Steps>
+
+    Example: Batch 1 – 6,667 (2:15 PM), Batch 2 – 6,666 (2:45 PM), Batch 3 – 6,666 (3:15 PM).
+  </Tab>
+  <Tab title="Manual">
+    Allows manual configuration of batch size and schedule time. Useful for controlling how and when each batch is sent.
+
+    <Steps>
+      <Step title="Select Manual">
+        Select the **Manual** option.
+      </Step>
+      <Step title="Set the batch size">
+        Enter the **Batch Size** (for example, 19,999).
+      </Step>
+      <Step title="Set the schedule time">
+        Set the **Schedule Time** manually for each batch.
+      </Step>
+      <Step title="Add more batches">
+        Click **+** to add more batches, if required. The panel shows the total allocated recipients against the total.
+      </Step>
+    </Steps>
+
+    Example: Batch 1 – 19,999 recipients scheduled for Nov 7, 2025, 02:18 PM.
+  </Tab>
+</Tabs>
+
+## Repeat Campaign
+
+Click **Repeat Campaign**, then select the **Enable Repeat** checkbox. Repeat campaigns let you schedule recurring campaigns without recreating them each time, ensuring messages are sent consistently based on the selected frequency and duration.
+
+<Warning>
+Immediate Execution does not allow Repeat Campaigns. Use Scheduled Execution when repeats are enabled.
+</Warning>
+
+Choose a **Frequency** and configure it as per the campaign requirements:
+
+| Frequency | Description | Configuration |
+| --- | --- | --- |
+| **Daily** | Sends the campaign every day at the scheduled time. | Select **Daily** under Frequency. Keep **Ends** as `Never` or choose an end date. The Schedule Summary shows "Every day". |
+| **Weekly** | Sends the campaign on selected days every week, on alternate weeks, or after a set number of weeks. | Select **Weekly**. Choose the interval (Every, Alternate, or After weeks). Select specific days (for example, Mon, Wed, Fri). The Schedule Summary shows "Every Week". |
+| **Monthly** | Sends the campaign every month based on specific dates or days. | Select **Monthly**. Choose the interval (Every, Alternate, or After months). Under **Repeat On**, select Specific Dates or Days of Week, then pick the Days of Week and Week Position (for example, First Monday). The Schedule Summary shows "Every Month". |
+| **Custom** | Manually select specific dates and times for the campaign. | Select **Custom**, then click **+ Add Date & Time** to schedule manually. The Schedule Summary shows "Custom — Add specific dates and times". |
+
+Use the **Ends** dropdown to stop the repeat on a given date, or leave it as `Never`. Review the **Schedule Summary** before proceeding.
+
+## Schedule
+
+Click **Schedule**. This section automates the campaign launch timing based on business needs. Under **Campaign Execution Schedule**, select the **Execution Type**:
+
+### Immediate Execution
+
+Launches the campaign instantly as soon as it is ready — useful for quick or urgent sends.
+
+<Steps>
+  <Step title="Open Schedule">
+    Click **Schedule**.
+  </Step>
+  <Step title="Choose immediate execution">
+    Select the **Immediate Execution** option. The panel shows the status `READY TO LAUNCH`, the execution mode ("As soon as campaign is launched"), and the current local time.
+  </Step>
+  <Step title="Launch">
+    Click **Launch**.
+  </Step>
+</Steps>
+
+### Scheduled Execution
+
+Sets a specific date, time, and time zone for the campaign to start automatically — ideal for planned or time-sensitive campaigns.
+
+<Steps>
+  <Step title="Choose scheduled execution">
+    Select the **Scheduled Execution** option.
+  </Step>
+  <Step title="Set the time zone">
+    Click the **Timezone** dropdown and choose the preferred time zone (for example, `Asia/Kolkata` — IST, India Standard Time).
+  </Step>
+  <Step title="Set the date and time">
+    Click the calendar icon or the **Scheduled Date & Time** field and select the desired date and time for campaign execution (for example, November 10, 2025, at 11:08 AM).
+  </Step>
+  <Step title="Confirm the schedule summary">
+    The **Schedule Summary** displays both local (IST) and UTC formats along with the selected time zone for confirmation.
+  </Step>
+  <Step title="Launch">
+    Click **Launch**.
+  </Step>
+</Steps>
+
+## Launch controls
+
+At the bottom of the Schedule section, three buttons are available:
+
+- **Test** — visible alongside the launch controls for trial sends.
+- **Draft** — saves the campaign without sending; it appears on the campaigns dashboard with the `Draft` status.
+- **Launch** — starts the campaign per the selected execution type.
+
+<Note>
+The source manual documents the **Launch** action explicitly; the Test and Draft buttons appear in the UI but are not described further in the manual.
+</Note>
+
+After launch, track the campaign from the [campaigns dashboard](/guides/whatsapp/campaign-dashboard), where its status moves through `Created` to `Completed`.

@@ -1,0 +1,78 @@
+---
+title: "Authentication Templates"
+description: "Meta's category guidelines for WhatsApp authentication message templates: preset templates, one-time password buttons, and content restrictions."
+---
+
+[Authentication templates](https://developers.facebook.com/docs/whatsapp/updates-to-pricing/new-template-guidelines#authentication-templates)
+enable businesses to verify a user's identity (usually with alphanumeric codes),
+potentially at various steps of the customer journey:
+
+- New account creation
+- Account integrity, access or recovery
+- New or existing orders/transactions
+
+<Warning>
+  Businesses can only send template messages to users who have subscribed to
+  receive messages from them on WhatsApp.
+</Warning>
+
+## Requirements
+
+Authentication templates are Meta's **most restricted** category. For a template
+to be classified as authentication, a business **must**:
+
+<Steps>
+  <Step title="Use WhatsApp's preset authentication message templates">
+    The preset templates include optional add-ons like security disclaimers and
+    expiry warnings.
+  </Step>
+  <Step title="Configure a one-time password button">
+    The button must be either **copy-code** or **one-tap**.
+  </Step>
+  <Step title="Follow content restrictions">
+    URLs, media, and emojis are **not allowed** for authentication template
+    content or parameters. An additional length restriction of **15 characters**
+    also applies to parameters.
+  </Step>
+</Steps>
+
+<Info>
+  Effective October 1, 2024, businesses on Cloud API can use authentication
+  templates from the
+  [Template Library](https://developers.facebook.com/docs/whatsapp/cloud-api/guides/send-message-templates/template-library).
+</Info>
+
+## Message objective
+
+### Identity verification
+
+**Business goal:** authenticate users with one-time passcodes.
+
+Example templates:
+
+- `{{1}} is your verification code.`
+- `{{1}} is your verification code. For your security, do not share this code.`
+- `{{1}} is your verification code. This code expires in 15 minutes.`
+
+On the user's device, the delivered message renders the code with the configured
+one-time password button beneath it — either an **Autofill** button (one-tap)
+that fills the code into your app directly, or a **Copy code** button that
+copies the code to the clipboard. For example: "797011 is your verification
+code. For your security, do not share this code. This code expires in 10
+minutes."
+
+<Warning>
+  **Only authentication templates can be used to send a one-time passcode for
+  identity verification.** A template that delivers an OTP cannot be submitted
+  as utility or marketing.
+</Warning>
+
+More detail on authentication templates and their requirements is outlined in
+Meta's
+[authentication templates documentation](https://developers.facebook.com/docs/whatsapp/business-management-api/authentication-templates/).
+
+<Note>
+  Examples are illustrative only; templates containing similar content or
+  content including this example text may be categorized differently based on
+  their exact content.
+</Note>

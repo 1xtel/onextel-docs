@@ -1,0 +1,217 @@
+---
+title: "Callback: Delivery Notification"
+description: "Callback payload structure for WhatsApp message delivery status updates, conversation details, pricing, and recipient status information."
+---
+
+The OnexAura platform posts a Delivery Notification callback to your configured
+endpoint when the delivery status of an outbound WhatsApp message changes.
+
+<Note>
+The payload below is the structural skeleton exactly as documented: each field's value
+shows its JSON path, not sample data. The source does not define field meanings, data
+types, or enumerated values — all descriptions on this page are **inferred from the
+field names and paths** and all leaf fields are documented as `string` because the
+source shows every value as a string placeholder. In particular, the possible values of
+`statuses.status` are not listed in the source.
+</Note>
+
+## Payload format
+
+```json
+{
+  "waba_id": "entry.id",
+  "custref1": "custref1",
+  "custref2": "custref2",
+  "custref3": "custref3",
+  "custref4": "custref4",
+  "custref5": "custref5",
+  "entry": [
+    {
+      "id": "entry.id",
+      "changes": [
+        {
+          "value": {
+            "metadata": {
+              "display_phone_number": "entry.changes.value.metadata.display_phone_number",
+              "phone_number_id": "entry.changes.value.metadata.phone_number_id"
+            },
+            "statuses": [
+              {
+                "id": "entry.changes.value.statuses.id",
+                "status": "entry.changes.value.statuses.status",
+                "timestamp": "entry.changes.value.statuses.timestamp",
+                "errors": {
+                  "code": "entry.changes.value.statuses.errors.code",
+                  "message": "entry.changes.value.statuses.errors.message",
+                  "title": "entry.changes.value.statuses.errors.title",
+                  "href": "entry.changes.value.statuses.errors.href",
+                  "error_data": {
+                    "details": "entry.changes.value.statuses.errors.error_data.details"
+                  }
+                },
+                "conversation": {
+                  "id": "entry.changes.value.statuses.conversation.id",
+                  "origin": {
+                    "type": "entry.changes.value.statuses.conversation.origin.type"
+                  },
+                  "expiration_timestamp": "entry.changes.value.statuses.conversation.expiration_timestamp"
+                },
+                "pricing": {
+                  "category": "entry.changes.value.statuses.pricing.category",
+                  "billable": "entry.changes.value.statuses.pricing.billable",
+                  "pricing_model": "entry.changes.value.statuses.pricing.pricing_model"
+                },
+                "recipient_id": "entry.changes.value.statuses.recipient_id"
+              }
+            ],
+            "messaging_product": "entry.changes.value.messaging_product"
+          },
+          "field": "entry.changes.field"
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Field reference
+
+<ResponseField name="waba_id" type="string">
+  WhatsApp Business Account ID (inferred). The source shows its value as `entry.id`,
+  indicating it carries the same value as the `entry[].id` field.
+</ResponseField>
+<ResponseField name="custref1" type="string">
+  Custom reference field 1, echoed back from the original send request. See
+  [custom reference passthrough](/api-reference/whatsapp/callback-events#custom-reference-passthrough).
+</ResponseField>
+<ResponseField name="custref2" type="string">
+  Custom reference field 2, echoed back from the original send request.
+</ResponseField>
+<ResponseField name="custref3" type="string">
+  Custom reference field 3, echoed back from the original send request.
+</ResponseField>
+<ResponseField name="custref4" type="string">
+  Custom reference field 4, echoed back from the original send request.
+</ResponseField>
+<ResponseField name="custref5" type="string">
+  Custom reference field 5, echoed back from the original send request.
+</ResponseField>
+
+<ResponseField name="entry" type="array of object">
+  Container array for the callback event (inferred).
+  <Expandable title="entry[] properties">
+    <ResponseField name="id" type="string">
+      Identifier of the entry (inferred). Mirrored at the top level as `waba_id`, which
+      suggests it is the WhatsApp Business Account ID (inferred).
+    </ResponseField>
+    <ResponseField name="changes" type="array of object">
+      Array of change events within this entry (inferred).
+      <Expandable title="changes[] properties">
+        <ResponseField name="value" type="object">
+          The event data for this change (inferred).
+          <Expandable title="value properties">
+            <ResponseField name="metadata" type="object">
+              Metadata about the business number the message was sent from (inferred).
+              <Expandable title="metadata properties">
+                <ResponseField name="display_phone_number" type="string">
+                  Display phone number of the business (inferred).
+                </ResponseField>
+                <ResponseField name="phone_number_id" type="string">
+                  Phone number identifier of the business (inferred).
+                </ResponseField>
+              </Expandable>
+            </ResponseField>
+            <ResponseField name="statuses" type="array of object">
+              Delivery status objects for the message (inferred).
+              <Expandable title="statuses[] properties">
+                <ResponseField name="id" type="string">
+                  Identifier of the message this status update refers to (inferred).
+                </ResponseField>
+                <ResponseField name="status" type="string">
+                  Delivery status of the message (inferred; possible values are not
+                  listed in the source).
+                </ResponseField>
+                <ResponseField name="timestamp" type="string">
+                  Timestamp of the status update (inferred; format not specified in the
+                  source).
+                </ResponseField>
+                <ResponseField name="errors" type="object">
+                  Error details when delivery fails (inferred). The source shows this as
+                  a single object despite the plural name.
+                  <Expandable title="errors properties">
+                    <ResponseField name="code" type="string">
+                      Error code (inferred; values not listed in the source).
+                    </ResponseField>
+                    <ResponseField name="message" type="string">
+                      Error message text (inferred).
+                    </ResponseField>
+                    <ResponseField name="title" type="string">
+                      Error title (inferred).
+                    </ResponseField>
+                    <ResponseField name="href" type="string">
+                      Link to further error documentation (inferred).
+                    </ResponseField>
+                    <ResponseField name="error_data" type="object">
+                      Additional error data (inferred).
+                      <Expandable title="error_data properties">
+                        <ResponseField name="details" type="string">
+                          Detailed error description (inferred).
+                        </ResponseField>
+                      </Expandable>
+                    </ResponseField>
+                  </Expandable>
+                </ResponseField>
+                <ResponseField name="conversation" type="object">
+                  Conversation details for the message (inferred).
+                  <Expandable title="conversation properties">
+                    <ResponseField name="id" type="string">
+                      Identifier of the conversation (inferred).
+                    </ResponseField>
+                    <ResponseField name="origin" type="object">
+                      Origin of the conversation (inferred).
+                      <Expandable title="origin properties">
+                        <ResponseField name="type" type="string">
+                          Conversation origin type (inferred; values not listed in the
+                          source).
+                        </ResponseField>
+                      </Expandable>
+                    </ResponseField>
+                    <ResponseField name="expiration_timestamp" type="string">
+                      Timestamp when the conversation expires (inferred).
+                    </ResponseField>
+                  </Expandable>
+                </ResponseField>
+                <ResponseField name="pricing" type="object">
+                  Pricing details for the message (inferred).
+                  <Expandable title="pricing properties">
+                    <ResponseField name="category" type="string">
+                      Pricing category of the message (inferred; values not listed in
+                      the source).
+                    </ResponseField>
+                    <ResponseField name="billable" type="string">
+                      Whether the message is billable (inferred; shown as a string
+                      placeholder in the source).
+                    </ResponseField>
+                    <ResponseField name="pricing_model" type="string">
+                      Pricing model applied to the message (inferred).
+                    </ResponseField>
+                  </Expandable>
+                </ResponseField>
+                <ResponseField name="recipient_id" type="string">
+                  Identifier of the message recipient (inferred; presumably the
+                  recipient's WhatsApp number).
+                </ResponseField>
+              </Expandable>
+            </ResponseField>
+            <ResponseField name="messaging_product" type="string">
+              Messaging product for the event (inferred).
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+        <ResponseField name="field" type="string">
+          Field name describing the change (inferred).
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>

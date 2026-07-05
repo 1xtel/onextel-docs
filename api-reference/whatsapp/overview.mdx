@@ -1,0 +1,73 @@
+---
+title: "WhatsApp API Overview"
+description: "Introduction to the OneXtel WhatsApp Create Templates and Send Messages API on the OnexAura platform."
+---
+
+The OneXtel WhatsApp Create Templates and Send Messages API provides a robust, secure, and flexible way to integrate with your system, enabling seamless communication capabilities within your applications. With this API, you can efficiently manage outbound campaigns and ensure reliable message delivery to users worldwide.
+
+To get started, simply obtain an API key. Once you have the key, you can begin making requests to our endpoints and start using our messaging services right away.
+
+## Base URL
+
+```text
+https://api.onexaura.com
+```
+
+## Authentication
+
+All requests require a valid API key in the header:
+
+<ParamField header="apikey" type="string" required>
+  API key generated for the TUC associated with the given phone number. Example: `7pvxoA4c`
+</ParamField>
+
+```bash
+curl --location 'https://api.onexaura.com/...' \
+--header 'apikey: YOUR_API_KEY'
+```
+
+## Endpoints at a glance
+
+| API | Method | Endpoint | Purpose |
+| --- | --- | --- | --- |
+| [Create Template](/api-reference/whatsapp/templates-create) | POST | `/wa/templates` | Create WhatsApp message templates (Authentication, Utility, Marketing, and more) |
+| [Fetch Template](/api-reference/whatsapp/templates-fetch) | POST | `/templates/fetch` | Retrieve templates with filters and pagination |
+| [Send Template Message](/api-reference/whatsapp/send-template-message) | POST | `/send_sms` | Send an approved WhatsApp template message |
+| [Send Session Message](/api-reference/whatsapp/send-session-messages) | POST | `/send_sms` | Send non-template (session) messages — text, media, interactive |
+| [Media Upload](/api-reference/whatsapp/media) | POST | `/oapi/wa/mediaupload` | Upload media and obtain a media ID |
+| [Opt-in / Opt-out](/api-reference/whatsapp/opt-in-opt-out) | GET/POST/DELETE | `/opt/{in,out}/wa` | Manage recipient opt-in and opt-out lists |
+| [Status Check](/api-reference/omnichannel/message-status) | POST | `/status` | Check delivery status of sent messages |
+| [History](/api-reference/omnichannel/message-history) | GET | `/history` | Retrieve messages sent to a phone number |
+| [Callbacks](/api-reference/whatsapp/callback-events) | — | — | Delivery, inbound, and click event webhooks |
+
+<Note>
+  Delivery receipts and inbound messages are pushed to your configured endpoint — see
+  [Delivery Notification](/api-reference/whatsapp/callback-delivery-notification) and the
+  [Callback Events overview](/api-reference/whatsapp/callback-events).
+</Note>
+
+## Template workflow
+
+<Steps>
+  <Step title="Upload media (optional)">
+    If your template uses an image, video, or document header, upload the file via the
+    [Media Upload](/api-reference/whatsapp/media) endpoint to generate a media ID.
+  </Step>
+  <Step title="Create the template">
+    Submit the template definition to the [Create Template API](/api-reference/whatsapp/templates-create)
+    with the appropriate category — `AUTHENTICATION`, `UTILITY`, or `MARKETING`.
+  </Step>
+  <Step title="Check approval status">
+    Use the [Fetch Template API](/api-reference/whatsapp/templates-fetch) to confirm the template
+    status is `Approved`.
+  </Step>
+  <Step title="Send messages">
+    Send the approved template to recipients via the
+    [Send Template Message API](/api-reference/whatsapp/send-template-message).
+  </Step>
+  <Step title="Track delivery">
+    Track messages via [Delivery Notification](/api-reference/whatsapp/callback-delivery-notification) callbacks,
+    the [Status Check API](/api-reference/omnichannel/message-status), or the
+    [History API](/api-reference/omnichannel/message-history).
+  </Step>
+</Steps>

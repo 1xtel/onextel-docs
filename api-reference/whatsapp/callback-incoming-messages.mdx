@@ -1,0 +1,316 @@
+---
+title: "Callback: Incoming Messages"
+description: "Callback payload structure for inbound WhatsApp messages, including text, media, location, and related contact metadata."
+---
+
+When an end user sends a WhatsApp message to your business number, the OnexAura
+platform posts an Incoming Messages callback to your configured endpoint.
+
+<Note>
+The payload below is the structural skeleton exactly as documented: each field's value
+shows its JSON path, not sample data. The source does not define field meanings, data
+types, or enumerated values — all descriptions on this page are **inferred from the
+field names and paths** and all leaf fields are documented as `string` because the
+source shows every value as a string placeholder.
+</Note>
+
+## Payload format
+
+```json
+{
+  "custref1": "custref1",
+  "custref2": "custref2",
+  "custref3": "custref3",
+  "custref4": "custref4",
+  "custref5": "custref5",
+  "entry": [
+    {
+      "id": "id",
+      "changes": [
+        {
+          "value": {
+            "messages": [
+              {
+                "id": "entry.changes.value.messages.id",
+                "timestamp": "entry.changes.value.messages.timestamp",
+                "type": "entry.changes.value.messages.type",
+                "context": {
+                  "id": "entry.changes.value.messages.context.id",
+                  "from": "entry.changes.value.messages.context.from"
+                },
+                "location": {
+                  "name": "entry.changes.value.messages.location.name",
+                  "address": "entry.changes.value.messages.location.address",
+                  "url": "entry.changes.value.messages.location.url",
+                  "latitude": "entry.changes.value.messages.location.latitude",
+                  "longitude": "entry.changes.value.messages.location.longitude"
+                },
+                "text": {
+                  "body": "entry.changes.value.messages.text.body"
+                },
+                "image": {
+                  "id": "entry.changes.value.messages.image.id",
+                  "sha256": "entry.changes.value.messages.image.sha256",
+                  "mime_type": "entry.changes.value.messages.image.mime_type"
+                },
+                "from": "entry.changes.value.messages.from",
+                "video": {
+                  "id": "entry.changes.value.messages.video.id",
+                  "sha256": "entry.changes.value.messages.video.sha256",
+                  "mime_type": "entry.changes.value.messages.video.mime_type",
+                  "mediaUrl": "entry.changes.value.messages.video.mediaUrl",
+                  "caption": "entry.changes.value.messages.video.caption"
+                },
+                "audio": {
+                  "id": "entry.changes.value.messages.audio.id",
+                  "sha256": "entry.changes.value.messages.audio.sha256",
+                  "mime_type": "entry.changes.value.messages.audio.mime_type",
+                  "mediaUrl": "entry.changes.value.messages.audio.mediaUrl",
+                  "caption": "entry.changes.value.messages.audio.caption"
+                },
+                "document": {
+                  "id": "entry.changes.value.messages.document.id",
+                  "filename": "entry.changes.value.messages.document.filename",
+                  "sha256": "entry.changes.value.messages.document.sha256",
+                  "mime_type": "entry.changes.value.messages.document.mime_type",
+                  "mediaUrl": "entry.changes.value.messages.document.mediaUrl",
+                  "caption": "entry.changes.value.messages.document.caption"
+                }
+              }
+            ],
+            "metadata": {
+              "display_phone_number": "entry.changes.value.metadata.display_phone_number",
+              "phone_number_id": "entry.changes.value.metadata.phone_number_id"
+            },
+            "messaging_product": "entry.changes.value.messaging_product",
+            "contacts": [
+              {
+                "profile": {
+                  "name": "entry.changes.value.contacts.profile.name"
+                },
+                "wa_id": "entry.changes.value.contacts.wa_id"
+              }
+            ]
+          },
+          "field": "field"
+        }
+      ]
+    }
+  ]
+}
+```
+
+<Note>
+The skeleton shows all content objects (`text`, `location`, `image`, `video`, `audio`,
+`document`) side by side. Which of these appear in a real callback for a given message
+is not stated in the source; the `type` field indicates the message type (inferred).
+</Note>
+
+## Field reference
+
+<ResponseField name="custref1" type="string">
+  Custom reference field 1, echoed back from the original send request. See
+  [custom reference passthrough](/api-reference/whatsapp/callback-events#custom-reference-passthrough).
+</ResponseField>
+<ResponseField name="custref2" type="string">
+  Custom reference field 2, echoed back from the original send request.
+</ResponseField>
+<ResponseField name="custref3" type="string">
+  Custom reference field 3, echoed back from the original send request.
+</ResponseField>
+<ResponseField name="custref4" type="string">
+  Custom reference field 4, echoed back from the original send request.
+</ResponseField>
+<ResponseField name="custref5" type="string">
+  Custom reference field 5, echoed back from the original send request.
+</ResponseField>
+
+<ResponseField name="entry" type="array of object">
+  Container array for the callback event (inferred).
+  <Expandable title="entry[] properties">
+    <ResponseField name="id" type="string">
+      Identifier of the entry (inferred from field name; the source does not state what
+      this identifies).
+    </ResponseField>
+    <ResponseField name="changes" type="array of object">
+      Array of change events within this entry (inferred).
+      <Expandable title="changes[] properties">
+        <ResponseField name="value" type="object">
+          The event data for this change (inferred).
+          <Expandable title="value properties">
+            <ResponseField name="messages" type="array of object">
+              Inbound message objects (inferred).
+              <Expandable title="messages[] properties">
+                <ResponseField name="id" type="string">
+                  Identifier of the inbound message (inferred).
+                </ResponseField>
+                <ResponseField name="timestamp" type="string">
+                  Timestamp of the message (inferred; format not specified in the source).
+                </ResponseField>
+                <ResponseField name="type" type="string">
+                  Type of the inbound message (inferred; possible values not listed in
+                  the source).
+                </ResponseField>
+                <ResponseField name="from" type="string">
+                  Sender of the inbound message (inferred; presumably the end user's
+                  WhatsApp number).
+                </ResponseField>
+                <ResponseField name="context" type="object">
+                  Context of the message, present when the message references another
+                  message (inferred).
+                  <Expandable title="context properties">
+                    <ResponseField name="id" type="string">
+                      Identifier of the referenced message (inferred).
+                    </ResponseField>
+                    <ResponseField name="from" type="string">
+                      Sender of the referenced message (inferred).
+                    </ResponseField>
+                  </Expandable>
+                </ResponseField>
+                <ResponseField name="location" type="object">
+                  Location shared by the user (inferred).
+                  <Expandable title="location properties">
+                    <ResponseField name="name" type="string">
+                      Name of the location (inferred).
+                    </ResponseField>
+                    <ResponseField name="address" type="string">
+                      Address of the location (inferred).
+                    </ResponseField>
+                    <ResponseField name="url" type="string">
+                      URL associated with the location (inferred).
+                    </ResponseField>
+                    <ResponseField name="latitude" type="string">
+                      Latitude of the location (inferred).
+                    </ResponseField>
+                    <ResponseField name="longitude" type="string">
+                      Longitude of the location (inferred).
+                    </ResponseField>
+                  </Expandable>
+                </ResponseField>
+                <ResponseField name="text" type="object">
+                  Text message content (inferred).
+                  <Expandable title="text properties">
+                    <ResponseField name="body" type="string">
+                      Body text of the message (inferred).
+                    </ResponseField>
+                  </Expandable>
+                </ResponseField>
+                <ResponseField name="image" type="object">
+                  Image message content (inferred).
+                  <Expandable title="image properties">
+                    <ResponseField name="id" type="string">
+                      Media identifier of the image (inferred).
+                    </ResponseField>
+                    <ResponseField name="sha256" type="string">
+                      SHA-256 hash of the image file (inferred).
+                    </ResponseField>
+                    <ResponseField name="mime_type" type="string">
+                      MIME type of the image (inferred).
+                    </ResponseField>
+                  </Expandable>
+                </ResponseField>
+                <ResponseField name="video" type="object">
+                  Video message content (inferred).
+                  <Expandable title="video properties">
+                    <ResponseField name="id" type="string">
+                      Media identifier of the video (inferred).
+                    </ResponseField>
+                    <ResponseField name="sha256" type="string">
+                      SHA-256 hash of the video file (inferred).
+                    </ResponseField>
+                    <ResponseField name="mime_type" type="string">
+                      MIME type of the video (inferred).
+                    </ResponseField>
+                    <ResponseField name="mediaUrl" type="string">
+                      URL to retrieve the video media (inferred).
+                    </ResponseField>
+                    <ResponseField name="caption" type="string">
+                      Caption sent with the video (inferred).
+                    </ResponseField>
+                  </Expandable>
+                </ResponseField>
+                <ResponseField name="audio" type="object">
+                  Audio message content (inferred).
+                  <Expandable title="audio properties">
+                    <ResponseField name="id" type="string">
+                      Media identifier of the audio (inferred).
+                    </ResponseField>
+                    <ResponseField name="sha256" type="string">
+                      SHA-256 hash of the audio file (inferred).
+                    </ResponseField>
+                    <ResponseField name="mime_type" type="string">
+                      MIME type of the audio (inferred).
+                    </ResponseField>
+                    <ResponseField name="mediaUrl" type="string">
+                      URL to retrieve the audio media (inferred).
+                    </ResponseField>
+                    <ResponseField name="caption" type="string">
+                      Caption field on the audio object, as shown in the source.
+                    </ResponseField>
+                  </Expandable>
+                </ResponseField>
+                <ResponseField name="document" type="object">
+                  Document message content (inferred).
+                  <Expandable title="document properties">
+                    <ResponseField name="id" type="string">
+                      Media identifier of the document (inferred).
+                    </ResponseField>
+                    <ResponseField name="filename" type="string">
+                      File name of the document (inferred).
+                    </ResponseField>
+                    <ResponseField name="sha256" type="string">
+                      SHA-256 hash of the document file (inferred).
+                    </ResponseField>
+                    <ResponseField name="mime_type" type="string">
+                      MIME type of the document (inferred).
+                    </ResponseField>
+                    <ResponseField name="mediaUrl" type="string">
+                      URL to retrieve the document media (inferred).
+                    </ResponseField>
+                    <ResponseField name="caption" type="string">
+                      Caption sent with the document (inferred).
+                    </ResponseField>
+                  </Expandable>
+                </ResponseField>
+              </Expandable>
+            </ResponseField>
+            <ResponseField name="metadata" type="object">
+              Metadata about the business number that received the message (inferred).
+              <Expandable title="metadata properties">
+                <ResponseField name="display_phone_number" type="string">
+                  Display phone number of the business (inferred).
+                </ResponseField>
+                <ResponseField name="phone_number_id" type="string">
+                  Phone number identifier of the business (inferred).
+                </ResponseField>
+              </Expandable>
+            </ResponseField>
+            <ResponseField name="messaging_product" type="string">
+              Messaging product for the event (inferred).
+            </ResponseField>
+            <ResponseField name="contacts" type="array of object">
+              Contact details of the message sender (inferred).
+              <Expandable title="contacts[] properties">
+                <ResponseField name="profile" type="object">
+                  Sender profile information (inferred).
+                  <Expandable title="profile properties">
+                    <ResponseField name="name" type="string">
+                      Profile name of the contact (inferred).
+                    </ResponseField>
+                  </Expandable>
+                </ResponseField>
+                <ResponseField name="wa_id" type="string">
+                  WhatsApp ID of the contact (inferred).
+                </ResponseField>
+              </Expandable>
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+        <ResponseField name="field" type="string">
+          Field name describing the change (inferred; the source shows only the literal
+          placeholder `field`).
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>

@@ -1,0 +1,110 @@
+---
+title: "Message Status"
+description: "Look up delivery status for one or more messages by message ID or mobile number, across SMS, RCS, and WhatsApp."
+---
+
+The Message Status endpoint returns delivery status for messages you've sent, looked up
+either by `messageId` or by `mobileNumber` with a date range.
+
+## Endpoint
+
+```
+POST https://api.onexaura.com/status
+```
+
+## Headers
+
+<ParamField header="apikey" type="string" required>
+  API key issued by OneXtel, used for authentication.
+</ParamField>
+
+## Request body
+
+The request body is a JSON object. Look up status either by `messageId`, or by
+`mobileNumber` with a `from`/`to` date range — the collection documents both forms
+(the `mobileNumber` form is shown commented-out as an alternative to `messageId`).
+
+<ParamField body="channel" type="string" required>
+  Channel to query. Either `wa` or `rcs` can be passed.
+</ParamField>
+
+<ParamField body="messageId" type="array" required>
+  Array of message IDs to look up status for.
+</ParamField>
+
+<ParamField body="mobileNumber" type="array">
+  Array of recipient mobile numbers. Alternative to `messageId`.
+</ParamField>
+
+<ParamField body="from" type="string">
+  Start of date range, e.g. `"2025-12-17 00:00:00"`. Mandatory when querying by
+  `mobileNumber`.
+</ParamField>
+
+<ParamField body="to" type="string">
+  End of date range, e.g. `"2025-12-17 23:59:59"`. Mandatory when querying by
+  `mobileNumber`.
+</ParamField>
+
+<ParamField body="pageNo" type="number" required>
+  Page number for paginated results.
+</ParamField>
+
+<ParamField body="limit" type="number" required>
+  Number of results to return per page.
+</ParamField>
+
+## Example request
+
+<CodeGroup>
+
+```bash cURL
+curl --request POST \
+  --url https://api.onexaura.com/status \
+  --header 'apikey: YOUR_API_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "channel": "wa",
+  "messageId": [
+    "xx"
+  ],
+  "pageNo": 0,
+  "limit": 10
+}'
+```
+
+```json Request body (by messageId)
+{
+  "channel": "wa",
+  "messageId": [
+    "xx"
+  ],
+  "pageNo": 0,
+  "limit": 10
+}
+```
+
+```json Request body (by mobileNumber)
+{
+  "channel": "wa",
+  "mobileNumber": ["xx"],
+  "from": "2025-12-17 00:00:00",
+  "to": "2025-12-17 23:59:59",
+  "pageNo": 0,
+  "limit": 10
+}
+```
+
+</CodeGroup>
+
+<Note>
+`channel` accepts either `wa` (WhatsApp) or `rcs`.
+</Note>
+
+## Response
+
+<Warning>
+The OneXtel Postman collection does not include a saved example response for this
+endpoint. Response fields below are not documented in the source — verify the actual
+response shape against a live call before relying on it.
+</Warning>

@@ -1,0 +1,456 @@
+---
+title: "Send Non-Template Messages"
+description: "Send free-form RCS plain text, rich card standalone, and rich card carousel messages via the Send Message API."
+---
+
+Send free-form (non-template) RCS content through the same Send Message endpoint used by all
+OnexAura channels. Non-template messages build the content directly in the request body,
+instead of referencing a pre-approved `templateCode`.
+
+## Endpoint
+
+```
+POST https://api.onexaura.com/oapi/send_sms
+```
+
+<ParamField header="apikey" type="string" required>
+  Your OneXtel API key.
+</ParamField>
+
+<ParamField header="Content-Type" type="string" required>
+  Must be `application/json`.
+</ParamField>
+
+## Request structure
+
+Every request wraps one or more message objects in an `rcs` array:
+
+```json
+{
+  "rcs": [ { /* messageObject */ } ],
+  "prefix": "+91",
+  "urlShortener": { /* optional */ }
+}
+```
+
+<ParamField body="rcs" type="array" required>
+  Array of RCS message objects to send.
+</ParamField>
+
+<ParamField body="prefix" type="string">
+  Country code prefix (e.g. `+91`) applied to recipient numbers that don't already include one.
+</ParamField>
+
+<ParamField body="urlShortener" type="object">
+  Optional. Shortens and tracks links inside the message. See [URL shortener](#url-shortener).
+</ParamField>
+
+### Message object (`rcs[]`)
+
+<ParamField body="messageType" type="string" required>
+  Message category: `Promotional`, `Transactional`, or `OTP`.
+</ParamField>
+
+<ParamField body="recipient" type="string" required>
+  Recipient phone number, without the `prefix`.
+</ParamField>
+
+<ParamField body="sender" type="string" required>
+  RCS sender/bot ID.
+</ParamField>
+
+<ParamField body="contentMessage" type="object" required>
+  Holds the message body — one of `text` or `richCard` for non-template messages.
+</ParamField>
+
+<ParamField body="ttl" type="string">
+  Time-to-live for the message (e.g. `"1200s"`). Provide only one of `ttl` or `expireTime`.
+</ParamField>
+
+<ParamField body="expireTime" type="string">
+  Absolute expiry time in UTC/Zulu format (e.g. `"2024-10-02T15:01:23Z"`). Provide only one of
+  `ttl` or `expireTime`.
+</ParamField>
+
+<ParamField body="custref1" type="string">
+  Optional custom reference field. Up to `custref6` is accepted for plain text messages, and
+  `custref1`–`custref5` for rich card messages.
+</ParamField>
+
+<Note>
+`ttl` and `expireTime` are mutually exclusive — provide at most one.
+</Note>
+
+## Message types
+
+<Tabs>
+  <Tab title="Plain Text">
+    The simplest non-template message: a `text` field inside `contentMessage`.
+
+    <ParamField body="contentMessage.text" type="string" required>
+      The plain text content of the message.
+    </ParamField>
+
+    <ParamField body="contentMessage.fileUrl" type="string">
+      Optional URL of a file to attach alongside the text.
+    </ParamField>
+
+    ```json Request
+    {
+      "rcs": [
+        {
+          "messageType": "Promotional",
+          "recipient": "919999999999",
+          "sender": "your_rcs_sender",
+          "contentMessage": {
+            "text": "Your OTP is 482913"
+          },
+          "custref1": "",
+          "custref2": "",
+          "custref3": "",
+          "custref4": "",
+          "custref5": "",
+          "custref6": ""
+        }
+      ],
+      "prefix": "+91"
+    }
+    ```
+
+    ```bash cURL
+    curl --location 'https://api.onexaura.com/oapi/send_sms' \
+    --header 'apikey: YOUR_API_KEY' \
+    --header 'Content-Type: application/json' \
+    --data '{
+      "rcs": [
+        {
+          "messageType": "Promotional",
+          "recipient": "919999999999",
+          "sender": "your_rcs_sender",
+          "contentMessage": {
+            "text": "Your OTP is 482913"
+          }
+        }
+      ],
+      "prefix": "+91"
+    }'
+    ```
+
+    <Note>
+    A plain text message can also carry a `ttl` (e.g. `"1200s"`) alongside `contentMessage.text`
+    to set an expiry — provide only one of `ttl` or `expireTime`.
+    </Note>
+  </Tab>
+
+  <Tab title="RichCard Standalone">
+    A single rich card with a title, description, media, and optional suggestion chips.
+
+    <ParamField body="contentMessage.richCard.standaloneCard.cardOrientation" type="string" required>
+      `VERTICAL` or `HORIZONTAL`.
+    </ParamField>
+
+    <ParamField body="contentMessage.richCard.standaloneCard.thumbnailImageAlignment" type="string">
+      Applicable only for `HORIZONTAL` orientation: `LEFT` (default) or `RIGHT`.
+    </ParamField>
+
+    <ParamField body="contentMessage.richCard.standaloneCard.cardContent.title" type="string" required>
+      Title text displayed on the card.
+    </ParamField>
+
+    <ParamField body="contentMessage.richCard.standaloneCard.cardContent.description" type="string" required>
+      Body/description text displayed on the card.
+    </ParamField>
+
+    <ParamField body="contentMessage.richCard.standaloneCard.cardContent.media.height" type="string">
+      Applicable only for `VERTICAL` orientation: `SHORT`, `MEDIUM` (default), or `TALL`.
+    </ParamField>
+
+    <ParamField body="contentMessage.richCard.standaloneCard.cardContent.media.contentInfo.fileUrl" type="string" required>
+      Publicly accessible URL of the media file (image, GIF, or video). A `fileName` returned by
+      the [Media Upload](/api-reference/rcs/media) API can be used here.
+    </ParamField>
+
+    <ParamField body="contentMessage.richCard.standaloneCard.cardContent.media.contentInfo.thumbnailUrl" type="string">
+      Optional URL of a thumbnail image to display before the media loads.
+    </ParamField>
+
+    <ParamField body="contentMessage.richCard.standaloneCard.cardContent.suggestions" type="array">
+      Optional list of reply or action suggestion chips. See [Suggestions](#suggestions) below.
+    </ParamField>
+
+    ```json Request
+    {
+      "rcs": [
+        {
+          "messageType": "Promotional",
+          "recipient": "919999999999",
+          "sender": "your_rcs_sender",
+          "contentMessage": {
+            "richCard": {
+              "standaloneCard": {
+                "cardOrientation": "VERTICAL",
+                "cardContent": {
+                  "title": "Electronics Offer",
+                  "description": "Flat 20% off, this weekend only.",
+                  "media": {
+                    "height": "TALL",
+                    "contentInfo": {
+                      "fileUrl": "https://example.com/media/offer.jpg",
+                      "thumbnailUrl": "https://example.com/media/offer_thumb.jpg"
+                    }
+                  },
+                  "suggestions": [
+                    {
+                      "reply": {
+                        "text": "Suggestion #1",
+                        "postbackData": "suggestion_1"
+                      }
+                    },
+                    {
+                      "action": {
+                        "text": "Shop Now",
+                        "postbackData": "shop_now",
+                        "openUrlAction": {
+                          "url": "https://example.com/shop",
+                          "application": "BROWSER"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "custref1": "",
+          "custref2": "",
+          "custref3": "",
+          "custref4": "",
+          "custref5": ""
+        }
+      ],
+      "prefix": "+91"
+    }
+    ```
+
+    ```bash cURL
+    curl --location 'https://api.onexaura.com/oapi/send_sms' \
+    --header 'apikey: YOUR_API_KEY' \
+    --header 'Content-Type: application/json' \
+    --data '{"rcs":[{"messageType":"Promotional","recipient":"919999999999","sender":"your_rcs_sender","contentMessage":{"richCard":{"standaloneCard":{"cardOrientation":"VERTICAL","cardContent":{"title":"Electronics Offer","description":"Flat 20% off, this weekend only.","media":{"height":"TALL","contentInfo":{"fileUrl":"https://example.com/media/offer.jpg"}}}}}}}],"prefix":"+91"}'
+    ```
+  </Tab>
+
+  <Tab title="RichCard Carousel">
+    Multiple cards in a single message, each with its own title, description, and media.
+
+    <ParamField body="contentMessage.richCard.carouselCard.cardWidth" type="string" required>
+      Carousel width: `MEDIUM_WIDTH` or `SMALL_WIDTH` (documented in the JSON sample as `MEDIUM`
+      — confirm the exact enum with OneXtel support before going live).
+    </ParamField>
+
+    <ParamField body="contentMessage.richCard.carouselCard.cardContents" type="array" required>
+      Array of card objects, each with `title`, `description`, and `media`.
+    </ParamField>
+
+    <ParamField body="contentMessage.richCard.carouselCard.cardContents[].title" type="string" required>
+      Title of the carousel card.
+    </ParamField>
+
+    <ParamField body="contentMessage.richCard.carouselCard.cardContents[].description" type="string" required>
+      Description text below the title.
+    </ParamField>
+
+    <ParamField body="contentMessage.richCard.carouselCard.cardContents[].media.height" type="string" required>
+      `SHORT`, `MEDIUM`, or `TALL`.
+    </ParamField>
+
+    <ParamField body="contentMessage.richCard.carouselCard.cardContents[].media.contentInfo.fileUrl" type="string" required>
+      URL of the media file. A `fileName` generated by the Media API can be used here.
+    </ParamField>
+
+    <ParamField body="contentMessage.richCard.carouselCard.cardContents[].media.contentInfo.forceRefresh" type="boolean">
+      Whether to bypass cached media and force a re-fetch.
+    </ParamField>
+
+    ```json Request
+    {
+      "rcs": [
+        {
+          "messageType": "Transactional",
+          "recipient": "919999999999",
+          "sender": "your_rcs_sender",
+          "contentMessage": {
+            "richCard": {
+              "carouselCard": {
+                "cardWidth": "MEDIUM",
+                "cardContents": [
+                  {
+                    "title": "New York Store",
+                    "description": "Visit us in NYC and grab exciting deals!",
+                    "media": {
+                      "height": "TALL",
+                      "contentInfo": {
+                        "fileUrl": "https://example.com/media/nyc.jpg",
+                        "forceRefresh": false
+                      }
+                    }
+                  },
+                  {
+                    "title": "Chicago Store",
+                    "description": "Exclusive offers this week.",
+                    "media": {
+                      "height": "SHORT",
+                      "contentInfo": {
+                        "fileUrl": "https://example.com/media/chicago.jpg",
+                        "forceRefresh": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "custref1": "",
+          "custref2": "",
+          "custref3": "",
+          "custref4": "",
+          "custref5": ""
+        }
+      ],
+      "prefix": "+91"
+    }
+    ```
+
+    ```bash cURL
+    curl --location 'https://api.onexaura.com/oapi/send_sms' \
+    --header 'apikey: YOUR_API_KEY' \
+    --header 'Content-Type: application/json' \
+    --data '{"rcs":[{"messageType":"Transactional","recipient":"919999999999","sender":"your_rcs_sender","contentMessage":{"richCard":{"carouselCard":{"cardWidth":"MEDIUM","cardContents":[{"title":"New York Store","description":"Visit us in NYC and grab exciting deals!","media":{"height":"TALL","contentInfo":{"fileUrl":"https://example.com/media/nyc.jpg","forceRefresh":false}}}]}}}}],"prefix":"+91"}'
+    ```
+  </Tab>
+</Tabs>
+
+## Suggestions
+
+`cardContent.suggestions` (rich card standalone) accepts a list of quick-reply or action chips.
+
+**Reply suggestion:**
+
+```json
+{
+  "reply": {
+    "text": "Suggestion #1",
+    "postbackData": "suggestion_1"
+  }
+}
+```
+
+**Action suggestion (Open URL):**
+
+```json
+{
+  "action": {
+    "text": "Shop Now",
+    "postbackData": "shop_now",
+    "openUrlAction": {
+      "url": "https://example.com/shop",
+      "application": "BROWSER",
+      "webviewViewMode": "FULL"
+    }
+  }
+}
+```
+
+| Field | Values | Description |
+| --- | --- | --- |
+| `application` | `BROWSER` (default), `WEBVIEW` | How to open the URL. |
+| `webviewViewMode` | `FULL` (default), `TALL`, `HALF` | Webview size, only applicable when `application` is `WEBVIEW`. |
+
+## URL shortener
+
+Set `urlShortener` at the top level (alongside `rcs` and `prefix`) to shorten and optionally
+track links referenced in the message.
+
+<ParamField body="urlShortener.flag" type="integer">
+  `1` to enable URL shortening, `0` to disable.
+</ParamField>
+
+<ParamField body="urlShortener.urlDetails" type="array">
+  Array of URLs to shorten.
+</ParamField>
+
+<ParamField body="urlShortener.urlDetails[].longUrl" type="string" required>
+  The original full URL to shorten.
+</ParamField>
+
+<ParamField body="urlShortener.urlDetails[].senderId" type="string">
+  Sender ID or bot ID associated with the message (matches your RCS sender).
+</ParamField>
+
+<ParamField body="urlShortener.urlDetails[].domain" type="string">
+  Custom domain to use for the shortened link.
+</ParamField>
+
+<ParamField body="urlShortener.urlDetails[].track_user" type="boolean">
+  Whether to enable user-level click tracking. Default: disabled.
+</ParamField>
+
+<ParamField body="urlShortener.urlDetails[].expiry" type="string">
+  Optional expiry for the shortened URL.
+</ParamField>
+
+## Response
+
+```json Response
+[
+  {
+    "messageId": "33mXmXf0myfFe7lA1QpPcDJcVaH",
+    "code": 200,
+    "status": "success"
+  }
+]
+```
+
+<ResponseField name="messageId" type="string">
+  Unique identifier for the submitted message. Use it to correlate delivery reports.
+</ResponseField>
+
+<ResponseField name="code" type="integer">
+  Result code. `200` indicates the message was accepted.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Result status, e.g. `success`.
+</ResponseField>
+
+<Note>
+Depending on the TUC (tenant/use-case) configuration, additional fields such as `recipient`,
+`sender`, and `custref1`–`custref5` may be dynamically added to each response object.
+</Note>
+
+## Error codes
+
+| Error | Response Status | Error Description |
+| --- | --- | --- |
+| Invalid Method | 405 | `API_Method_Not_Allowed` |
+| Missing Body | 400 | `API_No_Content` |
+| Invalid Body | 400 | `API_JSON_Decode_format_not_supported` |
+| Missing ApiKey | 401 | `API_Invalid_Auth_Key` |
+| Missing url_shortener flag | 400 | `API_Missing_Url_Shortner_Flag` |
+| Unknown Request | 404 | `API_Unknown_Request` |
+| Invalid Channel for TUC | 400 | `API_Route_WA/RCS_Not_Allowed_on_TUC` |
+| Invalid ApiKey | 401 | `API_Invalid_Authorisation` |
+| Empty SMS Body | 400 | `API_Empty_Body_Sms_Payload` |
+| Empty RCS Body | 400 | `API_Empty_Body_RCS_Payload` |
+| Invalid SMS Body | 400 | `API_Invalid_Sms_Details` |
+| Invalid RCS Body | 400 | `API_Invalid_RCS_Details` |
+| Missing Recipient | 400 | `API_Missing_Recipient` |
+| Missing Sender | 400 | `API_Missing_Sender` |
+| Invalid TemplateName-Sender | 400 | `API_Invalid_Sender` |
+| Invalid MsgType (RCS) | 400 | `API_Invalid_Message_Type` |
+| Missing MsgType (RCS) | 400 | `API_Missing_Message_Type` |
+
+<Note>
+For sending pre-approved **template** messages instead of free-form content, see
+[Send template messages](/api-reference/rcs/send-template-message).
+</Note>

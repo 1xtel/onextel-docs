@@ -1,0 +1,315 @@
+---
+title: "Fallback API"
+description: "Send a message on a primary channel (SMS, RCS, or WhatsApp) with automatic fallback to secondary channels in a single API call."
+---
+
+The Fallback API is part of the OmniChannel Send API. It lets you send messages with
+fallback across primary channels — **SMS**, **RCS**, and **WhatsApp** — in a single API
+call. If the primary channel fails to deliver within the configured wait time, the
+platform retries on the fallback channel(s) you define.
+
+## Endpoint
+
+```
+POST https://api.onexaura.com/oapi/send_sms
+```
+
+<Note>
+The Fallback API uses the same endpoint as the OmniChannel send API. Fallback behavior
+is activated by including the `fallback` object in the request body.
+</Note>
+
+## Headers
+
+<ParamField header="apikey" type="string" required>
+  API key issued by OneXtel, used for authentication.
+</ParamField>
+
+## Request body
+
+The request body is a JSON object. Each top-level key represents a messaging channel.
+You may use any one of `sms`, `wa`, or `rcs` as your primary channel, plus a `fallback`
+object defining the fallback behavior.
+
+### `sms` — SMS channel (array of objects)
+
+<ParamField body="sms[].sender" type="string" required>
+  SMS sender ID.
+</ParamField>
+
+<ParamField body="sms[].recipient" type="string" required>
+  Recipient phone number.
+</ParamField>
+
+<ParamField body="sms[].type" type="string" required>
+  Message type.
+</ParamField>
+
+<ParamField body="sms[].messageBody" type="string" required>
+  Message content.
+</ParamField>
+
+<ParamField body="sms[].templateId" type="string">
+  Template ID. Optional.
+</ParamField>
+
+<ParamField body="sms[].entityId" type="string">
+  Entity ID. Optional.
+</ParamField>
+
+<ParamField body="sms[].unicode" type="number">
+  `0` or `1` — enable Unicode encoding. Optional.
+</ParamField>
+
+<ParamField body="sms[].custRef1" type="object">
+  Optional custom reference fields for tracking or tagging (e.g. `CustomReference1`,
+  `CustomReference2`).
+</ParamField>
+
+### `wa` — WhatsApp channel (array of objects)
+
+<ParamField body="wa[].messaging_product" type="string" required>
+  Always `"whatsapp"`.
+</ParamField>
+
+<ParamField body="wa[].recipient_type" type="string" required>
+  Always `"individual"`.
+</ParamField>
+
+<ParamField body="wa[].recipient" type="array" required>
+  Array of recipient phone numbers.
+</ParamField>
+
+<ParamField body="wa[].sender" type="string" required>
+  WhatsApp sender number. A Pool ID can also be passed.
+</ParamField>
+
+<ParamField body="wa[].type" type="string" required>
+  Always `"template"`.
+</ParamField>
+
+<ParamField body="wa[].template" type="object" required>
+  Object with `name`, `language.code` (the template language), and `components`. Uses the
+  same payload structure as the WhatsApp Template Message API.
+</ParamField>
+
+<ParamField body="wa[].custref1" type="string">
+  Custom reference fields for tracking: `custref1` through `custref5`. Optional.
+</ParamField>
+
+### `rcs` — RCS channel (array of objects)
+
+<ParamField body="rcs[].sender" type="string" required>
+  RCS sender ID.
+</ParamField>
+
+<ParamField body="rcs[].messageType" type="string" required>
+  Message type.
+</ParamField>
+
+<ParamField body="rcs[].recipient" type="string" required>
+  Recipient phone number.
+</ParamField>
+
+<ParamField body="rcs[].contentMessage" type="object" required>
+  Contains `templateMessage`, an object with `templateCode` and `customParams`. Uses the
+  same payload structure as the RCS Template Message API.
+</ParamField>
+
+<ParamField body="rcs[].custref1" type="string">
+  Custom reference fields for tracking: `custref1` through `custref5`. Optional.
+</ParamField>
+
+### `fallback` — fallback configuration (object)
+
+Defines fallback behavior when the primary channel fails to deliver.
+
+<ParamField body="fallback.fallback_id" type="string" required>
+  Fallback configuration ID.
+</ParamField>
+
+<ParamField body="fallback.fallback" type="boolean" required>
+  Set to `true` to enable fallback.
+</ParamField>
+
+<ParamField body="fallback.waittime" type="string" required>
+  Maximum time (in seconds) to wait for Delivery / Failure before triggering fallback.
+</ParamField>
+
+<ParamField body="fallback.sms" type="object">
+  SMS fallback object: `sender`, `type`, `messageBody` plus optional `unicode`,
+  `templateId`, `entityId`, and `custRef1`–`custRef5`. Include as per your fallback
+  configuration.
+</ParamField>
+
+<ParamField body="fallback.wa" type="object">
+  WhatsApp fallback object: `sender`, `template`, `languageCode`, `templateComponents`
+  (same payload structure as the WhatsApp Template Message API) plus optional
+  `custref1`–`custref5`. Include as per your fallback configuration.
+</ParamField>
+
+<ParamField body="fallback.rcs" type="object">
+  RCS fallback object: `sender`, `messageType`, `templateCode`, `customParams` (same
+  payload structure as the RCS Template Message API) plus optional
+  `custref1`–`custref5`. Include as per your fallback configuration.
+</ParamField>
+
+<Note>
+Fallback Channel 1 and Fallback Channel 2 details can be added as per your fallback
+configuration. If a third-party fallback is used, dynamic keys can be added with the
+specific channel name.
+</Note>
+
+### Optional top-level fields
+
+<ParamField body="prefix" type="string">
+  Phone number prefix, e.g. `"+91"`. Optional.
+</ParamField>
+
+<ParamField body="campaignName" type="string">
+  Campaign identifier string. Optional.
+</ParamField>
+
+<ParamField body="urlShortener" type="object">
+  Object with `flag` (set to `1` — mandatory if a URL shortener is required in the
+  message body) and a `urlDetails` array. Each `urlDetails` item contains `longUrl`
+  (mandatory when `flag` is `1`), `domain` (optional), and `track_user` (optional).
+</ParamField>
+
+## Example request
+
+The example below sends a WhatsApp template message as the primary channel with SMS
+configured as the fallback channel.
+
+<CodeGroup>
+
+```bash cURL
+curl --request POST \
+  --url https://api.onexaura.com/oapi/send_sms \
+  --header 'apikey: YOUR_API_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "wa": [
+    {
+      "messaging_product": "whatsapp",
+      "recipient_type": "individual",
+      "recipient": [
+        "919999999999",
+        "919999999998"
+      ],
+      "sender": "YOUR_WA_SENDER",
+      "type": "template",
+      "template": {
+        "name": "YOUR_TEMPLATE_NAME",
+        "language": {
+          "code": "en"
+        },
+        "components": []
+      }
+    }
+  ],
+  "fallback": {
+    "fallback_id": "YOUR_FALLBACK_ID",
+    "fallback": true,
+    "waittime": "30",
+    "sms": {
+      "sender": "YOUR_SMS_SENDER",
+      "type": "TXN",
+      "messageBody": "Your message text",
+      "templateId": "YOUR_DLT_TEMPLATE_ID",
+      "entityId": "YOUR_DLT_ENTITY_ID"
+    }
+  }
+}'
+```
+
+```json Request body (all channels)
+{
+  "sms": [
+    {
+      "sender": "YOUR_SMS_SENDER",
+      "recipient": "919999999999",
+      "type": "TXN",
+      "messageBody": "Your message text",
+      "templateId": "YOUR_DLT_TEMPLATE_ID",
+      "entityId": "YOUR_DLT_ENTITY_ID",
+      "unicode": 0,
+      "custRef1": {
+        "CustomReference1": "",
+        "CustomReference2": ""
+      }
+    }
+  ],
+  "wa": [
+    {
+      "messaging_product": "whatsapp",
+      "recipient_type": "individual",
+      "recipient": [
+        "919999999999",
+        "919999999998"
+      ],
+      "sender": "YOUR_WA_SENDER",
+      "type": "template",
+      "template": {
+        "name": "YOUR_TEMPLATE_NAME",
+        "language": {
+          "code": "en"
+        },
+        "components": []
+      }
+    }
+  ],
+  "rcs": [
+    {
+      "sender": "YOUR_RCS_SENDER",
+      "messageType": "template",
+      "recipient": "919999999999",
+      "contentMessage": {
+        "templateMessage": {
+          "templateCode": "YOUR_TEMPLATE_CODE",
+          "customParams": "{}"
+        }
+      },
+      "custref1": "",
+      "custref2": "",
+      "custref3": "",
+      "custref4": "",
+      "custref5": ""
+    }
+  ],
+  "fallback": {
+    "fallback_id": "YOUR_FALLBACK_ID",
+    "fallback": true,
+    "waittime": "30",
+    "sms": {
+      "sender": "YOUR_SMS_SENDER",
+      "type": "TXN",
+      "messageBody": "Your message text",
+      "unicode": 0,
+      "templateId": "YOUR_DLT_TEMPLATE_ID",
+      "entityId": "YOUR_DLT_ENTITY_ID"
+    },
+    "wa": {
+      "sender": "YOUR_WA_SENDER",
+      "template": "YOUR_TEMPLATE_NAME",
+      "languageCode": "en",
+      "templateComponents": []
+    },
+    "rcs": {
+      "sender": "YOUR_RCS_SENDER",
+      "messageType": "template",
+      "templateCode": "YOUR_TEMPLATE_CODE",
+      "customParams": "{}"
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+<Tip>
+Include only the channel array (`sms`, `wa`, or `rcs`) that you want as the primary
+channel, and only the fallback channel objects that match your fallback configuration.
+The example under "Request body (all channels)" shows every supported block in one
+payload for reference.
+</Tip>

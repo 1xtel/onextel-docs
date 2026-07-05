@@ -1,0 +1,66 @@
+---
+title: "OmniChannel API Overview"
+description: "Send SMS, RCS, and WhatsApp messages — with automatic fallback — through a single OneXtel API endpoint."
+---
+
+The OmniChannel Send API is a single endpoint that spans all three OneXtel messaging
+channels — **SMS**, **RCS**, and **WhatsApp** — plus an optional automatic fallback
+mechanism between channels. Instead of integrating separately with each channel's send
+API, you can call one endpoint and route messages across channels from a single
+request payload.
+
+## Base URL
+
+```
+https://api.onexaura.com
+```
+
+<Note>
+All endpoints in this section use the `{{domain}}` variable from the OneXtel Postman
+collection, which resolves to `https://api.onexaura.com`.
+</Note>
+
+## Authentication
+
+Every request is authenticated with an `apikey` header carrying the API key issued to
+your OneXtel account.
+
+<ParamField header="apikey" type="string" required>
+  API key issued by OneXtel, used for authentication.
+</ParamField>
+
+## The send endpoint
+
+```
+POST https://api.onexaura.com/oapi/send_sms
+```
+
+Despite the `send_sms` path, this single endpoint accepts payloads for SMS, RCS, and
+WhatsApp — the channel is determined by which top-level key (`sms`, `wa`, or `rcs`) you
+include in the request body. Adding a `fallback` object to the same request enables
+automatic fallback to a secondary channel if the primary channel doesn't deliver within
+a configured wait time.
+
+## What's in this section
+
+| Page | Covers |
+|------|--------|
+| [Fallback API](/api-reference/omnichannel/fallback) | Sending on a primary channel with automatic fallback to one or more secondary channels in a single call to `/oapi/send_sms`. |
+| [Message Status](/api-reference/omnichannel/message-status) | Looking up delivery status for one or more messages by message ID (or mobile number) across channels. |
+| [Message History](/api-reference/omnichannel/message-history) | Querying historical message records with filters for channel, duration, status, and message type. |
+
+## Per-channel API references
+
+For channel-specific send APIs (templates, media, non-template messages, opt-in/opt-out,
+etc.), see the dedicated API reference for each channel:
+
+| Channel | Reference |
+|---------|-----------|
+| WhatsApp | [/api-reference/whatsapp/overview](/api-reference/whatsapp/overview) |
+| RCS | [/api-reference/rcs/overview](/api-reference/rcs/overview) |
+| SMS | [/api-reference/sms/overview](/api-reference/sms/overview) |
+
+<Tip>
+Use the channel-specific references when you need channel-only sends (no fallback), and
+the OmniChannel Send API when you want fallback across channels in a single request.
+</Tip>

@@ -1,0 +1,109 @@
+---
+title: "DLR Callback"
+description: "Delivery receipt (DLR) callback payload the OneXtel SMS platform sends to your configured URL."
+---
+
+## Overview
+
+After delivery, the platform sends a callback (DLR) POST request to the client's configured URL, indicating the final delivery state of a previously submitted message.
+
+<Note>
+The source guide does not document how to configure the callback URL, the HTTP headers used on the callback request, or an expected response body/status code from your endpoint. See the `GAPS` note returned with this extraction.
+</Note>
+
+## Callback payload
+
+<CodeGroup>
+
+```json Success
+{
+  "STATUS": "success",
+  "STATUSDATETIME": "2025-12-04 13:32:04",
+  "MSGID": "36NIhMgNvTJDx21HSsuZzF0XD4C",
+  "ERRORCODE": "000",
+  "ERRORDESP": "DELIVRD",
+  "CLIENTMSID": "123456789",
+  "MOBILENUMBER": "971502829916"
+}
+```
+
+```json Failed
+{
+  "STATUS": "failed",
+  "STATUSDATETIME": "2025-12-04 13:30:47",
+  "MSGID": "36NIY3sBLynZlLiMLAAudI1CzhY",
+  "ERRORCODE": "011",
+  "ERRORDESP": "UNDELIV",
+  "CLIENTMSID": "123456789",
+  "MOBILENUMBER": "971111111111"
+}
+```
+
+</CodeGroup>
+
+## Response parameters — success
+
+<ResponseField name="STATUS" type="string">
+  Final delivery state (`success`).
+</ResponseField>
+
+<ResponseField name="STATUSDATETIME" type="string">
+  Delivery confirmation timestamp.
+</ResponseField>
+
+<ResponseField name="MSGID" type="string">
+  Unique internal message identifier.
+</ResponseField>
+
+<ResponseField name="ERRORCODE" type="string">
+  Delivery confirmation code (e.g., `000` = delivered).
+</ResponseField>
+
+<ResponseField name="ERRORDESP" type="string">
+  Description of the delivery status.
+</ResponseField>
+
+<ResponseField name="CLIENTMSID" type="string">
+  Client's reference ID.
+</ResponseField>
+
+<ResponseField name="MOBILENUMBER" type="string">
+  Delivered-to mobile number.
+</ResponseField>
+
+## Response parameters — failure
+
+<ResponseField name="STATUS" type="string">
+  Final delivery status (e.g., `failed`).
+</ResponseField>
+
+<ResponseField name="STATUSDATETIME" type="string">
+  Timestamp when the delivery status was finalized.
+</ResponseField>
+
+<ResponseField name="MSGID" type="string">
+  Unique internal message ID.
+</ResponseField>
+
+<ResponseField name="ERRORCODE" type="string">
+  Delivery error code (operator mapping).
+</ResponseField>
+
+<ResponseField name="ERRORDESP" type="string">
+  Description of the error code (e.g., `UNDELIV` = undelivered).
+</ResponseField>
+
+<ResponseField name="CLIENTMSID" type="string">
+  Client's message ID reference.
+</ResponseField>
+
+## Delivery / error codes
+
+| Code | Description |
+|---|---|
+| `000` | Delivered. |
+| `011` | Undelivered. |
+
+<Note>
+These two codes are the only `ERRORCODE` values documented in the source guide's consolidated response-codes table. The guide does not provide an exhaustive operator error-code mapping.
+</Note>

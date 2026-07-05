@@ -1,0 +1,50 @@
+---
+title: "International SMS API Overview"
+description: "Introduction, base URL, authentication, and endpoint summary for the OneXtel International SMS API."
+---
+
+## Introduction
+
+The International SMS API lets you send SMS messages through the Onex Global platform. You submit message details as a JSON payload, and the platform forwards the message to the specified recipient(s).
+
+<Note>
+This API is documented separately from the OnexAura Omni platform's WhatsApp and RCS APIs. It uses its own base URL and authentication scheme (a `key` field in the request body, not an `apikey` header).
+</Note>
+
+## Base URL
+
+```
+https://api.int.onexglobal.io
+```
+
+## Authentication
+
+Authentication is performed with an API `key` value included in the JSON request body of every submission call (not as an HTTP header).
+
+<ParamField body="key" type="string" required>
+  API key assigned to the user for authentication.
+</ParamField>
+
+## Endpoints at a glance
+
+| Endpoint | Method | Purpose |
+|---|---|---|
+| [`/api/jsmslist`](/api-reference/sms/send-sms) | POST | Submit one or more SMS messages (single or multiple submission) |
+| [DLR callback](/api-reference/sms/dlr-callback) | POST (inbound, to your configured URL) | Receive final delivery status for a submitted message |
+
+## Request format
+
+All requests are sent as JSON with the header:
+
+<ParamField header="Content-Type" type="string" required>
+  Must be `application/json`.
+</ParamField>
+
+<Warning>
+The source guide's header sample is written as `Contest-Type: application/json` — this is a typo in the source document for `Content-Type`. The cURL examples throughout this API reference use the correct `Content-Type` header.
+</Warning>
+
+## Next steps
+
+- [Send SMS](/api-reference/sms/send-sms) — single and multiple submission payloads, request/response parameters
+- [DLR callback](/api-reference/sms/dlr-callback) — delivery receipt callback format sent to your configured URL

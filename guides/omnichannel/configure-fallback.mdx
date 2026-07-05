@@ -1,0 +1,156 @@
+---
+title: "Configure Fallback"
+description: "Create a fallback configuration in the OnexAura portal and attach it to WhatsApp or RCS campaigns."
+---
+
+This page walks through creating a fallback configuration in the portal, choosing a
+fallback mode, and enabling it on a campaign. For the trigger conditions and wait
+time/TTL concepts referenced below, see the
+[fallback overview](/guides/omnichannel/fallback-overview).
+
+## Create a fallback configuration
+
+<Steps>
+  <Step title="Log in to your account">
+    Sign in to the OnexAura portal.
+  </Step>
+  <Step title="Open Fallback">
+    Navigate to **Fallback** from the left-hand menu.
+  </Step>
+  <Step title="Add a fallback configuration">
+    Click **Add Fallback**.
+  </Step>
+  <Step title="Enter fallback details">
+    Enter a **Fallback Name**, choose a **Mode** (see below), and complete the
+    remaining details for your primary, first fallback, and second fallback channels,
+    including wait time.
+  </Step>
+  <Step title="Save">
+    Click to save the configuration.
+
+    The system automatically generates a unique **Fallback ID**. This Fallback ID is
+    the primary identifier used when sending campaigns and API requests with fallback
+    enabled.
+  </Step>
+</Steps>
+
+## Choose a fallback mode
+
+The platform supports two fallback modes.
+
+### Same Account mode
+
+All channels involved in the fallback flow are configured and executed within the
+same account.
+
+<Note>
+Example — WhatsApp → SMS. Both WhatsApp and SMS are configured under the same account.
+</Note>
+
+### Third-Party mode
+
+Fallback traffic can be routed to:
+
+1. Another account
+2. Another product
+3. An external provider / API
+
+In this mode, you design your own API schema according to the third-party
+requirements:
+
+1. HTTP Method — GET / POST
+2. Endpoint URL
+3. Headers
+4. Payload Format
+
+#### Third-party DLR callback
+
+The platform provides a callback URL which the third-party platform must use to
+submit delivery status updates in the required format:
+
+```
+https://domain/cb/callback/tp
+```
+
+## Enable fallback on a campaign
+
+Fallback can be enabled while creating **WhatsApp Campaigns** and **RCS Campaigns**.
+
+<Steps>
+  <Step title="Open Additional Settings">
+    While configuring the campaign, navigate to **Additional Settings → Enable
+    Fallback**.
+  </Step>
+  <Step title="Select the Fallback ID">
+    Select the required Fallback ID (Name) — the configuration you created above.
+  </Step>
+  <Step title="Fill in per-channel fields">
+    Depending on the fallback mode, the portal displays either the pre-defined
+    channel fields (Same Account mode) or the fields from your configured payload
+    schema (Third-Party mode). For each field you can provide static values, dynamic
+    values, or a mix of both — see
+    [Dynamic field variables](/guides/omnichannel/dynamic-field-variables).
+  </Step>
+</Steps>
+
+### Same Account campaign configuration
+
+All pre-defined fields are displayed during campaign setup.
+
+**SMS fallback fields**
+
+| Field | Mandatory | Description |
+| --- | --- | --- |
+| sender | Yes | SMS Sender ID configured for sending messages |
+| recipient | Auto Derived | Recipient mobile number |
+| type | Yes | Define as SI, TRANS, OTP or Promo |
+| messageBody | Yes | Content of the SMS message to be delivered |
+| templateId | Optional | Template ID registered with the regulatory platform |
+| entityId | Optional | Entity ID associated with the SMS template registration |
+| unicode | Optional | `1` = Unicode message, `0` = Normal text |
+| custRef1 – custRef5 | Optional | Custom reference fields for storing additional information |
+
+<Note>
+Template ID and Entity ID may be mandatory depending on country regulations.
+</Note>
+
+**WhatsApp fallback fields**
+
+| Field | Mandatory | Description |
+| --- | --- | --- |
+| WABA ID | Yes | WhatsApp Business Account ID |
+| Template | Yes | Approved WhatsApp message template name |
+| Recipient | Auto Derived | Recipient mobile number |
+| Sender | Yes | Select WABA number / Number Pool from which the message will be sent |
+| Language Code | Yes | Language code configured for the template |
+| Template Components | Yes | Template parameters/components required to populate dynamic values in the WhatsApp template (header, body, buttons, etc.) |
+
+**RCS fallback fields**
+
+| Field | Mandatory | Description |
+| --- | --- | --- |
+| Message Type | Yes | Define Transactional, Promotional, or OTP |
+| Recipient | Auto Derived | Recipient mobile number |
+| Sender Profile | Yes | Sender profile from which the message will be delivered |
+| Custom Params | Yes | Dynamic parameters required to populate values in the RCS template |
+| Template | Yes | RCS template configured for message delivery |
+
+### Third-Party campaign configuration
+
+For Third-Party fallback, all fields defined in your configured payload schema are
+displayed during campaign setup. You can provide static values, dynamic values, or
+mixed values, and map dynamic values from the uploaded recipient file — see
+[Dynamic field variables](/guides/omnichannel/dynamic-field-variables).
+
+<Tip>
+Fallback Channel 1 and Fallback Channel 2 details can be added as per the fallback
+configuration. If third-party fallback is used, dynamic fields can be added with the
+specific channel name.
+</Tip>
+
+## Sending fallback via API
+
+To trigger the same fallback configuration from an API call instead of a campaign,
+include the `fallback` object — referencing this Fallback ID — in your Send API
+request body. See the [Fallback API reference](/api-reference/omnichannel/fallback)
+for the full request schema, parameters, and a sample request body.

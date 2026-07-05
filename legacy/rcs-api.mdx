@@ -1,0 +1,123 @@
+---
+title: "RCS API — 365cx.io (Legacy)"
+description: "Archived: legacy RCS token generation and message send API hosted on 365cx.io."
+---
+
+<Warning>
+  Legacy V1 documentation, archived for reference. This documents a separate legacy API
+  surface hosted on `365cx.io`, distinct from the current OnexAura RCS API. For current RCS
+  APIs, see the [API Reference](/api-reference/omnichannel/overview). See [Legacy overview](/legacy/overview)
+  for context.
+</Warning>
+
+## Overview
+
+OneXtel's legacy 365cx.io RCS APIs provided integrations for incorporating RCS messaging into
+applications. Generate an authentication token first, then use it with the send-message API.
+
+## Generate token
+
+`POST https://365cx.io/account/enterprise/login`
+
+<ParamField body="email" type="string" required>Login email for the 365cx.io platform.</ParamField>
+<ParamField body="password" type="string" required>Login password for the 365cx.io platform.</ParamField>
+<ParamField body="longTermToken" type="boolean">
+  If true, the token does not expire (default validity is 1 hour).
+</ParamField>
+
+<CodeGroup>
+
+```json Success response (200)
+{
+  "response": {
+    "uId": 100,
+    "token": "VFl6Zz6ZMezrz+12+8CqIHRZdtxxxxxxxxxxxxxxxxEMLuKFgxM9RtZPcl"
+  },
+  "message": {
+    "code": 0,
+    "message": "Login success"
+  },
+  "status": true
+}
+```
+
+```json Failure response
+{
+  "message": {
+    "code": 1403,
+    "message": "Login failed! wrong email id and password combination"
+  },
+  "status": false
+}
+```
+
+</CodeGroup>
+
+## Send message API
+
+`POST https://365cx.io/chatbird/api/message/send`
+
+Header:
+
+| Key | Value |
+| --- | --- |
+| `authentication-token` | Token from Generate Token API |
+
+### Mandatory parameters
+
+<ParamField body="from" type="string" required>Specifies the sender's contact ID.</ParamField>
+<ParamField body="to" type="string" required>Specifies the recipient's phone number.</ParamField>
+<ParamField body="journeyId" type="string" required>Unique identifier for the journey.</ParamField>
+<ParamField body="templateId" type="string" required>Identifies the specific template for the message.</ParamField>
+
+### Additional parameters
+
+<ParamField body="message.template.parameterValues" type="object">Variable values in body content.</ParamField>
+<ParamField body="callbackUrl" type="string">URL used for receiving delivery callbacks.</ParamField>
+<ParamField body="metaData" type="object">Custom tags (`tag1`, `tag2`, `tag3`) for message categorization and filtering.</ParamField>
+
+```json Request payload
+{
+  "from": "xxxxxxxx",
+  "to": "xxxxxxxx",
+  "journeyId": "xxxxxxxx",
+  "message": {
+    "template": {
+      "templateId": "xxxxxxxx",
+      "parameterValues": {
+        "0": "xxxx"
+      }
+    }
+  },
+  "callbackUrl": "xxxxxxxx",
+  "metaData": {
+    "tag1": "xxxxxxxx",
+    "tag2": "xxxxxxxx",
+    "tag3": "xxxxxxxx"
+  }
+}
+```
+
+<CodeGroup>
+
+```json Success response (200)
+{
+  "message": null,
+  "code": 100,
+  "status": true,
+  "data": {
+    "id": "669e55c8a8f5d50aad723e73"
+  }
+}
+```
+
+```json Failure response — invalid journey ID
+{
+  "message": "Journey not found",
+  "code": 101,
+  "status": false,
+  "data": null
+}
+```
+
+</CodeGroup>

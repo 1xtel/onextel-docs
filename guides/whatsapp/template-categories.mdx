@@ -1,0 +1,71 @@
+---
+title: "Template Categories Overview"
+description: "How Meta categorizes WhatsApp message templates into marketing, utility, and authentication, effective July 1, 2025."
+---
+
+Meta's template category guidelines define how every WhatsApp message template is
+categorized. The category you choose is validated against these guidelines when you
+submit a template for approval, and it determines how the template is priced and
+what content is allowed in it.
+
+<Info>
+  These guidelines are effective **July 1, 2025**.
+</Info>
+
+## The three categories
+
+Message templates can be categorized as:
+
+- **Marketing** — Enable businesses to achieve a wide range of goals, from
+  generating awareness to driving sales and retargeting customers. Examples can
+  include new product/service/feature announcements; targeted promotions/offers;
+  or cart abandonment reminders.
+- **Utility** — Enable businesses to send non-promotional messages that are either
+  specific to and requested by the user or essential or critical to the user.
+  Examples can include order-related updates, payment reminders, or fraud
+  awareness messages.
+- **Authentication** — Enable businesses to verify a user's identity, potentially
+  at various steps of the customer journey.
+
+<Warning>
+  Businesses can only send template messages to users who have subscribed to
+  receive messages from them on WhatsApp.
+</Warning>
+
+## Category deep dives
+
+- [Marketing templates](/guides/whatsapp/template-categories-marketing) — message
+  objectives, example templates, and the mixed-content and unclear-content rules
+  that pull templates into the marketing category.
+- [Utility templates](/guides/whatsapp/template-categories-utility) — the
+  non-promotional requirement, allowed message objectives, and the
+  "essential or critical to the user" use cases.
+- [Authentication templates](/guides/whatsapp/template-categories-authentication) —
+  the most restricted category: preset templates, one-time password buttons, and
+  content restrictions.
+
+## Common categorization pitfalls
+
+Meta applies two default rules that frequently surprise template authors. Both
+result in a template being categorized as **marketing** even when you submitted
+it as utility:
+
+| Situation | Resulting category |
+| --- | --- |
+| **Mixed content** — the template contains both utility and marketing content (e.g. an order update with a promo/offer) | Marketing |
+| **Unclear content** — the template contents give no context (e.g. contents are only `{{1}}` or "Congratulations!") | Marketing |
+
+<Note>
+  The example templates in these guides are illustrative only. Templates
+  containing similar content, or content including the example text, may be
+  categorized differently based on their exact content.
+</Note>
+
+## Reference
+
+Meta's source material for these guidelines on the WhatsApp Business Platform:
+
+- [Pricing](https://developers.facebook.com/docs/whatsapp/pricing) on the WhatsApp Business Platform
+- [Rates and volume tiers](https://business.whatsapp.com/products/platform-pricing#rates) on the WhatsApp Business Platform
+- [Template category guidelines](https://developers.facebook.com/docs/whatsapp/updates-to-pricing/new-template-guidelines#template-category-guidelines) on the WhatsApp Business Platform
+- [Message templates](https://developers.facebook.com/docs/whatsapp/cloud-api/guides/send-message-templates/) developer documentation

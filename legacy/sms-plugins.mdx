@@ -1,0 +1,72 @@
+---
+title: "SMS Plugins (Legacy)"
+description: "Archived: legacy Aura SMS connector for MoEngage; other connectors were listed but not documented in detail."
+---
+
+<Warning>
+  Legacy V1 documentation, archived for reference. See [Legacy overview](/legacy/overview)
+  for context.
+</Warning>
+
+The legacy nav listed SMS plugin/connector pages for MoEngage, WebEngage, LeadSquared,
+CleverTap, Zoho CRM, Salesforce, and a Shopify SMS plugin. Only the MoEngage page returned
+substantive content when fetched; it is documented below as representative of how these
+marketing-platform connectors integrate with the Aura send-SMS API. See `GAPS` for the
+other connector pages.
+
+## MoEngage SMS connector
+
+### Prerequisites
+
+- An active Aura account with API keys.
+- Entity ID and Sender IDs configured in Aura.
+- DND scrubbing disabled when creating the API key.
+- DLT-approved templates uploaded via bulk upload.
+
+### Setup
+
+<Steps>
+  <Step title="Open sender configuration">
+    In MoEngage, go to **Settings → Channel → SMS → Sender Configuration**.
+  </Step>
+  <Step title="Add a sender">
+    Click **Add Sender**, then choose **Add custom service provider**.
+  </Step>
+  <Step title="Optional: set as default">
+    Toggle **Mark as default** if this sender should be the default for SMS sends.
+  </Step>
+  <Step title="Name the provider and sender">
+    Enter the service provider name and sender name.
+  </Step>
+  <Step title="Choose sender type">
+    Select **Promotional** or **Transactional**.
+  </Step>
+  <Step title="Enter API URLs">
+    Provide the Aura API URL (GET or POST, below) with the required parameters mapped to
+    MoEngage fields.
+  </Step>
+  <Step title="Test and save">
+    Send a test SMS using a mobile number and an approved template, then save the
+    configuration. Configure delivery tracking separately.
+  </Step>
+</Steps>
+
+### API endpoints used
+
+- GET: `https://api.onex-aura.com/api/sms`
+- POST: `https://api.onex-aura.com/api/jsms`
+
+### Parameter mapping
+
+| Aura parameter | MoEngage field |
+| --- | --- |
+| `key` | API Key |
+| `from` | Sender ID |
+| `to` | `Moesms_destination` |
+| `body` | `Moesms_message` |
+| `templateid` | `Moesms_dltTemplateId` |
+| `entityid` | Entity ID |
+
+<Note>
+  Support: support@onextel.com for account creation or integration questions.
+</Note>

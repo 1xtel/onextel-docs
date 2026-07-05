@@ -1,0 +1,102 @@
+---
+title: "Settings: Time Window & Frequency Capping"
+description: "Configure allowed sending time windows and per-number message frequency caps for RCS."
+---
+
+The RCS **Settings** subtab (under **Channels > RCS > Config**) controls
+when messages can be sent and how often a single recipient can be messaged.
+
+## Time Window
+
+OneXtel Time Window allows customers to define specific time windows during
+which RCS messages can be sent. This feature ensures that communications
+are timely and compliant with business or regulatory requirements.
+
+Once the configured window expires, further messages will either:
+
+- Stop dispatching and be marked as failed, **or**
+- Be scheduled for the next available window (e.g., next day), based on
+  the customer's configured action.
+
+<Steps>
+  <Step title="Open Channels > RCS > Config > Settings">
+    In the left pane of the RCS platform, click **Channels**, select
+    **RCS**, click the **Config** tab, then click the **Settings** subtab.
+  </Step>
+  <Step title="Enable Time Window">
+    Toggle the **Time Window** switch to turn on the feature.
+
+    The Time Window Configuration pop-up appears.
+  </Step>
+  <Step title="Enter configuration details">
+    Fill in the mandatory and optional fields described below.
+  </Step>
+  <Step title="Save">
+    Click **Save Configuration**.
+
+    OneXtel RCS platform redirects to the Settings subtab.
+  </Step>
+</Steps>
+
+### Mandatory configuration fields
+
+| Field | Description | Task |
+|---|---|---|
+| **Start Time** | Start of the allowed time window. Applies to all days of the week. | Set the time from the dropdown list. |
+| **End Time** | End of the allowed time window. Applies to all days of the week. | Set the time from the dropdown list. |
+| **Preferred Action Post End Time** | Specifies how the system should handle messages that exceed the configured frequency cap within the defined time window: **Send the remaining messages to the next day** (queued messages are automatically sent on the next day or next time window) or **Discard Messages** (messages that exceed the limit are discarded and not delivered). | Select one option from the dropdown list. |
+
+### Optional configuration fields
+
+| Field | Description | Task |
+|---|---|---|
+| **Source** | Specifies the channel of message submissions — **WEB** or **API**. | Select the channel from the dropdown list. |
+| **Sender Profile** | List of sender profiles configured for the account. | Select one or more sender profiles to filter the window based on specific senders. |
+| **Message Type** | Message types (e.g., promotional, transactional), filtered based on the selected sender profiles. | Select one or more message types. |
+| **Template Name** | Templates for the message type. | Select one or more template names. |
+| **API Name** | A specific API endpoint used to submit messages. | Select one or more API names so the frequency cap applies only to messages sent through those chosen APIs. |
+
+## Frequency Capping
+
+OneXtel's Frequency Capping feature allows customers to set and enforce
+limits on the number of RCS messages sent to a specific mobile number
+within a defined time window. It helps maintain compliance, prevent
+spam-like behaviour, and reduce user fatigue.
+
+<Steps>
+  <Step title="Open Channels > RCS > Config > Settings">
+    In the left pane of the RCS platform, click **Channels**, select
+    **RCS**, click the **Config** tab, then click the **Settings** subtab.
+  </Step>
+  <Step title="Enable Frequency Capping">
+    Toggle the **Frequency Capping** switch to turn on the feature.
+
+    The Frequency Capping Configuration pop-up appears.
+  </Step>
+  <Step title="Enter configuration details">
+    Fill in the mandatory and optional fields described below.
+  </Step>
+  <Step title="Save">
+    Click **Save Configuration**.
+
+    OneXtel RCS platform redirects to the Settings subtab.
+  </Step>
+</Steps>
+
+### Mandatory configuration fields
+
+| Field | Description | Task |
+|---|---|---|
+| **Number of Messages** | Maximum messages allowed to a single mobile number within the defined time window. | Enter the number. |
+| **Time Window** | **Per Day**, or **Custom Time Period** — set the time (by default it is in HH:MM format). | Select any one option. |
+| **Duplicate Category** | Defines message grouping criteria for the cap: **Template** (messages with the same template are treated as duplicates) or **Sender** (messages sent from the same sender profile are treated as duplicates). | Select either option individually or use both together. |
+
+### Optional configuration fields
+
+| Field | Description | Task |
+|---|---|---|
+| **Source** | Specifies the channel of message submissions — **WEB** or **API**. | Select the channel from the dropdown list. |
+| **API Name** | List of available APIs used for sending messages. | Select one or more API names to apply the cap to those APIs. |
+| **Sender Profile** | List of sender profiles configured for the account. | Select one or more sender profiles to filter the capping based on specific senders. |
+| **Message Type** | Message types (e.g., promotional, transactional), filtered based on the selected sender profiles. | Select one or more message types. |
+| **Template ID** | Template IDs linked to the selected message type; enabled only after a message type is chosen. | Select one or more template IDs. |

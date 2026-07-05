@@ -1,0 +1,172 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
+  "name": "OneXtel",
+  "colors": {
+    "primary": "#1E2A5E",
+    "light": "#C23B34",
+    "dark": "#1E2A5E"
+  },
+  "favicon": "/favicon.svg",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "WhatsApp Campaigns",
+            "pages": [
+              "guides/whatsapp/quickstart",
+              "guides/whatsapp/campaign-dashboard",
+              "guides/whatsapp/campaign-create",
+              "guides/whatsapp/campaign-variable-mapping",
+              "guides/whatsapp/campaign-launch"
+            ]
+          },
+          {
+            "group": "WhatsApp Template Categories",
+            "pages": [
+              "guides/whatsapp/template-categories",
+              "guides/whatsapp/template-categories-marketing",
+              "guides/whatsapp/template-categories-utility",
+              "guides/whatsapp/template-categories-authentication"
+            ]
+          },
+          {
+            "group": "RCS Campaigns",
+            "pages": [
+              "guides/rcs-campaigns/overview",
+              "guides/rcs-campaigns/getting-started",
+              "guides/rcs-campaigns/create-a-campaign",
+              "guides/rcs-campaigns/variable-mapping",
+              "guides/rcs-campaigns/additional-settings",
+              "guides/rcs-campaigns/schedule-and-launch",
+              "guides/rcs-campaigns/manage-campaigns"
+            ]
+          },
+          {
+            "group": "RCS Platform",
+            "pages": [
+              "guides/rcs-platform/overview",
+              "guides/rcs-platform/getting-started",
+              "guides/rcs-platform/sender-profiles",
+              "guides/rcs-platform/templates",
+              "guides/rcs-platform/billing-config",
+              "guides/rcs-platform/settings",
+              "guides/rcs-platform/reports-summary",
+              "guides/rcs-platform/reports-detail"
+            ]
+          },
+          {
+            "group": "International SMS",
+            "pages": [
+              "guides/sms/overview",
+              "guides/sms/send-sms",
+              "guides/sms/campaigns",
+              "guides/sms/templates",
+              "guides/sms/sender-id",
+              "guides/sms/phonebook",
+              "guides/sms/reports",
+              "guides/sms/settings"
+            ]
+          },
+          {
+            "group": "Omnichannel Fallback",
+            "pages": [
+              "guides/omnichannel/fallback-overview",
+              "guides/omnichannel/configure-fallback",
+              "guides/omnichannel/dynamic-field-variables"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "WhatsApp",
+            "pages": [
+              "api-reference/whatsapp/overview",
+              "api-reference/whatsapp/templates-create",
+              "api-reference/whatsapp/templates-fetch",
+              "api-reference/whatsapp/send-template-message",
+              "api-reference/whatsapp/send-session-messages",
+              "api-reference/whatsapp/media",
+              "api-reference/whatsapp/opt-in-opt-out",
+              {
+                "group": "Callbacks",
+                "pages": [
+                  "api-reference/whatsapp/callback-events",
+                  "api-reference/whatsapp/callback-incoming-messages",
+                  "api-reference/whatsapp/callback-delivery-notification",
+                  "api-reference/whatsapp/callback-button-clicks",
+                  "api-reference/whatsapp/callback-url-click"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "RCS",
+            "pages": [
+              "api-reference/rcs/overview",
+              "api-reference/rcs/templates",
+              "api-reference/rcs/send-template-message",
+              "api-reference/rcs/send-messages",
+              "api-reference/rcs/media",
+              "api-reference/rcs/opt-in-opt-out"
+            ]
+          },
+          {
+            "group": "International SMS",
+            "pages": [
+              "api-reference/sms/overview",
+              "api-reference/sms/send-sms",
+              "api-reference/sms/dlr-callback"
+            ]
+          },
+          {
+            "group": "OmniChannel",
+            "pages": [
+              "api-reference/omnichannel/overview",
+              "api-reference/omnichannel/fallback",
+              "api-reference/omnichannel/message-status",
+              "api-reference/omnichannel/message-history"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Legacy (V1)",
+        "groups": [
+          {
+            "group": "SMS AURA V1 — Archived",
+            "pages": [
+              "legacy/overview",
+              "legacy/sms-aura",
+              "legacy/sms-dlt",
+              "legacy/sms-plugins",
+              "legacy/whatsapp-api",
+              "legacy/rcs-api"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "OneXtel",
+      "href": "https://www.onextel.com"
+    }
+  },
+  "footer": {
+    "socials": {
+      "website": "https://www.onextel.com"
+    }
+  }
+}

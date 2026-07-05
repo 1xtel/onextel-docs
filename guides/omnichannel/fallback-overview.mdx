@@ -1,0 +1,108 @@
+---
+title: "Multi-Channel Fallback Overview"
+description: "How primary-to-secondary channel routing works in OnexAura, when it triggers, and how wait time and TTL control the handoff."
+---
+
+Multi-channel fallback lets you automatically switch message delivery from a primary
+channel to one or more secondary channels when delivery fails, or when no delivery
+status is received within a configured time period. This keeps messages reaching
+recipients even when a channel is unavailable or a recipient can't be reached on it.
+
+Fallback can be used with:
+
+- Campaigns
+- APIs
+
+## Channel routing
+
+A fallback journey moves a message through up to three channels, in order:
+
+**Primary Channel → First Fallback → Second Fallback**
+
+For example: WhatsApp → RCS → SMS.
+
+| Channel type | Supported channels |
+| --- | --- |
+| Primary Channel (PC) | WhatsApp, RCS |
+| First Fallback (FF) | SMS, WhatsApp, RCS |
+| Second Fallback (SF) | SMS, WhatsApp, RCS |
+
+<Note>
+A maximum of three channels can participate in a single fallback journey.
+</Note>
+
+## When does fallback trigger?
+
+Fallback is triggered under either of the following conditions.
+
+### Scenario 1: Failed DLR received
+
+A failed delivery status (DLR) is received from the primary channel, and the system
+immediately triggers the configured fallback channel.
+
+<Note>
+Example: WhatsApp = Failed. The system immediately triggers the configured fallback
+channel.
+</Note>
+
+### Scenario 2: Wait time exceeded
+
+No Delivered or Failed DLR is received within the configured wait time.
+
+<Note>
+Example: Wait Time = 300 seconds. If the message is not delivered within 300 seconds,
+fallback is triggered automatically.
+</Note>
+
+## Wait time
+
+Wait time defines how long the platform should wait for a delivery status before
+initiating fallback.
+
+<Note>
+Example — Primary Channel = WhatsApp, Wait Time = 300 seconds. The system waits for a
+Delivered or Failed DLR; if neither is received within 300 seconds, the next fallback
+channel is triggered.
+</Note>
+
+Wait time is defined at two points in the journey:
+
+- **Primary → First Fallback:** wait time is defined during campaign creation or in
+  the API request.
+- **First Fallback → Second Fallback:** wait time is defined at the time of fallback
+  configuration creation.
+
+## TTL (Time to Live)
+
+TTL defines the maximum duration operators should attempt message delivery before
+marking the message as failed.
+
+**TTL is automatically set to 95% of Wait Time in case of fallback.**
+
+- For SMS, TTL is submitted to operators during message submission.
+- For RCS, TTL is submitted to operators during message submission.
+- For WhatsApp, TTL must be configured at the WhatsApp template level.
+
+<Note>
+TTL configuration helps avoid duplicate delivery across channels. For SMS/RCS this is
+predefined as supported by operators; for WhatsApp, you are strongly recommended to add
+TTL at the time of template creation to avoid duplicate delivery.
+</Note>
+
+## Use cases
+
+- **Reach recipients without WhatsApp or RCS:** fall back to SMS when a rich channel
+  fails so the message still lands.
+- **Recover from channel-specific failures:** if a WhatsApp template message fails
+  (e.g., recipient hasn't opted in), automatically retry on RCS or SMS.
+- **Avoid silent delivery gaps:** the wait-time trigger catches messages stuck with no
+  DLR at all, not just explicit failures.
+
+## Next steps
+
+- [Configure a fallback flow](/guides/omnichannel/configure-fallback) in the OnexAura
+  portal.
+- [Dynamic field variables](/guides/omnichannel/dynamic-field-variables) for mapping
+  runtime and campaign-column values into fallback payloads.
+- [Fallback API reference](/api-reference/omnichannel/fallback) to trigger fallback
+  directly from the Send API.

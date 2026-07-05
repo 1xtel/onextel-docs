@@ -1,0 +1,76 @@
+---
+title: "Dynamic Field Variables"
+description: "Use runtime and campaign-column variables to populate static, dynamic, or mixed values in fallback fields."
+---
+
+When configuring a fallback flow — for a campaign or a Third-Party payload — you can
+populate fields with static values, dynamic values, or a mix of both. This page covers
+the two variable mechanisms available: runtime field variables for API/Third-Party
+payloads, and campaign-column mapping for campaign fields.
+
+## Runtime field variables (Third-Party payloads)
+
+To define dynamic values at the time of campaign or API push, you can create runtime
+field variables while configuring Third-Party payloads.
+
+Variables are represented using:
+
+```
+$$$variableName
+```
+
+**Example:**
+
+```json
+{
+  "mobile": "$$$mobile",
+  "message": "$$$message"
+}
+```
+
+At runtime, you pass the value for these dynamic fields, and the platform
+substitutes them automatically into the configured payload.
+
+### System-generated variables
+
+The following field variables are available by default and can be used to replace
+system-generated values:
+
+| Variable | Description |
+| --- | --- |
+| recipient | Recipient mobile number |
+| campaignName | Campaign Name / Campaign Title |
+| messageId | System-generated message ID |
+| sender | SMS Sender ID / RCS Sender Profile / WhatsApp WABA Number |
+| template | Template Name |
+| body | SMS Message Content |
+| media | Uploaded Media URL or Media Object |
+
+## Campaign-column mapping (Same Account campaigns)
+
+For campaign fields, you can map dynamic values from the uploaded recipient file
+using the `@` prefix, for example:
+
+- `@name`
+- `@mobile`
+- `@city`
+
+**Mixed static + dynamic example:**
+
+```
+Dear @name, your order has been shipped.
+```
+
+**Result:**
+
+```
+Dear John, your order has been shipped.
+```
+
+<Tip>
+Use campaign-column mapping (`@field`) for Same Account campaign fields such as SMS
+`messageBody` or WhatsApp/RCS template components. Use runtime variables
+(`$$$variableName`) when defining a Third-Party payload schema. See
+[Configure fallback](/guides/omnichannel/configure-fallback) for where each field
+type appears during setup.
+</Tip>

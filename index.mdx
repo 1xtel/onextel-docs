@@ -1,0 +1,65 @@
+---
+title: "OneXtel Documentation"
+description: "Enterprise messaging APIs and campaign tools — WhatsApp, RCS, SMS, and omnichannel."
+mode: "custom"
+---
+
+export const Hero = () => (
+  <div style={{ background: '#1E2A5E', borderRadius: '16px', padding: '56px 40px', textAlign: 'center', marginBottom: '32px' }}>
+    <h1 style={{ color: '#FFFFFF', fontSize: '2.2rem', margin: 0 }}>
+      Build on One<span style={{ color: '#C23B34' }}>X</span>tel
+    </h1>
+    <p style={{ color: '#E2E8F0', maxWidth: '620px', margin: '16px auto 0' }}>
+      One platform for WhatsApp, RCS, and SMS at enterprise scale — send via a single
+      omnichannel API, orchestrate fallback across channels, and run campaigns from the
+      OnexAura portal.
+    </p>
+  </div>
+)
+
+<Hero />
+
+## Developer API reference
+
+<CardGroup cols={3}>
+  <Card title="WhatsApp API" icon="whatsapp" href="/api-reference/whatsapp/overview">
+    Send template and session messages, manage media, opt-outs, and receive callbacks.
+  </Card>
+  <Card title="RCS API" icon="message" href="/api-reference/rcs/overview">
+    Rich cards, carousels, and template messaging over RCS Business Messaging.
+  </Card>
+  <Card title="International SMS API" icon="globe" href="/api-reference/sms/overview">
+    High-throughput international SMS with delivery reports.
+  </Card>
+</CardGroup>
+
+<CardGroup cols={2}>
+  <Card title="Omnichannel & Fallback" icon="arrows-split-up-and-left" href="/api-reference/omnichannel/overview">
+    One send API across channels, automatic fallback, message status and history.
+  </Card>
+  <Card title="WhatsApp Callbacks" icon="webhook" href="/api-reference/whatsapp/callback-events">
+    Incoming messages, delivery notifications, button clicks, and URL click events.
+  </Card>
+</CardGroup>
+
+## Platform guides
+
+<CardGroup cols={2}>
+  <Card title="WhatsApp Campaigns" icon="bullhorn" href="/guides/whatsapp/quickstart">
+    Create templates and launch WhatsApp campaigns from the OnexAura portal.
+  </Card>
+  <Card title="RCS Campaigns" icon="mobile-screen" href="/guides/rcs-campaigns/overview">
+    Run rich RCS campaigns end to end.
+  </Card>
+  <Card title="Multi-Channel Fallback" icon="shuffle" href="/guides/omnichannel/fallback-overview">
+    Configure fallback chains so every message reaches its recipient.
+  </Card>
+  <Card title="International SMS Platform" icon="paper-plane" href="/guides/sms/overview">
+    Portal guide for international SMS campaigns and reporting.
+  </Card>
+</CardGroup>
+
+<Note>
+Looking for the old Aura V1 SMS docs? They're preserved under [Legacy (Aura V1)](/legacy/overview)
+for existing integrations.
+</Note>

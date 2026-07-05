@@ -1,0 +1,852 @@
+---
+title: "Send Session Messages"
+description: "Send non-template (session/interactive) WhatsApp messages — text, media, address, contact, URL button, list, media carousel, and reply — via the OnexAura send_sms API."
+---
+
+Session messages are non-template WhatsApp messages. Unlike template messages, they do
+not require prior Meta approval, but they can only be sent within an open 24-hour
+customer service window (i.e., in reply to an inbound message from the recipient).
+
+<Note>
+This page is built from the OnexAura Postman collection (`WhatsApp > Non Template Message`
+folder). The OneXtel WhatsApp API Guide PDF documents template messages only; it does not
+cover these non-template message types.
+</Note>
+
+## Endpoint
+
+```
+POST /send_sms
+```
+
+<ParamField header="apikey" type="string" required>
+  API key generated for the TUC (tenant under customer) associated with the sending
+  WhatsApp number.
+</ParamField>
+
+## Common request structure
+
+Every message is wrapped in a `wa` array. Each object in the array shares these
+top-level fields regardless of message type:
+
+<ParamField body="wa" type="array" required>
+  Wrapper array for one or more WhatsApp message objects.
+</ParamField>
+<ParamField body="messaging_product" type="string" required>
+  Always `"whatsapp"`.
+</ParamField>
+<ParamField body="recipient_type" type="string" required>
+  Always `"individual"`.
+</ParamField>
+<ParamField body="recipient" type="string" required>
+  Recipient's WhatsApp phone number.
+</ParamField>
+<ParamField body="sender" type="string" required>
+  Sender's registered WhatsApp number.
+</ParamField>
+<ParamField body="type" type="string" required>
+  Message type — one of `text`, `document` / `image` / `video` / `audio` / `sticker`,
+  `interactive`, or `contacts`. See the tabs below for the value per message type.
+</ParamField>
+<ParamField body="prefix" type="string">
+  Optional country prefix (e.g. `+91`), set at the root of the request body alongside `wa`.
+</ParamField>
+
+<Tabs>
+
+<Tab title="Text">
+
+Sends a plain text message, optionally with link preview.
+
+<ParamField body="text.body" type="string" required>
+  Message text.
+</ParamField>
+<ParamField body="text.preview_url" type="boolean">
+  Optional. Set `true` to render a link preview for URLs in the body text.
+</ParamField>
+
+```json Request
+{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "text",
+            "text": {
+                "body": "xx",
+                "preview_url": true
+            }
+        }
+    ]
+}
+```
+
+```bash cURL
+curl --location 'https://api.onexaura.com/send_sms' \
+--header 'apikey: YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data '{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "text",
+            "text": {
+                "body": "xx",
+                "preview_url": true
+            }
+        }
+    ]
+}'
+```
+
+</Tab>
+
+<Tab title="Media">
+
+Sends a standalone media message. `type` can be `image`, `video`, `document`, `audio`,
+or `sticker` — pass the media object under the matching key name.
+
+<ParamField body="document.link" type="string" required>
+  Media URL, or a previously uploaded media `id` (see [Media](/api-reference/whatsapp/media)).
+</ParamField>
+<ParamField body="document.caption" type="string">
+  Optional. Only valid for `image`, `video`, and `document` types.
+</ParamField>
+<ParamField body="document.filename" type="string">
+  Optional. Only valid for `document` type.
+</ParamField>
+<ParamField body="document.voice" type="boolean">
+  Optional. Only valid for `audio` type — set `true` to send as a voice message.
+</ParamField>
+
+```json Request
+{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "document",
+            "document": {
+                "link": "xx",
+                "caption": "xx"
+            }
+        }
+    ]
+}
+```
+
+```bash cURL
+curl --location 'https://api.onexaura.com/send_sms' \
+--header 'apikey: YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data '{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "document",
+            "document": {
+                "link": "xx",
+                "caption": "xx"
+            }
+        }
+    ]
+}'
+```
+
+<Note>
+`type` can also be `image`, `video`, `audio`, or `sticker` — replace the `document` key
+with the matching type name (e.g. `"type": "image", "image": { "link": "xx" }`).
+</Note>
+
+</Tab>
+
+<Tab title="Address">
+
+Sends an interactive address-collection message (India-specific address form).
+
+<ParamField body="interactive.type" type="string" required>
+  Always `"address_message"`.
+</ParamField>
+<ParamField body="interactive.body.text" type="string" required>
+  Body text shown above the address form.
+</ParamField>
+<ParamField body="interactive.action.name" type="string" required>
+  Always `"address_message"`.
+</ParamField>
+<ParamField body="interactive.action.parameters.country" type="string" required>
+  Country code, e.g. `"IN"`.
+</ParamField>
+<ParamField body="interactive.action.parameters.saved_addresses" type="array">
+  Optional. Previously saved addresses associated with the user. Each entry has an `id`
+  and a `value` object (`name`, `phone_number`, `in_pin_code`, `house_number`,
+  `floor_number`, `tower_number`, `building_name`, `address`, `landmark_area`, `city`,
+  `state`) — all fields optional.
+</ParamField>
+<ParamField body="interactive.action.parameters.values" type="object">
+  Optional. Prefills address fields (e.g. prefilling city with `"India"`). Same field set
+  as `saved_addresses.value`, all optional.
+</ParamField>
+<ParamField body="interactive.action.parameters.validation_errors" type="object">
+  Optional. Raises validation errors on specific address fields; WhatsApp blocks submission
+  until resolved. Same field set as `values`, all optional.
+</ParamField>
+
+```json Request
+{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "interactive",
+            "interactive": {
+                "type": "address_message",
+                "body": {
+                    "text": "xx"
+                },
+                "action": {
+                    "name": "address_message",
+                    "parameters": {
+                        "country": "IN"
+                    }
+                }
+            }
+        }
+    ]
+}
+```
+
+```bash cURL
+curl --location 'https://api.onexaura.com/send_sms' \
+--header 'apikey: YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data '{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "interactive",
+            "interactive": {
+                "type": "address_message",
+                "body": {
+                    "text": "xx"
+                },
+                "action": {
+                    "name": "address_message",
+                    "parameters": {
+                        "country": "IN"
+                    }
+                }
+            }
+        }
+    ]
+}'
+```
+
+</Tab>
+
+<Tab title="Contact">
+
+Sends one or more vCard-style contact cards.
+
+<ParamField body="contacts" type="array" required>
+  Array of contact objects. All fields inside each contact object are optional.
+</ParamField>
+<ParamField body="contacts[].addresses" type="array">
+  Address entries: `street`, `city`, `state`, `zip`, `country`, `country_code`, `type`.
+</ParamField>
+<ParamField body="contacts[].birthday" type="string">
+  Contact's birthday.
+</ParamField>
+<ParamField body="contacts[].emails" type="array">
+  Email entries: `email`, `type`.
+</ParamField>
+<ParamField body="contacts[].name" type="object">
+  `formatted_name`, `first_name`, `last_name`, `middle_name`, `suffix`, `prefix`.
+</ParamField>
+<ParamField body="contacts[].org" type="object">
+  `company`, `department`, `title`.
+</ParamField>
+<ParamField body="contacts[].phones" type="array">
+  Phone entries: `phone`, `type`, `wa_id`.
+</ParamField>
+<ParamField body="contacts[].urls" type="array">
+  URL entries: `url`, `type`.
+</ParamField>
+
+```json Request
+{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "contacts",
+            "contacts": [
+                {
+                    "addresses": [
+                        {
+                            "street": "xx",
+                            "city": "xx",
+                            "state": "xx",
+                            "zip": "xx",
+                            "country": "xx",
+                            "country_code": "xx",
+                            "type": "xx"
+                        }
+                    ],
+                    "birthday": "xx",
+                    "emails": [
+                        {
+                            "email": "xx",
+                            "type": "xx"
+                        }
+                    ],
+                    "name": {
+                        "formatted_name": "xx",
+                        "first_name": "xx",
+                        "last_name": "xx",
+                        "middle_name": "xx",
+                        "suffix": "xx",
+                        "prefix": "xx"
+                    },
+                    "org": {
+                        "company": "xx",
+                        "department": "xx",
+                        "title": "xx"
+                    },
+                    "phones": [
+                        {
+                            "phone": "xx",
+                            "type": "xx",
+                            "wa_id": "xx"
+                        }
+                    ],
+                    "urls": [
+                        {
+                            "url": "xx",
+                            "type": "xx"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+```
+
+```bash cURL
+curl --location 'https://api.onexaura.com/send_sms' \
+--header 'apikey: YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data '{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "contacts",
+            "contacts": [
+                {
+                    "name": {
+                        "formatted_name": "xx",
+                        "first_name": "xx"
+                    },
+                    "phones": [
+                        {
+                            "phone": "xx",
+                            "type": "xx",
+                            "wa_id": "xx"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}'
+```
+
+</Tab>
+
+<Tab title="URL Button">
+
+Sends an interactive message with a single call-to-action URL button (`cta_url`).
+
+<ParamField body="interactive.type" type="string" required>
+  Always `"cta_url"`.
+</ParamField>
+<ParamField body="interactive.header.type" type="string">
+  Optional. `image`, `video`, or `document`. Pass the media object under the matching key
+  name. For a text header, pass a `text` parameter with a string value instead.
+</ParamField>
+<ParamField body="body.text" type="string" required>
+  Body text.
+</ParamField>
+<ParamField body="footer.text" type="string">
+  Optional footer text.
+</ParamField>
+<ParamField body="action.name" type="string" required>
+  Always `"cta_url"`.
+</ParamField>
+<ParamField body="action.parameters.display_text" type="string" required>
+  Label shown on the button.
+</ParamField>
+<ParamField body="action.parameters.url" type="string" required>
+  Destination URL.
+</ParamField>
+
+```json Request
+{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "interactive",
+            "interactive": {
+                "type": "cta_url",
+                "header": {
+                    "type": "image",
+                    "image": {
+                        "link": "xx"
+                    }
+                }
+            },
+            "body": {
+                "text": "xx"
+            },
+            "footer": {
+                "text": "xx"
+            },
+            "action": {
+                "name": "cta_url",
+                "parameters": {
+                    "display_text": "xx",
+                    "url": "xx"
+                }
+            }
+        }
+    ]
+}
+```
+
+```bash cURL
+curl --location 'https://api.onexaura.com/send_sms' \
+--header 'apikey: YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data '{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "interactive",
+            "interactive": {
+                "type": "cta_url",
+                "header": {
+                    "type": "image",
+                    "image": {
+                        "link": "xx"
+                    }
+                }
+            },
+            "body": {
+                "text": "xx"
+            },
+            "footer": {
+                "text": "xx"
+            },
+            "action": {
+                "name": "cta_url",
+                "parameters": {
+                    "display_text": "xx",
+                    "url": "xx"
+                }
+            }
+        }
+    ]
+}'
+```
+
+</Tab>
+
+<Tab title="List">
+
+Sends an interactive list message with sections of selectable rows.
+
+<ParamField body="interactive.type" type="string" required>
+  Always `"list"`.
+</ParamField>
+<ParamField body="interactive.header.type" type="string">
+  Optional. Set to `"text"` with a `text` string field.
+</ParamField>
+<ParamField body="interactive.body.text" type="string" required>
+  Body text.
+</ParamField>
+<ParamField body="interactive.footer.text" type="string">
+  Optional footer text.
+</ParamField>
+<ParamField body="interactive.action.button" type="string" required>
+  Label for the button that opens the list.
+</ParamField>
+<ParamField body="interactive.action.sections" type="array" required>
+  Array of section objects, each with a `title` and `rows`.
+</ParamField>
+<ParamField body="interactive.action.sections[].rows[]" type="object" required>
+  Each row has `id`, `title`, and `description`.
+</ParamField>
+
+```json Request
+{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "interactive",
+            "interactive": {
+                "type": "list",
+                "header": {
+                    "type": "text",
+                    "text": "xx"
+                },
+                "body": {
+                    "text": "xx"
+                },
+                "footer": {
+                    "text": "xx"
+                },
+                "action": {
+                    "button": "xx",
+                    "sections": [
+                        {
+                            "title": "xx",
+                            "rows": [
+                                {
+                                    "id": "xx",
+                                    "title": "xx",
+                                    "description": "xx"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
+```
+
+```bash cURL
+curl --location 'https://api.onexaura.com/send_sms' \
+--header 'apikey: YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data '{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "interactive",
+            "interactive": {
+                "type": "list",
+                "header": {
+                    "type": "text",
+                    "text": "xx"
+                },
+                "body": {
+                    "text": "xx"
+                },
+                "footer": {
+                    "text": "xx"
+                },
+                "action": {
+                    "button": "xx",
+                    "sections": [
+                        {
+                            "title": "xx",
+                            "rows": [
+                                {
+                                    "id": "xx",
+                                    "title": "xx",
+                                    "description": "xx"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}'
+```
+
+</Tab>
+
+<Tab title="Media Carousel">
+
+Sends an interactive carousel of 2–10 cards, each with a media header and either a URL
+button or quick-reply buttons.
+
+<ParamField body="interactive.type" type="string" required>
+  Always `"carousel"`.
+</ParamField>
+<ParamField body="interactive.body.text" type="string" required>
+  Body text shown above the carousel.
+</ParamField>
+<ParamField body="interactive.action.cards" type="array" required>
+  Array of 2–10 card objects.
+</ParamField>
+<ParamField body="cards[].card_index" type="string" required>
+  Zero-based card position.
+</ParamField>
+<ParamField body="cards[].type" type="string" required>
+  `"cta_url"` when the card uses a URL button.
+</ParamField>
+<ParamField body="cards[].header.type" type="string" required>
+  Cards must use an `image` or `video` header — no other header types are supported.
+  Pass the media object under the matching key name.
+</ParamField>
+<ParamField body="cards[].body.text" type="string" required>
+  Card body text.
+</ParamField>
+<ParamField body="cards[].action.name" type="string">
+  `"cta_url"` — only when using a URL button.
+</ParamField>
+<ParamField body="cards[].action.parameters" type="object">
+  `display_text` and `url` — only when using a URL button.
+</ParamField>
+<ParamField body="cards[].action.buttons" type="array">
+  One or more quick-reply buttons — only when not using a URL button. Each entry:
+  `type: "quick_reply"`, `quick_reply: { id, title }`.
+</ParamField>
+
+<Note>
+All cards in a carousel must use the same button configuration: either every card has
+one URL button, or every card has the same number of quick-reply buttons.
+</Note>
+
+```json Request
+{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "interactive",
+            "interactive": {
+                "type": "carousel",
+                "body": {
+                    "text": "xx"
+                },
+                "action": {
+                    "cards": [
+                        {
+                            "card_index": "0",
+                            "type": "cta_url",
+                            "header": {
+                                "type": "image",
+                                "image": {
+                                    "link": "xx"
+                                }
+                            },
+                            "body": {
+                                "text": "xx"
+                            },
+                            "action": {
+                                "name": "cta_url",
+                                "parameters": {
+                                    "display_text": "xx",
+                                    "url": "xx"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
+```
+
+```bash cURL
+curl --location 'https://api.onexaura.com/send_sms' \
+--header 'apikey: YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data '{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "interactive",
+            "interactive": {
+                "type": "carousel",
+                "body": {
+                    "text": "xx"
+                },
+                "action": {
+                    "cards": [
+                        {
+                            "card_index": "0",
+                            "type": "cta_url",
+                            "header": {
+                                "type": "image",
+                                "image": {
+                                    "link": "xx"
+                                }
+                            },
+                            "body": {
+                                "text": "xx"
+                            },
+                            "action": {
+                                "name": "cta_url",
+                                "parameters": {
+                                    "display_text": "xx",
+                                    "url": "xx"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}'
+```
+
+</Tab>
+
+<Tab title="Reply">
+
+Sends an interactive message with up to 3 quick-reply buttons.
+
+<ParamField body="interactive.type" type="string" required>
+  Always `"button"`.
+</ParamField>
+<ParamField body="interactive.header.type" type="string">
+  Optional. `text`, `image`, `video`, or `document`. Pass the media object under the
+  matching key name, or a `text` string for a text header.
+</ParamField>
+<ParamField body="interactive.body.text" type="string" required>
+  Body text.
+</ParamField>
+<ParamField body="interactive.footer.text" type="string">
+  Optional footer text.
+</ParamField>
+<ParamField body="interactive.action.buttons" type="array" required>
+  Up to 3 button objects: `type: "reply"`, `reply: { id, title }`.
+</ParamField>
+
+```json Request
+{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "interactive",
+            "interactive": {
+                "type": "button",
+                "header": {
+                    "type": "image",
+                    "image": {
+                        "link": "xx"
+                    }
+                },
+                "body": {
+                    "text": "xx"
+                },
+                "footer": {
+                    "text": "xx"
+                },
+                "action": {
+                    "buttons": [
+                        {
+                            "type": "reply",
+                            "reply": {
+                                "id": "xx",
+                                "title": "xx"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
+```
+
+```bash cURL
+curl --location 'https://api.onexaura.com/send_sms' \
+--header 'apikey: YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data '{
+    "wa": [
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "recipient": "919999999999",
+            "sender": "919888888888",
+            "type": "interactive",
+            "interactive": {
+                "type": "button",
+                "header": {
+                    "type": "image",
+                    "image": {
+                        "link": "xx"
+                    }
+                },
+                "body": {
+                    "text": "xx"
+                },
+                "footer": {
+                    "text": "xx"
+                },
+                "action": {
+                    "buttons": [
+                        {
+                            "type": "reply",
+                            "reply": {
+                                "id": "xx",
+                                "title": "xx"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}'
+```
+
+</Tab>
+
+</Tabs>
+
+<Note>
+For sending approved template messages instead of session messages, see the
+Send Template Message page (owned separately in this documentation set).
+</Note>

@@ -1,0 +1,477 @@
+---
+title: "Send WhatsApp Template Message"
+description: "Send an approved WhatsApp template message — media/variable/button payloads, Authentication OTP, Limited Time Offer, and Media Card Carousel sends."
+---
+
+Use this endpoint to send an already-approved WhatsApp template to one or more recipients.
+Templates must first be created and approved via the
+[Create Template API](/api-reference/whatsapp/templates-create).
+
+## Endpoint
+
+```text
+POST /send_sms
+```
+
+<Note>
+The Postman collection's generic "Media, Variable, Button Payload" example posts to
+`{{domain}}/oapi/send_sms` instead of `/send_sms`. The source PDF's Authentication,
+Utility, and Marketing send examples all use `/send_sms`. Both paths appear in the source
+material — confirm which one is live for your account, or try `/send_sms` first since it
+is the path used consistently across the PDF guide.
+</Note>
+
+## Headers
+
+<ParamField header="apikey" type="string" required>
+  API key for the sending WhatsApp number's TUC.
+</ParamField>
+<ParamField header="Content-Type" type="string" required>
+  `application/json`
+</ParamField>
+
+## Request body
+
+<ParamField body="wa" type="array" required>
+  Wrapper array for one or more WhatsApp message objects (batch send).
+</ParamField>
+<ParamField body="wa[].messaging_product" type="string" required>
+  Always `"whatsapp"`.
+</ParamField>
+<ParamField body="wa[].recipient_type" type="string" required>
+  Always `"individual"`.
+</ParamField>
+<ParamField body="wa[].recipient" type="array" required>
+  Recipient phone number(s), without country prefix (prefix supplied separately via the
+  root-level `prefix` field).
+</ParamField>
+<ParamField body="wa[].sender" type="string" required>
+  Sender's registered WhatsApp number. A pool ID can also be passed here.
+</ParamField>
+<ParamField body="wa[].type" type="string" required>
+  Always `"template"`.
+</ParamField>
+<ParamField body="wa[].template.name" type="string" required>
+  Name of the approved WhatsApp template.
+</ParamField>
+<ParamField body="wa[].template.language.code" type="string" required>
+  Template language code, e.g. `en_US`.
+</ParamField>
+<ParamField body="wa[].template.components" type="array" required>
+  Defines all template components to fill in at send time (header, body, button
+  parameters). Shape depends on template type — see the tabs below.
+</ParamField>
+<ParamField body="wa[].custref1" type="string">
+  Optional custom reference field, echoed back in delivery callbacks. `custref1`–`custref5`
+  are all supported.
+</ParamField>
+<ParamField body="prefix" type="string">
+  Country prefix applied to all recipients, e.g. `+91`.
+</ParamField>
+<ParamField body="campaignName" type="string">
+  Optional campaign label for reporting.
+</ParamField>
+<ParamField body="message_send_ttl_seconds" type="integer">
+  Time-to-live in seconds for the message send. Default `600`.
+</ParamField>
+<ParamField body="urlShortener" type="object">
+  Optional URL-shortening configuration for links in the message body.
+  <Expandable title="urlShortener">
+    <ParamField body="urlShortener.flag" type="integer" required>
+      Set to `1` to enable URL shortening.
+    </ParamField>
+    <ParamField body="urlShortener.urlDetails" type="array" required>
+      Array of URLs to shorten.
+      <Expandable title="urlDetails[]">
+        <ParamField body="urlDetails[].longUrl" type="string" required>
+          The full URL to shorten. Mandatory when `flag` is `1`.
+        </ParamField>
+        <ParamField body="urlDetails[].domain" type="string">
+          Optional custom short-link domain.
+        </ParamField>
+        <ParamField body="urlDetails[].track_user" type="integer">
+          Optional flag (`1`) to enable per-user click tracking.
+        </ParamField>
+      </Expandable>
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## cURL
+
+```bash
+curl --location 'https://api.onexaura.com/send_sms' \
+--header 'Content-Type: application/json' \
+--header 'apikey: YOUR_API_KEY' \
+--data '{
+  "wa": [
+    {
+      "messaging_product": "whatsapp",
+      "recipient": ["919999999999"],
+      "sender": "919888888888",
+      "type": "template",
+      "template": {
+        "name": "onextel_warcs",
+        "language": { "code": "en_US" }
+      }
+    }
+  ],
+  "prefix": "+91"
+}'
+```
+
+## Response
+
+```json
+[
+  {
+    "messageId": "35NIvS1Ry8m1RWUylXbgESEOqRi",
+    "code": 200,
+    "status": "success",
+    "recipient": "919999999999",
+    "sender": "919888888888",
+    "custref1": "custref1",
+    "custref2": "custref2",
+    "custref3": "",
+    "custref4": "",
+    "custref5": ""
+  }
+]
+```
+
+<Note>
+The response is an array with one entry per recipient. Which fields appear depends on
+the fields enabled for your TUC — the source shows two examples: one with `custref`,
+`recipient`, and `sender` enabled, and one with only `recipient` and `sender` enabled.
+</Note>
+
+<ResponseField name="messageId" type="string">
+  Unique message ID assigned by the platform. Use with the Status Check API to track
+  delivery.
+</ResponseField>
+<ResponseField name="code" type="integer">
+  Status code. `200` on successful submission.
+</ResponseField>
+<ResponseField name="status" type="string">
+  `"success"` on successful submission.
+</ResponseField>
+<ResponseField name="recipient" type="string">
+  Recipient phone number (only present if enabled for your TUC).
+</ResponseField>
+<ResponseField name="sender" type="string">
+  Sender WhatsApp number (only present if enabled for your TUC).
+</ResponseField>
+<ResponseField name="custref1" type="string">
+  Echoed custom reference field 1–5, if supplied on the request and enabled for your TUC.
+</ResponseField>
+
+## Send payload variants
+
+<Tabs>
+
+<Tab title="Media / Variable / Button">
+General-purpose template send with an image header, a body text variable, a quick-reply
+button, and a URL button.
+
+```json
+{
+  "wa": [
+    {
+      "messaging_product": "whatsapp",
+      "recipient_type": "individual",
+      "recipient": ["919999999999", "919888888888"],
+      "sender": "919777777777",
+      "type": "template",
+      "template": {
+        "name": "utility_image_with_params",
+        "language": { "code": "en_US" },
+        "components": [
+          {
+            "type": "header",
+            "parameters": [
+              {
+                "type": "image",
+                "image": { "link": "https://example.com/banner.jpg" }
+              }
+            ]
+          },
+          {
+            "type": "body",
+            "parameters": [
+              { "type": "text", "text": "Rahul" }
+            ]
+          },
+          {
+            "type": "button",
+            "sub_type": "quick_reply",
+            "index": 0,
+            "parameters": [
+              { "type": "payload", "payload": "confirm_order" }
+            ]
+          },
+          {
+            "type": "button",
+            "sub_type": "url",
+            "index": 1,
+            "parameters": [
+              { "type": "text", "text": "order-123" }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "prefix": "+91",
+  "campaignName": "diwali_promo",
+  "urlShortener": {
+    "flag": 1,
+    "urlDetails": [
+      { "longUrl": "https://example.com/order/123", "domain": "short.ly", "track_user": 1 }
+    ]
+  }
+}
+```
+
+<Note>
+Header `image` parameters accept either `"link"` (remote URL) or `"id"` (media ID from
+[Media Upload](/api-reference/whatsapp/media)). The header `type` can be `text`, `image`,
+`video`, `document`, or `location`. The button `index` is the zero-based position of that
+button within the template's `BUTTONS` array — a `quick_reply` sub-type must match a
+`QUICK_REPLY` button at that index, and a `url` sub-type must match a `URL` button.
+</Note>
+</Tab>
+
+<Tab title="Authentication (OTP)">
+Sends a Zero Tap / One Tap / Copy Code authentication template. All three OTP variants
+share the same send-time payload shape — only the template's own button configuration
+(set at template-creation time) differs.
+
+<ParamField body="components[].type" type="string">
+  `body` component carries the OTP code as a `text` parameter; `button` component
+  (`sub_type: "url"`) carries the same code appended to the button's OTP URL.
+</ParamField>
+
+```json
+{
+  "wa": [
+    {
+      "messaging_product": "whatsapp",
+      "recipient": ["919999999999"],
+      "sender": "919888888888",
+      "recipient_type": "individual",
+      "type": "template",
+      "template": {
+        "name": "zero_tap_authentication_temp_3",
+        "language": { "code": "en_US" },
+        "components": [
+          {
+            "type": "body",
+            "parameters": [
+              { "type": "text", "text": "123490" }
+            ]
+          },
+          {
+            "type": "button",
+            "sub_type": "url",
+            "index": "0",
+            "parameters": [
+              { "type": "text", "text": "1234567890" }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "prefix": "+91"
+}
+```
+
+Endpoint for Authentication sends: `POST /send_sms` (per the source PDF).
+</Tab>
+
+<Tab title="Limited Time Offer">
+Sends an LTO template with an image/video header, an expiration timestamp, a copy-code
+button, and a URL button.
+
+<ParamField body="components[].type" type="string" required>
+  Includes a `limited_time_offer` component in addition to `header`, `body`, and `button`.
+</ParamField>
+<ParamField body="limited_time_offer.expiration_time_ms" type="integer" required>
+  UNIX timestamp in milliseconds marking when the offer expires.
+</ParamField>
+<ParamField body="button.sub_type" type="string">
+  `copy_code` for the coupon button (`parameters[].type: "coupon_code"`), `url` for the
+  shop-now button.
+</ParamField>
+
+```json
+{
+  "wa": [
+    {
+      "messaging_product": "whatsapp",
+      "recipient": ["919999999999"],
+      "sender": "919888888888",
+      "recipient_type": "individual",
+      "type": "template",
+      "template": {
+        "name": "lto_03",
+        "language": { "code": "en_US" },
+        "components": [
+          {
+            "type": "header",
+            "parameters": [
+              {
+                "type": "image",
+                "image": { "url": "https://example.com/offer-image.jpg" }
+              }
+            ]
+          },
+          {
+            "type": "body",
+            "parameters": [
+              { "type": "text", "text": "Priya" }
+            ]
+          },
+          {
+            "type": "limited_time_offer",
+            "parameters": [
+              {
+                "type": "limited_time_offer",
+                "limited_time_offer": {
+                  "expiration_time_ms": 1767225600000
+                }
+              }
+            ]
+          },
+          {
+            "type": "button",
+            "sub_type": "copy_code",
+            "index": 0,
+            "parameters": [
+              { "type": "coupon_code", "coupon_code": "SAVE25" }
+            ]
+          },
+          {
+            "type": "button",
+            "sub_type": "url",
+            "index": 1,
+            "parameters": [
+              { "type": "text", "text": "https://example.com/shop?offer=SAVE25" }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "prefix": "+91",
+  "campaignName": "lto_campaign",
+  "urlShortener": {
+    "flag": 1,
+    "urlDetails": [
+      { "longUrl": "https://example.com/shop?offer=SAVE25", "domain": "short.ly", "track_user": 1 }
+    ]
+  }
+}
+```
+</Tab>
+
+<Tab title="Media Card Carousel">
+Sends a carousel template. The top-level `body` component can carry multiple text
+parameters; each card in the `carousel` array is addressed by `card_index` and carries
+its own header, body, and button parameters.
+
+<ParamField body="components[].type" type="string" required>
+  Top level: `body` and `carousel`. Within each card: `header`, `body`, `button`.
+</ParamField>
+<ParamField body="carousel.cards[].card_index" type="integer" required>
+  Zero-based index identifying which carousel card these parameters apply to.
+</ParamField>
+
+```json
+{
+  "wa": [
+    {
+      "messaging_product": "whatsapp",
+      "recipient": ["919999999999"],
+      "sender": "919888888888",
+      "recipient_type": "individual",
+      "type": "template",
+      "template": {
+        "name": "carousel_marketing_01",
+        "language": { "code": "en_US" },
+        "components": [
+          {
+            "type": "body",
+            "parameters": [
+              { "type": "text", "text": "Rahul" },
+              { "type": "text", "text": "20%" }
+            ]
+          },
+          {
+            "type": "carousel",
+            "cards": [
+              {
+                "card_index": 0,
+                "components": [
+                  {
+                    "type": "header",
+                    "parameters": [
+                      {
+                        "type": "image",
+                        "image": { "url": "https://example.com/card1.jpg" }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "body",
+                    "parameters": [
+                      { "type": "text", "text": "Product A" }
+                    ]
+                  },
+                  {
+                    "type": "button",
+                    "sub_type": "quick_reply",
+                    "index": 0,
+                    "parameters": [
+                      { "type": "payload", "payload": "product_a" }
+                    ]
+                  },
+                  {
+                    "type": "button",
+                    "sub_type": "url",
+                    "index": 1,
+                    "parameters": [
+                      { "type": "text", "text": "product-a" }
+                    ]
+                  }
+                ]
+              }
+              // Additional cards follow the same structure, each with its own card_index
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "prefix": "+91",
+  "campaignName": "carousel_campaign",
+  "urlShortener": {
+    "flag": 1,
+    "urlDetails": [
+      { "longUrl": "https://example.com/product/a", "domain": "short.ly", "track_user": 1 }
+    ]
+  }
+}
+```
+</Tab>
+
+</Tabs>
+
+## Related
+
+- [Create WhatsApp Template](/api-reference/whatsapp/templates-create) — create and get a
+  template approved before sending it.
+- [Fetch WhatsApp Templates](/api-reference/whatsapp/templates-fetch) — confirm a
+  template's approval status.
+- [Media](/api-reference/whatsapp/media) — upload media to obtain a `media_id` for header
+  parameters.

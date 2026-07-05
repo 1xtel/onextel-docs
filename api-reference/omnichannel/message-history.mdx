@@ -1,0 +1,67 @@
+---
+title: "Message History"
+description: "Query historical message records with filters for channel, duration, status, and message type."
+---
+
+The Message History endpoint returns historical message records, filterable by
+channel, time window, status, and message type.
+
+## Endpoint
+
+```
+GET https://api.onexaura.com/history
+```
+
+<Note>
+This endpoint uses `noauth` in the Postman collection (no `apikey` header) — the API
+key is instead passed as the `apiKey` query parameter.
+</Note>
+
+## Query parameters
+
+<ParamField query="apiKey" type="string" required>
+  API key issued by OneXtel, used for authentication.
+</ParamField>
+
+<ParamField query="channel" type="string" required>
+  Channel to query.
+</ParamField>
+
+<ParamField query="duration" type="number" required>
+  Lookback window in days, e.g. `7`.
+</ParamField>
+
+<ParamField query="page" type="number" required>
+  Page number for paginated results.
+</ParamField>
+
+<ParamField query="limit" type="number" required>
+  Number of results to return per page.
+</ParamField>
+
+<ParamField query="type" type="string" required>
+  Comma-separated message types to filter by, e.g. `template,nontemplate`.
+</ParamField>
+
+<ParamField query="phoneNumber" type="string">
+  Recipient phone number to filter by.
+</ParamField>
+
+<ParamField query="status" type="string">
+  Comma-separated delivery statuses to filter by, e.g. `sent,delivered,read,failed`.
+</ParamField>
+
+## Example request
+
+```bash cURL
+curl --request GET \
+  --url 'https://api.onexaura.com/history?apiKey=YOUR_API_KEY&channel=wa&duration=7&page=1&limit=1&type=template,nontemplate&phoneNumber=919999999999&status=sent,delivered,read,failed'
+```
+
+## Response
+
+<Warning>
+The OneXtel Postman collection does not include a saved example response for this
+endpoint. Response fields below are not documented in the source — verify the actual
+response shape against a live call before relying on it.
+</Warning>

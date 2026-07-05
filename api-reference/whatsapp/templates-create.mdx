@@ -1,0 +1,801 @@
+---
+title: "Create WhatsApp Template"
+description: "Create WhatsApp message templates on the OnexAura platform — Authentication, Utility, Marketing, Limited Time Offer, Carousel, Product Message, Flows, and Order templates."
+---
+
+Use this endpoint to submit a new WhatsApp message template for Meta approval. Templates
+are reusable message layouts (body, header, footer, buttons) that must be approved before
+they can be sent to recipients via the [Send Template Message API](/api-reference/whatsapp/send-template-message).
+
+## Endpoint
+
+```text
+POST /wa/templates
+```
+
+<Note>
+The Postman collection sends this request as `{{domain}}/wa/templates` with
+`Content-Type: multipart/form-data`, where the template JSON is passed as a form field
+named `data` alongside a `waba_id` form field. The source PDF's cURL examples match this
+shape exactly.
+</Note>
+
+## Headers
+
+<ParamField header="apikey" type="string" required>
+  API key generated for the TUC (telecom user connection) associated with the sending
+  WhatsApp phone number. Example: `7pvxoA4c`.
+</ParamField>
+<ParamField header="accept" type="string">
+  `application/json`
+</ParamField>
+
+## Request body (multipart/form-data)
+
+<ParamField body="data" type="string" required>
+  JSON-encoded string containing the template payload (name, category, language,
+  components, etc. — see below). Sent as a form field, not raw JSON.
+</ParamField>
+<ParamField body="waba_id" type="string" required>
+  WhatsApp Business Account ID the template is created under.
+</ParamField>
+<ParamField body="update_by" type="string">
+  Free-text string. Shown in the source's reconstructed cURL as an additional form field;
+  purpose is not documented further.
+</ParamField>
+
+## Common fields inside `data`
+
+Every template category shares this envelope:
+
+<ParamField body="name" type="string" required>
+  Unique template name in the Meta Cloud API. Should be descriptive of the template's
+  purpose (e.g. `zero_tap_authentication_temp_3`).
+</ParamField>
+<ParamField body="category" type="string" required>
+  Template category: `AUTHENTICATION`, `UTILITY`, or `MARKETING`.
+</ParamField>
+<ParamField body="language" type="string" required>
+  Template language code per ISO (e.g. `en_US`).
+</ParamField>
+<ParamField body="components" type="array" required>
+  Array of component objects — combinations of `HEADER`, `BODY`, `FOOTER`, `BUTTONS`,
+  `LIMITED_TIME_OFFER`, and `CAROUSEL`, depending on template type. See the tabs below.
+</ParamField>
+<ParamField body="parameter_format" type="string">
+  Determines how body/header variables are referenced. `POSITIONAL` (default, e.g. `{{1}}`)
+  or `NAMED` (e.g. `{{customer_name}}`).
+</ParamField>
+<ParamField body="message_send_ttl_seconds" type="integer">
+  Time-to-live for the message in seconds. Range varies by category: Authentication 30
+  seconds–15 minutes; Utility 30 seconds–12 hours; Marketing/LTO/Carousel 12 hours–30 days
+  (30-day maximum applies only for MM Lite).
+</ParamField>
+<ParamField body="sub_category" type="string">
+  Only used for `ORDER_STATUS` and `ORDER_DETAILS` utility templates — see those tabs.
+</ParamField>
+
+## cURL
+
+```bash
+curl --location 'https://api.onexaura.com/wa/templates' \
+--header 'accept: application/json' \
+--header 'apiKey: YOUR_API_KEY' \
+--form 'data="{
+  \"name\": \"utility_image_2\",
+  \"category\": \"UTILITY\",
+  \"language\": \"en_US\",
+  \"components\": [
+    {
+      \"type\": \"HEADER\",
+      \"format\": \"IMAGE\",
+      \"example\": { \"media_id\": \"(Media_ID)\" }
+    },
+    {
+      \"text\": \"Hello {{1}}, your account balance is {{2}} as of now Please check your latest statement.\",
+      \"type\": \"BODY\",
+      \"example\": { \"body_text\": [[\"customer_name\", \"amount\"]] }
+    },
+    {
+      \"text\": \"Welcome To OneXtel LTD\",
+      \"type\": \"FOOTER\"
+    }
+  ],
+  \"parameter_format\": \"POSITIONAL\"
+}"' \
+--form 'waba_id="YOUR_WABA_ID"' \
+--form 'update_by="string"'
+```
+
+<Note>
+Media headers accept either `"example": {"media_id": "..."}` (generated via the
+[Media Upload API](/api-reference/whatsapp/media)) or `"example": {"url": "..."}` for a
+remote file.
+</Note>
+
+## Response
+
+```json
+{
+  "status": 200,
+  "description": {
+    "message": "success"
+  }
+}
+```
+
+<ResponseField name="status" type="integer">
+  HTTP-style status code. `200` on success.
+</ResponseField>
+<ResponseField name="description" type="object">
+  Wrapper object for the result message.
+  <Expandable title="description">
+    <ResponseField name="description.message" type="string">
+      `"success"` on success, or an error description on failure (see
+      [Delete Template](#) error shape for the equivalent 400 response format
+      documented in the source: `"Required fields are missing, or the template does not exist."`).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<Note>
+The source PDF does not show a create-template success/failure response body distinct
+from the Delete Template API's. The 200/400 shape above is carried over from the Delete
+Template API documentation in the same guide, since no separate Create Template response
+sample was given.
+</Note>
+
+## Template types
+
+<Tabs>
+
+<Tab title="Authentication">
+Used for OTP delivery. Reference: [Meta authentication templates](https://developers.facebook.com/docs/whatsapp/business-management-api/authentication-templates).
+
+Components: `BODY` (optional, `add_security_recommendation`), `FOOTER` (optional,
+`code_expiration_minutes`), `BUTTONS` (required — one OTP button).
+
+<ParamField body="components[].add_security_recommendation" type="boolean">
+  Adds a security note below the OTP message (recommended). Set on the `BODY` component.
+</ParamField>
+<ParamField body="components[].code_expiration_minutes" type="integer">
+  OTP code validity in minutes. Set on the `FOOTER` component; required only if the OTP has
+  an expiry.
+</ParamField>
+<ParamField body="buttons[].otp_type" type="string" required>
+  `ZERO_TAP`, `ONE_TAP`, or `COPY_CODE`.
+</ParamField>
+<ParamField body="buttons[].text" type="string" required>
+  Button label, e.g. `"Copy Code"`.
+</ParamField>
+<ParamField body="buttons[].autofill_text" type="string">
+  Autofill button label. Used with `ONE_TAP` / `ZERO_TAP`.
+</ParamField>
+<ParamField body="buttons[].package_name" type="string">
+  Android app package identifier the OTP is generated for. Required for `ONE_TAP` /
+  `ZERO_TAP` (recommended).
+</ParamField>
+<ParamField body="buttons[].signature_hash" type="string">
+  Base64 or URL-encoded app signature hash used to verify app integrity. Required for
+  `ONE_TAP` / `ZERO_TAP` (recommended).
+</ParamField>
+<ParamField body="buttons[].zero_tap_terms_accepted" type="boolean">
+  Only for `ZERO_TAP`.
+</ParamField>
+
+| Template type | otp_type | Extra params | Expiry | Description |
+| --- | --- | --- | --- | --- |
+| Zero Tap AutoFill | `ZERO_TAP` | `package_name`, `signature_hash`, `cta_display_name` | Recommended | Automatically fills OTP when device matches app signature. |
+| One Tap AutoFill | `ONE_TAP` | `package_name`, `signature_hash`, `cta_display_name` | Recommended | Autofill available after user taps once in the UI. |
+| Copy Code | `COPY_CODE` | None | Recommended | User copies OTP manually to enter in the app. |
+
+**Example — Zero Tap AutoFill (with expiry)**
+
+```json
+{
+  "name": "zero_tap_authentication_temp_3",
+  "category": "AUTHENTICATION",
+  "language": "en_US",
+  "components": [
+    {
+      "type": "BODY",
+      "add_security_recommendation": true
+    },
+    {
+      "type": "FOOTER",
+      "code_expiration_minutes": 10
+    },
+    {
+      "type": "BUTTONS",
+      "buttons": [
+        {
+          "url": "https://www.whatsapp.com/otp/code/?otp_type=ZERO_TAP&cta_display_name=Autofill&package_name=com.example.authentication&signature_hash=123456789qw&code_expiration_minutes=10&code=otp{{1}}",
+          "text": "Copy Code",
+          "type": "URL",
+          "example": [
+            "https://www.whatsapp.com/otp/code/?otp_type=ZERO_TAP&cta_display_name=Autofill&package_name=com.example.authentication&signature_hash=123456789qw&code_expiration_minutes=10&code=otp123456"
+          ]
+        }
+      ]
+    }
+  ],
+  "parameter_format": "POSITIONAL",
+  "message_send_ttl_seconds": 600
+}
+```
+
+The Postman collection's minimal Authentication example uses a simpler button shape:
+
+```json
+{
+  "name": "xx",
+  "language": "en_US",
+  "category": "authentication",
+  "components": [
+    {
+      "type": "BUTTONS",
+      "buttons": [
+        {
+          "type": "otp",
+          "otp_type": "copy_code",
+          "text": "xx"
+        }
+      ]
+    }
+  ]
+}
+```
+</Tab>
+
+<Tab title="Utility">
+Reference: [Meta utility templates](https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/utility-templates).
+
+Components: `HEADER` (optional — text, location, or media), `BODY` (required), `FOOTER`
+(optional), `BUTTONS` (optional, max 10; quick-reply and non-quick-reply buttons must be
+grouped separately or the API returns an invalid-combination error).
+
+Supported button types: `URL` (requires `url`, `text`), `PHONE_NUMBER` (requires
+`phone_number`, `text`), `QUICK_REPLY` (requires `text`), `FLOW` (requires `flow_id`,
+`flow_action`, `navigate_screen`), `ORDER_STATUS` (requires `text`),
+`ORDER_DETAILS` (requires `text`).
+
+**Header variants**
+
+```json
+// Text header
+{ "type": "header", "format": "text", "text": "xx", "example": { "header_text": ["xx"] } }
+
+// Location header (no example needed)
+{ "type": "header", "format": "location" }
+
+// Media header (image, video, or document — media_id or url)
+{ "type": "header", "format": "image", "example": { "url": "xx" } }
+```
+
+**Body with header image and buttons — full example**
+
+```json
+{
+  "name": "image_utility_with_params",
+  "category": "UTILITY",
+  "language": "en",
+  "components": [
+    {
+      "type": "HEADER",
+      "format": "IMAGE",
+      "example": { "media_id": "<Media_ID>" }
+    },
+    {
+      "text": "Hello {{1}}, your order #{{2}} has been placed successfully. It will be delivered by {{3}}. Track your order anytime from our app or website.",
+      "type": "BODY",
+      "example": {
+        "body_text": [["Customer_name", "order_id", "date"]]
+      }
+    },
+    {
+      "text": "Welcome To OneXtel LTD",
+      "type": "FOOTER"
+    },
+    {
+      "type": "BUTTONS",
+      "buttons": [
+        { "url": "https://fdqn/<URL>", "text": "Visit website", "type": "URL" },
+        { "text": "Quick Reply", "type": "QUICK_REPLY" }
+      ]
+    }
+  ],
+  "parameter_format": "POSITIONAL"
+}
+```
+
+**Parameter format examples**
+
+```json
+// Positional – Header
+"example": { "header_text": ["xx"] }
+
+// Named – Header
+"example": { "header_text_named_params": [{ "param_name": "xx", "example": "xx" }] }
+
+// Positional – Body
+"example": { "body_text": ["xx"] }
+
+// Named – Body
+"example": { "body_text_named_params": [{ "param_name": "xx", "example": "xx" }] }
+
+// Positional – URL Button
+"example": ["xx"]
+
+// Named – URL Button
+"example": [{ "param_name": "xx", "example": "xx" }]
+```
+</Tab>
+
+<Tab title="Marketing">
+Reference: [Meta custom marketing templates](https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/custom-marketing-templates).
+
+Components: `header` (optional — text, location, or media), `body` (required), `footer`
+(optional), `buttons` (optional, max 10, same quick-reply grouping rule as Utility).
+
+Button types include `PHONE_NUMBER`, `URL`, `QUICK_REPLY`, and `COPY_CODE`.
+
+```json
+{
+  "name": "image_marketing",
+  "category": "MARKETING",
+  "language": "en_US",
+  "components": [
+    {
+      "type": "HEADER",
+      "format": "IMAGE",
+      "example": { "media_id": "<Media_ID>" }
+    },
+    {
+      "text": "Hi {{1}}, exciting news! Your Fresh Basket shopping unlocks a special treat. Enjoy {{2}} exclusive discount on your next order and keep the savings rolling.",
+      "type": "BODY",
+      "example": { "body_text": [["name", "offer"]] }
+    },
+    {
+      "text": "Fresh Basket - Freshness with Rewards",
+      "type": "FOOTER"
+    },
+    {
+      "type": "BUTTONS",
+      "buttons": [
+        { "text": "Call phone number", "type": "PHONE_NUMBER", "phone_number": "+91**********" }
+      ]
+    }
+  ],
+  "parameter_format": "POSITIONAL"
+}
+```
+
+`message_send_ttl_seconds` for Marketing ranges 12 hours to 30 days (30-day maximum
+applies only for MM Lite).
+</Tab>
+
+<Tab title="Limited Time Offer">
+Reference: [Meta limited-time offer templates](https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/limited-time-offer-templates).
+
+Components: `header` (optional — image or video only), `limited_time_offer` (mandatory),
+`buttons` (fixed shape — one `copy_code` and one `url` button). Do not include a footer
+component for LTO templates.
+
+<ParamField body="components[].limited_time_offer.text" type="string" required>
+  Display text for the offer banner.
+</ParamField>
+<ParamField body="components[].limited_time_offer.has_expiration" type="boolean">
+  Whether the offer expires. Defaults to `false`.
+</ParamField>
+
+```json
+{
+  "name": "lto_template_1",
+  "language": "en_US",
+  "category": "LTO",
+  "parameter_format": "POSITIONAL",
+  "message_send_ttl_seconds": 600,
+  "components": [
+    {
+      "type": "header",
+      "format": "image",
+      "example": { "url": "https://example.com/offer-image.jpg" }
+    },
+    {
+      "type": "limited_time_offer",
+      "limited_time_offer": {
+        "text": "Get 20% off on all products until midnight!",
+        "has_expiration": true
+      }
+    },
+    {
+      "type": "buttons",
+      "buttons": [
+        { "type": "copy_code", "example": "OFFER20" },
+        {
+          "type": "url",
+          "text": "Shop Now",
+          "url": "https://example.com/shop",
+          "example": ["https://example.com/shop?offer=OFFER20"]
+        }
+      ]
+    }
+  ]
+}
+```
+
+<Note>
+The Postman collection's LTO example sets `"category": "marketing"` (not `LTO`) in the
+`data` payload. The source PDF's dedicated "Example Request Payload" section uses
+`"category": "LTO"`. Both are shown here; confirm which value your WABA setup expects
+before submitting.
+</Note>
+</Tab>
+
+<Tab title="Media Card Carousel">
+Reference: [Meta media card carousel templates](https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/media-card-carousel-templates).
+
+Components: `body` (required), `carousel` (required — at least 2 cards). Each card must
+have the same button type across all cards (Quick Reply, URL, or Phone Number), 1–2
+buttons per card, and an Image or Video header per card.
+
+<ParamField body="cards" type="array" required>
+  Array of card objects, each with its own `components` (header + buttons).
+</ParamField>
+<ParamField body="cards[].components[].format" type="string" required>
+  `image` or `video` for the card header.
+</ParamField>
+
+```json
+{
+  "name": "template_name",
+  "language": "en_US",
+  "category": "MARKETING",
+  "parameter_format": "POSITIONAL",
+  "message_send_ttl_seconds": 43200,
+  "components": [
+    {
+      "type": "body",
+      "text": "xx",
+      "example": { "body_text": ["xx"] }
+    },
+    {
+      "type": "carousel",
+      "cards": [
+        {
+          "components": [
+            {
+              "type": "header",
+              "format": "image",
+              "example": { "url": "xx" }
+            },
+            {
+              "type": "buttons",
+              "buttons": [
+                { "type": "quick_reply", "text": "xx" },
+                { "type": "url", "text": "xx", "url": "xx", "example": ["xx"] },
+                { "type": "phone_number", "text": "xx", "phone_number": "xx" }
+              ]
+            }
+          ]
+        }
+        // Additional cards follow the same structure
+      ]
+    }
+  ]
+}
+```
+</Tab>
+
+<Tab title="Single Product Message">
+Reference: [Meta SPM templates](https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/spm-templates).
+
+Components: `header` (mandatory, `format: "product"`), `body` (required), `footer`
+(optional), `buttons` (fixed — one `spm` button).
+
+```json
+{
+  "name": "spm_marketing",
+  "category": "MARKETING",
+  "language": "en_US",
+  "components": [
+    {
+      "text": "Use code {{1}} to get {{2}} off our newest succulent!",
+      "type": "BODY",
+      "example": { "body_text": [["offer_code", "offer_discount"]] }
+    },
+    {
+      "type": "CAROUSEL",
+      "cards": [
+        {
+          "components": [
+            { "type": "HEADER", "format": "PRODUCT" },
+            { "type": "BUTTONS", "buttons": [{ "text": "View", "type": "SPM" }] }
+          ]
+        },
+        {
+          "components": [
+            { "type": "HEADER", "format": "PRODUCT" },
+            { "type": "BUTTONS", "buttons": [{ "text": "View", "type": "SPM" }] }
+          ]
+        }
+      ]
+    }
+  ],
+  "parameter_format": "POSITIONAL"
+}
+```
+
+<Note>
+The source PDF's Single Product Message example uses a `CAROUSEL` component with
+`PRODUCT`-format cards (shown above). The Postman collection's Single Product Message
+request instead shows a flatter shape without a carousel:
+
+```json
+{
+  "name": "xx",
+  "category": "marketing",
+  "language": "xx",
+  "parameter_format": "POSITIONAL",
+  "components": [
+    { "type": "HEADER", "format": "PRODUCT" },
+    {
+      "type": "BODY",
+      "text": "xx",
+      "example": { "body_text": [["xx"]] }
+    },
+    {
+      "type": "BUTTONS",
+      "buttons": [{ "type": "SPM", "text": "xx" }]
+    }
+  ]
+}
+```
+
+Both are documented here as a discrepancy — confirm with a test submission which shape
+your WABA accepts.
+</Note>
+</Tab>
+
+<Tab title="Multi Product Message">
+Components: `HEADER` (`format: "TEXT"`, with caption text), `BODY` (required), `FOOTER`
+(optional), `BUTTONS` (fixed — one `MPM` button).
+
+```json
+{
+  "name": "mpm_marketing_02",
+  "category": "MARKETING",
+  "language": "en_US",
+  "components": [
+    {
+      "text": "your catlog",
+      "type": "HEADER",
+      "format": "TEXT"
+    },
+    {
+      "text": "Hi {{1}}, explore our exclusive collection of {{2}} just for you! Browse through our handpicked items and find the perfect choice today.",
+      "type": "BODY",
+      "example": {
+        "body_text": [["customer", "product"]]
+      }
+    },
+    {
+      "text": "Tap below to view our full collection",
+      "type": "FOOTER"
+    },
+    {
+      "type": "BUTTONS",
+      "buttons": [
+        { "text": "View items", "type": "MPM" }
+      ]
+    }
+  ],
+  "parameter_format": "POSITIONAL"
+}
+```
+</Tab>
+
+<Tab title="Flows">
+Components: `BODY` (required), `FOOTER` (optional), `BUTTONS` (fixed — one `FLOW` button).
+
+<ParamField body="buttons[].flow_id" type="string" required>
+  Flow ID issued by Meta.
+</ParamField>
+<ParamField body="buttons[].flow_action" type="string" required>
+  `NAVIGATE` or `LAUNCH`.
+</ParamField>
+<ParamField body="buttons[].navigate_screen" type="string">
+  Screen identifier to navigate to (used with `NAVIGATE`).
+</ParamField>
+
+**Utility category**
+
+```json
+{
+  "name": "flows_template_utility_02",
+  "category": "UTILITY",
+  "language": "en_US",
+  "components": [
+    {
+      "text": "Hi {{1}}, your registration is pending. Please complete it",
+      "type": "BODY",
+      "example": { "body_text": [["customer"]] }
+    },
+    {
+      "text": "We will share the details of the application soon.",
+      "type": "FOOTER"
+    },
+    {
+      "type": "BUTTONS",
+      "buttons": [
+        {
+          "text": "View Flow",
+          "type": "FLOW",
+          "flow_id": "805389128575872",
+          "flow_action": "NAVIGATE",
+          "navigate_screen": "JOIN_NOW"
+        }
+      ]
+    }
+  ],
+  "parameter_format": "POSITIONAL"
+}
+```
+
+**Marketing category**
+
+```json
+{
+  "name": "flows_template_marketing",
+  "category": "MARKETING",
+  "language": "en_US",
+  "components": [
+    {
+      "text": "Hi {{1}}, complete your registration in just a few steps!",
+      "type": "BODY",
+      "example": { "body_text": [["customer"]] }
+    },
+    {
+      "text": "Join now and get exclusive benefits.",
+      "type": "FOOTER"
+    },
+    {
+      "type": "BUTTONS",
+      "buttons": [
+        {
+          "text": "View Flow",
+          "type": "FLOW",
+          "flow_id": "805389128575872",
+          "flow_action": "NAVIGATE",
+          "navigate_screen": "RECOMMEND"
+        }
+      ]
+    }
+  ],
+  "parameter_format": "POSITIONAL"
+}
+```
+</Tab>
+
+<Tab title="Complete Flow">
+Same shape as the Flows tab's Marketing example — Postman's "Complete Flow" request is a
+`MARKETING` category flow template. Included separately here because the Postman
+collection lists it as its own folder entry, distinct from "Flows-utility".
+
+```json
+{
+  "name": "flows_template_marketing",
+  "category": "MARKETING",
+  "language": "en_US",
+  "components": [
+    {
+      "text": "Hi {{1}}, complete your registration in just a few steps!",
+      "type": "BODY",
+      "example": { "body_text": [["customer"]] }
+    },
+    {
+      "text": "Join now and get exclusive benefits.",
+      "type": "FOOTER"
+    },
+    {
+      "type": "BUTTONS",
+      "buttons": [
+        {
+          "text": "View Flow",
+          "type": "FLOW",
+          "flow_id": "805389128575872",
+          "flow_action": "NAVIGATE",
+          "navigate_screen": "RECOMMEND"
+        }
+      ]
+    }
+  ],
+  "parameter_format": "POSITIONAL"
+}
+```
+</Tab>
+
+<Tab title="Order Status">
+`UTILITY` category with `"sub_category": "ORDER_STATUS"`. Components: `BODY` (required),
+`FOOTER` (optional). No buttons required in the create payload — the `ORDER_STATUS`
+button type is used at send time, not creation time, per the source's button-type table.
+
+<ParamField body="sub_category" type="string" required>
+  Must be `ORDER_STATUS`.
+</ParamField>
+
+```json
+{
+  "name": "order_status_test1",
+  "category": "UTILITY",
+  "language": "en_US",
+  "components": [
+    {
+      "text": "Hello {{1}}, your order #{{2}} is currently {{3}}. We will notify you once it is updated.",
+      "type": "BODY",
+      "example": {
+        "body_text": [["firdous", "1234", "booked"]]
+      }
+    },
+    {
+      "text": "thank you for shopping with us",
+      "type": "FOOTER"
+    }
+  ],
+  "sub_category": "ORDER_STATUS",
+  "parameter_format": "POSITIONAL"
+}
+```
+</Tab>
+
+<Tab title="Order Details">
+`UTILITY` category with `"sub_category": "ORDER_DETAILS"`. Components: `BODY` (required),
+`FOOTER` (optional), `BUTTONS` (one `ORDER_DETAILS` button, labeled e.g. "Review and Pay").
+
+<ParamField body="sub_category" type="string" required>
+  Must be `ORDER_DETAILS`.
+</ParamField>
+<ParamField body="buttons[].type" type="string" required>
+  `ORDER_DETAILS`.
+</ParamField>
+
+```json
+{
+  "name": "order_details_test",
+  "category": "UTILITY",
+  "language": "en",
+  "components": [
+    {
+      "text": "Hello {{1}}, thank you for your purchase! Here are the details of your order #{{2}}: Product: {{3}} Quantity: {{4}} Total Price: {{5}} We will notify you once your order is ready for shipping.",
+      "type": "BODY",
+      "example": {
+        "body_text": [["customer_name", "order_id", "product", "quantity", "price"]]
+      }
+    },
+    {
+      "text": "thank you",
+      "type": "FOOTER"
+    },
+    {
+      "type": "BUTTONS",
+      "buttons": [
+        { "text": "Review and Pay", "type": "ORDER_DETAILS" }
+      ]
+    }
+  ],
+  "sub_category": "ORDER_DETAILS",
+  "parameter_format": "POSITIONAL"
+}
+```
+</Tab>
+
+</Tabs>
+
+## Next steps
+
+- If your template uses a media header, upload the file first via
+  [Media Upload](/api-reference/whatsapp/media) to obtain a `media_id`.
+- After submission, poll [Fetch Template](/api-reference/whatsapp/templates-fetch) to
+  confirm the template reaches `Approved` status before sending it.
+- Send the approved template via
+  [Send Template Message](/api-reference/whatsapp/send-template-message).

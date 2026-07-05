@@ -1,0 +1,183 @@
+---
+title: "Opt In / Opt Out"
+description: "Manage RCS opt-in and opt-out lists for recipients, per sender and message type."
+---
+
+Manage which recipients are opted in or opted out of receiving RCS messages, scoped by sender
+and message type (`promotional` or `transactional`). Use these endpoints to check, add, and
+remove numbers from each list.
+
+<Note>
+All requests are authenticated with the `apikey` header. See
+[RCS Messaging Overview](/api-reference/rcs/overview#authentication).
+</Note>
+
+## Opt Out list
+
+### Get opt-out list
+
+<ParamField header="apikey" type="string" required>
+  Your OneXtel API key.
+</ParamField>
+
+```
+GET https://api.onexaura.com/opt/out/rcs
+```
+
+```bash cURL
+curl --location 'https://api.onexaura.com/opt/out/rcs' \
+--header 'apikey: YOUR_API_KEY'
+```
+
+### Add to opt-out list
+
+<ParamField header="apikey" type="string" required>
+  Your OneXtel API key.
+</ParamField>
+
+```
+POST https://api.onexaura.com/opt/out/rcs
+```
+
+<ParamField body="numbers" type="array" required>
+  Array of recipient phone numbers to opt out.
+</ParamField>
+
+<ParamField body="sender" type="string" required>
+  RCS sender/bot ID the opt-out applies to.
+</ParamField>
+
+<ParamField body="message_types" type="array" required>
+  Message types to opt the numbers out of, e.g. `["promotional", "transactional"]`.
+</ParamField>
+
+```json Request
+{
+  "numbers": ["919999999999", "919888888888"],
+  "sender": "your_rcs_sender",
+  "message_types": ["promotional", "transactional"]
+}
+```
+
+```bash cURL
+curl --location 'https://api.onexaura.com/opt/out/rcs' \
+--header 'apikey: YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data '{
+  "numbers": ["919999999999", "919888888888"],
+  "sender": "your_rcs_sender",
+  "message_types": ["promotional", "transactional"]
+}'
+```
+
+### Remove from opt-out list
+
+<ParamField header="apikey" type="string" required>
+  Your OneXtel API key.
+</ParamField>
+
+```
+DELETE https://api.onexaura.com/opt/out/rcs
+```
+
+<ParamField query="number" type="string" required>
+  Recipient phone number to remove from the opt-out list.
+</ParamField>
+
+<ParamField query="sender" type="string" required>
+  RCS sender/bot ID the opt-out applies to.
+</ParamField>
+
+<ParamField query="message_type" type="string" required>
+  Message type to remove the opt-out for. One of `promotional`, `transactional`.
+</ParamField>
+
+```bash cURL
+curl --location --request DELETE 'https://api.onexaura.com/opt/out/rcs?number=919999999999&sender=your_rcs_sender&message_type=promotional' \
+--header 'apikey: YOUR_API_KEY'
+```
+
+## Opt In list
+
+### Get opt-in list
+
+<ParamField header="apikey" type="string" required>
+  Your OneXtel API key.
+</ParamField>
+
+```
+GET https://api.onexaura.com/opt/in/rcs
+```
+
+```bash cURL
+curl --location 'https://api.onexaura.com/opt/in/rcs' \
+--header 'apikey: YOUR_API_KEY'
+```
+
+### Add to opt-in list
+
+<ParamField header="apikey" type="string" required>
+  Your OneXtel API key.
+</ParamField>
+
+```
+POST https://api.onexaura.com/opt/in/rcs
+```
+
+<ParamField body="numbers" type="array" required>
+  Array of recipient phone numbers to opt in.
+</ParamField>
+
+<ParamField body="sender" type="string" required>
+  RCS sender/bot ID the opt-in applies to.
+</ParamField>
+
+<ParamField body="message_types" type="array" required>
+  Message types to opt the numbers into, e.g. `["promotional", "transactional"]`.
+</ParamField>
+
+```json Request
+{
+  "numbers": ["919999999999", "919888888888"],
+  "sender": "your_rcs_sender",
+  "message_types": ["promotional", "transactional"]
+}
+```
+
+```bash cURL
+curl --location 'https://api.onexaura.com/opt/in/rcs' \
+--header 'apikey: YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data '{
+  "numbers": ["919999999999", "919888888888"],
+  "sender": "your_rcs_sender",
+  "message_types": ["promotional", "transactional"]
+}'
+```
+
+### Remove from opt-in list
+
+<ParamField header="apikey" type="string" required>
+  Your OneXtel API key.
+</ParamField>
+
+```
+DELETE https://api.onexaura.com/opt/in/rcs
+```
+
+<ParamField query="number" type="string" required>
+  Recipient phone number to remove from the opt-in list.
+</ParamField>
+
+<ParamField query="sender" type="string" required>
+  RCS sender/bot ID the opt-in applies to.
+</ParamField>
+
+<ParamField query="message_type" type="string" required>
+  Message type to remove the opt-in for. One of `promotional`, `transactional`.
+</ParamField>
+
+```bash cURL
+curl --location --request DELETE 'https://api.onexaura.com/opt/in/rcs?number=919999999999&sender=your_rcs_sender&message_type=promotional' \
+--header 'apikey: YOUR_API_KEY'
+```

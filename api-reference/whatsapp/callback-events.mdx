@@ -1,0 +1,76 @@
+---
+title: "WhatsApp Callback Events"
+description: "Overview of the WhatsApp callback payload formats delivered by the OnexAura platform: incoming messages, delivery notifications, button clicks, and URL clicks."
+---
+
+The OnexAura platform sends callback notifications to your system for WhatsApp events.
+This section defines the callback payload format for each supported event type.
+
+<Note>
+The source documentation defines payload structures only. It does not specify the
+callback delivery mechanism (HTTP method, headers, retry behaviour, or expected
+response), nor how the callback URL is configured. Contact OneXtel support to
+configure your callback endpoint.
+</Note>
+
+## Callback event types
+
+| Event type | Description |
+|---|---|
+| [Incoming Messages](/api-reference/whatsapp/callback-incoming-messages) | Callback payload structure for inbound WhatsApp messages, including text, media, location, and related contact metadata. |
+| [Delivery Notification](/api-reference/whatsapp/callback-delivery-notification) | Callback payload structure for message delivery status updates, conversation details, pricing, and recipient status information. |
+| [Button Clicks](/api-reference/whatsapp/callback-button-clicks) | Callback payload structure for inbound button interactions submitted under incoming message events. |
+| [URL Click](/api-reference/whatsapp/callback-url-click) | Callback payload structure for URL click tracking events, including browser, device, campaign, link, and recipient metadata. |
+
+## Custom reference passthrough
+
+All four event payloads include the `custref1`–`custref5` custom reference fields.
+
+Every callback payload carries five custom reference fields:
+
+```json
+{
+  "custref1": "custref1",
+  "custref2": "custref2",
+  "custref3": "custref3",
+  "custref4": "custref4",
+  "custref5": "custref5"
+}
+```
+
+These are optional custom reference fields you supply when sending a message through
+the OnexAura send APIs, used for tracking or tagging. The platform echoes them back
+unchanged in the callback, so you can correlate each callback event with your own
+internal identifiers (order IDs, campaign tags, user IDs, and so on).
+
+<ParamField body="custref1" type="string">
+  Custom reference field 1. Optional on the send request; returned as-is in callbacks.
+</ParamField>
+<ParamField body="custref2" type="string">
+  Custom reference field 2. Optional on the send request; returned as-is in callbacks.
+</ParamField>
+<ParamField body="custref3" type="string">
+  Custom reference field 3. Optional on the send request; returned as-is in callbacks.
+</ParamField>
+<ParamField body="custref4" type="string">
+  Custom reference field 4. Optional on the send request; returned as-is in callbacks.
+</ParamField>
+<ParamField body="custref5" type="string">
+  Custom reference field 5. Optional on the send request; returned as-is in callbacks.
+</ParamField>
+
+<Note>
+In the [URL Click](/api-reference/whatsapp/callback-url-click) payload the source shows
+the values of `custref1`–`custref5` as `cust_param_1`–`cust_param_5`, indicating they map
+to the custom parameters supplied with the original request (inferred from the field
+names shown).
+</Note>
+
+## Reading the payload formats
+
+The payload examples on the following pages are structural skeletons taken directly
+from the source documentation: the value of each field shows the JSON path of that
+field (for example `"id": "entry.changes.value.messages.id"`), not sample data.
+The source does not specify data types or enumerated values, so all leaf fields are
+documented as strings and field descriptions are inferred from the field names and
+paths, marked as such.

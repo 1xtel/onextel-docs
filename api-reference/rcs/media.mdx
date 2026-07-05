@@ -1,0 +1,97 @@
+---
+title: "Media Upload"
+description: "Upload media files for use in RCS rich cards and carousel messages."
+---
+
+Upload an image, GIF, or video so you can reference it by URL in a
+[rich card standalone or carousel message](/api-reference/rcs/send-messages), instead of hosting
+the file yourself.
+
+## Endpoint
+
+```
+POST https://api.onexaura.com/rcs/mediaupload
+```
+
+<ParamField header="apikey" type="string" required>
+  Your OneXtel API key.
+</ParamField>
+
+<ParamField header="accept" type="string">
+  `application/json` — specifies the response format.
+</ParamField>
+
+<Note>
+This is a `multipart/form-data` request, not JSON.
+</Note>
+
+## Request parameters
+
+<ParamField body="senderProfileName" type="string" required>
+  Registered RCS sender profile name (your RCS bot/sender ID).
+</ParamField>
+
+<ParamField body="message_type" type="string" required>
+  Type of RCS message the media will be used with, e.g. `transactional` or `promotional`.
+</ParamField>
+
+<ParamField body="file" type="file" required>
+  The media file to upload (multipart), e.g. an image, GIF, or video.
+</ParamField>
+
+## cURL
+
+```bash
+curl --location 'https://api.onexaura.com/rcs/mediaupload' \
+--header 'apikey: YOUR_API_KEY' \
+--form 'senderProfileName="your_rcs_sender"' \
+--form 'message_type="transactional"' \
+--form 'file=@"/path/to/file"'
+```
+
+## Response
+
+```json Response
+{
+  "id": "DL6+bVHuwLm7N3kstC270cfrehEzZOn3pa84pyewspE=",
+  "status": "success",
+  "http_status": 200,
+  "onextel_media_url": "https://warcssm.1xtel.co/media/media/6dc9571d-3805-4ac2-9e92-0eb1c35b1b6e/e04a2aac-83f5-45a8-9429-58669e8dd207.jpeg"
+}
+```
+
+<ResponseField name="id" type="string">
+  Unique identifier for the uploaded media.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Result status, e.g. `success`.
+</ResponseField>
+
+<ResponseField name="http_status" type="integer">
+  HTTP status code of the upload operation.
+</ResponseField>
+
+<ResponseField name="onextel_media_url" type="string">
+  Hosted URL of the uploaded media. Pass this as `fileUrl` in a rich card's
+  `cardContent.media.contentInfo.fileUrl` when sending a
+  [rich card standalone or carousel message](/api-reference/rcs/send-messages).
+</ResponseField>
+
+## Error codes
+
+| Error | Response Status | Error Description |
+| --- | --- | --- |
+| Invalid Method | 405 | Method Not Allowed |
+| Missing ApiKey | 114 (200) | NO VALID AUTH_KEY FOUND |
+| Invalid ApiKey | 200 | AUTHENTICATION FAILURE |
+| Missing Content-Type | 400 | Missing Content-Type / Missing form data |
+| Invalid Content-Type | 400 | Content-Type must be multipart/form-data or application |
+| Missing message_type (if BotId is empty) | 400 | message_type is mandatory |
+| Neither File nor URL is provided | 400 | Either file or url must be provided |
+| Both File and URL provided | 400 | Only one file or url can be provided |
+| Missing BotId, when messageType is empty | 400 | channelId is mandatory |
+| Invalid Json | 400 | Invalid JSON |
+| Upstream Req Failure | 503 | Reason of Failure can be multiple |
+| Upstream service unavailable | 503 | Upstream service unavailable |
+| Unknown Request | 500 | Internal server error - unexpected arguments |

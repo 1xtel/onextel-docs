@@ -1,0 +1,184 @@
+---
+title: "Reports"
+description: "Generate MIS, Summary, Campaign Summary, Search, Sender ID Summary, and Clicker reports on the OneXtel International platform."
+---
+
+The **Reports** menu generates detailed reports based on parameters such as date range, Sender ID, and campaign details. These reports support SMS performance analysis, delivery tracking, and issue identification.
+
+| Report | Purpose |
+| --- | --- |
+| MIS Report | Tracks SMS delivery counts by hour and day, with an hourly and daily breakdown. |
+| Summary | Displays SMS counts and delivery status with percentage breakdowns, along with message and account details for the selected date range. |
+| Campaign Summary | Presents campaign performance metrics — delivered, submitted, failed, and awaited messages — categorized by SMS type. |
+| Search | Filters report data using multiple criteria to retrieve detailed information. |
+| Sender ID Summary | Displays SMS activity for specific Sender IDs, retrieved by Sender ID or TUC name, for the selected date range. |
+| Clicker Data | Displays recipient interaction details for SMS links — IP address, browser, operator, circle, and geographic coordinates — for customer behavior analysis. |
+| Clicker Details | Generates campaign-level reports with clickable phone numbers, including user IP, browser, operator, circle, latitude/longitude, TUC ID, TUC Name, and Campaign Name. |
+
+## MIS Report
+
+MIS reports provide detailed records to track, analyze, and manage SMS delivery and performance:
+
+- **SMS Delivery Overview** — a grid divided by days and hours, showing the number of SMS messages delivered during each hour.
+- **Daily and Hourly Breakdown** — dates in rows and hours in columns, to show SMS volume patterns.
+- **Total SMS Sent per Day** — the total number of SMS messages sent each day, in the final column.
+- **Performance Analysis and Issue Identification** — supports campaign performance analysis and identification of delivery issues, including undelivered SMS and Sender ID–related problems.
+- **Data-Based Optimization** — supports SMS campaign optimization through actionable delivery insights.
+
+<Steps>
+  <Step title="Open the MIS tab">
+    In the left pane, click **Reports**, then click the **MIS** tab.
+  </Step>
+  <Step title="Drill into a count">
+    Click any active count of messages sent hourly, or the daily total count. The platform redirects to the **Web** subtab.
+  </Step>
+  <Step title="Search">
+    Click **Search**. The platform tracks the number of SMSs sent through the Web and API.
+  </Step>
+  <Step title="Choose a sending method">
+    Select the required option (**Web** or **API**) to view detailed information for that sending method.
+  </Step>
+  <Step title="Apply filters">
+    Refine report data using filters such as Mobile, Sender ID, Campaign Name, Template ID, and Limit (to control entries per page), then click **Search**.
+  </Step>
+  <Step title="Download">
+    Click a download option (see below).
+  </Step>
+</Steps>
+
+| Download option | Description |
+| --- | --- |
+| Download | Downloads campaign-wise data. Select the file format (CSV or XLSX) from the dropdown list. |
+| Download All | Downloads the complete dataset. Select the file format (CSV or XLSX) from the dropdown list. |
+
+## Summary
+
+View delivered SMS counts and statuses with percentage values, and display a list of delivered SMSs for each child account within the selected date range. Apply filters to generate customized reports.
+
+<Steps>
+  <Step title="Open the Summary tab">
+    In the left pane, click **Reports**, then click the **Summary** tab.
+  </Step>
+  <Step title="Select the TUC and date range">
+    Select the TUC from the dropdown list, then select the date range to view the SMS summary.
+  </Step>
+  <Step title="Select the source type">
+    Select the Source type of the SMS from the dropdown list.
+  </Step>
+  <Step title="Download">
+    Click **Download** and select the required file format (CSV or XLSX) from the dropdown list.
+  </Step>
+</Steps>
+
+## Campaign Summary
+
+Provides an overview of campaign performance, including metrics for delivered, submitted, failed, and awaited messages, and the types of SMS sent.
+
+<Steps>
+  <Step title="Open Campaign Summary">
+    In the left pane, click **Reports**, then click **Campaign Summary**.
+  </Step>
+  <Step title="Select the date range">
+    Select the date range to view the campaign summary.
+  </Step>
+  <Step title="Search">
+    Click **Search**. The platform displays the details of the campaigns.
+  </Step>
+  <Step title="Download">
+    Click **Download** and select the required file format (CSV or XLSX) from the dropdown list.
+  </Step>
+</Steps>
+
+## Search
+
+Refine data using available filters to retrieve detailed and specific information.
+
+<Steps>
+  <Step title="Open Campaign Summary">
+    In the left pane, click **Reports**, then click **Campaign Summary**.
+  </Step>
+  <Step title="Select the date range">
+    Select the date range to view the campaign summary.
+  </Step>
+  <Step title="Enter search criteria">
+    Enter the required fields (see table below).
+  </Step>
+  <Step title="Search">
+    Click **Search**. The platform displays the details of the campaigns.
+  </Step>
+  <Step title="Download">
+    Click **Download** and select the required file format (CSV or XLSX) from the dropdown list.
+  </Step>
+</Steps>
+
+| Field | Description |
+| --- | --- |
+| TUC Name | Name of the Tenant User Customer (TUC) associated with the message. |
+| Sender ID | Approved sender identity used for sending the message. |
+| UU ID | Unique identifier assigned to each message, for tracking and reference. |
+| Source Type | Channel through which the message was sent — Web, API, or SMPP. |
+
+## Sender ID Summary
+
+Provides an overview of SMSs sent through specific Sender IDs. Retrieves data by entering the Sender ID or TUC name, and displays all Sender IDs linked to the account within the selected date range.
+
+<Steps>
+  <Step title="Open Sender ID Summary">
+    In the left pane, click **Reports**, then click **Sender ID Summary**.
+  </Step>
+  <Step title="Select the date range">
+    Select the date range to view the Sender ID summary.
+  </Step>
+  <Step title="Search">
+    Click **Search**. The platform displays details such as the TUC ID, TUC name, and credits of the Sender ID.
+  </Step>
+  <Step title="Download">
+    Click **Download** and select the required file format (CSV or XLSX) from the dropdown list.
+  </Step>
+</Steps>
+
+## Clicker Data
+
+Provides detailed information on recipients who interact with SMS links, including user IP address, browser details, operator, circle, and geographic coordinates — supporting analysis of customer behavior and interaction patterns.
+
+<Steps>
+  <Step title="Open Sender ID Summary">
+    In the left pane, click **Reports**, then click **Sender ID Summary**.
+  </Step>
+  <Step title="Select the date range">
+    Select the date range to view the summary.
+  </Step>
+  <Step title="Search">
+    Click **Search**. The platform displays details such as the TUC ID, SMS Type, and campaign name.
+  </Step>
+  <Step title="Download">
+    Click **Download** and select the required file format (CSV or XLSX) from the dropdown list.
+  </Step>
+</Steps>
+
+## Clicker Details
+
+Generates campaign reports with clickable links, showing user details by mobile number — including User IP, browser, operator, circle, latitude/longitude, TUC ID, TUC Name, and Campaign Name — to support customer location identification.
+
+<Steps>
+  <Step title="Open Sender ID Summary">
+    In the left pane, click **Reports**, then click **Sender ID Summary**.
+  </Step>
+  <Step title="Select the date range">
+    Select the date range to view the summary.
+  </Step>
+  <Step title="Search">
+    Click **Search**. The platform displays details such as the TUC ID, SMS Type, and campaign name.
+  </Step>
+  <Step title="Download">
+    Click **Download** and select the required file format (CSV or XLSX) from the dropdown list.
+  </Step>
+</Steps>
+
+<Note>
+  The source manual gives Clicker Data and Clicker Details near-identical navigation
+  ("Reports → Sender ID Summary → Search"). This is likely a documentation copy-paste error
+  in the source rather than the platform's actual navigation — the two reports have distinct
+  purposes and result columns. If Clicker Data and Clicker Details are separate tabs in the
+  Reports menu, update the steps above to reference those tabs directly.
+</Note>

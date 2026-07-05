@@ -1,0 +1,208 @@
+---
+title: "Send SMS"
+description: "Submit single or multiple international SMS messages via the OneXtel SMS List API."
+---
+
+## Endpoint
+
+```
+POST https://api.int.onexglobal.io/api/jsmslist
+```
+
+<ParamField header="Content-Type" type="string" required>
+  `application/json`
+</ParamField>
+
+<Note>
+The source guide lists the endpoint header sample as `Contest-Type: application/json`, which is a typo for `Content-Type`. Use `Content-Type` as shown in the cURL examples below.
+</Note>
+
+## Single submission
+
+Submit one SMS message inside the `listsms` array.
+
+```bash
+curl --location 'https://api.int.onexglobal.io/api/jsmslist' \
+--header 'Content-Type: application/json' \
+--data '{
+  "key": "XXXXXX",
+  "listsms": [
+    {
+      "from": "Verify",
+      "to": "mobile number",
+      "body": "Your verification code is 1234",
+      "clientsmsid": "123456789"
+    }
+  ]
+}'
+```
+
+## Multiple submission
+
+Submit several SMS messages in a single request by adding multiple objects to the `listsms` array.
+
+```bash
+curl --location 'https://api.int.onexglobal.io/api/jsmslist' \
+--header 'Content-Type: application/json' \
+--data '{
+  "key": "XXXXXX",
+  "listsms": [
+    {
+      "from": "9599750774",
+      "to": "9898989898",
+      "body": "Your verification otp is 192031",
+      "clientsmsid": "123456789"
+    },
+    {
+      "from": "9599750774",
+      "to": "9898989898",
+      "body": "Your verification otp is 192031",
+      "clientsmsid": "123456789"
+    },
+    {
+      "from": "9599750774",
+      "to": "9898989898",
+      "body": "Your verification otp is 192031",
+      "clientsmsid": "123456789"
+    },
+    {
+      "from": "9599750774",
+      "to": "9898989898",
+      "body": "Your verification otp is 192031",
+      "clientsmsid": "123456789"
+    }
+  ]
+}'
+```
+
+## Request parameters
+
+The request body must be in JSON format and include the parameters below.
+
+<ParamField body="key" type="string" required>
+  An API key, assigned to the user for authentication.
+</ParamField>
+
+<ParamField body="listsms" type="array">
+  A list containing one or more SMS message objects to be sent.
+</ParamField>
+
+### `listsms` object structure
+
+Each object inside the `listsms` array represents an SMS message and contains the following fields:
+
+<ParamField body="from" type="string" required>
+  Sender ID or name that appears as the message originator.
+</ParamField>
+
+<ParamField body="to" type="string" required>
+  Recipient's mobile number including country code (e.g., `918872725225`).
+</ParamField>
+
+<ParamField body="body" type="string" required>
+  The text content of the SMS message.
+</ParamField>
+
+<ParamField body="clientsmsid" type="string">
+  Client-side unique identifier for tracking the message.
+</ParamField>
+
+## Response
+
+The API returns a JSON response under `smslist` → `sms`. Each SMS record includes details about the processing status.
+
+<CodeGroup>
+
+```json Success
+{
+  "smslist": {
+    "sms": [
+      {
+        "reason": "success",
+        "code": 0,
+        "messageid": "36NHM9t0WzRM9VtK4n7iI7Yd2Da",
+        "messagepartids": [],
+        "mobileno": "971502829916",
+        "status": "success"
+      }
+    ]
+  }
+}
+```
+
+```json Failed
+{
+  "smslist": {
+    "sms": [
+      {
+        "reason": "invalid mobileno",
+        "code": 700,
+        "mobileno": "9715028",
+        "clientsmsid": "123456789",
+        "status": "fail"
+      }
+    ]
+  }
+}
+```
+
+</CodeGroup>
+
+### Response parameters — success
+
+<ResponseField name="reason" type="string">
+  Status description of the submission.
+</ResponseField>
+
+<ResponseField name="code" type="integer">
+  Numeric response code (0 = success).
+</ResponseField>
+
+<ResponseField name="messageid" type="string">
+  Unique internal message identifier.
+</ResponseField>
+
+<ResponseField name="messagepartids" type="array">
+  IDs for multiple message parts (empty if single part).
+</ResponseField>
+
+<ResponseField name="mobileno" type="string">
+  Destination mobile number.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Submission status (`success`).
+</ResponseField>
+
+### Response parameters — failure
+
+<ResponseField name="reason" type="string">
+  Cause of submission failure.
+</ResponseField>
+
+<ResponseField name="code" type="integer">
+  Error code (`700` = invalid mobile number format).
+</ResponseField>
+
+<ResponseField name="mobileno" type="string">
+  Provided mobile number.
+</ResponseField>
+
+<ResponseField name="clientsmsid" type="string">
+  ID passed by the client for reference.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Submission failed (`fail`).
+</ResponseField>
+
+## Submission response codes
+
+| Code | Description |
+|---|---|
+| `0` | Submission Successful. |
+| `700` | Invalid mobile number. |
+
+<Note>
+The source guide's consolidated response-codes table also lists `000` (Delivered) and `011` (Undelivered). Those codes apply to the DLR callback's `ERRORCODE` field, not to this submission response — see [DLR callback](/api-reference/sms/dlr-callback).
+</Note>

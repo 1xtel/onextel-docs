@@ -1,0 +1,149 @@
+---
+title: "Batching, Repeat, and Launch"
+description: "Split an RCS campaign into batches, set up recurring sends, and schedule or launch execution."
+---
+
+The final sections of the campaign creation form control how and when messages
+go out: **Batching**, **Repeat Campaign**, and **Schedule**.
+
+## Batching
+
+Batching controls how messages are sent to recipients — either all at once or
+in smaller, scheduled groups (batches). Click **Batching** in the campaign
+form to expand it.
+
+The Batching Configuration panel shows:
+
+| Section | Description |
+| --- | --- |
+| **Total Recipients** | The total number of recipients who will receive the messages (e.g., 19,999). |
+| **Method** | Three batching methods: All, Split, and Manual. |
+| **Batches Preview** | A table of batch numbers and sizes for the chosen method. |
+
+Select any one method and enter the details:
+
+<Tabs>
+  <Tab title="All">
+    Sends the message to all recipients in a single batch. Best suited for
+    smaller campaigns or when all recipients should receive the message
+    simultaneously.
+
+    - By default, the **All** option is selected.
+    - The system automatically creates one batch containing all recipients.
+
+    Example: 19,999 recipients → Batch 1: 19,999 recipients.
+  </Tab>
+  <Tab title="Split">
+    Automatically divides the total recipients into multiple smaller batches
+    (maximum 10). Helps distribute large campaigns over intervals to avoid
+    message congestion.
+
+    1. Select the **Split** option.
+    2. Enter the **Number of Batches** (e.g., 3).
+    3. Set the **Interval Between Batches** (e.g., `00:30:00`).
+    4. The system displays a preview of batches with the recipient count and
+       schedule time.
+
+    Example: Batch 1 – 6,667 (2:15 PM), Batch 2 – 6,666 (2:45 PM),
+    Batch 3 – 6,666 (3:15 PM).
+  </Tab>
+  <Tab title="Manual">
+    Allows manual configuration of batch size and schedule time. Useful for
+    controlling how and when each batch is sent.
+
+    1. Select the **Manual** option.
+    2. Enter the **Batch Size** (e.g., 19,999).
+    3. Set the **Schedule Time** manually for each batch.
+    4. Click **+** to add more batches (if required).
+
+    Example: Batch 1 – 19,999 recipients scheduled for Nov 7, 2025, 02:18 PM.
+  </Tab>
+</Tabs>
+
+## Repeat Campaign
+
+Repeat Campaign allows scheduling recurring campaigns without recreating them
+each time, ensuring messages are sent consistently based on the selected
+frequency and duration.
+
+<Steps>
+  <Step title="Open Repeat Campaign">
+    Click **Repeat Campaign** in the campaign form.
+  </Step>
+  <Step title="Enable repetition">
+    Select the **Enable Repeat** checkbox. The Frequency, Configuration,
+    Ends, and Schedule Summary controls appear.
+  </Step>
+  <Step title="Choose a frequency">
+    Enter the following details as per the requirements of the campaign:
+
+    | Frequency | Description | Configuration |
+    | --- | --- | --- |
+    | **Daily** | Sends the campaign every day at the scheduled time. | Keep **Ends** as `Never` or choose an end date. The Schedule Summary shows "Every day". |
+    | **Weekly** | Sends the campaign on selected days every other week or on alternate weeks. | Choose the interval (Every, Alternate, or After weeks), then select specific days (e.g., Mon, Wed, Fri). The Schedule Summary shows "Every Week". |
+    | **Monthly** | Sends the campaign every month based on specific dates or days. | Choose the interval (Every, Alternate, or After months). Under **Repeat On**, select Specific Dates or Days of Week, then the required Days of Week and Week Position (e.g., First Monday). The Schedule Summary shows "Every Month". |
+    | **Custom** | Allows you to manually select specific dates and times for the campaign. | Click **+ Add Date & Time** to schedule manually. The Schedule Summary shows "Custom — Add specific dates and times". |
+  </Step>
+  <Step title="Review the Schedule Summary">
+    Confirm the summary matches the intended recurrence before moving on.
+  </Step>
+</Steps>
+
+## Schedule
+
+The Schedule section automates the campaign launch timing based on business
+needs. Click **Schedule** in the campaign form, then select the type of
+Campaign Execution:
+
+### Immediate Execution
+
+Launches the campaign instantly as soon as it's ready. Useful for quick or
+urgent sends.
+
+<Steps>
+  <Step title="Open Schedule">
+    Click **Schedule**.
+  </Step>
+  <Step title="Select Immediate Execution">
+    Select the **Immediate Execution** option. The panel shows the status
+    (`READY TO LAUNCH`), the execution mode ("As soon as campaign is
+    launched"), and the current local time.
+  </Step>
+  <Step title="Launch">
+    Click **Launch**.
+  </Step>
+</Steps>
+
+### Scheduled Execution
+
+Allows setting a specific date, time, and time zone for the campaign to start
+automatically. Ideal for planned or time-sensitive campaigns.
+
+<Steps>
+  <Step title="Select Scheduled Execution">
+    In the Schedule section, select the **Scheduled Execution** option.
+  </Step>
+  <Step title="Choose the time zone">
+    Click the **Time Zone** dropdown and choose the preferred time zone
+    (e.g., `Asia/Kolkata` — IST, India Standard Time) for accurate
+    scheduling.
+  </Step>
+  <Step title="Set the date and time">
+    Click the calendar icon or field under **Scheduled Date & Time** and
+    select the desired date and time for campaign execution (e.g.,
+    November 10, 2025, at 11:08 AM).
+  </Step>
+  <Step title="Confirm the Schedule Summary">
+    The **Schedule Summary** displays both local (e.g., IST) and UTC formats
+    along with the selected time zone for confirmation.
+  </Step>
+  <Step title="Launch">
+    Click **Launch**.
+  </Step>
+</Steps>
+
+<Note>
+  The Schedule section also shows **Test** and **Draft** buttons alongside
+  **Launch**. Campaigns saved as drafts appear on the campaigns dashboard with
+  the Draft status.
+</Note>

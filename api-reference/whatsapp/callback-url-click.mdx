@@ -1,0 +1,216 @@
+---
+title: "Callback: URL Click"
+description: "Callback payload structure for WhatsApp URL click tracking events, including browser, device, campaign, link, and recipient metadata."
+---
+
+When an end user clicks a tracked URL in a WhatsApp message, the OnexAura platform
+posts a URL Click callback to your configured endpoint. Unlike the other callback
+event types, this payload is a flat JSON object.
+
+<Note>
+The payload below is the structural skeleton exactly as documented: each field's value
+is a placeholder, not sample data. The source does not define field meanings, data
+types, or enumerated values — all descriptions on this page are **inferred from the
+field names** and all fields are documented as `string` because the source shows every
+value as a string placeholder.
+</Note>
+
+## Payload format
+
+```json
+{
+  "to_number": "to_number",
+  "bot_id": "bot_id",
+  "repush_count": "repush_count",
+  "waba_id": "waba_id",
+  "template_name": "template_name",
+  "browser": "browser",
+  "track_location": "track_location",
+  "ip": "ip",
+  "msg_type": "msg_type",
+  "custref1": "cust_param_1",
+  "custref2": "cust_param_2",
+  "operator": "operator",
+  "custref3": "cust_param_3",
+  "short_url": "short_url",
+  "source": "source",
+  "is_mmlite": "is_mmlite",
+  "clicked_time": "clicked_time",
+  "channel": "channel",
+  "onex_received_ts": "onex_received_ts",
+  "template_category": "template_category",
+  "provider_id": "provider_id",
+  "circle": "circle",
+  "tuc_id": "tuc_id",
+  "custref4": "cust_param_4",
+  "retry_count": "retry_count",
+  "api_key": "api_key",
+  "os": "os",
+  "uuid": "uuid",
+  "campaign_name": "campaign_name",
+  "request_time": "request_time",
+  "sender_profile": "sender_profile",
+  "custref5": "cust_param_5",
+  "template_type": "template_type",
+  "onex_msg_id": "onex_msg_id",
+  "phone_number": "phone_number",
+  "billing_category": "billing_category",
+  "long_url": "long_url",
+  "country_name": "country_name",
+  "tenant_id": "tenant_id",
+  "campaign_instance_id": "campaign_instance_id"
+}
+```
+
+## Field reference
+
+### Link and click details
+
+<ResponseField name="short_url" type="string">
+  The shortened tracked URL that the user clicked (inferred).
+</ResponseField>
+<ResponseField name="long_url" type="string">
+  The full destination URL behind the short URL (inferred).
+</ResponseField>
+<ResponseField name="clicked_time" type="string">
+  Time at which the URL was clicked (inferred; format not specified in the source).
+</ResponseField>
+<ResponseField name="browser" type="string">
+  Browser used by the recipient when clicking the URL (inferred).
+</ResponseField>
+<ResponseField name="os" type="string">
+  Operating system of the device used to click the URL (inferred).
+</ResponseField>
+<ResponseField name="ip" type="string">
+  IP address from which the click originated (inferred).
+</ResponseField>
+<ResponseField name="track_location" type="string">
+  Location tracking value for the click (inferred from the field name; exact meaning
+  not defined in the source).
+</ResponseField>
+<ResponseField name="country_name" type="string">
+  Country associated with the click or recipient (inferred).
+</ResponseField>
+<ResponseField name="circle" type="string">
+  Telecom circle (regional zone) of the recipient's number (inferred).
+</ResponseField>
+<ResponseField name="operator" type="string">
+  Mobile operator of the recipient's number (inferred).
+</ResponseField>
+
+### Message and recipient details
+
+<ResponseField name="to_number" type="string">
+  Number the original message was sent to (inferred).
+</ResponseField>
+<ResponseField name="phone_number" type="string">
+  Phone number field (inferred from field name; how it differs from `to_number` is not
+  defined in the source).
+</ResponseField>
+<ResponseField name="msg_type" type="string">
+  Type of the original message (inferred; possible values not listed in the source).
+</ResponseField>
+<ResponseField name="channel" type="string">
+  Messaging channel of the original message (inferred).
+</ResponseField>
+<ResponseField name="onex_msg_id" type="string">
+  OnexAura platform message identifier of the original message (inferred).
+</ResponseField>
+<ResponseField name="uuid" type="string">
+  Unique identifier of the event or message (inferred from field name; exact scope not
+  defined in the source).
+</ResponseField>
+<ResponseField name="request_time" type="string">
+  Time of the original send request (inferred; format not specified in the source).
+</ResponseField>
+<ResponseField name="onex_received_ts" type="string">
+  Timestamp at which the OnexAura platform received the event (inferred).
+</ResponseField>
+<ResponseField name="is_mmlite" type="string">
+  Flag whose name suggests whether the message was sent via MM Lite (inferred from the
+  field name; exact meaning and values not defined in the source).
+</ResponseField>
+
+### Template and campaign details
+
+<ResponseField name="template_name" type="string">
+  Name of the WhatsApp template used in the original message (inferred).
+</ResponseField>
+<ResponseField name="template_type" type="string">
+  Type of the template (inferred; values not listed in the source).
+</ResponseField>
+<ResponseField name="template_category" type="string">
+  Category of the template (inferred; values not listed in the source).
+</ResponseField>
+<ResponseField name="billing_category" type="string">
+  Billing category applied to the message (inferred; values not listed in the source).
+</ResponseField>
+<ResponseField name="campaign_name" type="string">
+  Name of the campaign the message belongs to (inferred).
+</ResponseField>
+<ResponseField name="campaign_instance_id" type="string">
+  Identifier of the specific campaign run or instance (inferred).
+</ResponseField>
+
+### Account and sender details
+
+<ResponseField name="waba_id" type="string">
+  WhatsApp Business Account ID (inferred).
+</ResponseField>
+<ResponseField name="bot_id" type="string">
+  Identifier of the bot or sender configuration used (inferred from field name; exact
+  meaning not defined in the source).
+</ResponseField>
+<ResponseField name="sender_profile" type="string">
+  Sender profile the message was sent from (inferred).
+</ResponseField>
+<ResponseField name="api_key" type="string">
+  API key associated with the account that sent the message (inferred).
+</ResponseField>
+<ResponseField name="tenant_id" type="string">
+  Tenant identifier on the OnexAura platform (inferred).
+</ResponseField>
+<ResponseField name="provider_id" type="string">
+  Identifier of the provider (inferred from field name; exact meaning not defined in
+  the source).
+</ResponseField>
+<ResponseField name="source" type="string">
+  Source of the event or message (inferred from field name; exact meaning not defined
+  in the source).
+</ResponseField>
+<ResponseField name="tuc_id" type="string">
+  Identifier field; its meaning is not defined in the source.
+</ResponseField>
+
+### Delivery mechanics
+
+<ResponseField name="repush_count" type="string">
+  Number of times the callback has been re-pushed to your endpoint (inferred).
+</ResponseField>
+<ResponseField name="retry_count" type="string">
+  Number of retries (inferred from field name; whether this counts message delivery or
+  callback retries is not defined in the source).
+</ResponseField>
+
+### Custom references
+
+The values of `custref1`–`custref5` in the source skeleton are shown as
+`cust_param_1`–`cust_param_5`, indicating they carry the custom parameters supplied
+with the original request (inferred). See
+[custom reference passthrough](/api-reference/whatsapp/callback-events#custom-reference-passthrough).
+
+<ResponseField name="custref1" type="string">
+  Custom reference field 1, echoed back from the original send request.
+</ResponseField>
+<ResponseField name="custref2" type="string">
+  Custom reference field 2, echoed back from the original send request.
+</ResponseField>
+<ResponseField name="custref3" type="string">
+  Custom reference field 3, echoed back from the original send request.
+</ResponseField>
+<ResponseField name="custref4" type="string">
+  Custom reference field 4, echoed back from the original send request.
+</ResponseField>
+<ResponseField name="custref5" type="string">
+  Custom reference field 5, echoed back from the original send request.
+</ResponseField>

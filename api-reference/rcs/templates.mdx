@@ -1,0 +1,670 @@
+---
+title: "RCS Templates"
+description: "Create RCS message templates and fetch existing templates from the OneXtel Omni platform."
+---
+
+RCS templates are reusable message definitions — text, media, or rich cards — that you submit
+for approval and later reference by name (or `templateCode`) when sending messages. This page
+covers the two template-management endpoints: **create** and **fetch**.
+
+## Create Template
+
+<ParamField header="apikey" type="string" required>
+  Your OneXtel API key.
+</ParamField>
+
+<ParamField header="accept" type="string" required>
+  Must be `application/json`.
+</ParamField>
+
+**Endpoint:** `POST https://api.onexaura.com/rcs/templates`
+
+This endpoint accepts a `multipart/form-data` request. Template metadata is passed as a JSON
+string in the `data` field, alongside separate form fields for sender profile and media upload.
+
+### cURL
+
+```bash
+curl --location 'https://api.onexaura.com/rcs/templates' \
+--header 'accept: application/json' \
+--header 'apikey: <api_key>' \
+--form 'data="{
+    \"name\": \"<template_name>\",
+    \"type\": \"text_message\",
+    \"textMessageContent\": \"<template_content>\"
+}"' \
+--form 'sender_profile_name="<sender_profile_name>"' \
+--form 'update_by="<update_by>"' \
+--form 'message_type="<message_type>"' \
+--form 'multimedia_files=@"<Path of the media>"'
+```
+
+### Form fields
+
+<ParamField body="data" type="string" required>
+  JSON string (see below) describing the template — `name`, `type`, content fields, and
+  optional `suggestions`.
+</ParamField>
+
+<ParamField body="sender_profile_name" type="string" required>
+  The RCS sender profile the template belongs to.
+</ParamField>
+
+<ParamField body="update_by" type="string" required>
+  Identifier of the user/system submitting the template.
+</ParamField>
+
+<ParamField body="message_type" type="string" required>
+  RCS template category (e.g. Promotional, Transactional).
+</ParamField>
+
+<ParamField body="multimedia_files" type="file">
+  Media file to attach, for template types that include media (image, video, or document).
+</ParamField>
+
+### Fields inside `data`
+
+<ParamField body="name" type="string" required>
+  Unique template name. Must be alphanumeric with underscores only.
+</ParamField>
+
+<ParamField body="type" type="string" required>
+  Template type. One of `text_message`, `text_message_with_media`, `rich_card`, `carousel`.
+</ParamField>
+
+<ParamField body="suggestions" type="array">
+  Array of interactive action (button) objects. Optional — can be empty or omitted for basic
+  text messages.
+</ParamField>
+
+### Suggestions object
+
+Each entry in `suggestions` is one interactive button. `suggestionType` determines which other
+fields are required.
+
+<ParamField body="suggestionType" type="string" required>
+  Type of suggestion. Supported values: `reply`, `dialer_action`, `url_action`,
+  `view_location_latlong`, `view_location_query`, `share_location`, `calendar_event`.
+</ParamField>
+
+<ParamField body="displayText" type="string" required>
+  The button text shown to the user.
+</ParamField>
+
+<ParamField body="postback" type="string" required>
+  Data sent back to the bot when the user interacts with the suggestion. Used for internal
+  logic/tracking.
+</ParamField>
+
+<ParamField body="url" type="string">
+  URL to open when the user taps the suggestion. Required when `suggestionType` is
+  `url_action`.
+</ParamField>
+
+<ParamField body="phoneNumber" type="string">
+  Phone number to call when the user taps the suggestion. Required when `suggestionType` is
+  `dialer_action`.
+</ParamField>
+
+<ParamField body="label" type="string">
+  Label for the map location (e.g. "Our Store"). Required when `suggestionType` is
+  `view_location_latlong`.
+</ParamField>
+
+<ParamField body="latitude" type="string">
+  Latitude coordinate for the map view. Required when `suggestionType` is
+  `view_location_latlong`.
+</ParamField>
+
+<ParamField body="longitude" type="string">
+  Longitude coordinate for the map view. Required when `suggestionType` is
+  `view_location_latlong`.
+</ParamField>
+
+<ParamField body="query" type="string">
+  The query string to search (e.g. "nearest ATM"). Required when `suggestionType` is
+  `view_location_query`.
+</ParamField>
+
+<ParamField body="title" type="string">
+  Title of the calendar event. Required when `suggestionType` is `calendar_event`.
+</ParamField>
+
+<ParamField body="description" type="string">
+  Description or notes for the calendar event. Required when `suggestionType` is
+  `calendar_event`.
+</ParamField>
+
+<ParamField body="startTime" type="string">
+  Event start time, ISO or `yyyy-MM-dd HH:mm:ss` format. Required when `suggestionType` is
+  `calendar_event`.
+</ParamField>
+
+<ParamField body="endTime" type="string">
+  Event end time, ISO or `yyyy-MM-dd HH:mm:ss` format. Required when `suggestionType` is
+  `calendar_event`.
+</ParamField>
+
+<ParamField body="timeZone" type="string">
+  Time zone of the event (e.g. "Asia/Kolkata"). Required when `suggestionType` is
+  `calendar_event`.
+</ParamField>
+
+### Minimum required fields per suggestion type
+
+| Suggestion Type | Minimum Required Fields | Purpose |
+| --- | --- | --- |
+| `reply` | `suggestionType`, `displayText`, `postback` | Creates quick reply buttons for user response. |
+| `dialer_action` | `suggestionType`, `displayText`, `postback`, `phoneNumber` | Opens the phone dialer to call a given number. |
+| `url_action` | `suggestionType`, `displayText`, `postback`, `url` | Opens a web URL in the browser. |
+| `view_location_latlong` | `suggestionType`, `displayText`, `postback`, `label`, `latitude`, `longitude` | Displays a specific latitude/longitude on the map. |
+| `view_location_query` | `suggestionType`, `displayText`, `postback`, `query` | Searches for a location query on the map. |
+| `share_location` | `suggestionType`, `displayText`, `postback` | Allows users to share their current location. |
+| `calendar_event` | `suggestionType`, `postback`, `title`, `description`, `startTime`, `endTime`, `timeZone` | Adds a calendar event to the user's device. |
+
+<Note>
+`displayText` is documented as mandatory for all suggestion types in the parameter reference
+table, but is omitted from the minimum-required-fields list for `calendar_event` in the
+source. Include it to be safe.
+</Note>
+
+### Template type: Text Message
+
+<ParamField body="name" type="string" required>
+  Unique template name. Alphanumeric with underscores only.
+</ParamField>
+
+<ParamField body="type" type="string" required>
+  Always `"text_message"`.
+</ParamField>
+
+<ParamField body="textMessageContent" type="string" required>
+  The actual message body. Can include placeholders (e.g. `[name]`, `[otp]`).
+</ParamField>
+
+```json Text Template
+{
+  "name": "<template_name>",
+  "type": "text_message",
+  "suggestions": [],
+  "textMessageContent": "This is a text message with [custom_param]."
+}
+```
+
+Suggestion-specific variants of the text template (reply, dialer, URL, location, calendar) all
+use the same `type: "text_message"` shape, adding one `suggestions` entry per action:
+
+<CodeGroup>
+
+```json Reply Action
+{
+  "name": "<Template_name>",
+  "type": "text_message",
+  "suggestions": [
+    {
+      "postback": "<postback>",
+      "displayText": "<display text>",
+      "suggestionType": "reply"
+    },
+    {
+      "postback": "<postback>",
+      "displayText": "<display text2>",
+      "suggestionType": "reply"
+    }
+  ],
+  "textMessageContent": "<text_message_content>"
+}
+```
+
+```json Dialer Action
+{
+  "name": "<Template_name>",
+  "type": "text_message",
+  "suggestions": [
+    {
+      "postback": "<postback>",
+      "displayText": "<display text>",
+      "phoneNumber": "<phone_number>",
+      "suggestionType": "dialer_action"
+    }
+  ],
+  "textMessageContent": "<text_message_content>"
+}
+```
+
+```json URL Action
+{
+  "name": "<Template_name>",
+  "type": "text_message",
+  "suggestions": [
+    {
+      "url": "<url>",
+      "postback": "<postback>",
+      "displayText": "<display text>",
+      "suggestionType": "url_action"
+    }
+  ],
+  "textMessageContent": "<text_message_content>"
+}
+```
+
+```json View Location
+{
+  "name": "<Template_name>",
+  "type": "text_message",
+  "suggestions": [
+    {
+      "label": "<label>",
+      "latitude": "<latitude>",
+      "longitude": "<longitude>",
+      "postback": "<postback>",
+      "displayText": "<display text>",
+      "suggestionType": "view_location_latlong"
+    }
+  ],
+  "textMessageContent": "<TextMessageContent>"
+}
+```
+
+```json Location Query
+{
+  "name": "<Template_name>",
+  "type": "text_message",
+  "suggestions": [
+    {
+      "query": "<query>",
+      "postback": "<postback>",
+      "displayText": "<display text>",
+      "suggestionType": "view_location_query"
+    }
+  ],
+  "textMessageContent": "<TextMessageContent>"
+}
+```
+
+```json Share Location
+{
+  "name": "<Template_name>",
+  "type": "text_message",
+  "suggestions": [
+    {
+      "postback": "<postback>",
+      "displayText": "<display text>",
+      "suggestionType": "share_location"
+    }
+  ],
+  "textMessageContent": "<TextMessageContent>"
+}
+```
+
+```json Calendar Event
+{
+  "name": "<Template_name>",
+  "type": "text_message",
+  "suggestions": [
+    {
+      "title": "<title>",
+      "endTime": "<endtime>",
+      "postback": "<postback>",
+      "displayText": "<display text>",
+      "timeZone": "<timezone>",
+      "startTime": "start_time",
+      "description": "<description>",
+      "suggestionType": "calendar_event"
+    }
+  ],
+  "textMessageContent": "<TextMessageContent>"
+}
+```
+
+</CodeGroup>
+
+### Template type: Text Message with Media
+
+<ParamField body="type" type="string" required>
+  Always `"text_message_with_media"`.
+</ParamField>
+
+<ParamField body="documentUrl" type="string" required>
+  URL of the media file to attach. Supported formats usually include images (`.jpg`, `.png`),
+  videos (`.mp4`), and documents (`.pdf`, `.docx`). The file should be publicly accessible or
+  hosted via an approved CDN.
+</ParamField>
+
+<ParamField body="messageOrder" type="string" required>
+  Determines display order of media and text. Accepted values: `media_at_top` (media displayed
+  above text) or `text_message_at_top` (text displayed above media).
+</ParamField>
+
+<ParamField body="textMessageContent" type="string" required>
+  Message body shown with the media. Supports placeholders like `[custom_param]`.
+</ParamField>
+
+```json
+{
+  "name": "<Template_name>",
+  "type": "text_message_with_media",
+  "documentUrl": "<media_url>",
+  "messageOrder": "media_at_top",
+  "textMessageContent": "<TextMessageContent>"
+}
+```
+
+### Template type: Rich Card Standalone
+
+<ParamField body="name" type="string" required>
+  Unique identifier or name for the rich card template.
+</ParamField>
+
+<ParamField body="type" type="string" required>
+  Must be `"rich_card"`.
+</ParamField>
+
+<ParamField body="height" type="string" required>
+  Determines card height. Supported values: `SHORT_HEIGHT`, `MEDIUM_HEIGHT`, `TALL_HEIGHT`.
+</ParamField>
+
+<ParamField body="standAlone" type="object" required>
+  An object that defines media, text, and actions for this single rich card. See fields below.
+</ParamField>
+
+<ParamField body="orientation" type="string" required>
+  Defines the layout of card components. Supported values: `VERTICAL` or `HORIZONTAL`.
+</ParamField>
+
+**Parameters inside `standAlone`:**
+
+<ParamField body="mediaUrl" type="string" required>
+  Publicly accessible URL to the card's media (image, video, or document).
+</ParamField>
+
+<ParamField body="fileName" type="string">
+  Name of the file that has been uploaded.
+</ParamField>
+
+<ParamField body="cardTitle" type="string" required>
+  Title text shown on the card.
+</ParamField>
+
+<ParamField body="cardDescription" type="string" required>
+  Description or message text for the card. Can include placeholders like `[custom_param]`.
+</ParamField>
+
+<ParamField body="suggestions" type="array">
+  Optional list of interactive buttons (see Suggestions Object above). Can be left empty (`[]`)
+  if no actions are required.
+</ParamField>
+
+```json
+{
+  "name": "rich_card_promo",
+  "type": "rich_card",
+  "height": "SHORT_HEIGHT",
+  "standAlone": {
+    "mediaUrl": "<document_url>",
+    "cardTitle": "<card_title>",
+    "suggestions": [],
+    "cardDescription": "<card_description>"
+  },
+  "orientation": "VERTICAL"
+}
+```
+
+### Template type: Rich Card Carousel
+
+<ParamField body="name" type="string" required>
+  Template name, e.g. `"richCardCarouselP"`.
+</ParamField>
+
+<ParamField body="type" type="string" required>
+  Always `"carousel"`.
+</ParamField>
+
+<ParamField body="width" type="string" required>
+  Carousel width. One of `MEDIUM_WIDTH`, `SMALL_WIDTH`.
+</ParamField>
+
+<ParamField body="height" type="string" required>
+  Carousel card height. One of `SHORT_HEIGHT`, `TALL_HEIGHT`.
+</ParamField>
+
+<ParamField body="carouselList" type="array" required>
+  Array of carousel card objects — see fields below.
+</ParamField>
+
+<ParamField body="templateState" type="string">
+  Template state, e.g. `"Create"` or `"Submit"`.
+</ParamField>
+
+**Parameters inside each `carouselList` entry:**
+
+<ParamField body="mediaUrl" type="string" required>
+  Image/video URL used in the card.
+</ParamField>
+
+<ParamField body="fileName" type="string">
+  File name, e.g. `"marketing.png"`.
+</ParamField>
+
+<ParamField body="cardTitle" type="string" required>
+  Title of the carousel card, e.g. `"New York Store"`.
+</ParamField>
+
+<ParamField body="cardDescription" type="string" required>
+  Description shown below the title, e.g. `"Visit us in NYC and grab exciting deals!"`.
+</ParamField>
+
+<ParamField body="suggestions" type="array">
+  Array of suggested actions. Can be empty (`[]`).
+</ParamField>
+
+```json
+{
+  "name": "<Template_name>",
+  "type": "carousel",
+  "width": "MEDIUM_WIDTH",
+  "height": "SHORT_HEIGHT",
+  "carouselList": [
+    {
+      "mediaUrl": "<media_url>",
+      "cardTitle": "<card_title>",
+      "suggestions": [],
+      "cardDescription": "<card_description>"
+    },
+    {
+      "mediaUrl": "<media_url>",
+      "cardTitle": "<card_title>",
+      "suggestions": [],
+      "cardDescription": "<card_description>"
+    }
+  ]
+}
+```
+
+---
+
+## Fetch Template
+
+<ParamField header="apikey" type="string" required>
+  Your OneXtel API key.
+</ParamField>
+
+<ParamField header="Content-Type" type="string" required>
+  Must be `application/json`.
+</ParamField>
+
+**Endpoint:** `POST https://api.onexaura.com/oapi/templates/fetch`
+
+<Note>
+The Postman collection ("OmniChannel APIs") documents this endpoint at
+`{{domain}}/oapi/templates/fetch` (`{{domain}}` = `https://api.onexaura.com`), while the PDF's
+sample cURL request uses `https://api.onexaura.com/templates/fetch` (no `/oapi` prefix). The
+`/oapi/templates/fetch` path is used below as the authoritative version per the style guide —
+see the Gaps note.
+</Note>
+
+### cURL
+
+```bash
+curl --location 'https://api.onexaura.com/oapi/templates/fetch' \
+--header 'accept: application/json' \
+--header 'apikey: <api_key>' \
+--header 'Content-Type: application/json' \
+--data '{
+    "channel": "RCS",
+    "senderProfile": "<sender_profile>",
+    "messageType": "Promotional",
+    "pageNo": 1,
+    "limit": 100
+}'
+```
+
+### Request body
+
+<ParamField body="channel" type="string" required>
+  Messaging channel. Must be `"RCS"`.
+</ParamField>
+
+<ParamField body="senderProfile" type="string" required>
+  RCS sender profile identifier from which templates are fetched.
+</ParamField>
+
+<ParamField body="messageType" type="string" required>
+  RCS template category: `Promotional`, `Transactional`, or `OTP`.
+</ParamField>
+
+<ParamField body="status" type="string">
+  Filters templates based on approval status: `Approved`, `Pending`, or `Rejected`.
+</ParamField>
+
+<ParamField body="createdDate" type="string">
+  Filters templates by creation timestamp, local datetime format `YYYY-MM-DDTHH:mm:ss`.
+</ParamField>
+
+<ParamField body="templateName" type="string">
+  RCS template name to filter by.
+</ParamField>
+
+<ParamField body="pageNo" type="integer" required>
+  Page number for pagination. Must be a non-negative integer.
+</ParamField>
+
+<ParamField body="limit" type="integer" required>
+  Number of records to return per page.
+</ParamField>
+
+<Note>
+The Postman collection's commented-out fields also list `start_date` and `end_date` as
+alternative date-range filters, in addition to `templateName`, `status`, and `createdDate`.
+These appear only in Postman, not in the PDF's parameter table — see Gaps.
+</Note>
+
+### Sample request
+
+```json
+{
+  "channel": "rcs",
+  "senderProfile": "Rcssenderprofile",
+  "messageType": "Promotional",
+  "status": "approved",
+  "createdDate": "2025-06-23 12:02:28",
+  "templateName": "jiocarouseltest01",
+  "pageNo": 0,
+  "limit": 1
+}
+```
+
+### Response
+
+```json
+{
+  "page_details": {
+    "pageNo": 0,
+    "limit": 1
+  },
+  "data": [
+    {
+      "name": "jiocarouseltest01",
+      "type": "carousel",
+      "width": "MEDIUM_WIDTH",
+      "height": "SHORT_HEIGHT",
+      "carouselList": [
+        {
+          "fileName": "temp.png",
+          "mediaUrl": "https://warcs.1xtel.dev/media/media/ce4429b6-eae6-4a0c-9af-9a3687687179%2Flaptop.jpeg",
+          "cardTitle": "title - [c1-var1]",
+          "suggestions": [
+            {
+              "postback": "postback - [c1-pd1]",
+              "displayText": "text - [c1-s1]",
+              "suggestionType": "reply"
+            },
+            {
+              "url": "https://www.onextel.com/",
+              "postback": "postback - [c1-pd2]",
+              "application": "Webview-Tall",
+              "displayText": "url - [c1-s2]",
+              "suggestionType": "url_action"
+            }
+          ],
+          "thumbnailUrl": "",
+          "cardDescription": "desc - [c1-var2]",
+          "thumbnailFileName": ""
+        },
+        {
+          "fileName": "temp.png",
+          "mediaUrl": "https://warcs.1xtel.dev/media/media/04927c40-28e0-4781-a427-ddacfc69cc8d%2Foffer.jpeg",
+          "cardTitle": "titile - [c2-t2]",
+          "suggestions": [
+            {
+              "postback": "postback - [c2-pd2]",
+              "displayText": "suggestion - [c2-s1]",
+              "suggestionType": "reply"
+            }
+          ],
+          "thumbnailUrl": "",
+          "cardDescription": "desc - [c2-d2]",
+          "thumbnailFileName": ""
+        }
+      ],
+      "templateState": "Create",
+      "created_on": "2025-08-26T12:27:21.684",
+      "updated_on": "2025-08-26T12:31:22.536",
+      "status": "Approved",
+      "category": "Carousel"
+    }
+  ]
+}
+```
+
+<ResponseField name="page_details" type="object">
+  Pagination metadata echoing the requested `pageNo` and `limit`.
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of matching template objects. Each object's shape mirrors the create-template payload
+  for its `type` (`text_message`, `text_message_with_media`, `rich_card`, or `carousel`), plus:
+
+  <Expandable title="template metadata fields">
+    <ResponseField name="templateState" type="string">
+      Template state, e.g. `Create`.
+    </ResponseField>
+    <ResponseField name="created_on" type="string">
+      Creation timestamp (ISO 8601).
+    </ResponseField>
+    <ResponseField name="updated_on" type="string">
+      Last update timestamp (ISO 8601).
+    </ResponseField>
+    <ResponseField name="status" type="string">
+      Approval status: `Approved`, `Pending`, or `Rejected`.
+    </ResponseField>
+    <ResponseField name="category" type="string">
+      Template category, e.g. `Carousel`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Next steps
+
+Once a template is `Approved`, reference its name as `templateCode` when sending a message —
+see [Send a template message](/api-reference/rcs/send-template-message).

@@ -1,0 +1,89 @@
+---
+title: "RCS Messaging Overview"
+description: "Authenticate, create and fetch RCS templates, and send RCS messages through the OneXtel Omni platform."
+---
+
+The OneXtel RCS Templates and Send Message API provides a robust, secure, and flexible way to
+integrate with your system, enabling seamless communication capabilities within your
+applications. With this API, you can efficiently manage outbound campaigns and ensure reliable
+message delivery to users worldwide.
+
+To get started, obtain an API key. Once you have the key, you can begin making requests to the
+endpoints and start using the messaging services right away.
+
+## Authentication
+
+Every request is authenticated with your API key passed in the `apikey` request header:
+
+```bash
+--header 'apikey: YOUR_API_KEY'
+```
+
+JSON endpoints also require:
+
+```bash
+--header 'Content-Type: application/json'
+```
+
+## Base URL
+
+```
+https://api.onexaura.com
+```
+
+## Endpoints
+
+| API | Method | Endpoint |
+| --- | --- | --- |
+| [Create Template](/api-reference/rcs/templates) | POST | `/rcs/templates` |
+| [Fetch Templates](/api-reference/rcs/templates) | POST | `/oapi/templates/fetch` |
+| [Send Template Message](/api-reference/rcs/send-template-message) | POST | `/oapi/send_sms` |
+| [Send Non-Template Message](/api-reference/rcs/send-messages) | POST | `/oapi/send_sms` |
+| [Media Upload](/api-reference/rcs/media) | POST | `/rcs/mediaupload` |
+| [Opt-in / Opt-out](/api-reference/rcs/opt-in-opt-out) | GET/POST/DELETE | `/opt/{in,out}/rcs` |
+
+<Note>
+The RCS Send Message API and Fetch Template API share the same endpoints as the other
+OnexAura channels (`/oapi/send_sms`, `/oapi/templates/fetch`). The channel is determined by
+the request body: RCS messages are wrapped in an `rcs` array, and template fetches set
+`"channel": "RCS"`.
+</Note>
+
+## Message types
+
+Every RCS message is classified with a `messageType` of `Promotional`, `Transactional`, or
+`OTP`.
+
+You can send two kinds of message bodies through the Send Message API:
+
+- **Non-template messages** — free-form content built in the request itself:
+  [plain text, rich card standalone, and rich card carousel](/api-reference/rcs/send-messages).
+- **Template messages** — pre-approved templates referenced by `templateCode`, optionally
+  personalized with `customParams`. See
+  [Send template messages](/api-reference/rcs/send-template-message).
+
+## Response format
+
+The Send Message API returns an array with one result object per message:
+
+```json
+[
+  {
+    "messageId": "33mXmXf0myfFe7lA1QpPcDJcVaH",
+    "code": 200,
+    "status": "success"
+  }
+]
+```
+
+<ResponseField name="messageId" type="string">
+  Unique identifier for the submitted message. Use it to correlate delivery reports.
+</ResponseField>
+
+<ResponseField name="code" type="integer">
+  Result code. `200` indicates the message was accepted.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Result status, e.g. `success`.
+</ResponseField>
