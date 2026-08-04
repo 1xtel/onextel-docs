@@ -1,0 +1,88 @@
+---
+title: "API Keys"
+description: "Generate and manage the API keys that authenticate API calls, plugin connections, and callback registrations."
+---
+
+An API key authenticates everything that talks to OneXtel from outside the portal — direct
+[API](/api-reference/whatsapp/overview) calls, every [plugin](/plugins/overview), and the
+[callbacks](/guides/platform/callback-configuration) that report delivery back to you.
+
+Keys are account-level, not channel-level: the same key works across the channels your account
+is entitled to.
+
+<Note>
+Callbacks are registered **against a specific key**. Messages sent with a key that has no
+callback registered will send perfectly well and report nothing back — so if you issue a second
+key for a new integration, remember to register its callbacks too.
+</Note>
+
+## Generate a key
+
+<Steps>
+  <Step title="Open the API tab">
+    In the left pane, click the **API** menu, then click the **API** tab.
+  </Step>
+  <Step title="Generate">
+    Click **+ Generate API**.
+  </Step>
+  <Step title="Configure the key">
+    In the pop-up, select the **Account Type**, select the **Scrub DND** checkbox if required,
+    and enter a description for the key.
+  </Step>
+  <Step title="Submit">
+    Click **Submit**. The platform generates the API key.
+  </Step>
+</Steps>
+
+<Warning>
+**Account type cannot be changed once the key is created.** If you pick the wrong type you will
+need to generate a replacement key and re-point every integration using it — including its
+callback registrations. Confirm the type before submitting.
+</Warning>
+
+Write a real description. A key labelled only by its creation date is impossible to retire
+safely later, because nobody can tell what would break.
+
+## View keys
+
+In the left pane, click the **API** menu, then the **API** tab, and click **Show API**. The
+platform lists your keys and their details.
+
+## Edit a key
+
+<Steps>
+  <Step title="Open the API list">
+    Click **API**, then **Show API** to display the keys and their details.
+  </Step>
+  <Step title="Open the edit action">
+    In the **Action** column, click the ellipsis (**...**) icon.
+  </Step>
+  <Step title="Save">
+    Make your changes and click **Submit**.
+  </Step>
+</Steps>
+
+## Delete a key
+
+<Steps>
+  <Step title="Open the API list">
+    Click **API**, then **Show API** to display the keys and their details.
+  </Step>
+  <Step title="Delete">
+    In the **Action** column, click the **Delete** icon.
+  </Step>
+  <Step title="Submit">
+    Click **Submit**.
+  </Step>
+</Steps>
+
+<Warning>
+Deleting a key immediately breaks every integration authenticating with it, and its registered
+callbacks stop firing. Check which plugins and applications use a key before removing it.
+</Warning>
+
+## Related
+
+- [Callback configuration](/guides/platform/callback-configuration)
+- [Plugins overview](/plugins/overview)
+- [Platform overview](/guides/platform/overview)

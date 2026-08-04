@@ -22,12 +22,16 @@
             "pages": [
               "guides/platform/overview",
               "guides/platform/getting-started",
+              "guides/platform/account-settings",
               "guides/platform/user-management",
               "guides/platform/roles",
               "guides/platform/credits",
+              "guides/platform/api-keys",
+              "guides/platform/phonebook",
               "guides/platform/blacklist",
               "guides/platform/callback-configuration",
               "guides/platform/vmn-configuration",
+              "guides/platform/notifications",
               "guides/platform/telco-reports",
               "guides/platform/all-schedule"
             ]
@@ -86,9 +90,7 @@
               "guides/sms/campaigns",
               "guides/sms/templates",
               "guides/sms/sender-id",
-              "guides/sms/phonebook",
-              "guides/sms/reports",
-              "guides/sms/settings"
+              "guides/sms/reports"
             ]
           },
           {
@@ -223,5 +225,17 @@
     "socials": {
       "website": "https://www.onextel.com"
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/guides/sms/phonebook",
+      "destination": "/guides/platform/phonebook",
+      "permanent": true
+    },
+    {
+      "source": "/guides/sms/settings",
+      "destination": "/guides/platform/account-settings",
+      "permanent": true
+    }
+  ]
 }

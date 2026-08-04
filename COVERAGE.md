@@ -46,15 +46,29 @@ A `guides/platform/` section now exists. Remaining gaps are marked **Missing**.
 | Telco Reports | **Done** — `platform/telco-reports` | V2 Aura p. 58 |
 | Signing in, TUC login | **Done** — `platform/getting-started` | V2 Aura pp. 8–9 |
 | Dashboard | **Done** — `platform/getting-started` | V2 Aura p. 24 |
-| API key generation | Covered, still filed under SMS — cross-linked from Platform overview, physical move pending | V2 Aura pp. 72–75 |
-| Phonebook — groups and contacts | Covered, still filed under SMS — same | V2 Aura pp. 77–84 |
-| Notifications | Covered, still filed under SMS — same | V2 Aura pp. 96–98 |
+| API key generation | **Done** — `platform/api-keys` (moved out of SMS) | V2 Aura pp. 72–75 |
+| Phonebook — groups and contacts | **Done** — `platform/phonebook` (moved out of SMS) | V2 Aura pp. 77–84 |
+| Notifications | **Done** — `platform/notifications` (moved out of SMS) | V2 Aura pp. 96–98 |
+| User profile / account settings | **Done** — `platform/account-settings` (moved out of SMS) | V2 Aura — |
 | DLT — entity IDs, sender IDs, templates, bulk upload | Partially, under SMS | V2 Aura pp. 59–71 |
 
-**On relocating the SMS-filed pages:** API keys, phonebook, and notifications are account-level,
-not SMS features, and belong in Platform. They are cross-linked from `platform/overview` for now
-rather than moved, because moving them changes their published URLs. Decide whether the deployed
-site can absorb redirects before doing the move.
+**Relocation completed (Aug 2026).** `guides/sms/settings` was split into
+`platform/account-settings`, `platform/api-keys`, and `platform/notifications`;
+`guides/sms/phonebook` became `platform/phonebook`. Two permanent redirects are registered in
+`docs.json`:
+
+| Old URL | New URL |
+|---------|---------|
+| `/guides/sms/phonebook` | `/guides/platform/phonebook` |
+| `/guides/sms/settings` | `/guides/platform/account-settings` |
+
+`/guides/sms/settings` had three sections going to three destinations; the redirect points at
+account-settings, since that carries the "settings" identity. Anyone deep-linking to the old
+`#api` or `#notifications` anchors lands on account-settings and needs one more click — acceptable,
+but worth knowing if those anchors were shared externally.
+
+The duplicated **Signing in** and **Dashboard** sections were removed from `guides/sms/overview`
+and replaced with a pointer to Platform.
 
 ### Layer 2 — Channel activation (no coverage)
 
