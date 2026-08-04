@@ -1,0 +1,108 @@
+---
+title: "Callback Configuration"
+description: "Register callback URLs in the OneXtel portal so delivery reports, inbound messages, and click events reach your own systems."
+---
+
+A **callback** is a URL OneXtel calls when something happens to a message — it was delivered, it
+failed, the recipient replied, or they tapped a link. Register the URL once against an API key,
+and every message sent with that key reports back to your system.
+
+Callbacks are configured per **API key** and per **channel**, so the same account can send
+delivery reports for WhatsApp and RCS to different endpoints, or route two products' traffic to
+two different systems.
+
+<Note>
+An API key with no callback registered still sends messages perfectly well — it simply reports
+nothing back. If messages are arriving but your system never hears about them, an unregistered
+callback is the first thing to check.
+</Note>
+
+## Add a callback
+
+<Steps>
+  <Step title="Open the Config section">
+    In the left pane, click **Config**, then select the **Callback Configuration** tab.
+  </Step>
+  <Step title="Start a new callback">
+    Click **+ Add New Callback** to open the Create Callback dialog.
+  </Step>
+  <Step title="Set the basic configuration">
+    | Field | Description |
+    | --- | --- |
+    | Title | A name for this callback configuration |
+    | Channel | The channel this callback applies to |
+    | API Key | The API key this callback is bound to — messages sent with any other key will not report here |
+  </Step>
+  <Step title="Set the request configuration">
+    | Field | Description |
+    | --- | --- |
+    | HTTP Method | `GET` or `POST` |
+    | Callback URL | The endpoint that receives the callback requests |
+    | Default Parameters | The parameters to include in the request, selected from the dropdown |
+    | Request Preview | A preview of the request as configured — use it to confirm the shape before saving |
+  </Step>
+  <Step title="Set the throughput limit">
+    Enter a **TPS** value to cap how many callback requests per second OneXtel sends you. Set
+    it to what your endpoint can absorb; a limit that is too high will cause dropped callbacks
+    if your endpoint cannot keep up.
+  </Step>
+  <Step title="Add headers, if required">
+    Enter a header **Key** and **Value**, then click **+** to add it. Use **Delete** to remove
+    a header, or **Reset** to clear the form.
+
+    Some integrations require a specific header — see [Headers](#headers).
+  </Step>
+  <Step title="Create">
+    Click **Create**. The callback appears in the Callback Configuration list with its title,
+    channel, method, URL, parameters, headers, TPS, and status.
+  </Step>
+</Steps>
+
+## Choosing default parameters
+
+Only the parameters you select are sent. Pick the ones your system actually needs — a smaller
+payload is faster to process and easier to parse — but include enough to correlate the callback
+with the original message.
+
+At minimum, select the message identifier so callbacks can be matched to sends. The
+`custref1`–`custref5` custom reference fields are echoed back exactly as you set them on the
+original send, which makes them the simplest way to carry your own campaign or order IDs
+through to the callback.
+
+For the parameters available per channel, see:
+
+- [RCS delivery notification](/api-reference/rcs/callback-delivery-notification)
+- [WhatsApp callback events](/api-reference/whatsapp/callback-events)
+- [SMS DLR callback](/api-reference/sms/dlr-callback)
+
+## Headers
+
+Headers are how a callback carries authentication or routing information the receiving system
+requires. Two common cases:
+
+- **Authentication.** If your endpoint expects a token or API key, add it as a header rather
+  than putting it in the URL.
+- **Onward routing.** Some connectors need the destination URL passed as a header so they can
+  forward the callback to a third-party platform. The [MoEngage plugin](/plugins/moengage), for
+  example, requires `callback_url` on WhatsApp and `cbUrl` on RCS.
+
+<Warning>
+Never put credentials in the Callback URL itself. URLs are logged along the request path;
+headers are the correct place for anything sensitive.
+</Warning>
+
+## One callback per event type
+
+A callback covers a single event type, so an integration that needs delivery reports *and*
+inbound messages *and* button clicks needs a separate configuration for each — same channel,
+same API key, different type and URL.
+
+This is why plugin setup often involves creating two or three callbacks in a row. See the
+[MoEngage](/plugins/moengage) or [WebEngage](/plugins/webengage) setup steps for a worked
+example.
+
+## Related
+
+- [Plugins overview](/plugins/overview)
+- [RCS delivery notification](/api-reference/rcs/callback-delivery-notification)
+- [WhatsApp callback events](/api-reference/whatsapp/callback-events)

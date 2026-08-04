@@ -1,0 +1,75 @@
+---
+title: "VMN Configuration"
+description: "Set up Virtual Mobile Numbers with keywords so incoming SMS triggers an action in your own systems."
+---
+
+A **Virtual Mobile Number (VMN)** is a number your customers can text. VMN Configuration lets
+you attach **keywords** to that number and forward matching messages to your own endpoint —
+so a customer texting `JOIN` to your VMN triggers something in your system.
+
+This is the inbound counterpart to sending: campaigns push messages out, VMN keywords pull
+responses back in.
+
+## Add keywords
+
+Keywords must exist before you can bind them to a configuration.
+
+<Steps>
+  <Step title="Open the Config section">
+    In the left pane, click **Config**, then select the **VMN Configuration** tab.
+  </Step>
+  <Step title="Add the keywords">
+    Click **+ Add Keywords**, select the **Virtual Mobile Number (VMN)** from the dropdown, and
+    enter the keywords you want to capture.
+  </Step>
+  <Step title="Save">
+    Click **Add Keywords**.
+  </Step>
+</Steps>
+
+## Add a VMN configuration
+
+<Steps>
+  <Step title="Start a new configuration">
+    On the **VMN Configuration** tab, click **+ VMN Configuration** to open the Pull SMS
+    Configuration dialog.
+  </Step>
+  <Step title="Select the number and keywords">
+    | Field | Description |
+    | --- | --- |
+    | Virtual Mobile Number (VMN) | The number this configuration applies to |
+    | Keywords | The keywords that route a message to this configuration |
+  </Step>
+  <Step title="Configure the request">
+    | Field | Description |
+    | --- | --- |
+    | Title | A name for this configuration |
+    | HTTP Method | `GET` or `POST` |
+    | URL | The endpoint that receives incoming requests |
+    | Default Parameters | The parameters to include in the request |
+    | Request Preview | A preview of the request as configured |
+  </Step>
+  <Step title="Add headers, if required">
+    Enter a header **Key** and **Value** and click **+** to add it, or **−** to remove one. Use
+    **Reset** to clear the entered values.
+  </Step>
+  <Step title="Add further configurations, if required">
+    Click **+ Add More Config** to add another configuration block under the same VMN — this is
+    how one number routes different keywords to different endpoints.
+  </Step>
+  <Step title="Create">
+    Click **Create**.
+  </Step>
+</Steps>
+
+<Note>
+Because each configuration block binds its own keywords to its own URL, a single VMN can serve
+several campaigns at once — `OFFER` to one endpoint, `STOP` to another — without needing more
+numbers.
+</Note>
+
+## Related
+
+- [Callback Configuration](/guides/platform/callback-configuration) — for delivery reports and
+  message events
+- [International SMS overview](/guides/sms/overview)

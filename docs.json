@@ -18,6 +18,17 @@
         "tab": "Guides",
         "groups": [
           {
+            "group": "Platform",
+            "pages": [
+              "guides/platform/overview",
+              "guides/platform/user-management",
+              "guides/platform/roles",
+              "guides/platform/credits",
+              "guides/platform/callback-configuration",
+              "guides/platform/vmn-configuration"
+            ]
+          },
+          {
             "group": "WhatsApp Campaigns",
             "pages": [
               "guides/whatsapp/quickstart",

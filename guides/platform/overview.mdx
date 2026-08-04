@@ -1,0 +1,109 @@
+---
+title: "Platform Overview"
+description: "How OneXtel accounts are structured — tenants, TUCs, users, roles, and credits — and what to set up before you send."
+---
+
+Everything you send through OneXtel runs inside an account structure that controls who can send,
+on which channels, and against whose credit. Understanding it takes two minutes and saves a lot
+of confusion later.
+
+## The account model
+
+<CardGroup cols={2}>
+  <Card title="TUC" icon="building">
+    A **Tenant User Customer** is the billable account. It holds the channel entitlements, the
+    charging rules, and the credit balance. Most customers are one TUC.
+  </Card>
+  <Card title="Child TUC" icon="sitemap">
+    A sub-account under a TUC, used to separate usage by department or by end client. An
+    aggregator onboarding its own customers gives each one a child TUC.
+  </Card>
+  <Card title="User" icon="user">
+    A person who signs in. Every user belongs to a TUC, and a TUC can have many users.
+  </Card>
+  <Card title="Role" icon="key">
+    What a user is allowed to do. Roles are assigned per user and control access feature by
+    feature.
+  </Card>
+</CardGroup>
+
+Credits flow down this structure: OneXtel allocates credits to the tenant, the tenant
+distributes them to each TUC, and messages sent by any user draw down that TUC's balance.
+
+<Note>
+Whether you can create TUCs depends on your access level. A direct enterprise customer has a
+single TUC created during onboarding and manages **users** within it. An aggregator or partner
+with child-TUC licences manages both. See [User management](/guides/platform/user-management).
+</Note>
+
+## What to set up before you send
+
+<Steps>
+  <Step title="Add your users">
+    Create a user for each person who needs access, and assign each one a role. See
+    [User management](/guides/platform/user-management) and [Roles](/guides/platform/roles).
+  </Step>
+  <Step title="Generate an API key">
+    Every API call and every plugin authenticates with an API key. Generate one under **API →
+    Generate an API** in the portal — see [API keys](/guides/sms/settings#api).
+  </Step>
+  <Step title="Register your callbacks">
+    Delivery reports, inbound messages, and click events only reach your systems once a
+    callback is registered against your API key. See
+    [Callback configuration](/guides/platform/callback-configuration).
+  </Step>
+  <Step title="Activate your channels">
+    Each channel needs its own sender registered before you can send — a WhatsApp Business
+    number, an [RCS agent](/guides/rcs-platform/sender-profiles), or an
+    [SMS sender ID](/guides/sms/sender-id).
+  </Step>
+  <Step title="Get your templates approved">
+    WhatsApp and RCS templates must be approved before a campaign can use them, and SMS
+    templates must be DLT-registered where applicable.
+  </Step>
+</Steps>
+
+## Charging and billing
+
+Charging is configured per TUC and applies to everything sent from it.
+
+**Charge point.** Each message category — OTP, transactional, promotional, government, SIM
+route, and a default — is charged either **On Submission**, the moment the message is accepted
+by the platform, or **On Delivery**, only once it actually reaches the recipient. On Delivery is
+the more favourable setting, since undelivered messages cost nothing.
+
+**Billing type.** **Prepaid** draws down a balance you top up in advance; **Postpaid** bills for
+usage after the fact.
+
+**Validity.** The number of days the charging configuration stays active.
+
+## Data masking
+
+Two independent settings control what account users can see in reports:
+
+| Setting | Effect |
+| --- | --- |
+| Mask Phone | Recipient phone numbers are partially hidden |
+| Mask Content | Message content is partially hidden |
+
+Both are set per TUC. Use them where staff need to monitor delivery performance without seeing
+customer data — a common requirement for outsourced support teams.
+
+## Platform features
+
+| Feature | What it does |
+| --- | --- |
+| [User management](/guides/platform/user-management) | Create and manage TUCs and users |
+| [Roles](/guides/platform/roles) | Control what each user can see and do |
+| [Credits](/guides/platform/credits) | View allocation and add or deduct credits |
+| [Callback configuration](/guides/platform/callback-configuration) | Register URLs for delivery reports and events |
+| [VMN configuration](/guides/platform/vmn-configuration) | Route inbound SMS by keyword |
+| [API keys](/guides/sms/settings#api) | Generate and manage keys for API and plugin access |
+| [Phonebook](/guides/sms/phonebook) | Manage contact groups |
+| [Notifications](/guides/sms/settings#notifications) | Configure account alerts |
+
+<Note>
+Optional per-TUC settings — two-factor authentication, maker-checker approval workflow, time
+windows, template auto-match, and message expiry — are enabled at the account level. Contact
+your account manager to change them.
+</Note>
