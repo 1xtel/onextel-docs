@@ -1,0 +1,102 @@
+---
+title: "Zoho CRM"
+description: "Send SMS from Zoho CRM leads, contacts, and accounts through OneXtel, manually or automatically via workflow rules."
+---
+
+The Zoho CRM plugin adds OneXtel SMS to your Lead, Contact, and Account modules. Sales users
+send manually from a record, or you trigger sends automatically from workflow rules. Every send
+is logged to an SMS Report module for tracking and audit.
+
+## Scope
+
+<CardGroup cols={2}>
+  <Card title="Manual sends" icon="paper-plane">
+    Send from the Lead, Contact, or Account module with a button on the navigation bar.
+  </Card>
+  <Card title="Workflow automation" icon="gears">
+    Trigger SMS from Zoho workflow rules on record actions.
+  </Card>
+  <Card title="Template management" icon="table-columns">
+    Register DLT-approved templates in a dedicated SMS Template module.
+  </Card>
+  <Card title="Reporting" icon="chart-line">
+    Every send is logged to the SMS Report module.
+  </Card>
+</CardGroup>
+
+## Setup
+
+<Steps>
+  <Step title="Install the app">
+    Download and install the OneXtel application from the Zoho Marketplace. A callback URL is
+    generated on install — send it to the OneXtel team so delivery reports can be routed back
+    to your CRM.
+  </Step>
+  <Step title="Configure your OneXtel account">
+    Find **OneXtel Account** in the top navigation bar — if it is not visible, click the
+    three-dot overflow menu. Click **Create OneXtel Account** and fill in:
+
+    | Field | Where to find it |
+    | --- | --- |
+    | OneXtel Account Name | Any name you choose |
+    | Sender ID | Your OneXtel account |
+    | API Key | **API → Show API Key** in the OneXtel portal |
+    | Entity ID | Your OneXtel account |
+
+    Click **Save**.
+  </Step>
+  <Step title="Add your templates">
+    Go to the **SMS Template** module and create a template with a name, the OneXtel template
+    ID, and the body text. Use the approved values from your OneXtel account rather than
+    retyping the content.
+  </Step>
+</Steps>
+
+<Note>
+Templates must be registered and approved on the DLT platform **and** present in your OneXtel
+account before you add them to Zoho CRM. See [DLT registration](/legacy/sms-dlt) for context on
+the approval process.
+</Note>
+
+## Sending SMS
+
+<Tabs>
+  <Tab title="Manually">
+    Open a Lead, Contact, or Account record and click **Send OneXtel SMS** on the navigation
+    bar. Fill in the phone number, account, sender ID, and template — plus any template
+    variables — then click **Send**.
+  </Tab>
+  <Tab title="From a workflow">
+    Click the settings icon at the top right and select **Workflow Rules → Create Rule**.
+    Configure the rule against the Lead, Contact, or Account module, then choose
+    **SendOnextelSMS (OneXtel)** as the action and select the template to send. Save the rule
+    and enable it.
+  </Tab>
+</Tabs>
+
+## Reporting
+
+Every SMS sent through the plugin creates an entry in the **SMS Report** module, giving you a
+per-message record for tracking and auditing.
+
+## Requirements
+
+- A Zoho CRM account with permission to install from the Zoho Marketplace.
+- A OneXtel account with SMS enabled, plus your Sender ID, API key, and Entity ID.
+- DLT-approved templates registered in OneXtel.
+
+## Limitations
+
+- **SMS only.** WhatsApp and RCS are in development — see
+  [Coming soon](/plugins/overview#coming-soon).
+- **Zoho CRM API limits apply.** High-volume sends are subject to your Zoho plan's API call
+  limits, which are enforced by Zoho before requests reach OneXtel. See
+  [Zoho's API limits documentation](https://www.zoho.com/crm/developer/docs/api/v7/api-limits.html).
+- **Templates are entered manually.** There is no automatic sync from OneXtel, so a template
+  edited in OneXtel must be updated in Zoho CRM too.
+
+## Related
+
+- [International SMS API](/api-reference/sms/overview)
+- [DLR callback](/api-reference/sms/dlr-callback)
+- [All plugins](/plugins/overview)

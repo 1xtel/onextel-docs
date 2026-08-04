@@ -1,0 +1,236 @@
+---
+title: "Salesforce Sales & Service Cloud"
+description: "Install the OneXtel managed package in Salesforce to send SMS and WhatsApp from records, Flows, and Apex, with reports stored in your own org."
+---
+
+The Salesforce package brings SMS and WhatsApp messaging into Sales Cloud and Service Cloud.
+Agents message contacts, leads, and accounts from the record itself; message history, delivery
+reports, and inbound replies are stored as records in your own org.
+
+This is a **native managed package** — no intermediary service sits between Salesforce and
+OneXtel. Your org calls the OneXtel APIs directly.
+
+## Scope
+
+<CardGroup cols={2}>
+  <Card title="Multiple accounts" icon="users">
+    Configure more than one OneXtel provider account in a single Salesforce org.
+  </Card>
+  <Card title="Object Templates" icon="table-columns">
+    Map approved OneXtel templates to Salesforce objects and bind placeholders to record
+    fields.
+  </Card>
+  <Card title="Send from anywhere" icon="paper-plane">
+    Send from a record button, from a Salesforce Flow, or programmatically from Apex.
+  </Card>
+  <Card title="Reporting in-org" icon="chart-line">
+    Every message, delivery report, and inbound reply is written to a per-channel Report
+    object.
+  </Card>
+</CardGroup>
+
+### Supported message types
+
+| Type | SMS | WhatsApp |
+| --- | :---: | :---: |
+| Text | ✅ | ✅ |
+| Media — image, video, document | — | ✅ |
+| Buttons — Copy Code, Copy Offer, URL, Phone Number, Reply with Payload | — | ✅ |
+| Carousel | — | ✅ |
+| Limited Time Offer (LTO) | — | ✅ |
+| Free-form (non-template) | — | ✅ |
+| Inbound — text, media, button reply, contact, location | — | ✅ |
+
+Delivery events `Sent`, `Delivered`, `Read`, and `Failed` are written back against the original
+message record. When a message fails, see
+[WhatsApp error codes](/api-reference/whatsapp/error-codes) for what the failure means.
+
+## Install the package
+
+<Steps>
+  <Step title="Get the install link">
+    Request the current package install link and password from OneXtel support. There are
+    separate packages for SMS and WhatsApp, and a WhatsApp variant that includes the inbox.
+  </Step>
+  <Step title="Point the link at your instance">
+    The install URL begins with `login.salesforce.com`. Replace `login` with your own instance
+    subdomain before opening it, then complete the install.
+  </Step>
+</Steps>
+
+## Configure delivery reports
+
+Delivery reports arrive over a public Salesforce Site, so the site and its Apex access must be
+set up before any status will return.
+
+<Steps>
+  <Step title="Create a site">
+    Go to **Setup → Sites → New** and fill in:
+
+    | Field | Value |
+    | --- | --- |
+    | Site Label | `DLR Site`, or any name you prefer |
+    | Active | Enabled |
+    | Active Site Home Page | `InMaintenance`, or any page |
+
+    Click **Save**.
+  </Step>
+  <Step title="Enable Apex class access">
+    Open the site, click **Public Access Settings**, then **Enabled Apex Class Access → Edit**.
+
+    For **SMS**, enable `OneXtel.SMSReportUpdateApi`.
+
+    For **WhatsApp**, enable all of:
+
+    ```
+    OneXtel.CustomResponse            OneXtel.SendWaQueueable
+    OneXtel.ProviderController        OneXtel.TemplateController
+    OneXtel.SMSPayloadController      OneXtel.WADLRReportUpdateApi
+    OneXtel.SMSReportUpdateApi        OneXtel.WAInboundUpdateApi
+    OneXtel.SendSMSController         OneXtel.WhatsAppService
+    OneXtel.SendSmsQueueable          OneXtel.WhatsAppTemplateController
+    ```
+
+    Click **Save**.
+  </Step>
+  <Step title="Grant object access (WhatsApp)">
+    Still in the site's profile, click **Edit** and select **OneXtel** under Custom App
+    Settings, then check everything under Events and Custom Objects.
+
+    In **Object Manager**, search for `WhatsApp`, open **Object Access → Profiles → Edit**,
+    and enable all checkboxes for the DLR profile.
+  </Step>
+  <Step title="Share the DLR link with OneXtel">
+    Go to **Sites** and copy the Site URL, then append the channel's path:
+
+    ```
+    {siteUrl}/services/apexrest/OneXtel/sms-report-update
+    {siteUrl}/services/apexrest/OneXtel/wa-dlr-update
+    ```
+
+    Send the resulting link to OneXtel support so delivery reports can be routed to your org.
+  </Step>
+</Steps>
+
+## Configure an account and templates
+
+<Steps>
+  <Step title="Add a provider account">
+    From the App Launcher, open **OneXtel**, go to the **Provider Account** tab, click **New**,
+    fill in your OneXtel credentials, and save. Repeat for each account you need.
+  </Step>
+  <Step title="Create templates">
+    Open the **SMS Template** or **WhatsApp Template** tab and click **New**.
+
+    SMS templates come in two kinds. A **Default Template** is the base template approved in
+    OneXtel — for example `Hi {{1}}, Thanks for signing up`. An **Object Template** binds that
+    base template to a Salesforce object, assigning each placeholder to a field, so `{{1}}`
+    resolves to `firstname`.
+
+    WhatsApp templates are typed as **Default**, **Marketing**, **Carousel**, or **LTO**.
+    Select the object, the provider, and the approved template, then enter variable values and
+    any card URLs before saving.
+  </Step>
+</Steps>
+
+<Warning>
+Each Object Template is restricted to **one** Salesforce object. A template cannot combine
+fields drawn from multiple objects — surface any related data on the target object first, for
+example with a formula field.
+</Warning>
+
+## Add the send button to an object
+
+The Contact object ships with the button already configured. For any other standard or custom
+object, create it yourself.
+
+<Steps>
+  <Step title="Create the action">
+    Go to **Setup → Object Manager**, select the target object, then **Buttons → New Action**:
+
+    | Field | SMS | WhatsApp |
+    | --- | --- | --- |
+    | Action Type | Lightning Web Components | Lightning Web Components |
+    | Lightning Web Component | `c:sendSmsForm` | `sendWhatsappAction` |
+    | Standard Label Type | None | None |
+    | Label | `Send SMS` | `Send WhatsApp` |
+    | Name | `Send_SMS` | `Send_whatsapp` |
+  </Step>
+  <Step title="Add it to the page layout">
+    Open the object's layout, find the button under **Mobile and Lightning Actions**, and drag
+    it into **Salesforce Mobile and Lightning Experience Actions**. If it will not drag, click
+    **Override the predefined actions** first. Save.
+  </Step>
+  <Step title="Link reports back to the object (SMS)">
+    So SMS reports resolve to the originating record, go to **Object Manager → SMS Report →
+    Fields & Relationships → New** and create a lookup relationship to the related object.
+    Name it `REF {objectname}` with API name `REF_{objectname}` — for example `REF Account` /
+    `REF_Account`. Skip this if the lookup already exists.
+  </Step>
+</Steps>
+
+## Send a message
+
+<Tabs>
+  <Tab title="From a record">
+    Open the record, click **Send SMS** or **Send WA Msg**, choose the phone field, the OneXtel
+    account, and the Object Template, then send. The result is saved to the channel's Report
+    object.
+
+    For WhatsApp you can also select **Freeform** instead of a template, pick a provider, and
+    type your own message — subject to WhatsApp's session window rules.
+  </Tab>
+  <Tab title="From a Flow">
+    Open Flow, choose **Start From Scratch → Record-Triggered Flow**, and select the object,
+    trigger, and condition. Add **Apex Action → Send SMS** or **WhatsApp Message**, then
+    specify the provider account ID, record ID, template ID, and phone value. Save and
+    activate.
+  </Tab>
+  <Tab title="From Apex">
+    Open the Developer Console and go to **Debug → Open Execute Anonymous Window**.
+
+    ```apex SMS
+    String accountId  = 'YOUR_PROVIDER_ACCOUNT_ID';
+    String templateId = 'YOUR_OBJECT_TEMPLATE_ID';
+    String recordId   = 'YOUR_SOBJECT_ID';
+    String phoneField = 'Phone';   // either phoneField or phone is mandatory
+    String phone      = null;
+
+    OneXtel.CustomResponse response = OneXtel.SendSmsController.sendSms(
+        accountId, templateId, recordId, phoneField, phone);
+    System.debug(response);
+    ```
+
+    ```apex WhatsApp
+    String templateId = 'YOUR_OBJECT_TEMPLATE_ID';
+    String recordId   = 'YOUR_SOBJECT_ID';
+    String phoneField = 'Phone';   // either phoneField or phone is mandatory
+    String phone      = '919999999999';
+
+    OneXtel.WhatsAppService.sendMessage(recordId, templateId, phoneField, phone);
+    ```
+  </Tab>
+</Tabs>
+
+## Reporting
+
+Outbound messages appear in the channel's Report tab, keyed by template reference. Inbound
+replies generate their own report entries, with template details mapped onto the record's
+fields.
+
+## Limitations
+
+- **Inbound media is capped at 5 MB.** Larger attachments on incoming WhatsApp messages are
+  not processed.
+- **One object per Object Template.** Templates cannot span multiple Salesforce objects.
+- **Salesforce platform limits apply.** Sends are subject to Salesforce API and job limits.
+  High-volume sends that exceed Apex governor limits fail at the Salesforce layer before
+  reaching OneXtel — batch large sends accordingly.
+- **Message-type support follows the channel.** Anything WhatsApp itself restricts — session
+  windows, template category rules — applies here unchanged.
+
+## Related
+
+- [Salesforce Marketing Cloud plugin](/plugins/salesforce-marketing-cloud)
+- [WhatsApp API overview](/api-reference/whatsapp/overview)
+- [All plugins](/plugins/overview)

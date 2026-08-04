@@ -1,0 +1,147 @@
+---
+title: "RCS Delivery Notification"
+description: "Receive RCS delivery status and user events on your own endpoint, with the full parameter list and sample payloads."
+---
+
+OneXtel pushes RCS delivery status and user events to an endpoint you host. Register the
+endpoint against your API key, and every message you send reports back its outcome — delivered,
+failed, or a user interaction such as a suggestion tap.
+
+## Configure the callback
+
+Register your endpoint in the OneXtel portal under **Configuration → Add New Callback**. Set
+the channel to `RCS`, choose the event type you want to receive, set the HTTP method to `POST`,
+and enter your endpoint URL. The callback is bound to the API key you select, so a key without
+a registered callback sends messages but reports no status.
+
+## Parameters
+
+None of the parameters are individually mandatory, but **at least one must be configured** for
+the callback to be valid. Select the fields you want in the callback configuration; only those
+are included in the payload.
+
+<ResponseField name="apiKey" type="string">
+  Unique authentication key used to identify and authorize the API request.
+</ResponseField>
+
+<ResponseField name="botId" type="string">
+  Identifier of the bot that handled or triggered the message or event.
+</ResponseField>
+
+<ResponseField name="messageId" type="string">
+  Unique ID assigned to the message for tracking. Use it to correlate the callback with the
+  `messageId` returned when you sent the message.
+</ResponseField>
+
+<ResponseField name="entityType" type="string">
+  Event type received in the callback — for example `USER_EVENT`.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Actual message text or payload sent, or attempted to be delivered.
+</ResponseField>
+
+<ResponseField name="sendTime" type="string">
+  Timestamp when the message was originally sent.
+</ResponseField>
+
+<ResponseField name="sender" type="string">
+  Name or ID of the entity sending the message.
+</ResponseField>
+
+<ResponseField name="senderPhoneNumber" type="string">
+  Phone number from which the message was sent.
+</ResponseField>
+
+<ResponseField name="userPhoneNumber" type="string">
+  Recipient's phone number.
+</ResponseField>
+
+<ResponseField name="errCode" type="string">
+  Error code returned when message delivery fails. See
+  [RCS operator error codes](/api-reference/rcs/error-codes) for what each value means and
+  whether a retry is worthwhile.
+</ResponseField>
+
+<ResponseField name="error" type="string">
+  Description of the error associated with `errCode`.
+</ResponseField>
+
+<ResponseField name="custref1" type="string">
+  Custom reference field 1, used for client-specific metadata.
+</ResponseField>
+
+<ResponseField name="custref2" type="string">
+  Custom reference field 2, used for client-specific metadata.
+</ResponseField>
+
+<ResponseField name="custref3" type="string">
+  Custom reference field 3, used for client-specific metadata.
+</ResponseField>
+
+<ResponseField name="custref4" type="string">
+  Custom reference field 4, used for client-specific metadata.
+</ResponseField>
+
+<ResponseField name="custref5" type="string">
+  Custom reference field 5, used for client-specific metadata.
+</ResponseField>
+
+<Note>
+The `custref1`–`custref5` fields are echoed back exactly as you set them on the original send,
+which makes them the simplest way to carry your own campaign or order identifiers through to
+the callback. See [Send messages](/api-reference/rcs/send-messages).
+</Note>
+
+## Sample payloads
+
+<CodeGroup>
+
+```json Incoming
+{
+  "submitTs": 1765261552576,
+  "entity": {
+    "messageId": "<message id>",
+    "sendTime": "2025-12-09T06:25:51.585844Z",
+    "text": "Hey"
+  },
+  "sender": "workingp",
+  "userPhoneNumber": "<+91 user phone number>"
+}
+```
+
+```json Outgoing
+{
+  "api_key": "<apiKey>",
+  "custref1": "<custom reference>",
+  "custref2": "<custom reference>",
+  "custref3": "<custom reference>",
+  "custref4": "<custom reference>",
+  "custref5": "<custom reference>",
+  "entityType": "USER_EVENT",
+  "messageId": "<message id>",
+  "sendTime": "2025-12-09T06:25:52.857724Z",
+  "sender": "workingp",
+  "senderPhoneNumber": "<+91 sender phone number>",
+  "tuc_id": 2000,
+  "userPhoneNumber": "<+91 user phone number>"
+}
+```
+
+</CodeGroup>
+
+The **incoming** payload is what OneXtel receives from the RCS platform. The **outgoing**
+payload is what OneXtel posts to your endpoint — this is the one your handler must parse.
+
+<Warning>
+The outgoing sample sends the key as `api_key`, while the parameter table names it `apiKey`.
+The sample also carries a `tuc_id` field that is not in the parameter list. Both are reproduced
+as documented — confirm the exact field names against a live callback before you write strict
+parsing.
+</Warning>
+
+## Related
+
+- [Send RCS messages](/api-reference/rcs/send-messages)
+- [RCS operator error codes](/api-reference/rcs/error-codes)
+- [RCS API overview](/api-reference/rcs/overview)

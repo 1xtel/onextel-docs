@@ -1,0 +1,126 @@
+---
+title: "LeadSquared"
+description: "Install and configure the OneXtel WhatsApp connector in LeadSquared to message leads, with delivery reports and replies written back to the lead."
+---
+
+The LeadSquared plugin adds WhatsApp to LeadSquared's messaging actions. Sales and marketing
+teams message leads from the same screens they already use, and replies and delivery status
+come back against the lead.
+
+## Scope
+
+<CardGroup cols={2}>
+  <Card title="Outbound" icon="paper-plane">
+    Template and free-form WhatsApp messages sent from lead actions or from an automation.
+  </Card>
+  <Card title="Inbound" icon="reply">
+    Customer replies routed back into LeadSquared, optionally generating new leads.
+  </Card>
+  <Card title="Delivery reports" icon="circle-check">
+    Sent, delivered, and failed status synced back for every message.
+  </Card>
+  <Card title="Compliance" icon="shield-check">
+    Opt-in or opt-out enforcement mapped to a lead field, with a daily message limit.
+  </Card>
+</CardGroup>
+
+### Supported message types
+
+| Direction | Supported |
+| --- | --- |
+| **Outbound** | Text, Image, Video, Document, Location, Contact |
+| **Inbound** | Free-form text, and media template messages — video, document, image, text header and footer, and button |
+
+## Setup
+
+<Steps>
+  <Step title="Install the app">
+    In LeadSquared, go to **Apps → Apps Marketplace** and install **WhatsApp Business**.
+  </Step>
+  <Step title="Configure basic details">
+    Open the WhatsApp Business app and click **Configure** under settings. If this is a new
+    handshake, click **Add a new number**, then set:
+
+    - **Account Name**
+    - **Enable Lead Generation on Incoming Message** — optional, creates a lead when an
+      unknown number messages you
+    - **Lead Source** — if required
+
+    Click **Save**.
+  </Step>
+  <Step title="Authenticate">
+    Go to the **Authentication** tab and provide:
+
+    | Field | Value |
+    | --- | --- |
+    | Client Base URL | The connector URL supplied by OneXtel |
+    | Username | The user's phone number |
+    | Password | Your OneXtel API key |
+    | Webhook URL | Generated automatically — leave as is |
+
+    Click **Save**. LeadSquared then signs in against the connector and stores the API token it
+    receives; your settings, including webhook details, are saved at the same time.
+  </Step>
+  <Step title="Map activity and number fields">
+    Under **Advanced Settings**, select **WhatsApp Message** as the activity under Activity
+    Mapping, choose **Mobile Number** as the default WhatsApp number field, and set your
+    default country code — for example `+91`.
+  </Step>
+  <Step title="Set compliance rules">
+    Choose **Opt-Out** or **Opt-In** depending on your requirement, and map the corresponding
+    lead field — for example **Do Not Call**. Review the message limit (for example 1000/day)
+    and click **Save**.
+  </Step>
+  <Step title="Add templates">
+    Go to **Apps → WhatsApp Templates** and click **Add New Template**. Enter the **Template
+    ID** and **Namespace** from OneXtel, then work through the following pages to add the
+    header (image, video, document, or text), the body content, and finally the footer and
+    buttons.
+  </Step>
+</Steps>
+
+## Send a message
+
+Go to **With Masters → Manage With Masters**, select a master, then choose
+**Messaging → WhatsApp → Send Message to Lead**.
+
+Select the template to send, then choose which user the message is sent from. Click **Send** — a
+confirmation appears once the message is accepted, and each send returns a unique identifier
+used to correlate the delivery report.
+
+## Sending from automations
+
+The plugin responds to a LeadSquared custom event, so WhatsApp sends can be triggered from your
+existing lead workflows rather than only by hand — for example when a lead reaches a particular
+stage.
+
+## Reporting
+
+| To see | Go to |
+| --- | --- |
+| Delivery status — sent, delivered, failed | **Apps → WhatsApp Reports → Delivery Reports** |
+| Customer replies | **Apps → WhatsApp Reports → Delivery Reports → Incoming Messages** |
+
+## Requirements
+
+- An active LeadSquared account with access to the Apps Marketplace.
+- A OneXtel account with WhatsApp enabled, a registered WhatsApp Business number, and your
+  API key.
+- WhatsApp templates approved in OneXtel before they can be added in LeadSquared. See
+  [Create templates](/api-reference/whatsapp/templates-create).
+
+## Limitations
+
+- **WhatsApp only.** RCS and SMS are not covered by this plugin.
+- **Templates are registered by ID, not synced.** LeadSquared references the OneXtel template
+  ID and namespace; it does not create or submit templates for approval, and it will not pick
+  up edits made in OneXtel.
+- **A daily message limit applies** per the value set during configuration.
+- Message types outside the supported list above fall back to the
+  [WhatsApp API](/api-reference/whatsapp/send-template-message).
+
+## Related
+
+- [WhatsApp API overview](/api-reference/whatsapp/overview)
+- [Delivery notification callback](/api-reference/whatsapp/callback-delivery-notification)
+- [All plugins](/plugins/overview)

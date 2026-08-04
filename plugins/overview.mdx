@@ -1,0 +1,119 @@
+---
+title: "Plugins & Connectors"
+description: "Send WhatsApp, RCS, and SMS through OneXtel directly from Salesforce, MoEngage, WebEngage, LeadSquared, Shopify, Zoho CRM, and Optimove."
+---
+
+OneXtel plugins let your team send messages through OneXtel from the tools they already work
+in — your CRM, your marketing automation platform, your storefront. Campaigns are built and
+triggered where they always were; OneXtel handles template delivery, carrier routing, delivery
+reports, and inbound replies underneath.
+
+## Available plugins
+
+| Plugin | Channels | Build campaigns in |
+| --- | --- | --- |
+| [Salesforce Sales & Service Cloud](/plugins/salesforce) | SMS, WhatsApp | Salesforce records, Flows, and Apex |
+| [Salesforce Marketing Cloud](/plugins/salesforce-marketing-cloud) | SMS, WhatsApp | Journey Builder |
+| [MoEngage](/plugins/moengage) | WhatsApp, RCS | MoEngage campaigns |
+| [WebEngage](/plugins/webengage) | WhatsApp, RCS | WebEngage campaigns |
+| [LeadSquared](/plugins/leadsquared) | WhatsApp | Lead actions and automations |
+| [Shopify](/plugins/shopify) | SMS, WhatsApp, RCS | Store event triggers |
+| [Zoho CRM](/plugins/zoho-crm) | SMS | Modules and workflow rules |
+| [Optimove](/plugins/optimove) | SMS | Optimove Campaign Builder |
+
+## What each plugin covers
+
+Every plugin covers the same four areas. What differs is how much of each the host platform
+itself can express — a limitation of the platform, not of OneXtel.
+
+<CardGroup cols={2}>
+  <Card title="Outbound messaging" icon="paper-plane">
+    Send approved templates and, where the channel allows, free-form messages. Supported
+    message types vary by plugin — see each page.
+  </Card>
+  <Card title="Template handling" icon="table-columns">
+    Templates approved in OneXtel are made available inside the host platform, so campaign
+    builders select from the same approved list.
+  </Card>
+  <Card title="Delivery reports" icon="circle-check">
+    Sent, delivered, read, and failed events flow back into the host platform's own reporting,
+    so campaign performance stays in one place.
+  </Card>
+  <Card title="Inbound messages" icon="reply">
+    Customer replies are routed back to the host platform where supported. Some platforms
+    cannot receive inbound at all — this is called out per plugin.
+  </Card>
+</CardGroup>
+
+## Channel coverage
+
+| Plugin | SMS | WhatsApp | RCS | Inbound | Delivery reports |
+| --- | :---: | :---: | :---: | :---: | :---: |
+| Salesforce Sales & Service Cloud | ✅ | ✅ | — | ✅ | ✅ |
+| Salesforce Marketing Cloud | ✅ | ✅ | — | ✅ | ✅ |
+| MoEngage | — | ✅ | ✅ | WhatsApp only | ✅ |
+| WebEngage | — | ✅ | ✅ | — | ✅ |
+| LeadSquared | — | ✅ | — | ✅ | ✅ |
+| Shopify | ✅ | ✅ | ✅ | — | ✅ |
+| Zoho CRM | ✅ | — | — | — | ✅ |
+| Optimove | ✅ | — | — | — | ✅ |
+
+## Common requirements
+
+Whichever plugin you use:
+
+- **An active OneXtel account** with an API key for the channels you intend to send on. Every
+  setup starts by copying your API key from **API → Show API Key** in the OneXtel portal.
+- **Approved templates.** WhatsApp and RCS templates must be approved in OneXtel before a
+  campaign can use them, and SMS templates must be DLT-registered where applicable. See
+  [WhatsApp templates](/api-reference/whatsapp/templates-create) and
+  [RCS templates](/api-reference/rcs/templates).
+- **A registered sender.** A WhatsApp Business number, an
+  [RCS agent](/guides/rcs-platform/sender-profiles), or an
+  [SMS sender ID](/guides/sms/sender-id), depending on channel.
+- **Matching template names.** Several platforms match templates by name rather than ID, so
+  the name in the host platform must match the name in OneXtel exactly.
+- **A callback configured in OneXtel.** Delivery reports and inbound messages only reach the
+  host platform once the corresponding callback is registered against your API key, under
+  **Configuration → Add New Callback** in the portal.
+
+## Message categories
+
+Templates are approved by category, and plugins send on these:
+
+| Channel | Categories |
+| --- | --- |
+| RCS | Promotional, Transactional |
+| WhatsApp | Marketing, Utility |
+
+Because templates are fetched per category, most platforms need a separate sender or channel
+configuration for each category you send on. The per-plugin pages show how each one expresses
+this.
+
+<Note>
+Plugins are enabled per account. Contact your OneXtel account manager to have one provisioned,
+and to confirm which channels are available on your plan.
+</Note>
+
+## Coming soon
+
+These connectors are in development. Contact your account manager if you need one of them on
+your roadmap.
+
+| Plugin | Channels |
+| --- | --- |
+| CleverTap | RCS, delivered through CleverTap's WhatsApp channel |
+| ActiveCampaign | SMS |
+| Salla | WhatsApp |
+| Salesforce Marketing Cloud | RCS, plus a reports and dashboard module |
+| Zoho CRM | WhatsApp and RCS |
+| MoEngage | RCS carousel templates and SMS fallback |
+
+## Choosing between a plugin and the API
+
+Use a **plugin** when campaigns are already built and triggered in the host platform, and you
+want messaging to live alongside the rest of that platform's reporting.
+
+Use the [API](/api-reference/whatsapp/overview) directly when you need message types or
+controls the host platform cannot express — every plugin is limited by what its platform's
+campaign builder supports, and those limits are listed on each page.

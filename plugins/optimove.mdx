@@ -1,0 +1,132 @@
+---
+title: "Optimove"
+description: "Send SMS from Optimove campaigns through OneXtel using OptiText, with delivery metrics returned to Mission Control."
+---
+
+The Optimove plugin connects OneXtel to Optimove's **OptiText** SMS channel. Campaigns are
+built and scheduled in Optimove's Campaign Builder; OneXtel delivers the messages, and delivery
+metrics come back into Mission Control alongside the rest of your campaign reporting.
+
+Configuration lives in a small connector portal, separate from both platforms, where you pair
+your Optimove credentials with your OneXtel credentials.
+
+## Scope
+
+<CardGroup cols={2}>
+  <Card title="Campaign sends" icon="paper-plane">
+    SMS sent from Optimove Campaign Builder to your target groups.
+  </Card>
+  <Card title="Multiple configurations" icon="users">
+    Pair more than one Optimove account with a OneXtel sender.
+  </Card>
+  <Card title="OptiText templates" icon="table-columns">
+    Templates authored in Optimove with variable placeholders and live preview.
+  </Card>
+  <Card title="Mission Control metrics" icon="chart-line">
+    Sent, delivered, delivery rate, and dropped or bounced counts per campaign.
+  </Card>
+</CardGroup>
+
+## Before you start
+
+Collect your OptiText credentials first — they are hidden permanently once the integration
+handshake completes.
+
+In Optimove, go to **Settings → OptiText → SMS Configuration**, then under **OptiText API
+Vendor** click **Edit Configuration**. Copy the **Base URL**, **API Key**, and **Secret Key**.
+
+<Warning>
+Once the handshake is complete the API Key and Secret Key are no longer visible in Optimove.
+Copy and store them securely before you begin, or you will need Optimove support to reissue
+them.
+</Warning>
+
+You also need a **Provider Key**, which the OneXtel support team shares separately during
+onboarding — it is not available from either dashboard.
+
+## Setup
+
+<Steps>
+  <Step title="Create a connector account">
+    Register at the connector portal URL provided by OneXtel with your name, company name,
+    email, and a password. Then sign in.
+  </Step>
+  <Step title="Start a new configuration">
+    In the SMS Integration Dashboard, go to **Sender Configurations** and click
+    **New Configuration** to open the wizard.
+  </Step>
+  <Step title="Enter your Optimove credentials">
+    Provide the **Optimove Base URL**, **API Token**, and **Secret Key** you collected above.
+    These are verified during the final handshake, so they must be exact. Click **Next**.
+  </Step>
+  <Step title="Enter your OneXtel credentials">
+    Provide your OneXtel **Provider API Key**. The **Provider Send URL** is pre-filled and
+    read-only — it is the OneXtel messaging endpoint and needs no change. Click **Next**.
+  </Step>
+  <Step title="Set the Sender ID">
+    Enter a valid sender ID, for example `ONEX`. Letters, numbers, underscores, and hyphens are
+    allowed, up to 50 characters. Click **Next**.
+  </Step>
+  <Step title="Review and create">
+    Check the Optimove settings, provider settings, and sender ID, then click
+    **Create Configuration**. The system performs a handshake with Optimove to validate the
+    credentials — the configuration is saved only if it succeeds.
+  </Step>
+</Steps>
+
+## Create a template
+
+In Optimove, go to **Plan → Templates → OptiText SMS** and click **+ Create New**. Enter a
+template name and your message content, inserting variables such as `{{1}}` where needed. The
+character count and message count are shown as you type, with a mobile preview on the right.
+
+Click **Save**. The template becomes available when you build a campaign in the Execute section.
+
+## Send a campaign
+
+<Steps>
+  <Step title="Open Campaign Builder">
+    In Optimove, go to **Execution → Campaign Builder**.
+  </Step>
+  <Step title="Choose the audience">
+    Select your target group from the dropdown, then choose **Include All**.
+  </Step>
+  <Step title="Schedule and configure">
+    Set the scheduling date, select **SMS** as the channel, choose the template you created,
+    and set the time and timezone.
+  </Step>
+  <Step title="Create the campaign">
+    Click **Create Campaign**. The campaign is triggered and begins executing.
+  </Step>
+</Steps>
+
+## Delivery reporting
+
+OneXtel sends delivery reports to the connector webhook, which processes them and updates
+Optimove. Overall delivery status appears on the **Mission Control** page, showing total
+messages sent, messages delivered, delivery percentage, and other statuses such as dropped or
+bounced.
+
+For a single campaign, open **Mission Control**, find the campaign in the list, click the
+three-dot menu on the left of its row, and select **Channel Metrics**.
+
+## Requirements
+
+- An Optimove account with the OptiText SMS channel enabled.
+- A OneXtel account with SMS enabled and a registered
+  [sender ID](/guides/sms/sender-id).
+- A Provider Key from OneXtel support.
+
+## Limitations
+
+- **SMS only.** This plugin does not cover WhatsApp or RCS.
+- **Credentials are single-view.** OptiText API and secret keys cannot be retrieved from
+  Optimove after the handshake.
+- **A failed handshake discards the configuration.** Invalid credentials mean nothing is
+  saved — re-enter them and create the configuration again.
+
+## Related
+
+- [International SMS API](/api-reference/sms/overview)
+- [DLR callback](/api-reference/sms/dlr-callback)
+- [All plugins](/plugins/overview)

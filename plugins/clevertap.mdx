@@ -1,0 +1,152 @@
+---
+title: "CleverTap"
+description: "Send RCS templates from CleverTap through its WhatsApp channel, with template sync, SMS fallback, click tracking, and inbound replies."
+---
+
+<Warning>
+**This connector is in development and not yet available.** The scope below is what it will
+cover at release. Contact your OneXtel account manager to be notified when it ships, or see
+[Coming soon](/plugins/overview#coming-soon) for the rest of the pipeline.
+</Warning>
+
+The CleverTap connector lets you send RCS messages from CleverTap. Because CleverTap has no
+native RCS channel, RCS templates are delivered **through CleverTap's WhatsApp channel** —
+OneXtel RCS templates are synced into CleverTap in a WhatsApp-compatible shape, and the
+connector converts each send back into an RCS message.
+
+This gives you RCS reach from CleverTap campaigns today, with the trade-offs in
+[Limitations](#limitations) — chiefly that template previews in CleverTap will not look like
+the real RCS message.
+
+## Scope
+
+<CardGroup cols={2}>
+  <Card title="Template sync" icon="arrows-rotate">
+    Approved OneXtel RCS templates are pulled into CleverTap on the sync schedule you
+    configure.
+  </Card>
+  <Card title="Outbound RCS" icon="paper-plane">
+    Text, Rich Card, and Rich Card Carousel templates.
+  </Card>
+  <Card title="Delivery & click tracking" icon="circle-check">
+    Delivery reports and click events are transformed into CleverTap's format and pushed back.
+  </Card>
+  <Card title="Inbound" icon="reply">
+    Customer replies are routed back into CleverTap.
+  </Card>
+</CardGroup>
+
+## Supported templates
+
+- Text
+- Rich Card
+- Rich Card Carousel
+
+## Channel configuration
+
+RCS templates in OneXtel are retrieved per message category, so CleverTap needs **one channel
+configuration per message type** — Promotional and Transactional. Each configuration syncs only
+the templates of its own category.
+
+## How template sync works
+
+CleverTap calls the connector's template fetch endpoint on the schedule and with the limits you
+set during channel setup. The connector returns OneXtel RCS templates in a CleverTap-compatible
+format.
+
+**Headers.** When a template header carries a file URL, the media type is inferred from the
+file extension — image, video, or document. If the URL has no filename to read an extension
+from, the header defaults to image.
+
+**Dynamic header variables.** CleverTap renders the header as static, so any variable in the
+header is appended to the template body during sync. This keeps it selectable when you build
+the campaign.
+
+**Button variables.** For buttons with a dynamic parameter — a dynamic URL suffix, for example
+— the parameter name is appended to the button label, so it stays visible in CleverTap's
+campaign builder.
+
+## Mapping variables in a campaign
+
+RCS uses named variables in `[custom_param]` form, which CleverTap's WhatsApp channel cannot
+bind automatically. Mapping is manual.
+
+<Steps>
+  <Step title="Find the variable in the body">
+    Select the synced template. Variable names appear inline in the body text, including any
+    header or button variables appended during sync.
+  </Step>
+  <Step title="Copy the variable name">
+    For a body reading `This is a [user] template to capture the CTA response from end users.`,
+    copy `user`.
+  </Step>
+  <Step title="Add it as a key">
+    Paste it as the key in CleverTap's custom key-value pair section.
+  </Step>
+  <Step title="Map the value">
+    Select the profile attribute or literal value to bind — for example the user's first name.
+  </Step>
+</Steps>
+
+At send time, the connector collects every key-value pair you configured and passes them to
+OneXtel as the template's named parameters.
+
+## Fallback
+
+Fallback is configured through the same custom key-value pair section, using reserved keys. The
+connector recognises the `Fallback_` prefix and separates these from your template variables
+before sending.
+
+| Key | Purpose |
+| --- | --- |
+| `Fallback_wait_time` | How long to wait for RCS delivery before falling back |
+| `Fallback_template_id` | The fallback template to send |
+| `Fallback_sender_id` | The sender ID used for the fallback message |
+| `Fallback_entity_id` | The entity ID used for the fallback message |
+
+<Warning>
+Do not use `Fallback_` as a prefix on your own template variables. Any key with that prefix is
+treated as a reserved fallback field and will not be passed through as a template parameter.
+</Warning>
+
+## Delivery reports and inbound
+
+Delivery reports, click-tracking events, and inbound messages are all handled by the connector
+and pushed to CleverTap in its expected format.
+
+To route them, register your CleverTap DLR URL and inbound URL in the OneXtel portal under
+**Configuration → Add New Callback**, against the same API key you used for the channel
+configuration. See
+[RCS delivery notification](/api-reference/rcs/callback-delivery-notification) for the payload
+your endpoint receives.
+
+<Note>
+Inbound processing requires a context ID on the incoming message, which CleverTap uses to
+attach the reply to the right conversation.
+</Note>
+
+## Requirements
+
+- A CleverTap account with the WhatsApp channel available.
+- A OneXtel account with RCS enabled and a registered
+  [RCS agent](/guides/rcs-platform/sender-profiles).
+- Pre-approved RCS templates in OneXtel. See [RCS templates](/api-reference/rcs/templates).
+
+## Limitations
+
+- **Template previews will not match the real message.** CleverTap renders synced templates
+  through its WhatsApp channel in its own format, so what you see when building the campaign is
+  not what the recipient receives. Always confirm appearance with a test send.
+- **Variables are positional in CleverTap.** CleverTap's WhatsApp channel supports `{{1}}`,
+  `{{2}}` style placeholders and not named `[custom_param]` variables, which is why templates
+  sync as a static representation and mapping is manual.
+- **Manual variable mapping.** Every dynamic variable must be copied from the body and
+  configured as a key-value pair by hand — there is no automatic binding.
+- **Three channel configurations required**, one per message category.
+
+## Related
+
+- [RCS API overview](/api-reference/rcs/overview)
+- [RCS operator error codes](/api-reference/rcs/error-codes)
+- [Configure fallback](/guides/omnichannel/configure-fallback)
+- [All plugins](/plugins/overview)

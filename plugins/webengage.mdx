@@ -1,0 +1,202 @@
+---
+title: "WebEngage"
+description: "Set up the OneXtel WhatsApp and RCS connectors in WebEngage — Private WSP and RSP configuration, webhooks, and supported message types."
+---
+
+The WebEngage connector adds WhatsApp and RCS as sendable channels inside WebEngage. Campaigns
+are built and triggered in WebEngage; the connector translates each payload into a OneXtel
+message and returns delivery status.
+
+## Scope
+
+<Tabs>
+  <Tab title="WhatsApp">
+    **Outbound**
+
+    | Type | Supported |
+    | --- | --- |
+    | Text | ✅ |
+    | Image | ✅ |
+    | Video | ✅ |
+    | Document | ✅ |
+    | Location | ✅ |
+    | Carousel | ✅ |
+    | Quick Reply buttons | ✅ |
+    | Call-to-action buttons | ✅ |
+    | Copy Code buttons | ✅ |
+
+    **Inbound**
+
+    Not supported — see [Limitations](#limitations).
+  </Tab>
+  <Tab title="RCS">
+    **Outbound**
+
+    | Type | Supported |
+    | --- | --- |
+    | Text | ✅ |
+    | Card | ✅ |
+    | Carousel | ✅ |
+    | Media | ✅ |
+    | Suggestions | ✅ |
+
+    **Inbound**
+
+    Not supported — see [Limitations](#limitations).
+  </Tab>
+</Tabs>
+
+## Set up WhatsApp
+
+<Steps>
+  <Step title="Get your OneXtel API key">
+    Log in to OneXtel, go to the **API** section, and click **Show API Key**. If no key
+    exists, click **Generate API Key**. Copy it.
+  </Step>
+  <Step title="Open the WhatsApp integration">
+    In WebEngage, go to **Data Platform → Integrations**, scroll down, and click
+    **WhatsApp Setup (Configure)**.
+  </Step>
+  <Step title="Configure a Private WSP">
+    Scroll down and click **Private WSP**, then fill in the configuration popup:
+
+    | Field | Value |
+    | --- | --- |
+    | Configuration Name | Any name you choose |
+    | WABA Number | Your WhatsApp Business Account number |
+    | URL | `https://we.onexaura.com/webengage/whatsapp/send` |
+    | Request Type | **Send personalization variables** |
+
+    Add a custom header with the key `apikey` and your OneXtel API key as the value. Copy and
+    paste the key rather than typing it. Save the configuration.
+  </Step>
+  <Step title="Copy the webhook URL">
+    Find your configured Private WSP, click the three-dot menu next to it, and select
+    **View Webhook URL**. Copy the URL.
+  </Step>
+  <Step title="Register the callback in OneXtel">
+    In the OneXtel portal, go to **Configuration → Add New Callback** and register the webhook
+    URL against the same API key, with the channel set to `WhatsApp`.
+  </Step>
+  <Step title="Create a matching template">
+    On the WhatsApp integration page, scroll to the **Template** section and create a template
+    that replicates one already approved in your OneXtel instance. Save it.
+  </Step>
+</Steps>
+
+## Set up RCS
+
+<Steps>
+  <Step title="Get your OneXtel API key">
+    As above — **API → Show API Key** in the OneXtel portal.
+  </Step>
+  <Step title="Open the RCS integration">
+    In WebEngage, go to **Data Platform → Integrations**, scroll down, and click
+    **RCS Setup (Configure)**.
+  </Step>
+  <Step title="Configure a Private RSP">
+    Scroll down and click **Private RSP**, then fill in the configuration popup:
+
+    | Field | Value |
+    | --- | --- |
+    | Configuration Name | Any name you choose |
+    | RCS Business number | Your sender profile name |
+    | URL | `https://we.onexaura.com/webengage/rcs/send` |
+
+    Add two custom headers:
+
+    | Header key | Value |
+    | --- | --- |
+    | `apikey` | Your OneXtel API key |
+    | `campaigntype` | `Promotional` or `Transactional` |
+
+    Save the configuration.
+  </Step>
+  <Step title="Copy the webhook URL">
+    Find your configured Private RSP, click the three-dot menu, and select
+    **View Webhook URL**. Copy the URL.
+  </Step>
+  <Step title="Register the callback in OneXtel">
+    In the OneXtel portal, go to **Configuration → Add New Callback** and register the webhook
+    URL against the same API key, with the channel set to `RCS`. See
+    [RCS delivery notification](/api-reference/rcs/callback-delivery-notification).
+  </Step>
+  <Step title="Create a matching template">
+    On the RCS integration page, scroll to the template section and create a template that
+    replicates one already approved in your OneXtel instance. Save it.
+  </Step>
+</Steps>
+
+<Note>
+Because `campaigntype` is set on the configuration rather than per message, you need a separate
+Private RSP configuration for each RCS message type you intend to send.
+</Note>
+
+## Create a campaign
+
+<Steps>
+  <Step title="Start the campaign">
+    Go to the **Channels** tab, select **WhatsApp** or **RCS**, and create a new campaign.
+    Complete the campaign configuration and choose your target user segment.
+  </Step>
+  <Step title="Select the template">
+    In the **Message** tab, select the template you created and fill in its variables.
+  </Step>
+  <Step title="Tag the campaign">
+    Under **Custom Key–Value Pairs**, add the key `campaignName` with a campaign identifier as
+    the value. This is what lets you filter the campaign's data in OneXtel reporting — without
+    it, sends are harder to attribute.
+  </Step>
+  <Step title="Add optional metadata">
+    Optionally add `custref3`, `custref4`, and `custref5` as further key-value pairs to carry
+    your own identifiers through to OneXtel.
+  </Step>
+  <Step title="Test before going live">
+    Run a test send and confirm the message renders correctly before triggering the live
+    campaign.
+  </Step>
+</Steps>
+
+## Requirements
+
+- A WebEngage account with the WhatsApp channel enabled.
+- A OneXtel account with the relevant channels enabled.
+- Pre-approved templates in OneXtel — WebEngage templates must replicate an already-approved
+  OneXtel template. See [RCS templates](/api-reference/rcs/templates) and
+  [WhatsApp templates](/api-reference/whatsapp/templates-create).
+- **A WebEngage OAuth token for the webhook**, which you obtain from WebEngage directly.
+  OneXtel cannot issue it on your behalf.
+
+## Limitations
+
+### Both channels
+
+- **Inbound messages are not supported.** WebEngage cannot receive inbound messages on these
+  channels, so customer replies will not appear in WebEngage. If two-way conversation matters,
+  use the [WhatsApp](/api-reference/whatsapp/overview) or
+  [RCS](/api-reference/rcs/overview) APIs directly.
+- **Variable names must match the keys in the message payload.**
+- **Callbacks time out after 5 seconds** and are retried up to three times. If WebEngage does
+  not acknowledge within that window, the callback is dropped rather than queued for later
+  redelivery.
+- **Templates are duplicated, not synced.** A template created in WebEngage must manually
+  replicate one approved in OneXtel. If either copy is edited, they drift apart.
+
+### WhatsApp
+
+- **Personalisation variables only.** This version of the connector supports personalisation
+  variables and no other variable form.
+- **Variable ordering is assigned by the connector.** WebEngage does not send a variable index,
+  so the connector assigns positions when building the OneXtel payload. Verify order-sensitive
+  templates with a test send before going live.
+
+### RCS
+
+- **Only template names and parameters are passed** to OneXtel — the template body itself is
+  resolved on the OneXtel side.
+
+## Related
+
+- [RCS API overview](/api-reference/rcs/overview)
+- [RCS operator error codes](/api-reference/rcs/error-codes)
+- [All plugins](/plugins/overview)

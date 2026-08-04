@@ -119,6 +119,7 @@
               "api-reference/rcs/send-messages",
               "api-reference/rcs/media",
               "api-reference/rcs/opt-in-opt-out",
+              "api-reference/rcs/callback-delivery-notification",
               "api-reference/rcs/error-codes"
             ]
           },
@@ -137,6 +138,41 @@
               "api-reference/omnichannel/fallback",
               "api-reference/omnichannel/message-status",
               "api-reference/omnichannel/message-history"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Plugins",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "plugins/overview"
+            ]
+          },
+          {
+            "group": "CRM & Sales",
+            "pages": [
+              "plugins/salesforce",
+              "plugins/leadsquared",
+              "plugins/zoho-crm"
+            ]
+          },
+          {
+            "group": "Marketing Automation",
+            "pages": [
+              "plugins/salesforce-marketing-cloud",
+              "plugins/moengage",
+              "plugins/webengage",
+              "plugins/optimove",
+              "plugins/clevertap"
+            ]
+          },
+          {
+            "group": "E-commerce",
+            "pages": [
+              "plugins/shopify"
             ]
           }
         ]

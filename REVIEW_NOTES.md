@@ -26,7 +26,7 @@ This file is **not** part of the published site (it isn't in `docs.json`).
 | 13 | RCS send | Suggestions `displayText` mandatory in one table, omitted for `calendar_event` in another | Treated as required | Confirm |
 | 14 | RCS send | Carousel `cardWidth`: samples use `MEDIUM` but template table lists `MEDIUM_WIDTH`/`SMALL_WIDTH` | Both flagged | Correct enum |
 | 15 | RCS opt-in/out | Entire feature sourced only from Postman (no PDF coverage); GET list response schema undocumented | Documented request only | Provide response schema |
-| 16 | RCS callbacks | **Delivery Notification (RCS API Guide p.52–53) not yet turned into a page** | Not documented | Add an RCS callback page (see below) |
+| 16 | RCS callbacks | Delivery Notification (RCS API Guide p.52–53) | **Resolved** — now `api-reference/rcs/callback-delivery-notification` | Outgoing sample uses `api_key` while the param table says `apiKey`; sample also carries an undocumented `tuc_id`. Both flagged inline — confirm against a live callback |
 | 17 | Intl SMS | Source header sample reads `Contest-Type` (typo for `Content-Type`) | Corrected in cURL, flagged | Fix source |
 | 18 | Intl SMS | DLR callback: URL registration, request headers, and expected ack response not documented | Noted as gap | Provide callback setup details |
 | 19 | Omnichannel | Message Status & History have no saved example responses in Postman | Documented request only (`<Warning>`) | Provide response examples |
@@ -38,6 +38,76 @@ This file is **not** part of the published site (it isn't in `docs.json`).
 | 25 | RCS error codes (Vi) | "Test template limit exceeded" appears twice — `400-C` (retry UNSURE) and `429-B` (retry YES); "Curfew hours" appears as both `403-D` and `503-A` | Both reproduced, flagged | Reconcile duplicates |
 | 26 | WhatsApp error codes | Meta code `3` (API Method) is mapped to HTTP **500** while every other permission error is 403 | Reproduced as given | Confirm status |
 | 27 | Both error-code pages | "Retry Allowed" column uses **UNSURE** for 9 codes — the operators never confirmed behaviour | Documented as "treat as non-retryable until verified" | Verify against live traffic |
+
+## Plugins section — source caveats
+
+The `plugins/` pages were written from two source sets: **vendor SOWs** (OneXtel ↔ Spritle
+Software) for scope, and the **setup guides in Google Drive** for procedures. Status was
+reconciled against the connector delivery tracker (Aug 2026).
+
+Deliberately excluded as commercially sensitive and not customer-facing: vendor identity and
+addresses, pricing and person-day estimates, hourly rates, payment terms, vendor support tiers
+and SLA tables, vendor escalation contacts, signature blocks, and internal delivery caveats
+(e.g. "based solely on verbal confirmation").
+
+### Redacted from the setup guides — must not be published
+
+| # | Source | Redacted | Replaced with |
+|---|--------|----------|---------------|
+| R1 | Salesforce Marketing Cloud guide | Every endpoint is an **ngrok dev tunnel** (`jadon-unperished-prelusively.ngrok-free.app`) | `{connectorBaseUrl}` placeholder — **supply the production URL** |
+| R2 | Salesforce Marketing Cloud guide | Hard-coded MID `546009709` in all four activity URLs | `{MID}` placeholder |
+| R3 | Shopify RCS guide | DLR callback is an **internal private IP**, `http://10.52.6.54:8081/dlr/rcs` | Removed; page says share the callback URL with OneXtel — **supply the public URL** |
+| R4 | Salesforce SMS + WhatsApp guides | Package install **password in plaintext**, and fixed package IDs | "Request the current install link and password from OneXtel support" |
+| R5 | Salesforce WhatsApp guide | Real mobile number `919840161462` in the Apex sample | `919999999999` per style guide |
+| R6 | Optimove guide | Sign-up / login URLs are `https://example.com/...` placeholders | "the connector portal URL provided by OneXtel" — **supply the real URL** |
+
+### Errors found in the source setup guides
+
+- **Optimove guide is footered "Copyright © 2024 Tanla Platforms Limited"** — a different
+  company. Fix at source.
+- **Shopify SMS guide** contains an unfinished editorial note ("Insert the above ss here bro").
+- **LeadSquared guide** gives the same navigation path for delivery reports and inbound
+  ("Delivery Reports → Incoming Messages") — copy-paste error. Page documents Delivery Reports
+  for DLR and its Incoming Messages sub-tab for inbound; confirm.
+- **Salesforce WhatsApp guide** lists `OneXtel.TemplateController` twice in the Apex class list.
+- **MoEngage inbound header key differs by channel** — `callback_url` for WhatsApp, `cbUrl` for
+  RCS. Documented as-is with a warning, but this looks unintentional; consider unifying.
+
+### Open questions
+
+### Resolved (Aug 2026)
+
+- **P5 — Authentication templates.** Not supported via plugins by design: authentication needs
+  direct API integration because plugins add latency. Per product decision, this is **not
+  mentioned in the docs at all** — the limitation was removed from the Salesforce page rather
+  than reworded.
+- **P7 — Message categories.** RCS has two: **Promotional** and **Transactional** (Utility is
+  part of Transactional). WhatsApp via plugins is **Marketing** and **Utility**. OTP is not
+  supported via plugins on either channel. Pages now state supported categories positively and
+  never enumerate what is excluded. Documented in `plugins/overview.mdx`.
+- **P8 — Callback configuration is self-serve.** Customers configure their own callback URLs in
+  the portal's callback designer (**Configuration → Add New Callback**). CleverTap and
+  WebEngage pages updated; the WebEngage *setup guide* still says "reach out to the Onextel
+  team" — fix at source.
+- **P11 — Multi-region routing.** OnexAura is the domestic deployment, OnexGlobal the
+  international one. The docs stay deployment-generic, so the Shopify multi-region feature is
+  **not documented at all**. Removed from the Shopify page and from Coming soon.
+- **P12 — TTL.** Status unclear for WebEngage and unverified elsewhere. Per product decision,
+  **TTL is not mentioned anywhere in `plugins/`**. Note that `ttl` remains documented in the
+  RCS API reference (`api-reference/rcs/send-messages`), which was left untouched — confirm
+  that is intended.
+
+### Open questions
+
+| # | Plugin | Open question |
+|---|--------|---------------|
+| P2 | All | Onboarding is written as "contact your account manager". Confirm the real provisioning route. |
+| P4 | Salesforce | Confirm SMS and WhatsApp ship as separate packages, and what the "with WA inbox" variant adds. |
+| P9 | WebEngage | "The index won't be sent from Webengage, so it will be added arbitrarily" — documented as connector-assigned variable ordering with a test-send warning. Confirm actual behaviour. |
+| P10 | LeadSquared | Auth uses the user's phone number as username and the OneXtel API key as password. Confirm this is intended and how keys are rotated. |
+| P13 | Salesforce Marketing Cloud | Tracker lists a **V2-SH Fallback** as live, recorded only in an email thread (Jun 18). Page documents fallback via decision splits — confirm that is the same feature. |
+| P14 | Salla / ActiveCampaign | Listed in Coming soon without detail, as agreed. Supply scope when they go live. |
+| P15 | All plugins | The callback designer flow is now referenced from four pages but has **no guide page of its own**. Worth adding one under `guides/` and linking to it instead of repeating the menu path. |
 
 ## Product manuals — gaps & likely errors
 
@@ -62,8 +132,8 @@ them under `/images` for the campaign and platform guides.
 
 ## Suggested follow-ups
 
-1. Add an **RCS Delivery Notification callback** page under `api-reference/rcs/` (parity with the
-   WhatsApp callback pages) from RCS API Guide p.52–53.
+1. ~~Add an **RCS Delivery Notification callback** page~~ — done.
 2. Resolve the endpoint-path conflicts (#1, #2, #7, #8) with engineering and delete the inline notes.
 3. Supply production portal URLs and real response examples (#18, #19).
 4. Capture portal screenshots for the user guides.
+5. Add a **Callback Designer** guide page (see P15) and point the plugin pages at it.

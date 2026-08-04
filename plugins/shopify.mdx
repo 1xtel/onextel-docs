@@ -1,0 +1,89 @@
+---
+title: "Shopify"
+description: "Trigger SMS, WhatsApp, and RCS messages from Shopify store events through OneXtel, with delivery tracking in the app dashboard."
+---
+
+The Shopify app sends SMS, WhatsApp, and RCS messages in response to store events — order
+confirmations, delivery updates, and similar transactional moments. You map each event to a
+template once, and every matching order sends automatically.
+
+## Scope
+
+| Channel | Supported |
+| --- | :---: |
+| SMS | ✅ |
+| WhatsApp | ✅ |
+| RCS | ✅ |
+
+For RCS, the app also tracks suggestion replies and URL actions in addition to standard
+delivery status.
+
+## Setup
+
+<Steps>
+  <Step title="Install the app">
+    Install the OneXtel application from the Shopify Marketplace and grant the requested
+    permissions. It appears under **Apps** in your store dashboard. If you already have it,
+    go to **Dashboard → Settings** and update to the latest version.
+  </Step>
+  <Step title="Add an account">
+    Open the app and go to the **Authentication** tab, then select the channel you are
+    configuring.
+
+    For **SMS** and **WhatsApp**, click **Add Account** and enter an account name and your
+    OneXtel API key.
+
+    For **RCS**, enter the account name, sender profile, API key, and message type, then click
+    **Add Account**.
+
+    You can add multiple accounts per channel.
+  </Step>
+  <Step title="Register the DLR callback">
+    Share the callback URL shown in the app with the OneXtel team so delivery updates are
+    routed back to your store. Make sure it is configured for every API key you use — an
+    unregistered key sends messages but reports no status.
+  </Step>
+  <Step title="Map events to templates">
+    Go to the channel's mapping tab — **SMS Mapping**, **WhatsApp Mapping**, or **RCS
+    Mapping** — and click **Add Trigger** or **Add Template**. Select the store event, the
+    configured account, and the template. If the template has placeholders, choose the values
+    to bind from the placeholder dropdown. Save the trigger.
+
+    Create as many triggers as you need; existing ones can be edited or deleted later.
+  </Step>
+  <Step title="Test the integration">
+    Ensure a customer account exists with both a phone number and an email address, then place
+    a test order to fire an order-creation trigger. The message sends to the customer.
+  </Step>
+</Steps>
+
+## Tracking delivery
+
+Open the app and go to the **DLR** tab:
+
+| Report | Location |
+| --- | --- |
+| SMS and WhatsApp delivery status | **DLR → SMS** / **DLR → WhatsApp** |
+| RCS delivery status | **DLR → RCS → DLR** |
+| RCS suggestion replies and URL actions | **DLR → RCS → Advanced DLR** |
+
+## Requirements
+
+- A Shopify store with permission to install apps.
+- A OneXtel account with the relevant channels enabled, and a registered sender for each —
+  an [SMS sender ID](/guides/sms/sender-id), a WhatsApp Business number, or an
+  [RCS agent](/guides/rcs-platform/sender-profiles).
+- Approved templates in OneXtel for each channel you use.
+
+## Limitations
+
+- **Sends are event-triggered.** The app fires on Shopify store events; it is not a campaign
+  tool for ad-hoc or segmented broadcasts.
+- **Inbound messages are not routed to Shopify.** RCS suggestion replies and URL actions are
+  reported in Advanced DLR, but free-form customer replies are not surfaced in the store.
+
+## Related
+
+- [International SMS API](/api-reference/sms/overview)
+- [RCS API overview](/api-reference/rcs/overview)
+- [All plugins](/plugins/overview)
