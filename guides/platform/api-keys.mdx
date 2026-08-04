@@ -25,9 +25,22 @@ key for a new integration, remember to register its callbacks too.
   <Step title="Generate">
     Click **+ Generate API**.
   </Step>
-  <Step title="Configure the key">
-    In the pop-up, select the **Account Type**, select the **Scrub DND** checkbox if required,
-    and enter a description for the key.
+  <Step title="Name and describe the key">
+    Enter a **Name** and a **description**.
+
+    Write a real description. A key labelled only by its creation date is impossible to retire
+    safely later, because nobody can tell what would break.
+  </Step>
+  <Step title="Set the account type">
+    Select the **Account Type** for this key.
+  </Step>
+  <Step title="Set the optional controls">
+    | Option | Effect |
+    | --- | --- |
+    | Scrub DND | Filters recipients registered on Do Not Disturb |
+    | Match Template | Requires outbound content to match a registered template |
+    | IP Whitelist | Restricts use of the key to approved source IP addresses |
+    | PE-TM Settings | Permits only DLT-approved messages |
   </Step>
   <Step title="Submit">
     Click **Submit**. The platform generates the API key.
@@ -40,8 +53,12 @@ need to generate a replacement key and re-point every integration using it — i
 callback registrations. Confirm the type before submitting.
 </Warning>
 
-Write a real description. A key labelled only by its creation date is impossible to retire
-safely later, because nobody can tell what would break.
+<Note>
+**IP Whitelist** is the single most effective control here — a leaked key is unusable from an
+unapproved address. Set it for any key used by a fixed server. For [DLT-regulated
+sending](/guides/platform/dlt) in India, enable **PE-TM Settings** so unregistered content is
+rejected at the platform rather than by the operator.
+</Note>
 
 ## View keys
 

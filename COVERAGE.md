@@ -50,7 +50,7 @@ A `guides/platform/` section now exists. Remaining gaps are marked **Missing**.
 | Phonebook — groups and contacts | **Done** — `platform/phonebook` (moved out of SMS) | V2 Aura pp. 77–84 |
 | Notifications | **Done** — `platform/notifications` (moved out of SMS) | V2 Aura pp. 96–98 |
 | User profile / account settings | **Done** — `platform/account-settings` (moved out of SMS) | V2 Aura — |
-| DLT — entity IDs, sender IDs, templates, bulk upload | Partially, under SMS | V2 Aura pp. 59–71 |
+| DLT — entity IDs, sender IDs, templates, bulk upload, short URLs | **Done** — `platform/dlt` | V2 Aura pp. 59–71 |
 
 **Relocation completed (Aug 2026).** `guides/sms/settings` was split into
 `platform/account-settings`, `platform/api-keys`, and `platform/notifications`;
@@ -173,13 +173,19 @@ covers it today.
 
 ## Remaining work
 
-1. **RCS and SMS activation pages** — blocked on source.
-2. **RCS template field constraints** — from `VI Templates Payload Description.txt`, stripping
-   the internal IPs.
-3. **DLT section** (V2 Aura pp. 59–71) — entity IDs, sender IDs, templates, bulk upload. Still
-   only partially covered under SMS.
+1. **RCS and SMS activation pages** — blocked on source. The only gap left in the five-layer
+   structure.
+2. **Confirm the DLT / Templates-menu relationship.** `platform/dlt` documents the portal's DLT
+   menu (India, TRAI). `guides/sms/sender-id` and `guides/sms/templates` came from the
+   *International SMS* manual and describe a separate Templates menu. The pages cross-reference
+   each other on the assumption that DLT is domestic-only and the Templates menu is
+   international — **verify that split is real** before publishing, since getting it backwards
+   would send someone to the wrong screen.
+3. **Short URLs** (V2 Aura p. 71) are documented in one sentence in the source, so the section
+   in `platform/dlt` is thin. Expand when there is more source.
 4. The open API discrepancies in `REVIEW_NOTES.md`, several of which need engineering to
-   confirm rather than more documentation.
+   confirm rather than more documentation — notably the RCS carousel enums (#14), which need a
+   test template rather than another document.
 
 ## The live site — resolved, with a caveat
 
