@@ -1,0 +1,126 @@
+---
+title: "Tech Provider Onboarding"
+description: "The eleven steps a Tech Solution Provider completes to onboard with OneXtel and start onboarding their own end-customers on WhatsApp."
+---
+
+A **Tech Solution Provider (TSP)** builds on OneXtel's WhatsApp infrastructure to onboard and
+serve its own end-customers. This page covers the full path from commercial agreement to your
+first customer sending live messages.
+
+Budget **three to five weeks** end to end, assuming your documentation is ready when you start.
+
+<Note>
+This is partner onboarding, not customer onboarding. If you are a business activating WhatsApp
+for your own messaging, see [Activating WhatsApp](/guides/whatsapp/activation) instead.
+</Note>
+
+## The eleven steps
+
+| # | Step | Duration | Owner |
+| :---: | --- | --- | --- |
+| 1 | Commercial alignment | 1–2 days | OneXtel + TSP |
+| 2 | Meta Business Portfolio setup | 1–3 days | TSP |
+| 3 | Meta App creation | Same day | TSP |
+| 4 | Tech Provider enrolment | Same day | TSP |
+| 5 | Partner Solution linking | 1 day | TSP + OneXtel |
+| 6 | Solution approval | 1–2 days | OneXtel |
+| 7 | **Meta App review and demos** | **5–10 days** | TSP |
+| 8 | **Access verification** | **3–5 days** | Meta |
+| 9 | Embedded signup implementation | 3–10 days | TSP |
+| 10 | Credit line activation | 1 day | OneXtel + TSP |
+| 11 | Go-live | — | TSP |
+
+All durations are business days.
+
+<Warning>
+**Steps 7 and 8 are where timelines slip.** Together they account for up to fifteen business
+days, and both sit with Meta rather than with OneXtel or you. Prepare the review submission
+carefully — a rejected review restarts the clock.
+</Warning>
+
+## Commercial and Meta setup
+
+<Steps>
+  <Step title="Commercial alignment">
+    OneXtel and you define commercial terms, credit limits, billing currency, and the scope of
+    the programme.
+  </Step>
+  <Step title="Meta Business Portfolio setup">
+    Establish a **verified** Meta Business Portfolio. Use accurate legal information and a
+    corporate domain — a mismatch between your registered legal entity and what you enter here
+    is a common cause of failure at verification, several weeks later.
+  </Step>
+  <Step title="Meta App creation">
+    Register as a Meta Developer and create a dedicated Meta App of type **Business** in the
+    **Messaging** category.
+  </Step>
+  <Step title="Tech Provider enrolment">
+    Enrol in the Tech Provider Program through the Meta App Dashboard and accept the terms.
+    OneXtel guides you through this.
+  </Step>
+</Steps>
+
+## Linking to OneXtel
+
+<Steps>
+  <Step title="Partner Solution linking">
+    A Partner Solution is created linking your Meta App to OneXtel's Partner App ID with
+    **Partner Only** permissions.
+  </Step>
+  <Step title="Solution approval">
+    OneXtel reviews and approves the Partner Solution request, which generates your unique
+    **Solution ID**. This identifies your integration for everything that follows.
+  </Step>
+</Steps>
+
+## Meta review
+
+<Steps>
+  <Step title="Meta App review and demos">
+    Submit your Meta App for review, including **two video demonstrations** — one covering the
+    messaging lifecycle, one covering the template lifecycle.
+
+    Record these against a working integration. Reviewers are checking that the flows genuinely
+    function, not that they have been described.
+  </Step>
+  <Step title="Access verification">
+    Meta validates your organisation as a legitimate Tech Provider. Respond promptly to any
+    questions Meta raises — an unanswered enquiry stalls the review rather than failing it, and
+    the delay is invisible until you chase.
+  </Step>
+</Steps>
+
+## Implementation and go-live
+
+<Steps>
+  <Step title="Embedded signup implementation">
+    Implement the Facebook JavaScript SDK popup flow so your end-customers can onboard
+    themselves. This is the longest step you control — anywhere from three to ten business days
+    depending on your stack.
+  </Step>
+  <Step title="Credit line activation">
+    OneXtel extends the credit line to your WhatsApp Business Accounts, activating the billing
+    relationship.
+  </Step>
+  <Step title="Go-live">
+    Your first end-customer completes onboarding and live messaging begins.
+  </Step>
+</Steps>
+
+## Planning the timeline
+
+Three to five weeks assumes your documentation is ready on day one. The steps worth preparing
+for in advance:
+
+- **Legal entity details and corporate domain** for step 2 — gather these before you start,
+  since correcting them later invalidates work downstream.
+- **Video demonstrations** for step 7 — these need a working integration, so scope development
+  time to have something demonstrable before the review window.
+- **Embedded signup** for step 9 — you can begin building against the Facebook JavaScript SDK
+  while Meta review is in progress rather than waiting for approval.
+
+## Related
+
+- [Activating WhatsApp](/guides/whatsapp/activation) — the end-customer equivalent
+- [WhatsApp API overview](/api-reference/whatsapp/overview)
+- [Platform overview](/guides/platform/overview)

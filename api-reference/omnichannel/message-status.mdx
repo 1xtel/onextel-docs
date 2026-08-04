@@ -1,6 +1,6 @@
 ---
 title: "Message Status"
-description: "Look up delivery status for one or more messages by message ID or mobile number, across SMS, RCS, and WhatsApp."
+description: "Look up delivery status for one or more messages by message ID or mobile number."
 ---
 
 The Message Status endpoint returns delivery status for messages you've sent, looked up
@@ -18,40 +18,54 @@ POST https://api.onexaura.com/status
   API key issued by OneXtel, used for authentication.
 </ParamField>
 
+## Choosing a lookup
+
+You must supply **either** `messageId` **or** `mobileNumber` — never both.
+
+| Lookup by | Date range |
+| --- | --- |
+| `messageId` | Optional |
+| `mobileNumber` | **Required** — `from` and `to` must both be supplied |
+
+<Warning>
+Passing `messageId` and `mobileNumber` in the same request returns an error. Supplying neither
+does too — one of the two is always required.
+</Warning>
+
 ## Request body
 
-The request body is a JSON object. Look up status either by `messageId`, or by
-`mobileNumber` with a `from`/`to` date range — the collection documents both forms
-(the `mobileNumber` form is shown commented-out as an alternative to `messageId`).
+The request body is a JSON object.
 
 <ParamField body="channel" type="string" required>
-  Channel to query. Either `wa` or `rcs` can be passed.
+  Channel to query — for example `wa` or `rcs`.
 </ParamField>
 
-<ParamField body="messageId" type="array" required>
-  Array of message IDs to look up status for.
+<ParamField body="messageId" type="array">
+  Array of message IDs to look up. Required unless `mobileNumber` is supplied, and mutually
+  exclusive with it.
 </ParamField>
 
 <ParamField body="mobileNumber" type="array">
-  Array of recipient mobile numbers. Alternative to `messageId`.
+  Array of recipient mobile numbers, with country code. Required unless `messageId` is
+  supplied, and mutually exclusive with it.
 </ParamField>
 
 <ParamField body="from" type="string">
-  Start of date range, e.g. `"2025-12-17 00:00:00"`. Mandatory when querying by
-  `mobileNumber`.
+  Start of date range, formatted `YYYY-MM-DD HH:mm:ss` — for example
+  `"2025-12-17 00:00:00"`. Mandatory when querying by `mobileNumber`.
 </ParamField>
 
 <ParamField body="to" type="string">
-  End of date range, e.g. `"2025-12-17 23:59:59"`. Mandatory when querying by
-  `mobileNumber`.
+  End of date range, formatted `YYYY-MM-DD HH:mm:ss` — for example
+  `"2025-12-17 23:59:59"`. Mandatory when querying by `mobileNumber`.
 </ParamField>
 
-<ParamField body="pageNo" type="number" required>
+<ParamField body="pageNo" type="integer" default="0">
   Page number for paginated results.
 </ParamField>
 
-<ParamField body="limit" type="number" required>
-  Number of results to return per page.
+<ParamField body="limit" type="integer" default="10">
+  Number of records to return per page.
 </ParamField>
 
 ## Example request
@@ -97,14 +111,15 @@ curl --request POST \
 
 </CodeGroup>
 
-<Note>
-`channel` accepts either `wa` (WhatsApp) or `rcs`.
-</Note>
-
 ## Response
 
 <Warning>
-The OneXtel Postman collection does not include a saved example response for this
-endpoint. Response fields below are not documented in the source — verify the actual
-response shape against a live call before relying on it.
+No example response is documented in the source for this endpoint. Verify the actual response
+shape against a live call before relying on it.
 </Warning>
+
+## Related
+
+- [RCS delivery notification](/api-reference/rcs/callback-delivery-notification) — push delivery status instead of polling for it
+- [WhatsApp callback events](/api-reference/whatsapp/callback-events)
+- [Message history](/api-reference/omnichannel/message-history)

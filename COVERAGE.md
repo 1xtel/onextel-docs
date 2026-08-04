@@ -102,9 +102,32 @@ auto-generated templates. None of it is in the docs.
 | WhatsApp, RCS, SMS, Omnichannel | Covered |
 | RCS delivery notification | Added Aug 2026 |
 | Operator error codes (Jio, Vi, Meta) | Added Aug 2026 |
-| `Status Check API.docx` | Verify against `api-reference/omnichannel/message-status` |
-| `Delivery Status (DLR) Mapping Document.pdf` | Verify against the SMS and WhatsApp DLR pages |
-| `VI Templates Payload Description.txt` | Field constraints (max lengths, allowed characters, suggestion limits) may not all be in `api-reference/rcs/templates` — worth a pass |
+| `Status Check API.docx` | **Verified and corrected** — see below |
+| `Delivery Status (DLR) Mapping Document.pdf` | **Verified and rewritten** — see below |
+| `VI Templates Payload Description.txt` | **Outstanding.** Field constraints (max lengths, allowed characters, suggestion limits) not yet checked against `api-reference/rcs/templates`. Extract constraints only — every cURL in that file points at an internal IP |
+
+### Corrections found in the verification pass
+
+**`api-reference/omnichannel/message-status`** had three errors against the Status Check API
+source, all of which would have caused failed calls:
+
+| Was documented | Actually |
+|----------------|----------|
+| `messageId` required | Conditional — either `messageId` **or** `mobileNumber`, never both. Passing both returns an error |
+| `pageNo` and `limit` required | Optional, defaulting to `0` and `10` |
+| Description claimed SMS support | Source gives `wa` and `rcs` only |
+
+The mutual-exclusion rule was absent entirely and is now a warning on the page, along with the
+`YYYY-MM-DD HH:mm:ss` format for `from`/`to` and the rule that date range is mandatory only for
+`mobileNumber` lookups.
+
+**`api-reference/whatsapp/callback-delivery-notification`** was written against a structural
+skeleton with every field marked "(inferred)" and the note "possible values of `statuses.status`
+are not listed in the source". The DLR mapping document supplies all of it, so the page was
+rewritten with the real status lifecycle (`sent` / `delivered` / `read` / `failed`, with trigger
+conditions), authoritative field definitions, the enum values for `conversation.origin.type` and
+`pricing.category`, the fact that `errors` appears only on `failed`, and Meta's error-codes
+reference link.
 
 ### Layer 5 — Plugins (covered)
 
@@ -138,14 +161,25 @@ covers it today.
    The relocation of API keys, phonebook, and notifications out of `guides/sms/` is still
    outstanding (see the note above).
 3. ~~Meta Direct Send and Bulk WhatsApp Template Upload~~ — **done**.
-4. **Channel activation pages** — one per channel. WhatsApp must be *derived* from the internal
-   onboarding SOP, never copied. **RCS and SMS have no source in this drop** — supply one.
-5. **TSP onboarding section** — partner-facing, separate audience. Source is the 11-step
-   journey infographic; a written source would be better.
-6. **Verification pass** — Status Check API, DLR mapping, and RCS template field constraints
-   against their new sources.
-7. **Relocation decision** — move API keys, phonebook, and notifications into Platform once the
-   URL/redirect question is settled.
+4. **Channel activation** — WhatsApp **done** (`guides/whatsapp/activation`), derived from the
+   internal SOP with all internal procedure, hosts, credentials, and staff excluded.
+   **RCS and SMS still have no source** — activation for those two remains undocumented beyond
+   sender registration. Supply a source.
+5. ~~TSP onboarding~~ — **done** (`guides/partners/tsp-onboarding`), from the 11-step journey.
+   A written source would still be better than the infographic.
+6. **Verification pass** — Status Check API and DLR mapping **done**. RCS template field
+   constraints still outstanding.
+7. ~~Relocation~~ — **done**, with redirects.
+
+## Remaining work
+
+1. **RCS and SMS activation pages** — blocked on source.
+2. **RCS template field constraints** — from `VI Templates Payload Description.txt`, stripping
+   the internal IPs.
+3. **DLT section** (V2 Aura pp. 59–71) — entity IDs, sender IDs, templates, bulk upload. Still
+   only partially covered under SMS.
+4. The open API discrepancies in `REVIEW_NOTES.md`, several of which need engineering to
+   confirm rather than more documentation.
 
 ## Note on the live site
 

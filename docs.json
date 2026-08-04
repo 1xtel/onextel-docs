@@ -39,6 +39,7 @@
           {
             "group": "WhatsApp Campaigns",
             "pages": [
+              "guides/whatsapp/activation",
               "guides/whatsapp/quickstart",
               "guides/whatsapp/campaign-dashboard",
               "guides/whatsapp/campaign-create",
@@ -99,6 +100,12 @@
               "guides/omnichannel/fallback-overview",
               "guides/omnichannel/configure-fallback",
               "guides/omnichannel/dynamic-field-variables"
+            ]
+          },
+          {
+            "group": "Partners",
+            "pages": [
+              "guides/partners/tsp-onboarding"
             ]
           }
         ]

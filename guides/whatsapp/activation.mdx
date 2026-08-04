@@ -1,0 +1,154 @@
+---
+title: "Activating WhatsApp"
+description: "What happens between signing with OneXtel and sending your first WhatsApp message — what you supply, what you decide, and what to have ready."
+---
+
+Activating WhatsApp means connecting your business to the WhatsApp Business Platform through
+OneXtel, verifying your number with Meta, and configuring how customers opt in and out.
+
+Most of the work is done for you. This page covers the parts that need you: what to supply, what
+to decide, and what to have ready for the one session where your involvement is essential.
+
+## What you supply
+
+Activation starts once your account team has these:
+
+| Document | Required |
+| --- | --- |
+| Activation form | Yes |
+| CERF form | Yes |
+| OBA form | Optional |
+| Display picture | Optional |
+
+The CERF supplies the details your account and users are created from — company name, primary
+contact, email, and website. Getting it right up front avoids rework later.
+
+## What gets set up for you
+
+Your account is created and entitled for WhatsApp before you are involved. That includes the
+account itself, its users, the channel configuration, and the choice of billing currency —
+typically INR, SAR, AED, or USD, agreed on the kick-off call.
+
+Link tracking is also configured at this stage if your campaigns will use shortened URLs. See
+[URL click callbacks](/api-reference/whatsapp/callback-url-click) for the data it returns.
+
+## Embedded signup
+
+This is the step that needs you. It is a single session of about thirty minutes, scheduled in
+your timezone, where your WhatsApp Business Account is created and your number verified with
+Meta.
+
+<Warning>
+Have all three of these ready before the session starts, or it cannot be completed:
+
+- **Access to your Facebook admin account**
+- **Access to your OneXtel account**
+- **Access to the phone number you intend to use**, to receive a verification code by SMS or
+  voice call
+</Warning>
+
+The number you verify becomes your WhatsApp Business number. Choose it deliberately — moving to
+a different number later means repeating verification.
+
+<Note>
+If signup fails, the error usually comes from Meta rather than OneXtel. Meta documents the
+common causes for
+[business account creation](https://developers.facebook.com/documentation/business-messaging/whatsapp/embedded-signup/errors/#business-manager-account-creation-errors),
+[WhatsApp account creation](https://developers.facebook.com/documentation/business-messaging/whatsapp/embedded-signup/errors/#whatsapp-business-account-creation-errors),
+[phone setup](https://developers.facebook.com/documentation/business-messaging/whatsapp/embedded-signup/errors/#phone-setup-errors),
+and [phone verification](https://developers.facebook.com/documentation/business-messaging/whatsapp/embedded-signup/errors/#phone-verification-errors).
+</Note>
+
+## Your business profile
+
+Once the number is verified, your WhatsApp Business profile is configured from the artefacts you
+supplied. This is what customers see when they open a conversation with you, so it is worth
+supplying good material rather than placeholders.
+
+| Field | Specification |
+| --- | --- |
+| Display picture | 640 × 640 px recommended; PNG, JPG, or JPEG |
+| Business profile address | Maximum 256 characters |
+| Business description | Maximum 512 characters |
+| Business email address | Maximum 128 characters |
+| Website URLs | Up to 2 URLs, 256 characters each |
+
+## Opt-in and opt-out
+
+WhatsApp requires customers to be able to opt out of messaging, and configuring this is part of
+activation. Two decisions are yours.
+
+**Which categories opt-out blocks.** Opt-out can suppress **Marketing**, **Utility**, or both.
+The standard configuration blocks Marketing only, so a customer who opts out of promotional
+messaging still receives order confirmations and service notifications they would otherwise miss.
+
+**Which keywords customers can use.** Keywords are case-insensitive.
+
+| Purpose | Standard keywords |
+| --- | --- |
+| Opt in | `START`, `SUBSCRIBE`, `YES` |
+| Opt out | `STOP`, `UNSUBSCRIBE`, `STOP PROMOTIONAL` |
+
+Keep the standards unless you have a reason not to — customers try them by habit, and a keyword
+nobody guesses is the same as no opt-out at all.
+
+Opt-in can also be scoped to specific message types, or left unscoped so it applies to
+everything. You can manage opt-in and opt-out programmatically once live — see
+[Opt-in / opt-out API](/api-reference/whatsapp/opt-in-opt-out).
+
+## Acceptance testing
+
+Before handover, three things are verified end to end:
+
+<Steps>
+  <Step title="Template creation">
+    A template is created and submitted for approval.
+  </Step>
+  <Step title="Template trigger">
+    An approved template is sent to a real number and arrives.
+  </Step>
+  <Step title="Report population">
+    The send appears correctly in reporting, with its delivery status.
+  </Step>
+</Steps>
+
+If you want anything else covered — a specific template type, a callback into your own system,
+a plugin connection — raise it before this stage rather than after.
+
+## Handover
+
+At handover you receive your portal URL and credentials, plus the documentation set: the
+WhatsApp Campaign user manual, the Templates and Send Message API guide, and Meta's message
+template category guidelines. Training sessions are scheduled at the same time.
+
+<Note>
+Credentials are sent to individual recipients only, never to a shared or group address. Change
+your password on first sign-in — see [Account settings](/guides/platform/account-settings).
+</Note>
+
+## Adding conversational features
+
+Standard activation covers messaging, templates, campaigns, automation triggers, and reporting.
+
+If you also need **chatbot** capability — conversational AI, automated response flows,
+context-aware conversations — or **live agent** handling with bot-to-human handoff, an agent
+dashboard, queue management, and multi-agent routing, these are an additional layer on top of
+the base setup. Raise it during the kick-off call, since it changes the scope and timeline of
+onboarding.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Create your templates" icon="table-columns" href="/guides/whatsapp/template-categories">
+    Understand the categories before you write.
+  </Card>
+  <Card title="Launch a campaign" icon="bullhorn" href="/guides/whatsapp/quickstart">
+    Build and send your first campaign.
+  </Card>
+  <Card title="Register callbacks" icon="webhook" href="/guides/platform/callback-configuration">
+    So delivery reports and replies reach your systems.
+  </Card>
+  <Card title="Connect a plugin" icon="plug" href="/plugins/overview">
+    Send from Salesforce, MoEngage, LeadSquared, and more.
+  </Card>
+</CardGroup>

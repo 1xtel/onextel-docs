@@ -1,18 +1,30 @@
 ---
 title: "Callback: Delivery Notification"
-description: "Callback payload structure for WhatsApp message delivery status updates, conversation details, pricing, and recipient status information."
+description: "Receive WhatsApp delivery status updates, with the full status lifecycle, conversation, pricing, and error fields explained."
 ---
 
-The OnexAura platform posts a Delivery Notification callback to your configured
-endpoint when the delivery status of an outbound WhatsApp message changes.
+OneXtel posts a Delivery Notification callback to your configured endpoint whenever the delivery
+status of an outbound WhatsApp message changes. The events originate from Meta's webhooks and
+give you real-time visibility from submission through to outcome.
+
+Register your endpoint under **Configuration → Add New Callback** — see
+[Callback configuration](/guides/platform/callback-configuration).
+
+## Status lifecycle
+
+Every message moves through a defined set of statuses. Map all four in your system, or your
+delivery tracking will be wrong.
+
+| Status | Meaning | Triggered when |
+| --- | --- | --- |
+| `sent` | Accepted by the WhatsApp server | The API request is validated and queued |
+| `delivered` | Delivered to the recipient's device | The device receives the message |
+| `read` | Read by the recipient | The user opens the message, if read receipts are enabled |
+| `failed` | Delivery failed | An error occurred — invalid number, throttling, ecosystem health, or template rejection |
 
 <Note>
-The payload below is the structural skeleton exactly as documented: each field's value
-shows its JSON path, not sample data. The source does not define field meanings, data
-types, or enumerated values — all descriptions on this page are **inferred from the
-field names and paths** and all leaf fields are documented as `string` because the
-source shows every value as a string placeholder. In particular, the possible values of
-`statuses.status` are not listed in the source.
+`read` only ever arrives if the recipient has read receipts enabled. Its absence is not evidence
+the message went unread, so never treat `delivered` without a subsequent `read` as a failure.
 </Note>
 
 ## Payload format
@@ -32,41 +44,41 @@ source shows every value as a string placeholder. In particular, the possible va
         {
           "value": {
             "metadata": {
-              "display_phone_number": "entry.changes.value.metadata.display_phone_number",
-              "phone_number_id": "entry.changes.value.metadata.phone_number_id"
+              "display_phone_number": "...",
+              "phone_number_id": "..."
             },
             "statuses": [
               {
-                "id": "entry.changes.value.statuses.id",
-                "status": "entry.changes.value.statuses.status",
-                "timestamp": "entry.changes.value.statuses.timestamp",
+                "id": "message_id",
+                "status": "sent/delivered/read/failed",
+                "timestamp": "unix_timestamp",
                 "errors": {
-                  "code": "entry.changes.value.statuses.errors.code",
-                  "message": "entry.changes.value.statuses.errors.message",
-                  "title": "entry.changes.value.statuses.errors.title",
-                  "href": "entry.changes.value.statuses.errors.href",
+                  "code": "...",
+                  "message": "...",
+                  "title": "...",
+                  "href": "...",
                   "error_data": {
-                    "details": "entry.changes.value.statuses.errors.error_data.details"
+                    "details": "..."
                   }
                 },
                 "conversation": {
-                  "id": "entry.changes.value.statuses.conversation.id",
+                  "id": "...",
                   "origin": {
-                    "type": "entry.changes.value.statuses.conversation.origin.type"
+                    "type": "user_initiated/business_initiated/referral"
                   },
-                  "expiration_timestamp": "entry.changes.value.statuses.conversation.expiration_timestamp"
+                  "expiration_timestamp": "..."
                 },
                 "pricing": {
-                  "category": "entry.changes.value.statuses.pricing.category",
-                  "billable": "entry.changes.value.statuses.pricing.billable",
-                  "pricing_model": "entry.changes.value.statuses.pricing.pricing_model"
+                  "category": "utility/marketing/authentication",
+                  "billable": true,
+                  "pricing_model": "..."
                 },
-                "recipient_id": "entry.changes.value.statuses.recipient_id"
+                "recipient_id": "customer_phone_number"
               }
             ],
-            "messaging_product": "entry.changes.value.messaging_product"
+            "messaging_product": "whatsapp"
           },
-          "field": "entry.changes.field"
+          "field": "messages"
         }
       ]
     }
@@ -74,146 +86,164 @@ source shows every value as a string placeholder. In particular, the possible va
 }
 ```
 
-## Field reference
+## Top-level fields
 
 <ResponseField name="waba_id" type="string">
-  WhatsApp Business Account ID (inferred). The source shows its value as `entry.id`,
-  indicating it carries the same value as the `entry[].id` field.
-</ResponseField>
-<ResponseField name="custref1" type="string">
-  Custom reference field 1, echoed back from the original send request. See
-  [custom reference passthrough](/api-reference/whatsapp/callback-events#custom-reference-passthrough).
-</ResponseField>
-<ResponseField name="custref2" type="string">
-  Custom reference field 2, echoed back from the original send request.
-</ResponseField>
-<ResponseField name="custref3" type="string">
-  Custom reference field 3, echoed back from the original send request.
-</ResponseField>
-<ResponseField name="custref4" type="string">
-  Custom reference field 4, echoed back from the original send request.
-</ResponseField>
-<ResponseField name="custref5" type="string">
-  Custom reference field 5, echoed back from the original send request.
+  Unique identifier of the WhatsApp Business Account generating the event.
 </ResponseField>
 
-<ResponseField name="entry" type="array of object">
-  Container array for the callback event (inferred).
-  <Expandable title="entry[] properties">
+<ResponseField name="custref1" type="string">
+  Custom key passed at the time of submission, echoed back unchanged.
+</ResponseField>
+
+<ResponseField name="custref2" type="string">
+  Custom key passed at the time of submission.
+</ResponseField>
+
+<ResponseField name="custref3" type="string">
+  Custom key passed at the time of submission.
+</ResponseField>
+
+<ResponseField name="custref4" type="string">
+  Custom key passed at the time of submission.
+</ResponseField>
+
+<ResponseField name="custref5" type="string">
+  Custom key passed at the time of submission.
+</ResponseField>
+
+<ResponseField name="entry" type="array">
+  Webhook event batches from WhatsApp.
+  <Expandable title="entry properties">
     <ResponseField name="id" type="string">
-      Identifier of the entry (inferred). Mirrored at the top level as `waba_id`, which
-      suggests it is the WhatsApp Business Account ID (inferred).
+      Unique ID of the WhatsApp Business Account.
     </ResponseField>
-    <ResponseField name="changes" type="array of object">
-      Array of change events within this entry (inferred).
-      <Expandable title="changes[] properties">
-        <ResponseField name="value" type="object">
-          The event data for this change (inferred).
-          <Expandable title="value properties">
-            <ResponseField name="metadata" type="object">
-              Metadata about the business number the message was sent from (inferred).
-              <Expandable title="metadata properties">
-                <ResponseField name="display_phone_number" type="string">
-                  Display phone number of the business (inferred).
-                </ResponseField>
-                <ResponseField name="phone_number_id" type="string">
-                  Phone number identifier of the business (inferred).
-                </ResponseField>
-              </Expandable>
-            </ResponseField>
-            <ResponseField name="statuses" type="array of object">
-              Delivery status objects for the message (inferred).
-              <Expandable title="statuses[] properties">
-                <ResponseField name="id" type="string">
-                  Identifier of the message this status update refers to (inferred).
-                </ResponseField>
-                <ResponseField name="status" type="string">
-                  Delivery status of the message (inferred; possible values are not
-                  listed in the source).
-                </ResponseField>
-                <ResponseField name="timestamp" type="string">
-                  Timestamp of the status update (inferred; format not specified in the
-                  source).
-                </ResponseField>
-                <ResponseField name="errors" type="object">
-                  Error details when delivery fails (inferred). The source shows this as
-                  a single object despite the plural name.
-                  <Expandable title="errors properties">
-                    <ResponseField name="code" type="string">
-                      Error code (inferred). See
-                      [WhatsApp error codes](/api-reference/whatsapp/error-codes) for the
-                      Meta Cloud API values.
-                    </ResponseField>
-                    <ResponseField name="message" type="string">
-                      Error message text (inferred).
-                    </ResponseField>
-                    <ResponseField name="title" type="string">
-                      Error title (inferred).
-                    </ResponseField>
-                    <ResponseField name="href" type="string">
-                      Link to further error documentation (inferred).
-                    </ResponseField>
-                    <ResponseField name="error_data" type="object">
-                      Additional error data (inferred).
-                      <Expandable title="error_data properties">
-                        <ResponseField name="details" type="string">
-                          Detailed error description (inferred).
-                        </ResponseField>
-                      </Expandable>
-                    </ResponseField>
-                  </Expandable>
-                </ResponseField>
-                <ResponseField name="conversation" type="object">
-                  Conversation details for the message (inferred).
-                  <Expandable title="conversation properties">
-                    <ResponseField name="id" type="string">
-                      Identifier of the conversation (inferred).
-                    </ResponseField>
-                    <ResponseField name="origin" type="object">
-                      Origin of the conversation (inferred).
-                      <Expandable title="origin properties">
-                        <ResponseField name="type" type="string">
-                          Conversation origin type (inferred; values not listed in the
-                          source).
-                        </ResponseField>
-                      </Expandable>
-                    </ResponseField>
-                    <ResponseField name="expiration_timestamp" type="string">
-                      Timestamp when the conversation expires (inferred).
-                    </ResponseField>
-                  </Expandable>
-                </ResponseField>
-                <ResponseField name="pricing" type="object">
-                  Pricing details for the message (inferred).
-                  <Expandable title="pricing properties">
-                    <ResponseField name="category" type="string">
-                      Pricing category of the message (inferred; values not listed in
-                      the source).
-                    </ResponseField>
-                    <ResponseField name="billable" type="string">
-                      Whether the message is billable (inferred; shown as a string
-                      placeholder in the source).
-                    </ResponseField>
-                    <ResponseField name="pricing_model" type="string">
-                      Pricing model applied to the message (inferred).
-                    </ResponseField>
-                  </Expandable>
-                </ResponseField>
-                <ResponseField name="recipient_id" type="string">
-                  Identifier of the message recipient (inferred; presumably the
-                  recipient's WhatsApp number).
-                </ResponseField>
-              </Expandable>
-            </ResponseField>
-            <ResponseField name="messaging_product" type="string">
-              Messaging product for the event (inferred).
-            </ResponseField>
-          </Expandable>
-        </ResponseField>
+    <ResponseField name="changes" type="array">
+      Event changes related to messages and status updates.
+      <Expandable title="changes properties">
         <ResponseField name="field" type="string">
-          Field name describing the change (inferred).
+          Type of webhook event — `messages` for delivery status.
+        </ResponseField>
+        <ResponseField name="value" type="object">
+          Core object containing message delivery and metadata details.
         </ResponseField>
       </Expandable>
     </ResponseField>
   </Expandable>
 </ResponseField>
+
+<Note>
+The `custref1`–`custref5` fields are the simplest way to correlate a callback with your own
+records — set them on the original send and they come straight back. See
+[Send template messages](/api-reference/whatsapp/send-template-message).
+</Note>
+
+## Value fields
+
+<ResponseField name="metadata.display_phone_number" type="string">
+  The business WhatsApp number visible to users.
+</ResponseField>
+
+<ResponseField name="metadata.phone_number_id" type="string">
+  Unique ID of the WhatsApp number.
+</ResponseField>
+
+<ResponseField name="messaging_product" type="string">
+  Messaging platform identifier — `whatsapp`.
+</ResponseField>
+
+<ResponseField name="statuses" type="array">
+  Message delivery status updates.
+</ResponseField>
+
+## Status fields
+
+<ResponseField name="statuses[].id" type="string">
+  Unique message ID. Match it against the ID returned when you sent the message.
+</ResponseField>
+
+<ResponseField name="statuses[].status" type="string">
+  Delivery status — `sent`, `delivered`, `read`, or `failed`.
+</ResponseField>
+
+<ResponseField name="statuses[].timestamp" type="string">
+  Unix timestamp of the status event.
+</ResponseField>
+
+<ResponseField name="statuses[].recipient_id" type="string">
+  Recipient's WhatsApp phone number.
+</ResponseField>
+
+### Errors
+
+The `errors` object is present **only when `status` is `failed`**.
+
+<ResponseField name="statuses[].errors.code" type="string">
+  Error code indicating the failure reason. See
+  [WhatsApp error codes](/api-reference/whatsapp/error-codes) for the values OneXtel has
+  observed and whether each is worth retrying.
+</ResponseField>
+
+<ResponseField name="statuses[].errors.message" type="string">
+  Description of the error.
+</ResponseField>
+
+<ResponseField name="statuses[].errors.title" type="string">
+  Short error category or title.
+</ResponseField>
+
+<ResponseField name="statuses[].errors.href" type="string">
+  URL for detailed error documentation.
+</ResponseField>
+
+<ResponseField name="statuses[].errors.error_data.details" type="string">
+  Additional granular error detail.
+</ResponseField>
+
+Meta publishes the full list of failure reasons in its
+[error codes reference](https://developers.facebook.com/documentation/business-messaging/whatsapp/support/error-codes).
+
+### Conversation
+
+<ResponseField name="statuses[].conversation.id" type="string">
+  Unique conversation identifier.
+</ResponseField>
+
+<ResponseField name="statuses[].conversation.origin.type" type="string">
+  How the conversation was initiated — `user_initiated`, `business_initiated`, or `referral`.
+</ResponseField>
+
+<ResponseField name="statuses[].conversation.expiration_timestamp" type="string">
+  Timestamp when the conversation window expires.
+</ResponseField>
+
+<Note>
+`expiration_timestamp` is when the session window closes. After it passes you can no longer send
+free-form messages to that recipient — only templates. Track it if your application sends
+session messages. See [Send session messages](/api-reference/whatsapp/send-session-messages).
+</Note>
+
+### Pricing
+
+<ResponseField name="statuses[].pricing.category" type="string">
+  Message category used for billing — `utility`, `marketing`, or `authentication`.
+</ResponseField>
+
+<ResponseField name="statuses[].pricing.billable" type="boolean">
+  Whether the message is billable.
+</ResponseField>
+
+<ResponseField name="statuses[].pricing.pricing_model" type="string">
+  Pricing model used for billing.
+</ResponseField>
+
+<Note>
+The pricing object is what to reconcile billing against — `category` here is the category Meta
+actually charged at, which is not always the category you submitted the template under.
+</Note>
+
+## Related
+
+- [Callback events overview](/api-reference/whatsapp/callback-events)
+- [WhatsApp error codes](/api-reference/whatsapp/error-codes)
+- [Callback configuration](/guides/platform/callback-configuration)
