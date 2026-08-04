@@ -1,0 +1,93 @@
+---
+title: "WhatsApp Error Codes"
+description: "Meta Cloud API error codes surfaced through the OneXtel WhatsApp APIs, with HTTP status and retry guidance."
+---
+
+WhatsApp messages submitted to OneXtel are delivered onward through the Meta WhatsApp Cloud
+API. When Meta rejects a request, it returns its own error code, which OneXtel surfaces back
+to you unchanged.
+
+The most likely place to encounter them is the `errors.code` field of the
+[delivery notification callback](/api-reference/whatsapp/callback-delivery-notification), though
+the source table does not confirm which field carries them.
+
+<Warning>
+Meta's error taxonomy changes independently of OneXtel. The table below is a snapshot of the
+codes OneXtel has observed — treat any unlisted code as non-retryable and check Meta's Cloud
+API error reference for its current meaning.
+</Warning>
+
+## Retry guidance
+
+Every code below is marked with whether re-sending the same message is worthwhile:
+
+| Value | Meaning |
+| --- | --- |
+| **YES** | Transient condition. Retry with backoff. |
+| **NO** | Permanent for this message or account. Retrying will fail again — fix the request, the account, or the permissions first. |
+| **UNSURE** | Behaviour not confirmed. Treat as non-retryable until verified, or retry once with a long delay. |
+
+## Authorization and policy errors
+
+Raised when the app, token, or WhatsApp Business Account is not permitted to send.
+
+| Code | Error Type | Details | HTTP Status Code | Retry Allowed |
+| --- | --- | --- | --- | --- |
+| 0 | AuthException | Unable to authenticate the app user. Token may be expired or invalid. | 401 | YES |
+| 3 | API Method | Capability or permissions issue. | 500 | NO |
+| 10 | Permission Denied | Permission not granted or removed. Use token debugger to verify. | 403 | NO |
+| 190 | Access token has expired | Get a new access token. | 401 | YES |
+| 200 | API Permission | Permission not granted or removed. | 403 | NO |
+| 368 | Policy Violation | Account restricted/disabled for violating policy. | 403 | NO |
+| 130497 | Country Messaging Restriction | Account restricted from messaging users in this country. | 403 | NO |
+| 131031 | Account Locked | Account locked or failed to verify request data. | 403 | NO |
+
+<Note>
+Codes 0 and 190 are the only recoverable errors in this group — refresh the access token and
+resend. Codes 368, 130497, and 131031 are account-level restrictions that no amount of retrying
+will clear; raise them with OneXtel support.
+</Note>
+
+## Request and parameter errors
+
+Raised when the request itself is malformed, or when Meta fails to process it.
+
+| Code | Error Type | Details | HTTP Status Code | Retry Allowed |
+| --- | --- | --- | --- | --- |
+| 1 | API Unknown | Invalid request or server error. | 400 | YES |
+| 2 | API Service | Temporary issue or overloaded service. | 503 | YES |
+| 33 | Invalid Parameter Value | The business phone number has been deleted. | 400 | NO |
+| 100 | Invalid Parameter | Unsupported or misspelled parameter. | 400 | NO |
+| 130472 | Experiment User | Message was not sent as part of an experiment. | 400 | NO |
+| 131000 | Unknown Error | Message failed to send due to unknown error. | 500 | UNSURE |
+| 131008 | Missing Parameter | Request is missing a required parameter. | 400 | NO |
+| 131009 | Invalid Parameter Value | One or more parameter values are invalid. | 400 | NO |
+
+<Note>
+Code 130472 is expected behaviour, not a fault: the recipient is part of a Meta experiment
+group that excludes them from delivery. Do not retry, and do not count it as a failure in
+delivery-rate reporting.
+</Note>
+
+## Rate-limit errors
+
+Raised when a throughput ceiling is hit — at the app, account, or messaging-quality level.
+
+| Code | Error Type | Details | HTTP Status Code | Retry Allowed |
+| --- | --- | --- | --- | --- |
+| 4 | Too Many API Calls | App has reached its API call rate limit. | 400 | YES |
+| 80007 | Account Rate Limit | WhatsApp Business Account has reached rate limit. | 400 | UNSURE |
+| 130429 | Rate Limit Hit | Cloud API message throughput has been reached. | 400 | UNSURE |
+| 131048 | Spam Rate Limit Hit | Messages blocked/flagged as spam. | 400 | NO |
+
+<Warning>
+Code 131048 is a quality signal, not a throughput one. It means Meta has flagged your messaging
+as spam and is throttling delivery to protect recipients. Retrying makes the quality rating
+worse — review template content, opt-in provenance, and send frequency instead.
+</Warning>
+
+## Related
+
+- [Delivery notification callback](/api-reference/whatsapp/callback-delivery-notification) — where these codes are returned
+- [Send template messages](/api-reference/whatsapp/send-template-message)
+- [RCS operator error codes](/api-reference/rcs/error-codes) — Jio and Vi equivalents

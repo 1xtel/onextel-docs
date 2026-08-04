@@ -106,7 +106,8 @@
                   "api-reference/whatsapp/callback-button-clicks",
                   "api-reference/whatsapp/callback-url-click"
                 ]
-              }
+              },
+              "api-reference/whatsapp/error-codes"
             ]
           },
           {
@@ -117,7 +118,8 @@
               "api-reference/rcs/send-template-message",
               "api-reference/rcs/send-messages",
               "api-reference/rcs/media",
-              "api-reference/rcs/opt-in-opt-out"
+              "api-reference/rcs/opt-in-opt-out",
+              "api-reference/rcs/error-codes"
             ]
           },
           {

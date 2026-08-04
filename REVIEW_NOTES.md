@@ -33,6 +33,11 @@ This file is **not** part of the published site (it isn't in `docs.json`).
 | 20 | Omnichannel | Message Status request is `auth: noauth` in Postman but still sends `apikey` header | Documented header auth | Confirm auth |
 | 21 | Fallback | SMS `type` values: guide says `SI, TRANS, OTP or Promo`; API ref example uses `TXN` | Both carried verbatim | Reconcile enum |
 | 22 | Legacy | Legacy Aura API domain is `api.onex-aura.com` (hyphenated) vs current `api.onexaura.com` | Flagged in `legacy/sms-aura.mdx` | Historical — confirm |
+| 23 | RCS / WhatsApp error codes | Source tables (Soham Shirke, 25 Jun 2025) give operator codes but never state **which response or callback field carries them** | Documented with a `<Warning>` on both pages | Confirm the carrying field |
+| 24 | RCS error codes (Jio) | "Default account TPS exceeded" is listed with **no error code** (`—`); codes 8, 10, 18, 19, 22, 26, 27, 29 undefined | Reproduced with `—`, flagged | Supply the missing code |
+| 25 | RCS error codes (Vi) | "Test template limit exceeded" appears twice — `400-C` (retry UNSURE) and `429-B` (retry YES); "Curfew hours" appears as both `403-D` and `503-A` | Both reproduced, flagged | Reconcile duplicates |
+| 26 | WhatsApp error codes | Meta code `3` (API Method) is mapped to HTTP **500** while every other permission error is 403 | Reproduced as given | Confirm status |
+| 27 | Both error-code pages | "Retry Allowed" column uses **UNSURE** for 9 codes — the operators never confirmed behaviour | Documented as "treat as non-retryable until verified" | Verify against live traffic |
 
 ## Product manuals — gaps & likely errors
 

@@ -42,6 +42,11 @@ https://api.onexaura.com
 | [Media Upload](/api-reference/rcs/media) | POST | `/rcs/mediaupload` |
 | [Opt-in / Opt-out](/api-reference/rcs/opt-in-opt-out) | GET/POST/DELETE | `/opt/{in,out}/rcs` |
 
+Failures fall into two layers: OneXtel API validation errors are listed under
+[Send messages](/api-reference/rcs/send-messages#error-codes), and errors raised downstream by
+the recipient's operator are listed under
+[RCS operator error codes](/api-reference/rcs/error-codes).
+
 <Note>
 The RCS Send Message API and Fetch Template API share the same endpoints as the other
 OnexAura channels (`/oapi/send_sms`, `/oapi/templates/fetch`). The channel is determined by

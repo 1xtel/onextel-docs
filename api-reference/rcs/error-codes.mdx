@@ -1,0 +1,124 @@
+---
+title: "RCS Operator Error Codes"
+description: "Error codes returned by the Jio and Vi RCS platforms, with HTTP status and retry guidance."
+---
+
+RCS messages submitted to OneXtel are delivered onward to the recipient's operator RCS
+platform. When that platform rejects a message, it returns its own error code, which OneXtel
+surfaces back to you unchanged. The codes are **operator-specific** — the same numeric value
+means different things on Jio and Vi.
+
+These are distinct from the OneXtel API validation errors (`API_Invalid_Auth_Key`,
+`API_Missing_Recipient`, and so on) documented under
+[Send messages](/api-reference/rcs/send-messages#error-codes). A request that passes OneXtel
+validation can still fail downstream with one of the codes below.
+
+<Warning>
+The source table does not state which response or callback field carries the operator code.
+Confirm with OneXtel support how these values appear in your delivery reports before you build
+retry logic against them.
+</Warning>
+
+## Retry guidance
+
+Every code below is marked with whether re-sending the same message is worthwhile:
+
+| Value | Meaning |
+| --- | --- |
+| **YES** | Transient condition. Retry with backoff. |
+| **NO** | Permanent for this message or account. Retrying will fail again — fix the request, the account, or the recipient's status first. |
+| **UNSURE** | Behaviour not confirmed by the operator. Treat as non-retryable until verified, or retry once with a long delay. |
+
+## Jio
+
+Errors returned by the Jio RCS platform.
+
+| Error Code | Error Type | Description / Resolution | Retry Allowed |
+| --- | --- | --- | --- |
+| 2 | Bad Request | Request is not proper. Please provide valid JSON body. | NO |
+| 3 | Unauthorized | Unauthorized. | YES |
+| 4 | Forbidden | Assistant is not launched yet. Please launch the assistant before retrying again. | NO |
+| 5 | User Not Found | RCS Disabled. Please enable RCS as a service. | NO |
+| 6 | Too Many Requests | Max number of messages for the number/assistant exhausted. Try next month. | UNSURE |
+| 7 | Internal Server Error | Server connectivity error. Please retry after some time. | YES |
+| 9 | Bot Rate Limit Exceeded | Account-level TPS limit exceeded. Retry with allowed TPS. | YES |
+| 11 | Internal Server Error | Request timeout occurred. Please try after some time. | YES |
+| 12 | Internal Server Error | Bad gateway error. Please try after some time. | YES |
+| 13 | Internal Server Error | Service temporarily unavailable. Please try after some time. | YES |
+| 14 | Internal Server Error | Similar to bad gateway error. Please try after some time. | YES |
+| 15 | Invalid Message Expiry | One of the expiry fields is already set. Please try with suitable expiry fields. | NO |
+| 16 | Invalid ExpireTime Value | Please try with suitable `expireTime`. | NO |
+| 17 | Invalid TTL Format | TTL must be a digit string ending with `s`. Please try with suitable value. | NO |
+| 20 | Internal Server Error | GetCapabilities failed. Please try after some time. | UNSURE |
+| 21 | Internal Server Error | SendMessage request failed. Please validate the message and try again. | YES |
+| 23 | Operation Not Allowed | Account is inactive. Activate the account and try again. | NO |
+| 24 | Operation Not Allowed | User has opted out. | NO |
+| 25 | Internal Server Error | Assistant not ready yet. | UNSURE |
+| 28 | Too Many Requests | Account-level TPS exceeded. Please retry with lower rate. | YES |
+| — | Too Many Requests | Default account TPS exceeded. | NO |
+| 30 | Internal Server Error | Assistant initialization failed. Please re-create assistant and try again. | NO |
+
+<Note>
+"Assistant" is the Jio term for the RCS agent (sender profile). Codes 4, 25, and 30 all point
+at agent provisioning rather than the message itself — check the agent's launch status in the
+[RCS platform](/guides/rcs-platform/sender-profiles) before retrying.
+</Note>
+
+<Warning>
+The source lists "Default account TPS exceeded" without an error code. Codes 8, 10, 18, 19, 22,
+26, 27, and 29 are not defined in the source either.
+</Warning>
+
+## Vi (Vodafone Idea)
+
+Errors returned by the Vi RCS platform. Codes combine the HTTP status with a suffix letter.
+The `-M01` suffix indicates the error was passed through from Google's RCS platform (MaaP)
+rather than raised by Vi.
+
+| Error Code | Error Message | HTTP Status Code | Retry Allowed |
+| --- | --- | --- | --- |
+| 400-A | Template provided with insufficient params | 400 | NO |
+| 400-B | Template not approved | 400 | NO |
+| 400-C | Test template limit exceeded | 400 | UNSURE |
+| 400-D | Template code with bot doesn't exist | 400 | NO |
+| 400-E | Agent Not found | 400 | NO |
+| 400-F | Not a valid JSON message | 400 | NO |
+| 400-G | Message type not supported | 400 | NO |
+| 400-H | Invalid phone Number | 400 | NO |
+| 400-M01 | 400 error reason from Google Platform | 400 | UNSURE |
+| 401-A | Unauthorized | 401 | YES |
+| 401-B | Invalid ClientId | 401 | YES |
+| 401-C | Invalid IP Address | 401 | YES |
+| 401-D | User not in conversation and provided message is not a template | 401 | NO |
+| 402-A | Low balance. Please recharge | 402 | NO |
+| 403-A | Bot not launched | 403 | NO |
+| 403-B | User opted out | 403 | NO |
+| 403-C | Bot blocked for spam | 403 | NO |
+| 403-D | Curfew hours | 403 | NO |
+| 404-A | RCS disabled | 404 | NO |
+| 409-M01 | 409 error reason from Google Platform | 409 | UNSURE |
+| 429-A | Too many requests | 429 | YES |
+| 429-B | Test template limit exceeded | 429 | YES |
+| 429-M01 | Too many requests error from Google platforms/MaaPs | 429 | YES |
+| 500-A | Internal server error | 500 | YES |
+| 502-A | Bad gateway | 502 | YES |
+| 502-M01 | Timeout from Google MaaP | 502 | NO |
+| 503-A | Curfew hours | 503 | NO |
+| 504-A | Timeout | 504 | YES |
+
+<Note>
+`401-C` (Invalid IP Address) means the calling IP is not whitelisted. Retrying from the same IP
+will not help — whitelist the IP first, then retry.
+</Note>
+
+<Warning>
+Two pairs of Vi codes overlap in meaning but differ in handling: "Test template limit exceeded"
+appears as both `400-C` (retry UNSURE) and `429-B` (retry YES), and "Curfew hours" appears as
+both `403-D` and `503-A`. Both pairs are reproduced as given in the source.
+</Warning>
+
+## Related
+
+- [Send RCS messages](/api-reference/rcs/send-messages) — OneXtel API-level error codes
+- [Send RCS template messages](/api-reference/rcs/send-template-message)
+- [WhatsApp error codes](/api-reference/whatsapp/error-codes) — Meta Cloud API equivalents
