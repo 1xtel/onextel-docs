@@ -41,11 +41,11 @@ A `guides/platform/` section now exists. Remaining gaps are marked **Missing**.
 | Credits — userwise, all allocation, update | **Done** — `platform/credits` | V2 Aura pp. 45–47 |
 | Callback Configuration | **Done** — `platform/callback-configuration` | V2 Aura pp. 91–92 |
 | VMN Configuration and keywords | **Done** — `platform/vmn-configuration` | V2 Aura pp. 93–95 |
-| Blacklist — category, number, upload, download | **Missing** | V2 Aura pp. 86–90 |
-| All Schedule | **Missing** | V2 Aura p. 100 |
-| Telco Reports | **Missing** | V2 Aura p. 58 |
-| Signing in, TUC login | Exists but SMS-scoped (`guides/sms/overview`) — generalise into Platform | V2 Aura pp. 8–9 |
-| Dashboard | Exists but SMS-scoped (`guides/sms/overview`) — generalise into Platform | V2 Aura p. 24 |
+| Blacklist — category, number, upload, download | **Done** — `platform/blacklist` | V2 Aura pp. 86–90 |
+| All Schedule | **Done** — `platform/all-schedule` | V2 Aura p. 100 |
+| Telco Reports | **Done** — `platform/telco-reports` | V2 Aura p. 58 |
+| Signing in, TUC login | **Done** — `platform/getting-started` | V2 Aura pp. 8–9 |
+| Dashboard | **Done** — `platform/getting-started` | V2 Aura p. 24 |
 | API key generation | Covered, still filed under SMS — cross-linked from Platform overview, physical move pending | V2 Aura pp. 72–75 |
 | Phonebook — groups and contacts | Covered, still filed under SMS — same | V2 Aura pp. 77–84 |
 | Notifications | Covered, still filed under SMS — same | V2 Aura pp. 96–98 |
@@ -70,8 +70,8 @@ RCS and SMS activation have no equivalent source in this drop at all.
 
 | Feature | Status | Source |
 |---------|--------|--------|
-| **Meta Direct Send** | **Entirely undocumented** | `Meta Direct Send User Guide.docx` |
-| **Bulk WhatsApp Template Upload** | **Entirely undocumented** | `Bulk WhatsApp Template Upload.docx` |
+| Meta Direct Send | **Done** — `guides/whatsapp/direct-send` | `Meta Direct Send User Guide.docx` |
+| Bulk WhatsApp Template Upload | **Done** — `guides/whatsapp/bulk-template-upload` | `Bulk WhatsApp Template Upload.docx` |
 | WhatsApp campaigns | Covered | — |
 | RCS campaigns and platform | Covered | — |
 | International SMS | Covered | — |
@@ -119,18 +119,19 @@ covers it today.
 
 ## Recommended order
 
-1. **Callback Configuration guide** — smallest, and four published pages already link to the
-   concept. Closes `REVIEW_NOTES` P15.
-2. **Getting Started section** — sign-in, dashboard, user management, roles, credits, blacklist,
-   VMN, all-schedule. Move API keys, phonebook, and notifications out of `guides/sms/` into it.
-   This is the layer-1 fix and the largest single piece of work.
-3. **Channel activation pages** — one per channel, derived from the onboarding SOP for WhatsApp;
-   RCS and SMS need a source.
-4. **Meta Direct Send** and **Bulk WhatsApp Template Upload** — two self-contained new features
-   with complete sources.
-5. **TSP onboarding section** — partner-facing, separate audience.
+1. ~~Callback Configuration guide~~ — **done**.
+2. ~~Getting Started / Platform section~~ — **done**. Ten pages under `guides/platform/`.
+   The relocation of API keys, phonebook, and notifications out of `guides/sms/` is still
+   outstanding (see the note above).
+3. ~~Meta Direct Send and Bulk WhatsApp Template Upload~~ — **done**.
+4. **Channel activation pages** — one per channel. WhatsApp must be *derived* from the internal
+   onboarding SOP, never copied. **RCS and SMS have no source in this drop** — supply one.
+5. **TSP onboarding section** — partner-facing, separate audience. Source is the 11-step
+   journey infographic; a written source would be better.
 6. **Verification pass** — Status Check API, DLR mapping, and RCS template field constraints
    against their new sources.
+7. **Relocation decision** — move API keys, phonebook, and notifications into Platform once the
+   URL/redirect question is settled.
 
 ## Note on the live site
 

@@ -1,0 +1,88 @@
+---
+title: "Signing In"
+description: "Sign in to the OneXtel portal, read the dashboard, and understand what your account level lets you do."
+---
+
+The OneXtel portal is where campaigns are built, templates are managed, reports are read, and
+the account is administered. Everything below is available to any signed-in user, subject to
+the [role](/guides/platform/roles) they have been given.
+
+## Sign in
+
+<Steps>
+  <Step title="Open the portal">
+    Go to the OneXtel portal URL in a web browser. Your account manager provides this during
+    onboarding.
+  </Step>
+  <Step title="Enter your credentials">
+    Enter the **Username** and **Password** for your account.
+  </Step>
+  <Step title="Accept the terms">
+    Select the **I accept the Terms and Conditions** checkbox.
+  </Step>
+  <Step title="Sign in">
+    Click **Sign In**. The dashboard appears once you are authenticated.
+  </Step>
+</Steps>
+
+Forgotten your password? Use **Forgot Password?** on the sign-in screen rather than asking an
+administrator to reset it — credentials should never be shared.
+
+<Note>
+If two-factor authentication is enabled on your account, you are prompted for a second
+verification step after your password. 2FA is switched on per account — see
+[Platform overview](/guides/platform/overview).
+</Note>
+
+## The dashboard
+
+The dashboard is the landing page after sign-in and gives a real-time view of message
+performance.
+
+| Panel | Shows |
+| --- | --- |
+| Summary Overview | Submitted, delivered, failed, and awaited volumes, toggleable between **Week** and **Month** |
+| Today's Delivered Percent | The proportion of today's traffic that reached recipients |
+| Quick Stats | Volumes submitted today, this week, and this month |
+
+Your available credit is shown in the header at all times, split into **Web** and **API** —
+traffic sent from the portal and traffic sent programmatically are metered separately. See
+[Credits](/guides/platform/credits).
+
+<Note>
+**Submitted** counts messages the platform accepted, not messages that arrived. The gap between
+Submitted and Delivered is where delivery problems show up first — if it widens, check the
+delivery reports before assuming a send succeeded.
+</Note>
+
+## What you can do
+
+A TUC account manages day-to-day messaging operations under a tenant. From the portal you can:
+
+- **Send messages** — one-off, dynamic, or campaign sends, via web, API, or SMPP
+- **Create and manage templates** for each channel
+- **Manage users** within your account's scope, and assign their roles
+- **Generate reports** on delivery, sender IDs, campaigns, templates, and click data
+- **Allocate credit** to users and sub-accounts
+- **Maintain the phonebook** of contacts and groups
+- **Configure blacklisted numbers** to suppress specific recipients
+
+Administrative control beyond your own account — creating tenants, or changing account-level
+entitlements — sits with the tenant administrator.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Add your users" icon="user-plus" href="/guides/platform/user-management">
+    Create accounts for your team and assign roles.
+  </Card>
+  <Card title="Generate an API key" icon="key" href="/guides/sms/settings#api">
+    Required for API sends and every plugin.
+  </Card>
+  <Card title="Register callbacks" icon="webhook" href="/guides/platform/callback-configuration">
+    So delivery reports and replies reach your systems.
+  </Card>
+  <Card title="Understand the account model" icon="sitemap" href="/guides/platform/overview">
+    Tenants, TUCs, users, roles, and credits.
+  </Card>
+</CardGroup>

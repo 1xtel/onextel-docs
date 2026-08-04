@@ -1,0 +1,66 @@
+---
+title: "Bulk Template Upload"
+description: "Create many WhatsApp templates at once by uploading a CSV in the prescribed format."
+---
+
+Bulk Upload creates multiple WhatsApp templates in one go from a CSV file, instead of building
+each one by hand in the template editor.
+
+It is worth using whenever you are creating templates in bulk — a new language set, a migration
+from another provider, or a seasonal campaign family that shares a structure.
+
+## Upload templates
+
+<Steps>
+  <Step title="Open Bulk Uploads">
+    Sign in to the portal, then go to **Channels → WhatsApp → Bulk Uploads**.
+  </Step>
+  <Step title="Get the sample file">
+    Click **Upload Template File**, then **Download Sample Template**.
+
+    The sample defines the required CSV format and includes fields such as **WABA ID**,
+    **Name**, **Language**, **Category**, and **Message**, along with the other required
+    columns.
+  </Step>
+  <Step title="Fill in your templates">
+    Complete your template details using exactly the format in the sample file — the same
+    columns, in the same order.
+  </Step>
+  <Step title="Upload the file">
+    Either click **Click to Browse** and select the file, or drag and drop it into the upload
+    area.
+
+    | Requirement | Value |
+    | --- | --- |
+    | File format | CSV |
+    | Maximum file size | 10 MB |
+  </Step>
+  <Step title="Create the templates">
+    Click **Create Templates**. The templates are uploaded and processed.
+  </Step>
+</Steps>
+
+<Warning>
+Always start from a freshly downloaded sample file rather than reusing an old one. Adding,
+renaming, or reordering columns will cause the upload to fail — and a partially valid file is
+harder to diagnose than an obviously broken one.
+</Warning>
+
+## After uploading
+
+Uploaded templates enter the same approval process as templates created individually — they are
+submitted to Meta and must be approved before a campaign can use them. Check their status under
+**WhatsApp → Asset Management → Templates**, or via the
+[Fetch Template API](/api-reference/whatsapp/templates-fetch).
+
+<Note>
+Category matters as much in bulk as it does one at a time. A file that miscategorises marketing
+content as utility will be rejected template by template — see
+[Template categories](/guides/whatsapp/template-categories) before preparing the CSV.
+</Note>
+
+## Related
+
+- [Create templates via API](/api-reference/whatsapp/templates-create)
+- [Template categories](/guides/whatsapp/template-categories)
+- [Fetch templates](/api-reference/whatsapp/templates-fetch)

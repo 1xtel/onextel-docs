@@ -21,11 +21,15 @@
             "group": "Platform",
             "pages": [
               "guides/platform/overview",
+              "guides/platform/getting-started",
               "guides/platform/user-management",
               "guides/platform/roles",
               "guides/platform/credits",
+              "guides/platform/blacklist",
               "guides/platform/callback-configuration",
-              "guides/platform/vmn-configuration"
+              "guides/platform/vmn-configuration",
+              "guides/platform/telco-reports",
+              "guides/platform/all-schedule"
             ]
           },
           {
@@ -35,7 +39,9 @@
               "guides/whatsapp/campaign-dashboard",
               "guides/whatsapp/campaign-create",
               "guides/whatsapp/campaign-variable-mapping",
-              "guides/whatsapp/campaign-launch"
+              "guides/whatsapp/campaign-launch",
+              "guides/whatsapp/direct-send",
+              "guides/whatsapp/bulk-template-upload"
             ]
           },
           {
