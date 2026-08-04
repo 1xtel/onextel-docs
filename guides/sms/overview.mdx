@@ -1,64 +1,90 @@
 ---
-title: "International SMS Platform Overview"
-description: "Introduction to the OneXtel International SMS platform: signing in, the dashboard, and key terminology."
+title: "SMS Overview"
+description: "Send SMS through OneXtel — sending options, credits, and what differs between domestic and international delivery."
 ---
 
-The OneXtel International platform is a business communication platform that enables brands to
-create connected customer experiences through integrated telecommunication. Use it to send SMS
-to international recipients, run bulk campaigns, manage templates and Sender IDs, and analyze
-delivery through detailed reports.
+OneXtel SMS lets you send one-off messages, personalised sends, and bulk campaigns, with
+templates, sender IDs, and delivery reporting behind them. Send from the portal, from the
+[API](/api-reference/sms/overview), or from a [connected platform](/plugins/overview).
 
-This guide covers SMS in the end-user portal: sending messages, managing campaigns, templates,
-sender IDs, and reports.
+This guide covers SMS in the portal. Signing in, users, API keys, phonebook, blacklist, and
+account settings are shared across every channel and live under
+[Platform](/guides/platform/overview).
 
-<Note>
-Signing in, the dashboard, and account-level features — [users and
-roles](/guides/platform/user-management), [API keys](/guides/platform/api-keys),
-[phonebook](/guides/platform/phonebook), [blacklist](/guides/platform/blacklist), and
-[account settings](/guides/platform/account-settings) — are shared across every channel and are
-documented under [Platform](/guides/platform/overview).
-</Note>
+## Domestic and international
+
+SMS is one product. What changes with destination is **compliance**, not how you use it —
+sending, campaigns, templates, and reports work the same either way.
+
+| | Domestic (India) | International |
+| --- | --- | --- |
+| Registration | Entity ID, sender ID, and every template must be pre-registered under [DLT](/guides/sms/dlt) | No DLT registration |
+| Sender ID | Six characters, approved via DLT | Varies by destination country |
+| Message content | Must match an approved template | Governed by destination-country rules |
+| DND / opt-out filtering | Enforced by the operator, and by [Scrub DND](/guides/platform/api-keys) on your API key | Varies by country |
+
+<Warning>
+Sending to Indian numbers without DLT registration fails at the operator, not at OneXtel — the
+message is accepted and then dropped. If you send to India at all, complete
+[DLT registration](/guides/sms/dlt) first.
+</Warning>
+
+Destination rules outside India vary widely — sender ID format, permitted content, and time
+windows all differ by country. Check with your account manager before launching into a new
+market.
+
+## Sending options
+
+Five categories are available under **+ New SMS**:
+
+| Category | Use it to |
+| --- | --- |
+| Quick English SMS | Send text messages, schedule them, and import contacts from phonebooks or notepads |
+| Quick Unicode / Multilingual SMS | Send in multiple languages, schedule, and import contacts |
+| Dynamic SMS | Send messages with multiple variables, importing recipients and variable data from a spreadsheet |
+| Multiple Dynamic SMS | Send using multiple templates from a single spreadsheet, for large-scale multi-template messaging |
+| Campaign SMS | Run bulk campaigns with multiple variables and recipients imported from a spreadsheet |
+
+See [Send SMS](/guides/sms/send-sms) for the first four, and
+[Campaigns](/guides/sms/campaigns) for Campaign SMS and campaign management.
+
+## Credits
+
+One credit equals one 160-character message. Longer messages are split into segments, and
+**each segment consumes a credit** — so a 300-character message costs two, not one.
+
+Unicode and multilingual messages segment at a lower character count than plain English, so the
+same text costs more credits when sent in a non-Latin script. Factor this in when budgeting a
+multilingual campaign.
+
+See [Credits](/guides/platform/credits) for allocation and top-ups.
 
 ## Key terms
 
 | Term | Definition |
 | --- | --- |
-| TUC (Tenant User Customer) | A primary account that manages and delivers SMS services independently. |
-| Child TUC | A secondary account that manages SMS services under the primary account. |
-| Reseller / Sub-account Module | An account that manages multiple SMS accounts. |
-| Credits | The total number of messages an account can send. One credit equals one 160-character message. Unicode or long messages consume multiple credits based on the number of message segments per request. |
-| UU ID | A unique ID that identifies each SMS sent to recipients. |
+| TUC (Tenant User Customer) | The billable account that manages and delivers SMS independently |
+| Child TUC | A sub-account managed under a primary account |
+| Reseller / Sub-account module | An account that manages multiple SMS accounts |
+| UU ID | A unique ID identifying each SMS sent to a recipient |
 
-<Note>
-  Credits are consumed per message segment. A message longer than 160 characters is split
-  into multiple parts, and each part consumes one credit.
-</Note>
+## Next steps
 
-## SMS sending options
-
-The platform offers five SMS categories under **+New SMS**:
-
-| Category | Use it to |
-| --- | --- |
-| Quick English SMS | Send text messages, schedule messages, and import contacts from phonebooks or notepads. |
-| Quick Unicode / Multilingual SMS | Send text messages in multiple languages, schedule messages, and import contacts. |
-| Dynamic SMS | Send messages with multiple variables, importing recipient numbers and variable data from Excel sheets. |
-| Multiple Dynamic SMS | Send messages using multiple templates from a single Excel sheet for large-scale, multi-template messaging. |
-| Campaign SMS | Run bulk SMS campaigns with multiple variables and recipient numbers imported from Excel sheets. |
-
-See [Send SMS](/guides/sms/send-sms) for Quick English, Quick Unicode/Multilingual, Dynamic, and
-Multiple Dynamic SMS, and [Campaigns](/guides/sms/campaigns) for Campaign SMS and campaign
-management.
-
-## Related documents
-
-For more information, refer to the following documents:
-
-- Admin Manual
-- Quick Start Manual
-- Release Notes
+<CardGroup cols={2}>
+  <Card title="Register for DLT" icon="shield-check" href="/guides/sms/dlt">
+    Required before sending to Indian numbers.
+  </Card>
+  <Card title="Send your first SMS" icon="paper-plane" href="/guides/sms/send-sms">
+    Quick, dynamic, and multilingual sends.
+  </Card>
+  <Card title="Run a campaign" icon="bullhorn" href="/guides/sms/campaigns">
+    Bulk sends from a spreadsheet.
+  </Card>
+  <Card title="Build against the API" icon="code" href="/api-reference/sms/overview">
+    Send programmatically and receive delivery reports.
+  </Card>
+</CardGroup>
 
 ## Getting help
 
-If you need assistance beyond this guide, email
-[support@OneXtel.com](mailto:support@OneXtel.com).
+Email [support@OneXtel.com](mailto:support@OneXtel.com).

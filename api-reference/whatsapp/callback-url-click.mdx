@@ -3,7 +3,7 @@ title: "Callback: URL Click"
 description: "Callback payload structure for WhatsApp URL click tracking events, including browser, device, campaign, link, and recipient metadata."
 ---
 
-When an end user clicks a tracked URL in a WhatsApp message, the OnexAura platform
+When an end user clicks a tracked URL in a WhatsApp message, the OneXtel platform
 posts a URL Click callback to your configured endpoint. Unlike the other callback
 event types, this payload is a flat JSON object.
 
@@ -114,7 +114,7 @@ value as a string placeholder.
   Messaging channel of the original message (inferred).
 </ResponseField>
 <ResponseField name="onex_msg_id" type="string">
-  OnexAura platform message identifier of the original message (inferred).
+  OneXtel platform message identifier of the original message (inferred).
 </ResponseField>
 <ResponseField name="uuid" type="string">
   Unique identifier of the event or message (inferred from field name; exact scope not
@@ -124,7 +124,7 @@ value as a string placeholder.
   Time of the original send request (inferred; format not specified in the source).
 </ResponseField>
 <ResponseField name="onex_received_ts" type="string">
-  Timestamp at which the OnexAura platform received the event (inferred).
+  Timestamp at which the OneXtel platform received the event (inferred).
 </ResponseField>
 <ResponseField name="is_mmlite" type="string">
   Flag whose name suggests whether the message was sent via MM Lite (inferred from the
@@ -168,7 +168,7 @@ value as a string placeholder.
   API key associated with the account that sent the message (inferred).
 </ResponseField>
 <ResponseField name="tenant_id" type="string">
-  Tenant identifier on the OnexAura platform (inferred).
+  Tenant identifier on the OneXtel platform (inferred).
 </ResponseField>
 <ResponseField name="provider_id" type="string">
   Identifier of the provider (inferred from field name; exact meaning not defined in

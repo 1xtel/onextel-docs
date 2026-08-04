@@ -28,7 +28,6 @@
               "guides/platform/credits",
               "guides/platform/api-keys",
               "guides/platform/phonebook",
-              "guides/platform/dlt",
               "guides/platform/blacklist",
               "guides/platform/callback-configuration",
               "guides/platform/vmn-configuration",
@@ -85,9 +84,10 @@
             ]
           },
           {
-            "group": "International SMS",
+            "group": "SMS",
             "pages": [
               "guides/sms/overview",
+              "guides/sms/dlt",
               "guides/sms/send-sms",
               "guides/sms/campaigns",
               "guides/sms/templates",
@@ -151,7 +151,7 @@
             ]
           },
           {
-            "group": "International SMS",
+            "group": "SMS",
             "pages": [
               "api-reference/sms/overview",
               "api-reference/sms/send-sms",
@@ -205,10 +205,10 @@
         ]
       },
       {
-        "tab": "Legacy (V1)",
+        "tab": "Archived APIs",
         "groups": [
           {
-            "group": "SMS AURA V1 — Archived",
+            "group": "Previous platform",
             "pages": [
               "legacy/overview",
               "legacy/sms-aura",
@@ -243,6 +243,11 @@
     {
       "source": "/guides/sms/settings",
       "destination": "/guides/platform/account-settings",
+      "permanent": true
+    },
+    {
+      "source": "/guides/platform/dlt",
+      "destination": "/guides/sms/dlt",
       "permanent": true
     }
   ]

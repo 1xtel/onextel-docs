@@ -44,7 +44,11 @@ and campaign managers integrating with the OneXtel Omni platform (brand name "On
   cURL from documented method + URL + headers + body — that is not invention).
 - Keep JSON examples exactly as documented; pretty-print with 2-space indent.
 - Placeholders in examples: `YOUR_API_KEY`, `919999999999` style MSISDNs.
-- Product names: "OneXtel" (company), "OnexAura" / "Omni platform" (product), channel names
+- Product names: use **"OneXtel"** for the company and the product, and **"the OneXtel portal"**
+  for the web UI. Do **not** use deployment names ("OnexAura", "OneXGlobal", "Aura V1/V2",
+  "Core 365") in customer-facing pages — customers see one platform, not our deployments.
+  Likewise do not label SMS as "International SMS": SMS is one product, and domestic versus
+  international is a compliance difference documented inside it. Channel names are
   "WhatsApp", "RCS", "SMS". Do not write "Onextel" or "OneXTel".
 - Voice: second person, present tense, concise. No marketing fluff.
 - Screenshots in source PDFs/DOCX you cannot extract: describe the UI action in text

@@ -12,7 +12,7 @@ export const Hero = () => (
     <p style={{ color: '#E2E8F0', maxWidth: '620px', margin: '16px auto 0' }}>
       One platform for WhatsApp, RCS, and SMS at enterprise scale — send via a single
       omnichannel API, orchestrate fallback across channels, and run campaigns from the
-      OnexAura portal.
+      OneXtel portal.
     </p>
   </div>
 )
@@ -28,8 +28,8 @@ export const Hero = () => (
   <Card title="RCS API" icon="message" href="/api-reference/rcs/overview">
     Rich cards, carousels, and template messaging over RCS Business Messaging.
   </Card>
-  <Card title="International SMS API" icon="globe" href="/api-reference/sms/overview">
-    High-throughput international SMS with delivery reports.
+  <Card title="SMS API" icon="globe" href="/api-reference/sms/overview">
+    Domestic and international SMS with delivery reports.
   </Card>
 </CardGroup>
 
@@ -46,7 +46,7 @@ export const Hero = () => (
 
 <CardGroup cols={2}>
   <Card title="WhatsApp Campaigns" icon="bullhorn" href="/guides/whatsapp/quickstart">
-    Create templates and launch WhatsApp campaigns from the OnexAura portal.
+    Create templates and launch WhatsApp campaigns from the portal.
   </Card>
   <Card title="RCS Campaigns" icon="mobile-screen" href="/guides/rcs-campaigns/overview">
     Run rich RCS campaigns end to end.
@@ -54,8 +54,8 @@ export const Hero = () => (
   <Card title="Multi-Channel Fallback" icon="shuffle" href="/guides/omnichannel/fallback-overview">
     Configure fallback chains so every message reaches its recipient.
   </Card>
-  <Card title="International SMS Platform" icon="paper-plane" href="/guides/sms/overview">
-    Portal guide for international SMS campaigns and reporting.
+  <Card title="SMS" icon="paper-plane" href="/guides/sms/overview">
+    Portal guide for SMS campaigns, templates, and reporting.
   </Card>
 </CardGroup>
 
@@ -76,6 +76,6 @@ Send through OneXtel from the tools your team already works in — no code requi
 </CardGroup>
 
 <Note>
-Looking for the old Aura V1 SMS docs? They're preserved under [Legacy (Aura V1)](/legacy/overview)
-for existing integrations.
+Integrating against `api.onex-aura.com` or `365cx.io`? Those are earlier APIs, still documented
+under [Archived APIs](/legacy/overview). Everything current uses `api.onexaura.com`.
 </Note>
