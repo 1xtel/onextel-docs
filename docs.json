@@ -179,27 +179,17 @@
             ]
           },
           {
-            "group": "CRM & Sales",
+            "group": "Connectors",
             "pages": [
-              "plugins/salesforce",
-              "plugins/leadsquared",
-              "plugins/zoho-crm"
-            ]
-          },
-          {
-            "group": "Marketing Automation",
-            "pages": [
-              "plugins/salesforce-marketing-cloud",
               "plugins/moengage",
+              "plugins/clevertap",
               "plugins/webengage",
-              "plugins/optimove",
-              "plugins/clevertap"
-            ]
-          },
-          {
-            "group": "E-commerce",
-            "pages": [
-              "plugins/shopify"
+              "plugins/salesforce",
+              "plugins/salesforce-marketing-cloud",
+              "plugins/leadsquared",
+              "plugins/zoho-crm",
+              "plugins/shopify",
+              "plugins/optimove"
             ]
           }
         ]
