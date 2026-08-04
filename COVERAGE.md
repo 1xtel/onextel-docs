@@ -104,7 +104,7 @@ auto-generated templates. None of it is in the docs.
 | Operator error codes (Jio, Vi, Meta) | Added Aug 2026 |
 | `Status Check API.docx` | **Verified and corrected** — see below |
 | `Delivery Status (DLR) Mapping Document.pdf` | **Verified and rewritten** — see below |
-| `VI Templates Payload Description.txt` | **Outstanding.** Field constraints (max lengths, allowed characters, suggestion limits) not yet checked against `api-reference/rcs/templates`. Extract constraints only — every cURL in that file points at an internal IP |
+| `VI Templates Payload Description.txt` | **Done** — constraints extracted into `api-reference/rcs/templates`; internal IPs and the sample API key in that file were not carried across |
 
 ### Corrections found in the verification pass
 
@@ -181,8 +181,20 @@ covers it today.
 4. The open API discrepancies in `REVIEW_NOTES.md`, several of which need engineering to
    confirm rather than more documentation.
 
-## Note on the live site
+## The live site — resolved, with a caveat
 
-The feedback tracker points at `https://onextel-09023014.mintlify.site/` and references a
-`/getting-started` page. No such page exists in this repo — confirm whether the deployed site is
-built from this repo or from an earlier source.
+`https://onextel-09023014.mintlify.site/` **is live.** The subdomain is Mintlify's
+auto-generated project URL, not a custom one.
+
+**Its content does not match this repo.** The live landing page has "Choose your path" and
+"How it works" sections that do not exist in `index.mdx` here, and it lists six API-reference
+entries against this repo's different set. So it was deployed from an earlier state, a different
+branch, or edited through Mintlify's web editor.
+
+<u>Confirm which GitHub repo and branch the Mintlify project is connected to before pushing</u> —
+if it is connected to this repo's default branch, the next push replaces the live site wholesale.
+
+The `/getting-started` reference in the feedback tracker is **not a real page**. That tracker
+row is template placeholder text — same row reads "Jane Doe" and "Example: intro paragraph is
+unclear on what CPaaS covers". The live site has no Getting Started page either. Nothing to
+chase.

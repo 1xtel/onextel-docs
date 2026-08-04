@@ -77,6 +77,43 @@ curl --location 'https://api.onexaura.com/rcs/templates' \
   text messages.
 </ParamField>
 
+### Field constraints
+
+Templates are rejected outright if any of these limits is exceeded, so validate before
+submitting rather than after.
+
+| Field | Constraint |
+| --- | --- |
+| `name` | Max 20 characters. Alphanumeric and underscore (`_`) only |
+| `textMessageContent` | Max 2500 characters, **including** variables |
+| `cardTitle` | Max 200 characters, including variables |
+| `cardDescription` | Max 2000 characters, including variables |
+| `displayText` | Max 25 characters, including variables |
+| `postback` | Max 120 characters, including variables |
+| `phoneNumber` | Must be a valid phone number |
+| `url` | Must be a valid URL |
+| `mediaUrl`, `thumbnailUrl`, `documentUrl` | Must be publicly accessible |
+| Media and document files | Under 100 MB |
+
+<Warning>
+Character limits count **variables as written**, not as resolved. A `cardTitle` of
+`Hi [customer_first_name]` costs 24 characters against the 200 limit regardless of what the
+variable expands to — but a `displayText` built the same way can exceed 25 easily.
+</Warning>
+
+**Suggestion limits** depend on the template type:
+
+| Template type | Maximum suggestions |
+| --- | --- |
+| Text message | 11 |
+| Text message with media or PDF | 11 |
+| Rich card standalone | 4 |
+| Carousel (per card) | 4 |
+
+**File name matching.** When you upload a file rather than supplying a URL, the uploaded file's
+name must exactly match the `fileName`, `thumbnailFileName`, or `documentFileName` you declare
+in `data`. A mismatch fails the upload. Videos additionally require a `thumbnailFileName`.
+
 ### Suggestions object
 
 Each entry in `suggestions` is one interactive button. `suggestionType` determines which other
@@ -360,17 +397,34 @@ use the same `type: "text_message"` shape, adding one `suggestions` entry per ac
   Must be `"rich_card"`.
 </ParamField>
 
+<ParamField body="orientation" type="string" required>
+  Defines the layout of card components. Supported values: `VERTICAL` or `HORIZONTAL`.
+</ParamField>
+
 <ParamField body="height" type="string" required>
-  Determines card height. Supported values: `SHORT_HEIGHT`, `MEDIUM_HEIGHT`, `TALL_HEIGHT`.
+  Card height. Applies to `VERTICAL` orientation only. Supported values: `SHORT_HEIGHT`,
+  `MEDIUM_HEIGHT`, `TALL_HEIGHT`.
+</ParamField>
+
+<ParamField body="alignment" type="string" required>
+  Card alignment. Applies to `HORIZONTAL` orientation only. Supported values: `LEFT` or
+  `RIGHT`.
 </ParamField>
 
 <ParamField body="standAlone" type="object" required>
   An object that defines media, text, and actions for this single rich card. See fields below.
 </ParamField>
 
-<ParamField body="orientation" type="string" required>
-  Defines the layout of card components. Supported values: `VERTICAL` or `HORIZONTAL`.
-</ParamField>
+<Note>
+`height` and `alignment` are mutually exclusive and driven by `orientation` — a `VERTICAL` card
+takes `height`, a `HORIZONTAL` card takes `alignment`. Set `orientation` first.
+</Note>
+
+<Warning>
+Sources disagree on the `height` enum: one lists `SHORT_HEIGHT`, `MEDIUM_HEIGHT`, and
+`TALL_HEIGHT`, another only the first two. All three are documented here — confirm
+`TALL_HEIGHT` is accepted before relying on it.
+</Warning>
 
 **Parameters inside `standAlone`:**
 
@@ -421,11 +475,11 @@ use the same `type: "text_message"` shape, adding one `suggestions` entry per ac
 </ParamField>
 
 <ParamField body="width" type="string" required>
-  Carousel width. One of `MEDIUM_WIDTH`, `SMALL_WIDTH`.
+  Carousel card width. One of `MEDIUM_WIDTH`, `SMALL_WIDTH`, or `SHORT_WIDTH`.
 </ParamField>
 
 <ParamField body="height" type="string" required>
-  Carousel card height. One of `SHORT_HEIGHT`, `TALL_HEIGHT`.
+  Carousel card height. One of `SHORT_HEIGHT`, `MEDIUM_HEIGHT`, or `TALL_HEIGHT`.
 </ParamField>
 
 <ParamField body="carouselList" type="array" required>
@@ -433,8 +487,16 @@ use the same `type: "text_message"` shape, adding one `suggestions` entry per ac
 </ParamField>
 
 <ParamField body="templateState" type="string">
-  Template state, e.g. `"Create"` or `"Submit"`.
+  Template state — `"Create"` or `"Submit"`.
 </ParamField>
+
+<Warning>
+The `width` and `height` enums are inconsistent across sources. `width` appears as
+`MEDIUM_WIDTH`/`SMALL_WIDTH` in one and `MEDIUM_WIDTH`/`SHORT_WIDTH` in another, while sample
+payloads use the bare value `MEDIUM`. `height` appears as `SHORT_HEIGHT`/`TALL_HEIGHT` in one
+and `SHORT_HEIGHT`/`MEDIUM_HEIGHT` in another. Every observed value is listed above —
+**confirm the accepted set with a test template before building against it.**
+</Warning>
 
 **Parameters inside each `carouselList` entry:**
 

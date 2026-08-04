@@ -24,7 +24,8 @@ This file is **not** part of the published site (it isn't in `docs.json`).
 | 11 | RCS send | "Dynamic Query with Tracking" nests `ttl` inside `contentMessage` (contradicts every other example) | Reproduced as-is, flagged | Confirm `ttl` placement |
 | 12 | RCS send | `prefix` marked mandatory in table but optional/commented in Postman | Both readings noted | Confirm required? |
 | 13 | RCS send | Suggestions `displayText` mandatory in one table, omitted for `calendar_event` in another | Treated as required | Confirm |
-| 14 | RCS send | Carousel `cardWidth`: samples use `MEDIUM` but template table lists `MEDIUM_WIDTH`/`SMALL_WIDTH` | Both flagged | Correct enum |
+| 14 | RCS send / templates | Carousel `width` and `height` enums differ across **three** sources: `MEDIUM_WIDTH`/`SMALL_WIDTH`, `MEDIUM_WIDTH`/`SHORT_WIDTH`, and bare `MEDIUM` in samples; `height` as `SHORT_HEIGHT`/`TALL_HEIGHT` vs `SHORT_HEIGHT`/`MEDIUM_HEIGHT` | All observed values listed with a `<Warning>` on `api-reference/rcs/templates` | **Confirm the accepted set with a test template** |
+| 14b | RCS templates | Rich card `height` enum: one source lists `TALL_HEIGHT`, another omits it | All three listed, flagged inline | Confirm `TALL_HEIGHT` |
 | 15 | RCS opt-in/out | Entire feature sourced only from Postman (no PDF coverage); GET list response schema undocumented | Documented request only | Provide response schema |
 | 16 | RCS callbacks | Delivery Notification (RCS API Guide p.52–53) | **Resolved** — now `api-reference/rcs/callback-delivery-notification` | Outgoing sample uses `api_key` while the param table says `apiKey`; sample also carries an undocumented `tuc_id`. Both flagged inline — confirm against a live callback |
 | 17 | Intl SMS | Source header sample reads `Contest-Type` (typo for `Content-Type`) | Corrected in cURL, flagged | Fix source |
