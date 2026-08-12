@@ -1,19 +1,32 @@
 ---
 title: "Reports"
-description: "Generate MIS, Summary, Campaign Summary, Search, Sender ID Summary, and Clicker reports on the OneXtel platform."
+description: "Generate delivery, campaign, sender ID, template, and click reports for SMS, and build custom exports."
 ---
 
-The **Reports** menu generates detailed reports based on parameters such as date range, Sender ID, and campaign details. These reports support SMS performance analysis, delivery tracking, and issue identification.
+The **Reports** menu generates detailed reports based on parameters such as date range, Sender
+ID, template, and campaign. These support SMS performance analysis, delivery tracking, and
+issue diagnosis.
+
+Each report is a tab under **Reports**, and every one of them can be exported.
 
 | Report | Purpose |
 | --- | --- |
-| MIS Report | Tracks SMS delivery counts by hour and day, with an hourly and daily breakdown. |
-| Summary | Displays SMS counts and delivery status with percentage breakdowns, along with message and account details for the selected date range. |
-| Campaign Summary | Presents campaign performance metrics — delivered, submitted, failed, and awaited messages — categorized by SMS type. |
-| Search | Filters report data using multiple criteria to retrieve detailed information. |
-| Sender ID Summary | Displays SMS activity for specific Sender IDs, retrieved by Sender ID or TUC name, for the selected date range. |
-| Clicker Data | Displays recipient interaction details for SMS links — IP address, browser, operator, circle, and geographic coordinates — for customer behavior analysis. |
-| Clicker Details | Generates campaign-level reports with clickable phone numbers, including user IP, browser, operator, circle, latitude/longitude, TUC ID, TUC Name, and Campaign Name. |
+| MIS Report | SMS delivery counts by hour and day |
+| Summary | Counts and delivery status with percentage breakdowns for a date range |
+| Search | Filter report data by multiple criteria to retrieve message-level detail |
+| Sender ID Summary | Activity for specific Sender IDs, by Sender ID or TUC name |
+| Template Wise Report | Performance and usage grouped by SMS template |
+| Campaign Summary | Campaign performance — delivered, submitted, failed, and awaited — by SMS type |
+| Clicker Data | Click activity on campaign URLs, with IP, browser, operator, circle, and coordinates |
+| Clicker Details | Click activity resolved to individual recipients |
+| Scheduled Campaigns | Campaigns queued for future delivery |
+| Custom Download Report | A bespoke export with your own filters and column selection |
+| Download Data | Previously generated exports, with status and download links |
+
+<Tip>
+For delivery performance broken down by operator rather than by campaign, see
+[Telco Reports](/guides/platform/telco-reports).
+</Tip>
 
 ## MIS Report
 
@@ -137,48 +150,141 @@ Provides an overview of SMSs sent through specific Sender IDs. Retrieves data by
   </Step>
 </Steps>
 
-## Clicker Data
+## Template Wise Report
 
-Provides detailed information on recipients who interact with SMS links, including user IP address, browser details, operator, circle, and geographic coordinates — supporting analysis of customer behavior and interaction patterns.
+Reports message data grouped by SMS template, so you can see how individual templates perform
+and how heavily each is used.
 
 <Steps>
-  <Step title="Open Sender ID Summary">
-    In the left pane, click **Reports**, then click **Sender ID Summary**.
+  <Step title="Open Template Wise Report">
+    In the left pane, click **Reports**, then the **Template Wise Report** tab.
   </Step>
-  <Step title="Select the date range">
-    Select the date range to view the summary.
+  <Step title="Set the filters">
+    Enter or search the required **TUC**, select the **From Date** and **To Date**, optionally
+    enter a **Template ID** to narrow the results, and select the **Source Type**.
   </Step>
-  <Step title="Search">
-    Click **Search**. The platform displays details such as the TUC ID, SMS Type, and campaign name.
+  <Step title="Search and export">
+    Click **Search** to view the report, then **Download** to export it.
   </Step>
-  <Step title="Download">
-    Click **Download** and select the required file format (CSV or XLSX) from the dropdown list.
+</Steps>
+
+<Note>
+Filtering by Template ID is the fastest way to check whether a specific DLT-registered template
+is actually being used — an approved template with no traffic usually means a campaign is
+referencing the wrong ID.
+</Note>
+
+## Clicker Data
+
+Detailed insight into how recipients interact with URLs in SMS campaigns — user IP address,
+browser, operator, circle, and geographic coordinates — for analysing click activity and
+engagement.
+
+<Steps>
+  <Step title="Open Clicker Data">
+    In the left pane, click **Reports**, then the **Clicker Data** tab.
+  </Step>
+  <Step title="Set the filters">
+    Enter the required **TUC**, select the **From Date** and **To Date**, enter a **Mobile
+    Number**, then select the **Campaign Name**, **Channel**, and **Limit** from the dropdowns.
+  </Step>
+  <Step title="Search and export">
+    Click **Search**, then **Download** to export the report.
   </Step>
 </Steps>
 
 ## Clicker Details
 
-Generates campaign reports with clickable links, showing user details by mobile number — including User IP, browser, operator, circle, latitude/longitude, TUC ID, TUC Name, and Campaign Name — to support customer location identification.
+Click activity for individual recipients on SMS campaign URLs, for user-level engagement
+tracking.
 
 <Steps>
-  <Step title="Open Sender ID Summary">
-    In the left pane, click **Reports**, then click **Sender ID Summary**.
+  <Step title="Open Clicker Details">
+    In the left pane, click **Reports**, then the **Clicker Details** tab.
   </Step>
-  <Step title="Select the date range">
-    Select the date range to view the summary.
+  <Step title="Set the filters">
+    Enter the required **TUC**, select the **From Date** and **To Date**, then select the
+    **Campaign Name** and **Limit** from the dropdowns.
   </Step>
-  <Step title="Search">
-    Click **Search**. The platform displays details such as the TUC ID, SMS Type, and campaign name.
-  </Step>
-  <Step title="Download">
-    Click **Download** and select the required file format (CSV or XLSX) from the dropdown list.
+  <Step title="Search and export">
+    Click **Search**, then **Download** to export the report.
   </Step>
 </Steps>
 
 <Note>
-  The source manual gives Clicker Data and Clicker Details near-identical navigation
-  ("Reports → Sender ID Summary → Search"). This is likely a documentation copy-paste error
-  in the source rather than the platform's actual navigation — the two reports have distinct
-  purposes and result columns. If Clicker Data and Clicker Details are separate tabs in the
-  Reports menu, update the steps above to reference those tabs directly.
+Clicker Data and Clicker Details cover the same clicks from different angles: **Clicker Data**
+aggregates click activity across a campaign, while **Clicker Details** resolves it to individual
+recipients. Use the first to judge whether a campaign worked, the second to see who responded.
+
+Both depend on URL shortening being enabled — without it there is no click to track. See
+[Short URLs](/guides/sms/dlt#short-urls).
+</Note>
+
+## Scheduled Campaigns
+
+Campaigns queued for future delivery, so you can track and manage what is due to go out.
+
+<Steps>
+  <Step title="Open Scheduled Campaigns">
+    In the left pane, click **Reports**, then the **Scheduled Campaigns** tab.
+  </Step>
+  <Step title="Set the filters">
+    Enter the required **TUC**, select the **From Date** and **To Date**, then select the
+    **Campaign Name** and **Limit**.
+  </Step>
+  <Step title="Search and export">
+    Click **Search**, then **Download** to export the report.
+  </Step>
+</Steps>
+
+<Note>
+This is the reporting view of what is scheduled. To cancel a scheduled send rather than just
+review it, use [All Schedule](/guides/platform/all-schedule).
+</Note>
+
+## Custom Download Report
+
+Build your own export by applying advanced filters and choosing exactly which columns appear.
+Use it when none of the fixed reports gives you the shape you need.
+
+<Steps>
+  <Step title="Open Custom Download Report">
+    In the left pane, click **Reports**, then the **Custom Download Report** tab.
+  </Step>
+  <Step title="Set the scope">
+    Enter the required **TUC**, select the **From date** and **To date**, enter the **UUID**,
+    and select the **Separator** format — for example comma.
+  </Step>
+  <Step title="Narrow the results">
+    Add any further filters you need: **Error Code**, **Template ID**, **Campaign ID**, **Mobile
+    Number**, and **Sender ID**. Then select the **Source Type** and **Status**.
+  </Step>
+  <Step title="Choose your columns">
+    From **Available Columns**, select the fields you want and move them into **Selected
+    Columns** using the arrow buttons. Arrange them with the up and down controls — the order
+    here is the column order in the export.
+  </Step>
+  <Step title="Download">
+    Click **Download** to export the customised report.
+  </Step>
+</Steps>
+
+<Note>
+Filtering by **Error Code** is the quickest way to isolate a delivery problem — export only the
+failures carrying one code and you have the full picture of a single failure mode. See
+[DLR callback](/api-reference/sms/dlr-callback) for what the codes mean.
+</Note>
+
+## Download Data
+
+Every report you generate is queued and produced in the background. **Download Data** is where
+finished exports appear.
+
+In the left pane, click **Reports**, then the **Download Data** tab. The list shows the request
+time, file creation time, report type, file name, the filters that were applied, status, and a
+download link.
+
+<Note>
+Large exports do not download immediately — they are generated and then appear here. If a
+report seems not to have downloaded, check this tab before running it again.
 </Note>
