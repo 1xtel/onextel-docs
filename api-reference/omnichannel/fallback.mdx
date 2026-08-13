@@ -42,8 +42,15 @@ object defining the fallback behavior.
 </ParamField>
 
 <ParamField body="sms[].type" type="string" required>
-  Message type.
+  Message type. One of `SI`, `TRANS`, `OTP`, `SE`, or `Promo`.
 </ParamField>
+
+<Warning>
+`TXN` is **not** a valid message type, despite having appeared in earlier example payloads. A
+fallback SMS carrying an invalid `type` is rejected at the fallback stage — long after the
+primary send has already returned `200` — so the symptom is a successful API response with no
+SMS delivered. Use `TRANS` for transactional messages.
+</Warning>
 
 <ParamField body="sms[].messageBody" type="string" required>
   Message content.
@@ -214,7 +221,7 @@ curl --request POST \
     "waittime": "30",
     "sms": {
       "sender": "YOUR_SMS_SENDER",
-      "type": "TXN",
+      "type": "TRANS",
       "messageBody": "Your message text",
       "templateId": "YOUR_DLT_TEMPLATE_ID",
       "entityId": "YOUR_DLT_ENTITY_ID"
@@ -229,7 +236,7 @@ curl --request POST \
     {
       "sender": "YOUR_SMS_SENDER",
       "recipient": "919999999999",
-      "type": "TXN",
+      "type": "TRANS",
       "messageBody": "Your message text",
       "templateId": "YOUR_DLT_TEMPLATE_ID",
       "entityId": "YOUR_DLT_ENTITY_ID",
@@ -283,7 +290,7 @@ curl --request POST \
     "waittime": "30",
     "sms": {
       "sender": "YOUR_SMS_SENDER",
-      "type": "TXN",
+      "type": "TRANS",
       "messageBody": "Your message text",
       "unicode": 0,
       "templateId": "YOUR_DLT_TEMPLATE_ID",

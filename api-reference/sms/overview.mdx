@@ -3,32 +3,41 @@ title: "SMS API Overview"
 description: "Introduction, base URL, authentication, and endpoint summary for the OneXtel SMS API."
 ---
 
-## Introduction
+You submit message details as a JSON payload and the platform delivers to the recipients.
 
-The SMS API lets you send SMS messages through OneXtel. You submit message details as a JSON payload, and the platform forwards the message to the specified recipient(s).
+## Which SMS API
 
-<Note>
-This API is documented separately from the OneXtel WhatsApp and RCS APIs. It uses its own base URL and authentication scheme (a `key` field in the request body, not an `apikey` header).
-</Note>
+There are **two** SMS send APIs, on different hosts with different authentication. Check which
+one your account is provisioned for before you build — they are not interchangeable.
 
-## Base URL
+| | [Omni API](/api-reference/sms/send-sms-omni) | [SMS List API](/api-reference/sms/send-sms) |
+| --- | --- | --- |
+| Endpoint | `api.onexaura.com/oapi/send_sms` | `api.int.onexglobal.io/api/jsmslist` |
+| Authentication | `apikey` request header | `key` field in the request body |
+| Message array | `sms` | `listsms` |
+| Shared with WhatsApp and RCS | Yes — same endpoint | No |
+| Supports [channel fallback](/api-reference/omnichannel/fallback) | Yes | No |
+| DLT fields (`templateId`, `entityId`) | Yes | — |
 
-```
-https://api.int.onexglobal.io
-```
+<Tip>
+If you send WhatsApp or RCS as well as SMS, use the **Omni API** — one endpoint, one API key,
+and fallback between channels. The SMS List API is SMS-only.
+</Tip>
 
 ## Authentication
 
-Authentication is performed with an API `key` value included in the JSON request body of every submission call (not as an HTTP header).
+The Omni API authenticates with an `apikey` HTTP header. The SMS List API authenticates with a
+`key` value inside the JSON request body, not as a header.
 
 <ParamField body="key" type="string" required>
-  API key assigned to the user for authentication.
+  SMS List API only — API key assigned to the user for authentication.
 </ParamField>
 
 ## Endpoints at a glance
 
 | Endpoint | Method | Purpose |
 |---|---|---|
+| [`/oapi/send_sms`](/api-reference/sms/send-sms-omni) | POST | Send SMS via the Omni API, with DLT fields, campaign tagging, and URL shortening |
 | [`/api/jsmslist`](/api-reference/sms/send-sms) | POST | Submit one or more SMS messages (single or multiple submission) |
 | [DLR callback](/api-reference/sms/dlr-callback) | POST (inbound, to your configured URL) | Receive final delivery status for a submitted message |
 

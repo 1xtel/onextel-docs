@@ -32,7 +32,7 @@ This file is **not** part of the published site (it isn't in `docs.json`).
 | 18 | Intl SMS | DLR callback: URL registration, request headers, and expected ack response not documented | Noted as gap | Provide callback setup details |
 | 19 | Omnichannel | Message Status & History have no saved example responses in Postman | Documented request only (`<Warning>`) | Provide response examples |
 | 20 | Omnichannel | Message Status request is `auth: noauth` in Postman but still sends `apikey` header | Documented header auth | Confirm auth |
-| 21 | Fallback | SMS `type` values: guide says `SI, TRANS, OTP or Promo`; API ref example uses `TXN` | Both carried verbatim | Reconcile enum |
+| 21 | Fallback | SMS `type` enum — **RESOLVED** by *SMS API Omni Channel* (rel. 1.0, 3 Apr 2026): valid values are `SI`, `TRANS`, `OTP`, `SE`, `Promo`. `TXN` was never valid. | All three `TXN` examples corrected to `TRANS`; warning added to the fallback page. **Likely cause of the reported "SMS fallback not received" ticket** — an invalid `type` is rejected at the fallback stage, after the primary send has already returned 200 | Confirm with a live send |
 | 22 | Legacy | Legacy Aura API domain is `api.onex-aura.com` (hyphenated) vs current `api.onexaura.com` | Flagged in `legacy/sms-aura.mdx` | Historical — confirm |
 | 23 | RCS / WhatsApp error codes | Source tables (Soham Shirke, 25 Jun 2025) give operator codes but never state **which response or callback field carries them** | Documented with a `<Warning>` on both pages | Confirm the carrying field |
 | 24 | RCS error codes (Jio) | "Default account TPS exceeded" is listed with **no error code** (`—`); codes 8, 10, 18, 19, 22, 26, 27, 29 undefined | Reproduced with `—`, flagged | Supply the missing code |

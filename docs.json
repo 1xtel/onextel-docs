@@ -154,6 +154,7 @@
             "group": "SMS",
             "pages": [
               "api-reference/sms/overview",
+              "api-reference/sms/send-sms-omni",
               "api-reference/sms/send-sms",
               "api-reference/sms/dlr-callback"
             ]

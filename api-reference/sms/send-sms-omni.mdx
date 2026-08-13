@@ -1,0 +1,202 @@
+---
+title: "Send SMS (Omni API)"
+description: "Send one or more SMS messages through the OneXtel Omni send endpoint, with DLT fields, campaign tagging, and URL shortening."
+---
+
+The Omni send endpoint delivers SMS through the same API used for WhatsApp and RCS. The channel
+is determined by the request body: SMS messages are wrapped in an `sms` array.
+
+Because it shares an endpoint with the other channels, this is the API to use if you also send
+WhatsApp or RCS, or if you want [fallback](/api-reference/omnichannel/fallback) between them.
+
+<Note>
+OneXtel exposes a second, separate SMS API — the [SMS List API](/api-reference/sms/send-sms) —
+on a different host with a different authentication scheme. Check
+[which API you are on](/api-reference/sms/overview#which-sms-api) before you build.
+</Note>
+
+## Endpoint
+
+```
+POST https://api.onexaura.com/oapi/send_sms
+```
+
+## Headers
+
+<ParamField header="apikey" type="string" required>
+  API key issued by OneXtel.
+</ParamField>
+
+<ParamField header="Content-Type" type="string" required>
+  Must be `application/json`.
+</ParamField>
+
+## Example request
+
+<CodeGroup>
+
+```bash cURL
+curl --location 'https://api.onexaura.com/oapi/send_sms' \
+--header 'apikey: YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data '{
+  "sms": [
+    {
+      "sender": "ONEXTL",
+      "recipient": "919999999999",
+      "type": "SI",
+      "messageBody": "This is a test sms.",
+      "templateId": "YOUR_DLT_TEMPLATE_ID",
+      "entityId": "YOUR_DLT_ENTITY_ID",
+      "unicode": 0,
+      "custRef1": {
+        "CustomReference1": "testSMS",
+        "CustomReference2": "123"
+      }
+    }
+  ],
+  "campaignName": "SMS2026",
+  "prefix": "+91",
+  "validation": false
+}'
+```
+
+```json Request body
+{
+  "sms": [
+    {
+      "sender": "ONEXTL",
+      "recipient": "919999999999",
+      "type": "SI",
+      "messageBody": "This is a test sms.",
+      "templateId": "YOUR_DLT_TEMPLATE_ID",
+      "entityId": "YOUR_DLT_ENTITY_ID",
+      "unicode": 0,
+      "custRef1": {
+        "CustomReference1": "testSMS",
+        "CustomReference2": "123"
+      }
+    }
+  ],
+  "campaignName": "SMS2026",
+  "prefix": "+91",
+  "validation": false,
+  "urlShortener": {
+    "flag": 0,
+    "urlDetails": [
+      {
+        "longUrl": "",
+        "senderId": "",
+        "domain": "",
+        "track_user": 1
+      }
+    ]
+  }
+}
+```
+
+</CodeGroup>
+
+## The `sms` array
+
+The `sms` array carries one or more messages in a single call. Each object is one message.
+
+<ParamField body="sms[].sender" type="string" required>
+  Sender ID. Must be DLT-approved — see [DLT registration](/guides/sms/dlt).
+</ParamField>
+
+<ParamField body="sms[].recipient" type="string" required>
+  Recipient mobile number.
+</ParamField>
+
+<ParamField body="sms[].messageBody" type="string" required>
+  Content of the SMS.
+</ParamField>
+
+<ParamField body="sms[].type" type="string">
+  Message type. One of `SI`, `TRANS`, `OTP`, `SE`, or `Promo`.
+</ParamField>
+
+<ParamField body="sms[].templateId" type="string">
+  DLT-approved template ID.
+</ParamField>
+
+<ParamField body="sms[].entityId" type="string">
+  DLT entity ID.
+</ParamField>
+
+<ParamField body="sms[].unicode" type="integer">
+  `1` for a Unicode message, `0` for normal text. **Required when sending Unicode.**
+</ParamField>
+
+<ParamField body="sms[].custRef1" type="object">
+  Custom reference object for tracking — for example `CustomReference1` and
+  `CustomReference2`. Echoed back on the [delivery report](/api-reference/sms/dlr-callback).
+</ParamField>
+
+<Warning>
+**The message type is ultimately determined by your API key configuration, regardless of the
+`type` you send in the request.** If messages are being charged or routed as a different
+category than you expect, the API key is the thing to check — not the payload.
+</Warning>
+
+<Note>
+`templateId` and `entityId` are marked optional in the API, but DLT-regulated traffic in India
+will be rejected by the operator without them. Treat them as required for Indian destinations.
+See [DLT registration](/guides/sms/dlt).
+</Note>
+
+## Top-level fields
+
+<ParamField body="campaignName" type="string">
+  Identifier used to group and track messages as a campaign. Set it if you want the send to be
+  filterable in [reports](/guides/sms/reports).
+</ParamField>
+
+<ParamField body="prefix" type="string">
+  Country code applied to recipient numbers — for example `+91`.
+</ParamField>
+
+<ParamField body="validation" type="boolean">
+  `true` rejects invalid requests outright; `false` processes them anyway.
+</ParamField>
+
+<Note>
+Set `validation` to `true` while integrating. With `false`, a malformed request is accepted and
+fails silently downstream, which is far harder to diagnose than an upfront rejection.
+</Note>
+
+## URL shortener
+
+Include the `urlShortener` object when your message contains a link you want shortened and
+tracked.
+
+<ParamField body="urlShortener.flag" type="integer">
+  `1` enables shortening, `0` disables it. Required if short-URL conversion is needed.
+</ParamField>
+
+<ParamField body="urlShortener.urlDetails[].longUrl" type="string">
+  The original URL to shorten. Required when `flag` is `1`.
+</ParamField>
+
+<ParamField body="urlShortener.urlDetails[].senderId" type="string">
+  Sender ID associated with the shortened URL. Required when `flag` is `1`.
+</ParamField>
+
+<ParamField body="urlShortener.urlDetails[].domain" type="string">
+  Custom domain, if one is configured for your account. Required when `flag` is `1`.
+</ParamField>
+
+<ParamField body="urlShortener.urlDetails[].track_user" type="integer">
+  `1` enables click tracking, `0` disables it. Required if location tracking is needed.
+</ParamField>
+
+Click data captured this way appears in the
+[Clicker Data and Clicker Details reports](/guides/sms/reports#clicker-data).
+
+## Related
+
+- [Fallback API](/api-reference/omnichannel/fallback) — SMS as a fallback channel for WhatsApp or RCS
+- [DLR callback](/api-reference/sms/dlr-callback)
+- [Message status](/api-reference/omnichannel/message-status)
+- [DLT registration](/guides/sms/dlt)
