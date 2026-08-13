@@ -187,20 +187,71 @@ covers it today.
    confirm rather than more documentation — notably the RCS carousel enums (#14), which need a
    test template rather than another document.
 
-## The live site — resolved, with a caveat
+## Open questions — domestic SMS
 
-`https://onextel-09023014.mintlify.site/` **is live.** The subdomain is Mintlify's
-auto-generated project URL, not a custom one.
+To put to the domestic SMS owner and engineering. Ordered by what unblocks the most.
 
-**Its content does not match this repo.** The live landing page has "Choose your path" and
-"How it works" sections that do not exist in `index.mdx` here, and it lists six API-reference
-entries against this repo's different set. So it was deployed from an earlier state, a different
-branch, or edited through Mintlify's web editor.
+### Blocking developers
 
-<u>Confirm which GitHub repo and branch the Mintlify project is connected to before pushing</u> —
-if it is connected to this repo's default branch, the next push replaces the live site wholesale.
+1. **The Omni SMS API has no documented response.** The source guide covers the request only —
+   no success shape, no failure shape, no error codes. A developer can send but cannot handle
+   the reply. What does a 200 return, and what does a rejection look like?
+2. **`type` vs API key configuration.** The guide says message type is "ultimately determined by
+   the API key configuration, regardless of the value sent". If the key is configured for
+   `TRANS` and the payload says `Promo` — is the request rejected, or silently recategorised
+   and billed as `TRANS`?
+3. **Are `templateId` and `entityId` really optional?** Marked "No" for mandatory, but
+   DLT-regulated traffic is rejected without them. Can we state plainly that they are required
+   for Indian destinations?
+4. **`custRef1` shape.** It is an *object* (`CustomReference1`, `CustomReference2`) on the SMS
+   API, but `custref1`–`custref5` are *strings* on RCS and WhatsApp. Intentional? Which form
+   comes back on the DLR?
+5. **What does `validation: true` validate?**
+6. **Per-key throughput limit for SMS** — is there one, and what happens on breach?
 
-The `/getting-started` reference in the feedback tracker is **not a real page**. That tracker
-row is template placeholder text — same row reads "Jane Doe" and "Example: intro paragraph is
-unclear on what CPaaS covers". The live site has no Getting Started page either. Nothing to
-chase.
+### DLT and compliance
+
+7. **How do DLT template types map to API `type` values?** DLT registers templates as Promo /
+   Service Implicit / Service Explicit. The API accepts `SI`, `TRANS`, `OTP`, `SE`, `Promo`.
+   `SI`/`SE`/`Promo` line up — but what are **`TRANS`** and **`OTP`** mapped to, given DLT has
+   no such template categories? This is the seam where the TXN bug lived.
+8. **Sender ID length.** The Add form hints "3 to 15 characters"; the list view calls it "the
+   six-lettered government-issued Sender's ID". Which does the platform enforce?
+9. **What does the DLT → URL tab do?** The source gives it one sentence.
+
+### Quick portal checks
+
+10. Is the **DLT** menu domestic-only and the **Templates** menu international-only? Our pages
+    cross-reference each other on that assumption.
+11. Does **MIS Report** exist on the domestic Reports menu? It is in the International manual but
+    not in the V2 Aura tab list.
+12. Confirm **Campaign Summary** is its own tab — the V2 Aura procedure says "click the Template
+    Wise Report tab", almost certainly a copy-paste error.
+
+### No source at all
+
+13. **SMS channel activation.** Nothing documents what a customer does to get SMS switched on.
+    This is the last structural gap in the docs.
+14. **SMS DLR callback setup** — how the customer registers the DLR URL, expected headers, and
+    the acknowledgement we expect back (REVIEW_NOTES #18).
+15. **Does a fallback SMS emit a normal SMS DLR?** Needed to close the fallback ticket — it is
+    the diagnostic that separates "fallback never fired" from "fired and failed".
+
+### Naming
+
+16. Wait time appears as `waittime` (Fallback API), `wait_time` (MoEngage CR), and
+    `Fallback_wait_time` (CleverTap). Which is canonical?
+
+## The live site — resolved
+
+`https://onextel-09023014.mintlify.site/` is live and **deploys from this repo on push**.
+Verified against pages that exist only in recent commits. The subdomain is Mintlify's
+auto-generated project URL, not a custom one; the custom-domain cutover is still open.
+
+Mintlify does not surface its builds through GitHub's checks or deployments API — the repo shows
+zero of both while deploying normally. Do not use that as a signal; fetch a known-new URL
+instead.
+
+The `/getting-started` reference in the feedback tracker was **not a real page** — that row is
+template placeholder text ("Jane Doe", "Example: intro paragraph is unclear on what CPaaS
+covers"). It most likely came from an earlier, abandoned Mintlify project. Nothing to chase.
