@@ -256,7 +256,8 @@
     "decoration": "grid"
   },
   "appearance": {
-    "default": "light"
+    "default": "light",
+    "strict": true
   },
   "icons": {
     "library": "fontawesome"
