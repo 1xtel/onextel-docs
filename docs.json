@@ -220,7 +220,8 @@
       "type": "button",
       "label": "OneXtel",
       "href": "https://www.onextel.com"
-    }
+    },
+    "links": []
   },
   "footer": {
     "socials": {
@@ -248,9 +249,13 @@
     "color": {
       "light": "#dae6f1",
       "dark": "#dae6f1"
-    }
+    },
+    "decoration": "grid"
   },
   "appearance": {
     "default": "light"
+  },
+  "icons": {
+    "library": "fontawesome"
   }
 }
