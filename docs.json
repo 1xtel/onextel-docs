@@ -4,7 +4,8 @@
   "name": "OneXtel",
   "colors": {
     "primary": "#242c6a",
-    "light": "#C23B34"
+    "light": "#C23B34",
+    "dark": "#C23B34"
   },
   "favicon": {
     "light": "/images/Xsymbol.png",
@@ -250,7 +251,7 @@
   "background": {
     "color": {
       "light": "#dae6f1",
-      "dark": "#dae6f1"
+      "dark": "#242c6a"
     },
     "decoration": "grid"
   },
