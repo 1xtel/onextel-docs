@@ -1,9 +1,9 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "maple",
+  "theme": "mint",
   "name": "OneXtel",
   "colors": {
-    "primary": "#1E2A5E",
+    "primary": "#f7e7ce",
     "light": "#C23B34"
   },
   "favicon": {
@@ -246,8 +246,11 @@
   ],
   "background": {
     "color": {
-      "light": "#f7e7ce",
+      "light": "#dae6f1",
       "dark": "#dae6f1"
     }
+  },
+  "appearance": {
+    "default": "light"
   }
 }
