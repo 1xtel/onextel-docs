@@ -4,6 +4,12 @@ description: "Enterprise messaging APIs and campaign tools — WhatsApp, RCS, SM
 mode: "custom"
 ---
 
+export const Page = ({children}) => (
+  <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(20px, 5vw, 64px) 64px' }}>
+    {children}
+  </div>
+)
+
 export const Hero = () => (
   <div style={{ background: '#1E2A5E', borderRadius: '16px', padding: '56px 40px', textAlign: 'center', marginBottom: '32px' }}>
     <h1 style={{ color: '#FFFFFF', fontSize: '2.2rem', margin: 0 }}>
@@ -16,6 +22,8 @@ export const Hero = () => (
     </p>
   </div>
 )
+
+<Page>
 
 <Hero />
 
@@ -79,3 +87,5 @@ Send through OneXtel from the tools your team already works in — no code requi
 Integrating against `api.onex-aura.com` or `365cx.io`? Those are earlier APIs, still documented
 under [Archived APIs](/legacy/overview). Everything current uses `api.onexaura.com`.
 </Note>
+
+</Page>
