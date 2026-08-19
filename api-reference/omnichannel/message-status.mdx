@@ -37,8 +37,27 @@ does too — one of the two is always required.
 The request body is a JSON object.
 
 <ParamField body="channel" type="string" required>
-  Channel to query — for example `wa` or `rcs`.
+  Channel to query — `whatsapp`, `rcs`, or `sms`.
 </ParamField>
+
+<Warning>
+An earlier source documented this value as `wa`. Working requests use the full channel name
+`whatsapp`. Use `whatsapp`; treat `wa` as unverified.
+</Warning>
+
+<ParamField body="taId" type="integer">
+  Tenant administrator ID. Scopes the query to a tenant.
+</ParamField>
+
+<ParamField body="tucId" type="integer">
+  TUC ID. Scopes the query to a specific account under the tenant.
+</ParamField>
+
+<Note>
+`taId` and `tucId` scope the lookup to a tenant and account. They are not needed when the API
+key already identifies a single account, but are accepted — and appear in working requests from
+tenant-level callers. Confirm with your account team whether your integration needs them.
+</Note>
 
 <ParamField body="messageId" type="array">
   Array of message IDs to look up. Required unless `mobileNumber` is supplied, and mutually
@@ -78,30 +97,34 @@ curl --request POST \
   --header 'apikey: YOUR_API_KEY' \
   --header 'Content-Type: application/json' \
   --data '{
-  "channel": "wa",
+  "taId": 10,
+  "tucId": 2002,
+  "channel": "whatsapp",
   "messageId": [
-    "xx"
+    "3I7dnaYRaiTVj8f5EgxsoiJrT5R"
   ],
   "pageNo": 0,
-  "limit": 10
+  "limit": 100
 }'
 ```
 
 ```json Request body (by messageId)
 {
-  "channel": "wa",
+  "taId": 10,
+  "tucId": 2002,
+  "channel": "whatsapp",
   "messageId": [
-    "xx"
+    "3I7dnaYRaiTVj8f5EgxsoiJrT5R"
   ],
   "pageNo": 0,
-  "limit": 10
+  "limit": 100
 }
 ```
 
 ```json Request body (by mobileNumber)
 {
-  "channel": "wa",
-  "mobileNumber": ["xx"],
+  "channel": "whatsapp",
+  "mobileNumber": ["919999999999"],
   "from": "2025-12-17 00:00:00",
   "to": "2025-12-17 23:59:59",
   "pageNo": 0,
