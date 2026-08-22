@@ -1,17 +1,138 @@
 ---
 title: "DLR Callback"
-description: "Delivery receipt (DLR) callback payload the OneXtel SMS platform sends to your configured URL."
+description: "Delivery receipt payloads OneXtel posts to your configured URL, for both the Omni and SMS List APIs."
 ---
 
-## Overview
+When a message reaches its final state, OneXtel posts a **delivery receipt (DLR)** to the
+callback URL registered against your API key.
 
-After delivery, the platform sends a callback (DLR) POST request to the client's configured URL, indicating the final delivery state of a previously submitted message.
+There are **two DLR formats**, matching the two SMS APIs. Which one you receive depends on which
+API you send with — see [Which SMS API](/api-reference/sms/overview#which-sms-api).
+
+| You send with | You receive |
+| --- | --- |
+| [Omni API](/api-reference/sms/send-sms-omni) (`/oapi/send_sms`) | [Platform DLR](#platform-dlr) — camelCase fields |
+| [SMS List API](/api-reference/sms/send-sms) (`/api/jsmslist`) | [SMS List DLR](#sms-list-dlr) — uppercase fields |
+
+Register your callback URL under **Configuration → Add New Callback** — see
+[Callback configuration](/guides/platform/callback-configuration).
+
+## Platform DLR
+
+The full set of parameters currently supported for SMS.
+
+```json
+{
+  "apiKey": "YOUR_API_KEY",
+  "custRef": {
+    "custref1": {
+      "CustomReference1": "testSMS",
+      "CustomReference2": "123"
+    }
+  },
+  "destination": "919999999999",
+  "dlrCode": "001",
+  "doneDate": "260812122201",
+  "errorCode": "000",
+  "errorDesc": "Delivered",
+  "header": "ONEXTEL",
+  "incomingTs": 1786517520081,
+  "messageTxt": "Dear Customer, your account has been created. URL: (#var#) Username: (#var#) Password: (#var#)",
+  "status": "DELIVERED",
+  "submitDate": "260812122200",
+  "submitTs": 1786517520149,
+  "templateId": "YOUR_DLT_TEMPLATE_ID",
+  "uuid": "3HnxEKeKkZ0tAvEdTYiV6ADJ3la"
+}
+```
+
+### Identity and routing
+
+<ResponseField name="uuid" type="string">
+  Unique message identifier. Use it to correlate the receipt with the message you sent.
+</ResponseField>
+
+<ResponseField name="apiKey" type="string">
+  The API key the message was sent with.
+</ResponseField>
+
+<ResponseField name="destination" type="string">
+  Recipient mobile number.
+</ResponseField>
+
+<ResponseField name="header" type="string">
+  Sender ID the message was sent from.
+</ResponseField>
+
+<ResponseField name="templateId" type="string">
+  DLT template ID the message was sent against.
+</ResponseField>
+
+### Outcome
+
+<ResponseField name="status" type="string">
+  Final delivery state — for example `DELIVERED`.
+</ResponseField>
+
+<ResponseField name="errorCode" type="string">
+  Outcome code. `000` is delivered; anything else is a failure reason. See
+  [SMS error codes](/api-reference/sms/error-codes).
+</ResponseField>
+
+<ResponseField name="errorDesc" type="string">
+  Human-readable description of `errorCode`.
+</ResponseField>
+
+<ResponseField name="dlrCode" type="string">
+  Delivery receipt code.
+</ResponseField>
+
+<Warning>
+`dlrCode` and `errorCode` are separate fields carrying different values — a delivered message
+shows `dlrCode: "001"` alongside `errorCode: "000"`. Branch your logic on **`errorCode`**, which
+is the field the [error code table](/api-reference/sms/error-codes) documents. The relationship
+between the two is not documented; treat `dlrCode` as informational until it is.
+</Warning>
+
+### Content
+
+<ResponseField name="messageTxt" type="string">
+  The message text as sent. Template variables appear in their substituted form.
+</ResponseField>
+
+<ResponseField name="custRef" type="object">
+  The custom references you set on the original send, echoed back unchanged — `custref1`
+  containing `CustomReference1` and `CustomReference2`. This is the simplest way to carry your
+  own order or campaign identifiers through to the receipt.
+</ResponseField>
+
+### Timestamps
+
+<ResponseField name="submitDate" type="string">
+  When the message was submitted, formatted `YYMMDDHHmmss`.
+</ResponseField>
+
+<ResponseField name="doneDate" type="string">
+  When the message reached its final state, formatted `YYMMDDHHmmss`.
+</ResponseField>
+
+<ResponseField name="submitTs" type="integer">
+  Submission timestamp in epoch milliseconds.
+</ResponseField>
+
+<ResponseField name="incomingTs" type="integer">
+  Timestamp in epoch milliseconds at which the receipt was received.
+</ResponseField>
 
 <Note>
-The source guide does not document how to configure the callback URL, the HTTP headers used on the callback request, or an expected response body/status code from your endpoint. See the `GAPS` note returned with this extraction.
+`submitDate` and `doneDate` give you delivery latency directly — in the example above the
+message was submitted at `...122200` and completed at `...122201`, one second later. Tracking
+the spread across a campaign surfaces routing problems earlier than the delivery rate does.
 </Note>
 
-## Callback payload
+## SMS List DLR
+
+The receipt format for the [SMS List API](/api-reference/sms/send-sms).
 
 <CodeGroup>
 
@@ -23,7 +144,7 @@ The source guide does not document how to configure the callback URL, the HTTP h
   "ERRORCODE": "000",
   "ERRORDESP": "DELIVRD",
   "CLIENTMSID": "123456789",
-  "MOBILENUMBER": "971502829916"
+  "MOBILENUMBER": "919999999999"
 }
 ```
 
@@ -35,16 +156,14 @@ The source guide does not document how to configure the callback URL, the HTTP h
   "ERRORCODE": "011",
   "ERRORDESP": "UNDELIV",
   "CLIENTMSID": "123456789",
-  "MOBILENUMBER": "971111111111"
+  "MOBILENUMBER": "919999999999"
 }
 ```
 
 </CodeGroup>
 
-## Response parameters — success
-
 <ResponseField name="STATUS" type="string">
-  Final delivery state (`success`).
+  Final delivery state — `success` or `failed`.
 </ResponseField>
 
 <ResponseField name="STATUSDATETIME" type="string">
@@ -52,58 +171,33 @@ The source guide does not document how to configure the callback URL, the HTTP h
 </ResponseField>
 
 <ResponseField name="MSGID" type="string">
-  Unique internal message identifier.
+  Unique message identifier assigned by the platform.
 </ResponseField>
 
 <ResponseField name="ERRORCODE" type="string">
-  Delivery confirmation code (e.g., `000` = delivered).
+  Outcome code — `000` is delivered.
 </ResponseField>
 
 <ResponseField name="ERRORDESP" type="string">
-  Description of the delivery status.
+  Short description, for example `DELIVRD` or `UNDELIV`.
 </ResponseField>
 
 <ResponseField name="CLIENTMSID" type="string">
-  Client's reference ID.
+  The `clientsmsid` you supplied on the original submission, echoed back so you can match the
+  receipt to your own record.
 </ResponseField>
 
 <ResponseField name="MOBILENUMBER" type="string">
-  Delivered-to mobile number.
+  Recipient mobile number.
 </ResponseField>
-
-## Response parameters — failure
-
-<ResponseField name="STATUS" type="string">
-  Final delivery status (e.g., `failed`).
-</ResponseField>
-
-<ResponseField name="STATUSDATETIME" type="string">
-  Timestamp when the delivery status was finalized.
-</ResponseField>
-
-<ResponseField name="MSGID" type="string">
-  Unique internal message ID.
-</ResponseField>
-
-<ResponseField name="ERRORCODE" type="string">
-  Delivery error code (operator mapping).
-</ResponseField>
-
-<ResponseField name="ERRORDESP" type="string">
-  Description of the error code (e.g., `UNDELIV` = undelivered).
-</ResponseField>
-
-<ResponseField name="CLIENTMSID" type="string">
-  Client's message ID reference.
-</ResponseField>
-
-## Delivery / error codes
-
-| Code | Description |
-|---|---|
-| `000` | Delivered. |
-| `011` | Undelivered. |
 
 <Note>
-These two codes are the only `ERRORCODE` values documented in the source guide's consolidated response-codes table. The guide does not provide an exhaustive operator error-code mapping.
+This format carries no template, sender, or message content — only the outcome. If you need
+those on the receipt, use the [Omni API](/api-reference/sms/send-sms-omni).
 </Note>
+
+## Related
+
+- [SMS error codes](/api-reference/sms/error-codes)
+- [Callback configuration](/guides/platform/callback-configuration)
+- [Message status](/api-reference/omnichannel/message-status) — poll for status instead of receiving it
