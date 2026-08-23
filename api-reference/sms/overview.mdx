@@ -7,11 +7,13 @@ You submit message details as a JSON payload and the platform delivers to the re
 
 ## Which SMS API
 
-There are **two** SMS send APIs, on different hosts with different authentication. Check which
-one your account is provisioned for before you build — they are not interchangeable.
+There are **two** SMS send APIs, split by destination. They sit on different hosts with
+different authentication and are not interchangeable — check which one your account is
+provisioned for before you build.
 
 | | [Omni API](/api-reference/sms/send-sms-omni) | [SMS List API](/api-reference/sms/send-sms) |
 | --- | --- | --- |
+| **Destinations** | **India** | **Outside India** |
 | Endpoint | `api.onexaura.com/oapi/send_sms` | `api.int.onexglobal.io/api/jsmslist` |
 | Authentication | `apikey` request header | `key` field in the request body |
 | Message array | `sms` | `listsms` |

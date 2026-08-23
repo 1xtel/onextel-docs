@@ -1,6 +1,6 @@
 ---
-title: "Send SMS (Omni API)"
-description: "Send one or more SMS messages through the OneXtel Omni send endpoint, with DLT fields, campaign tagging, and URL shortening."
+title: "Send SMS — India"
+description: "Send SMS to Indian numbers through the Omni send endpoint, with DLT fields, campaign tagging, and URL shortening."
 ---
 
 The Omni send endpoint delivers SMS through the same API used for WhatsApp and RCS. The channel
@@ -10,9 +10,9 @@ Because it shares an endpoint with the other channels, this is the API to use if
 WhatsApp or RCS, or if you want [fallback](/api-reference/omnichannel/fallback) between them.
 
 <Note>
-OneXtel exposes a second, separate SMS API — the [SMS List API](/api-reference/sms/send-sms) —
-on a different host with a different authentication scheme. Check
-[which API you are on](/api-reference/sms/overview#which-sms-api) before you build.
+This API covers **India**, and carries the DLT fields Indian traffic requires. For destinations
+outside India, use the [SMS List API](/api-reference/sms/send-sms) — a different host with a
+different authentication scheme. See [Which SMS API](/api-reference/sms/overview#which-sms-api).
 </Note>
 
 ## Endpoint
