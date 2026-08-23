@@ -40,10 +40,13 @@ The request body is a JSON object.
   Channel to query — `whatsapp`, `rcs`, or `sms`.
 </ParamField>
 
-<Warning>
-An earlier source documented this value as `wa`. Working requests use the full channel name
-`whatsapp`. Use `whatsapp`; treat `wa` as unverified.
-</Warning>
+<Note>
+**Verified against the live API (Aug 2026):** when looking up by `messageId`, the `channel`
+value is not validated — `whatsapp`, `wa`, `sms`, an arbitrary string, and omitting the field
+entirely all return the same record. A message ID is already unique, so the channel adds
+nothing. It is still worth sending the correct value: it is likely to matter for `mobileNumber`
+lookups, where the same number can appear on more than one channel.
+</Note>
 
 <ParamField body="taId" type="integer">
   Tenant administrator ID. Scopes the query to a tenant.
@@ -54,9 +57,9 @@ An earlier source documented this value as `wa`. Working requests use the full c
 </ParamField>
 
 <Note>
-`taId` and `tucId` scope the lookup to a tenant and account. They are not needed when the API
-key already identifies a single account, but are accepted — and appear in working requests from
-tenant-level callers. Confirm with your account team whether your integration needs them.
+**Verified:** `taId` and `tucId` are optional. Requests omitting both return the same result,
+because the API key already identifies the account. They appear in requests from tenant-level
+callers, where they scope the lookup to one account under the tenant.
 </Note>
 
 <ParamField body="messageId" type="array">
@@ -136,10 +139,96 @@ curl --request POST \
 
 ## Response
 
-<Warning>
-No example response is documented in the source for this endpoint. Verify the actual response
-shape against a live call before relying on it.
-</Warning>
+```json
+{
+  "data": [
+    {
+      "uuid": "3I7dnaYRaiTVj8f5EgxsoiJrT5R",
+      "mobileNumber": "919999999999",
+      "status": "DELIVERED",
+      "failedErrorCode": "000",
+      "failedErrorMessage": "Delivered",
+      "onexReceivedTs": 1786517520081,
+      "credit": 1,
+      "buttonClick": 0,
+      "urlClick": 0,
+      "customParam1": "",
+      "customParam2": "",
+      "customParam3": "",
+      "customParam4": "",
+      "customParam5": ""
+    }
+  ],
+  "pagination": {
+    "totalRecords": 1
+  }
+}
+```
+
+<ResponseField name="data" type="array">
+  One object per matching message.
+</ResponseField>
+
+<ResponseField name="pagination.totalRecords" type="integer">
+  Total number of records matching the query, across all pages.
+</ResponseField>
+
+### Record fields
+
+<ResponseField name="uuid" type="string">
+  Unique message identifier — the same value returned when the message was sent.
+</ResponseField>
+
+<ResponseField name="mobileNumber" type="string">
+  Recipient number.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current delivery state.
+</ResponseField>
+
+<ResponseField name="failedErrorCode" type="string">
+  Outcome code. `000` is delivered; anything else is a failure reason — see
+  [SMS error codes](/api-reference/sms/error-codes).
+</ResponseField>
+
+<ResponseField name="failedErrorMessage" type="string">
+  Human-readable description of `failedErrorCode`.
+</ResponseField>
+
+<ResponseField name="onexReceivedTs" type="integer">
+  Timestamp in epoch milliseconds at which the platform received the status.
+</ResponseField>
+
+<ResponseField name="credit" type="integer">
+  Credits consumed by the message.
+</ResponseField>
+
+<ResponseField name="buttonClick" type="integer">
+  Whether a button in the message was clicked.
+</ResponseField>
+
+<ResponseField name="urlClick" type="integer">
+  Whether a tracked URL in the message was clicked.
+</ResponseField>
+
+<ResponseField name="customParam1" type="string">
+  Custom reference set on the original send, echoed back. `customParam1` through
+  `customParam5`.
+</ResponseField>
+
+<Note>
+`failedErrorCode` here is the same code set as the [SMS error codes](/api-reference/sms/error-codes)
+table, despite the field name — it carries `000` on success too, not only on failure.
+</Note>
+
+## Errors
+
+An invalid or missing API key returns **HTTP 400** with the body:
+
+```
+"NO VALID AUTH_KEY FOUND!"
+```
 
 ## Related
 
