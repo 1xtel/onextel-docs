@@ -42,15 +42,25 @@ object defining the fallback behavior.
 </ParamField>
 
 <ParamField body="sms[].type" type="string" required>
-  Message type. One of `SI`, `TRANS`, `OTP`, `SE`, or `Promo`.
+  Message type. Verified accepted on the SMS send API: `SI`, `OTP`, `SE`. Case-sensitive.
 </ParamField>
 
 <Warning>
-`TXN` is **not** a valid message type, despite having appeared in earlier example payloads. A
-fallback SMS carrying an invalid `type` is rejected at the fallback stage — long after the
-primary send has already returned `200` — so the symptom is a successful API response with no
-SMS delivered. Use `TRANS` for transactional messages.
+**Neither `TXN` nor `TRANS` is a valid message type**, despite both having appeared in earlier
+example payloads. Live testing of the SMS send API (Aug 2026) accepts only `SI`, `OTP`, and
+`SE`; `TXN`, `TRANS`, and `Promo` are rejected as `invalid type`.
+
+This matters more in fallback than in a direct send: an invalid `type` here is rejected at the
+**fallback** stage, long after the primary send returned `200`, so the symptom is a successful
+API response and no SMS. Use `SI` or `SE` for service messages — see
+[DLT template types](/guides/sms/dlt#template-types).
 </Warning>
+
+<Note>
+The accepted set was verified on the send API, not on the fallback object specifically. If a
+fallback SMS is still not arriving with a valid `type`, confirm the fallback validator uses the
+same set.
+</Note>
 
 <ParamField body="sms[].messageBody" type="string" required>
   Message content.
@@ -221,7 +231,7 @@ curl --request POST \
     "waittime": "30",
     "sms": {
       "sender": "YOUR_SMS_SENDER",
-      "type": "TRANS",
+      "type": "SI",
       "messageBody": "Your message text",
       "templateId": "YOUR_DLT_TEMPLATE_ID",
       "entityId": "YOUR_DLT_ENTITY_ID"
@@ -236,7 +246,7 @@ curl --request POST \
     {
       "sender": "YOUR_SMS_SENDER",
       "recipient": "919999999999",
-      "type": "TRANS",
+      "type": "SI",
       "messageBody": "Your message text",
       "templateId": "YOUR_DLT_TEMPLATE_ID",
       "entityId": "YOUR_DLT_ENTITY_ID",
@@ -290,7 +300,7 @@ curl --request POST \
     "waittime": "30",
     "sms": {
       "sender": "YOUR_SMS_SENDER",
-      "type": "TRANS",
+      "type": "SI",
       "messageBody": "Your message text",
       "unicode": 0,
       "templateId": "YOUR_DLT_TEMPLATE_ID",

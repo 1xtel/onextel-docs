@@ -113,9 +113,30 @@ The `sms` array carries one or more messages in a single call. Each object is on
   Content of the SMS.
 </ParamField>
 
-<ParamField body="sms[].type" type="string">
-  Message type. One of `SI`, `TRANS`, `OTP`, `SE`, or `Promo`.
+<ParamField body="sms[].type" type="string" required>
+  Message type. **Verified accepted:** `SI`, `OTP`, `SE`. Case-sensitive.
 </ParamField>
+
+<Warning>
+**`type` is required, and the accepted values are narrower than earlier documentation stated.**
+Verified against the live API (Aug 2026):
+
+| Value | Result |
+| --- | --- |
+| `SI`, `OTP`, `SE` | Accepted |
+| `TRANS`, `Promo`, `TXN` | Rejected — `invalid type`, status `700` |
+| Lowercase (`si`, `otp`, `se`) | Rejected — the field is case-sensitive |
+| Omitted | Rejected — `invalid type` |
+
+`SI` and `SE` correspond to the DLT consent categories Service Implicit and Service Explicit —
+see [DLT registration](/guides/sms/dlt#template-types).
+</Warning>
+
+<Note>
+`Promo` was rejected on the account used for testing, which is provisioned for transactional
+traffic. Because the message type is ultimately governed by the API key configuration, `Promo`
+may be accepted on a promotional key — this has not been verified.
+</Note>
 
 <ParamField body="sms[].templateId" type="string">
   DLT-approved template ID.
@@ -193,6 +214,65 @@ tracked.
 
 Click data captured this way appears in the
 [Clicker Data and Clicker Details reports](/guides/sms/reports#clicker-data).
+
+## Response
+
+Both success and failure return **HTTP 200**. The outcome is inside `smsList.sms[]`, one entry
+per message in your request.
+
+<CodeGroup>
+
+```json Accepted
+{
+  "smsList": {
+    "sms": [
+      {
+        "description": "Message submitted with tracking id ( UID )",
+        "status": 200,
+        "messageid": "01M0QSEJDWTYJTCJ533TRH165A"
+      }
+    ]
+  }
+}
+```
+
+```json Rejected
+{
+  "smsList": {
+    "sms": [
+      {
+        "description": "invalid type",
+        "status": 700
+      }
+    ]
+  }
+}
+```
+
+</CodeGroup>
+
+<ResponseField name="smsList.sms[].status" type="integer">
+  Per-message result. `200` accepted; `700` rejected.
+</ResponseField>
+
+<ResponseField name="smsList.sms[].description" type="string">
+  Outcome text — the tracking-id confirmation on success, or the rejection reason.
+</ResponseField>
+
+<ResponseField name="smsList.sms[].messageid" type="string">
+  Tracking ID, present only when the message was accepted.
+</ResponseField>
+
+<Warning>
+**The HTTP status tells you nothing about the outcome.** A rejected message still returns
+HTTP 200 — the rejection is `smsList.sms[].status: 700` inside the body. Parse the per-message
+status; do not branch on the HTTP code.
+</Warning>
+
+<Note>
+Because `sms` is an array, each message carries its own status. A request with several
+recipients can be partly accepted and partly rejected in the same response.
+</Note>
 
 ## Related
 
