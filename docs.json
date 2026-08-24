@@ -172,6 +172,19 @@
               "api-reference/omnichannel/message-status",
               "api-reference/omnichannel/message-history"
             ]
+          },
+          {
+            "group": "Verify",
+            "openapi": "api-reference/verify/openapi.yaml",
+            "pages": [
+              "api-reference/verify/overview",
+              "api-reference/verify/create-and-dispatch-a-pin",
+              "api-reference/verify/resend-a-pin",
+              "api-reference/verify/verify-a-pin",
+              "api-reference/verify/list-templates",
+              "api-reference/verify/list-channel-accounts",
+              "api-reference/verify/error-codes"
+            ]
           }
         ]
       },

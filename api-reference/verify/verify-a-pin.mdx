@@ -1,0 +1,36 @@
+---
+title: "Verify a PIN"
+description: "Check the code the user typed against the stored hash."
+openapi: "POST /v1/pins/{pinId}/verify"
+---
+
+Submit the code exactly as the user typed it. OneXtel compares it against the stored hash in
+constant time, so the comparison itself leaks nothing about how close a wrong guess was.
+
+## Reading the outcome
+
+A `200` is the only success. Everything else is a distinct error code, and they mean different
+things to your UI:
+
+| Code | HTTP | What to show the user |
+| --- | --- | --- |
+| — | 200 | Verified — continue the flow |
+| `pin_incorrect` | 422 | "That code isn't right" — offer a retry |
+| `pin_expired` | 410 | "That code has expired" — offer a resend |
+| `pin_blocked` | 409 | "Too many attempts" — offer a resend |
+| `pin_already_verified` | 409 | Already used — treat as done, or start a new send |
+
+<Note>
+Expired and incorrect are deliberately separate codes. Collapsing them into one "invalid code"
+message makes a user who waited too long retype a code that can never work.
+</Note>
+
+## Attempts
+
+Both the `200` response and a `pin_incorrect` error carry `attemptsRemaining`. Use it to warn
+before the PIN is spent — at zero, the next wrong guess returns `pin_blocked` and the PIN is
+dead. The allowance is set per template as `pinAttempts` and is reset by every
+[resend](/api-reference/verify/resend-a-pin).
+
+Verify calls are rate limited per template via `verifyPinLimit`; exceeding it returns
+`rate_limited` (429).

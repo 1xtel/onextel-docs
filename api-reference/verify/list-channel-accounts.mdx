@@ -1,0 +1,29 @@
+---
+title: "List channel accounts"
+description: "The provider accounts each channel dispatches through."
+openapi: "GET /v1/channel-accounts"
+---
+
+A channel account is the provider connection a channel actually sends through — the WhatsApp
+number, the SMS route, the email sender. Templates reference them by `channelAccountId`, so this
+endpoint is how you resolve that id into something readable, and how you check whether a channel
+is live before you try to send on it.
+
+<Warning>
+A disabled channel account fails the send at dispatch time with `channel_account_disabled` (409),
+even though the template still lists the channel. If a channel starts failing for every
+destination, check `status` here before looking anywhere else.
+</Warning>
+
+## Credentials
+
+`credentialFields[]` describes the provider credentials the account is configured with. Fields
+marked `secret: true` always come back with an empty `value` — the API never returns a
+credential, and there is no parameter that makes it.
+
+Use the `key` and `label` to render a settings view; change the values in the OneXtel portal.
+
+## Paging
+
+Page-numbered, the same as [List templates](/api-reference/verify/list-templates): pass `page`
+and `pageSize`, read `total` and `totalPages`, and trust the echoed values, which are post-clamp.
