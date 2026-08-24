@@ -16,8 +16,8 @@ info:
     ```
 
 servers:
-  - url: http://localhost:3001
-    description: Development — replace with the production host before this page ships
+  - url: https://api.onexaura.com
+    description: Production
 
 security:
   - bearerAuth: []
