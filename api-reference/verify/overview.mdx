@@ -1,0 +1,109 @@
+---
+title: "Verify API Overview"
+description: "Generate, dispatch and verify one-time PINs across SMS, WhatsApp, and email from a single API."
+---
+
+The Onextel Verify API issues one-time PINs and verifies them. You send a PIN against a **template**,
+which decides the PIN's shape (length, character set, lifetime, attempt allowance) and which
+channels it can go out on. OneXtel generates the code, dispatches it, and holds only a hash of
+it — so verification is a comparison you make through the API, never a code you store yourself.
+
+A single send can fan out to **SMS**, **WhatsApp**, and **email** in parallel, and the response
+tells you what each channel did.
+
+## Base URL
+
+```
+http://localhost:3001
+```
+
+<Warning>
+This section documents the Onextel Verify API against its development host. The production base URL is not
+yet confirmed — do not integrate against `localhost:3001`.
+</Warning>
+
+## Authentication
+
+Every request carries an API key as a bearer token. Create one in the OneXtel portal under
+**Developers → API Keys**.
+
+<ParamField header="Authorization" type="string" required>
+  `Bearer YOUR_API_KEY`
+</ParamField>
+
+## The three calls
+
+<Steps>
+  <Step title="Send">
+    `POST /v1/pins` generates a PIN, dispatches it to every requested channel, and returns a
+    `pinId` plus per-channel dispatch status. Hold on to the `pinId` — it is what you verify
+    against.
+  </Step>
+  <Step title="Resend (optional)">
+    `POST /v1/pins/{pinId}/resend` issues a **new** PIN on the same `pinId`, optionally on a
+    different channel. Because the original is only stored hashed, there is no earlier code to
+    re-send — every resend regenerates the PIN, its expiry, and its attempt allowance.
+  </Step>
+  <Step title="Verify">
+    `POST /v1/pins/{pinId}/verify` compares what the user typed against the stored hash in
+    constant time.
+  </Step>
+</Steps>
+
+## Partial dispatch
+
+A send that requests several channels can succeed on some and fail on others. The API treats
+that as success:
+
+| Outcome | Response |
+| --- | --- |
+| At least one channel accepted the message | `201`, with per-channel status in `channels[]` |
+| Every requested channel was rejected | `502 dispatch_failed` |
+
+So a `201` is not a promise that every channel went out. Read `channels[]` to see which did:
+
+| `channels[].status` | Meaning |
+| --- | --- |
+| `accepted` | The provider took the message |
+| `rejected` | The provider refused it |
+| `error` | The dispatch itself failed — timeout, transport, or an unexpected response |
+
+## Idempotency
+
+Sends and resends accept an `Idempotency-Key` header, which protects against duplicate dispatch
+when you retry a request whose response you never saw.
+
+- Replaying the **same key with the same body** within 24 hours returns the original response
+  verbatim — no second message goes out.
+- The **same key with a different body** is rejected with `idempotency_key_reuse`.
+- A **concurrent** request on a key still in flight is rejected with `idempotency_in_progress`.
+
+<Tip>
+Generate the key per logical send attempt — typically once per user action — not per HTTP retry,
+or the retries will each look like a new send.
+</Tip>
+
+## Rate limits
+
+Limits are configured per template, not globally, and each has its own error code:
+
+| Limit | Code |
+| --- | --- |
+| Resend attempted before the cooldown elapsed | `resend_cooldown` |
+| Verify or send rate exceeded | `rate_limited` |
+| Template's daily send cap reached | `daily_cap_exceeded` |
+
+Read the current values off the template — `resendCooldown`, `verifyPinLimit`,
+`sendPinPerTemplateLimit`, `sendPinPerPhoneNumberLimit` — via
+[List templates](/api-reference/verify/list-templates).
+
+## What's in this section
+
+| Page | What it covers |
+| --- | --- |
+| [Create and dispatch a PIN](/api-reference/verify/create-and-dispatch-a-pin) | Send a PIN across one or more channels |
+| [Resend a PIN](/api-reference/verify/resend-a-pin) | Issue a fresh PIN on an existing `pinId` |
+| [Verify a PIN](/api-reference/verify/verify-a-pin) | Check the code the user typed |
+| [List templates](/api-reference/verify/list-templates) | The templates a PIN can be sent under |
+| [List channel accounts](/api-reference/verify/list-channel-accounts) | The provider accounts each channel dispatches through |
+| [Verify Error Codes](/api-reference/verify/error-codes) | Every error code and its HTTP status |

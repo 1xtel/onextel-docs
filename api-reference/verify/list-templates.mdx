@@ -1,0 +1,44 @@
+---
+title: "List templates"
+description: "The templates a PIN can be sent under, with their PIN rules and per-channel content."
+openapi: "GET /v1/templates"
+---
+
+A template is what a send is configured by. It decides the shape of the PIN — length, character
+set, lifetime, how many verify attempts it allows — and it carries one entry per channel it can
+go out on, each bound to a channel account and to that provider's own template.
+
+You will mostly call this to discover `templateId` values, and to read the limits your
+integration has to respect.
+
+## The limits live here
+
+Rate limits are set per template, not per account. These are the fields to read:
+
+| Field | Governs |
+| --- | --- |
+| `resendCooldown` | How long before a [resend](/api-reference/verify/resend-a-pin) is allowed |
+| `pinAttempts` | Wrong guesses allowed before `pin_blocked` |
+| `pinTimeToLive` | How long a PIN stays valid |
+| `verifyPinLimit` | Verify rate ceiling |
+| `sendPinPerTemplateLimit` | Send rate ceiling for this template |
+| `sendPinPerPhoneNumberLimit` | Send rate ceiling per destination |
+
+## Channels
+
+Each entry in `channels[]` is one channel's rendering of the template. `isDefault` marks the one
+used when a send omits `channels`. `pinPlaceholder` is the token in `contentText` the generated
+PIN replaces, and `paramDefaults` holds the fallbacks for the template's other placeholders —
+the ones a send can override with `templateParams`.
+
+<Note>
+Channel entries carry the fields that channel needs and leave the rest empty: `entityId` and
+`unicode` are SMS/DLT concerns, `subjectText` is email only, and `copyCodeButtonIndex` is
+WhatsApp only.
+</Note>
+
+## Paging
+
+Page-numbered: pass `page` and `pageSize`, then read `total` and `totalPages` to drive a pager.
+Both are echoed back **after** clamping — `pageSize` caps at 100, and an out-of-range `page`
+reads as page 1 — so trust the response, not what you sent.

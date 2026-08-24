@@ -1,0 +1,46 @@
+---
+title: "Create and dispatch a PIN"
+description: "Generate a PIN and send it to one or more channels in parallel."
+openapi: "POST /v1/pins"
+---
+
+This is the call that starts a verification. OneXtel generates the PIN, substitutes it into the
+template's content for each channel you asked for, and dispatches to all of them **in parallel** —
+then returns a `pinId` and what each channel did.
+
+Hold on to the `pinId`. It is what you [verify](/api-reference/verify/verify-a-pin) against, and
+what you [resend](/api-reference/verify/resend-a-pin) on. The code itself is never returned to
+you and never stored in the clear.
+
+<Note>
+Omit `channels` to send on the template's default channel. Pass it to override — every channel you
+name must already have a channel account configured on that template, or the call fails with
+`channel_not_configured`.
+</Note>
+
+## Partial success
+
+A `201` means **at least one** channel accepted the message, not all of them. Read `channels[]`
+to see which:
+
+```json Response — SMS accepted, WhatsApp rejected
+{
+  "pinId": "pin_x9k2m1qz",
+  "status": "PENDING",
+  "expiresAt": "2026-08-04T10:22:03.221Z",
+  "attemptsRemaining": 3,
+  "channels": [
+    { "channel": "sms", "status": "accepted", "providerMessageId": "3f9a1c02" },
+    { "channel": "whatsapp", "status": "rejected", "errorCode": "131047", "errorMessage": "Re-engagement message" }
+  ]
+}
+```
+
+Only when **every** requested channel is rejected do you get `502 dispatch_failed`. So do not
+retry on a `201` — the user has a code.
+
+<Warning>
+Always send the `Idempotency-Key` header on this call. Without it, a network timeout you retry
+will dispatch a second PIN and invalidate the first, and the user will be typing a code that no
+longer verifies. See [Idempotency](/api-reference/verify/overview#idempotency).
+</Warning>

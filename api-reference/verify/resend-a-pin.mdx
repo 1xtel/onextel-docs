@@ -1,0 +1,39 @@
+---
+title: "Resend a PIN"
+description: "Issue a fresh PIN on an existing pinId, optionally on a different channel."
+openapi: "POST /v1/pins/{pinId}/resend"
+---
+
+Use this when the user says they never got the code, or when the PIN has expired and you want to
+keep them in the same flow rather than starting over.
+
+<Warning>
+A resend is **not** a re-delivery of the earlier code. The PIN is only ever stored hashed, so
+there is no original to send again — every resend generates a new PIN and resets its expiry and
+its attempt allowance. Any code the user is still holding stops working the moment this call
+succeeds.
+</Warning>
+
+## Switching channel
+
+The most useful thing about a resend is that it does not have to use the channel the original
+went out on. If SMS was rejected, resend on WhatsApp against the same `pinId`:
+
+```json Request
+{
+  "channels": ["whatsapp"]
+}
+```
+
+Omit `channels` to reuse the original send's channels.
+
+## Cooldown
+
+Each template sets a `resendCooldown`. A resend inside that window is rejected with
+`resend_cooldown` (429) — surface a "try again in a moment" state rather than retrying
+automatically. Read the current value off
+[List templates](/api-reference/verify/list-templates).
+
+The PIN must also still be resendable: a PIN that is already verified returns
+`pin_already_verified`, and one whose attempts are exhausted returns `pin_blocked`. Both are
+`409` — start a new send instead.

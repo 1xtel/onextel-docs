@@ -1,0 +1,108 @@
+---
+title: "Verify Error Codes"
+description: "Every Onextel Verify API error code, its HTTP status, and what to do about it."
+---
+
+Every error response from the Onextel Verify API — on every endpoint — has the same shape:
+
+```json
+{
+  "error": {
+    "code": "pin_expired",
+    "message": "...",
+    "details": {},
+    "requestId": "req_..."
+  }
+}
+```
+
+Branch on `error.code`, not on the HTTP status: several codes share a status, and the code is
+what tells you whether to retry, re-send, or surface something to the user. Quote `requestId`
+when you raise a ticket with OneXtel — it identifies the exact request in our logs.
+
+## Verification outcomes
+
+These are the codes you handle in your sign-in flow. They are the normal outcomes of a user
+typing a code, not faults.
+
+| Code | HTTP | What happened | What to do |
+| --- | --- | --- | --- |
+| `pin_incorrect` | 422 | Wrong code | Let the user retry — check `attemptsRemaining` |
+| `pin_expired` | 410 | The PIN's lifetime elapsed | Offer a resend |
+| `pin_blocked` | 409 | Attempts exhausted | Offer a resend; the PIN is dead |
+| `pin_already_verified` | 409 | This PIN was already used | Treat as done, or start a new send |
+| `pin_not_found` | 404 | No PIN for that `pinId` | Start a new send |
+
+## Rate and cooldown
+
+| Code | HTTP | What happened |
+| --- | --- | --- |
+| `resend_cooldown` | 429 | A resend was attempted before the template's cooldown elapsed |
+| `rate_limited` | 429 | The send or verify rate limit was exceeded |
+| `daily_cap_exceeded` | 429 | The template's daily send cap is used up |
+
+<Note>
+All three are configured per template, not per account. Read the current values off
+[List templates](/api-reference/verify/list-templates).
+</Note>
+
+## Idempotency
+
+| Code | HTTP | What happened |
+| --- | --- | --- |
+| `idempotency_key_reuse` | 409 | The same `Idempotency-Key` was replayed with a different body |
+| `idempotency_in_progress` | 409 | A request with the same key is still in flight |
+
+## Configuration
+
+These mean the send never had a chance — something in the template or channel setup needs
+fixing in the portal.
+
+| Code | HTTP | What happened |
+| --- | --- | --- |
+| `template_not_found` | 404 | No template with that `templateId` |
+| `template_disabled` | 409 | The template exists but is disabled |
+| `channel_not_configured` | 409 | The template has no channel account for a requested channel |
+| `channel_account_disabled` | 409 | The channel's provider account is disabled |
+
+## Authentication and access
+
+| Code | HTTP | What happened |
+| --- | --- | --- |
+| `unauthenticated` | 401 | Missing, malformed, or revoked API key |
+| `forbidden` | 403 | The key is valid but not allowed to do this |
+| `workspace_disabled` | 403 | The workspace is disabled |
+| `user_disabled` | 403 | The acting user is disabled |
+
+## Request validation
+
+| Code | HTTP | What happened |
+| --- | --- | --- |
+| `validation_failed` | 400 | A field is missing or malformed — `details` names the fields |
+| `not_found` | 404 | The resource does not exist |
+
+## Dispatch and platform
+
+| Code | HTTP | What happened |
+| --- | --- | --- |
+| `dispatch_failed` | 502 | Every requested channel was rejected — nothing went out |
+| `provider_unavailable` | 502 | The upstream provider could not be reached |
+| `internal_error` | 500 | An unexpected fault on the OneXtel side |
+
+<Warning>
+`dispatch_failed` is the only send failure where **no** channel accepted the message. A `201`
+with some channels showing `rejected` means the send partly succeeded — the user still got a
+code. Do not retry a `201`.
+</Warning>
+
+## Membership
+
+These appear on the workspace-membership endpoints rather than the Verify calls themselves.
+
+| Code | HTTP | What happened |
+| --- | --- | --- |
+| `member_not_found` | 404 | No such workspace member |
+| `invitation_not_found` | 404 | No such invitation |
+| `invitation_expired` | 410 | The invitation lapsed |
+| `already_member` | 409 | The user is already in the workspace |
+| `last_owner` | 409 | You cannot remove or demote the last owner |

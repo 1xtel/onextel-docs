@@ -1,0 +1,486 @@
+openapi: 3.1.0
+info:
+  title: Onextel Verify API
+  version: "1.0.0"
+  description: |
+    Generate, dispatch and verify one-time PINs across SMS, WhatsApp and email.
+
+    Every request is authenticated with an API key created from the OneXtel portal's
+    **Developers → API Keys** page, sent as a bearer token.
+
+    Every error response carries the same shape — see
+    [Verify Error Codes](/api-reference/verify/error-codes) for the full list:
+
+    ```json
+    { "error": { "code": "pin_expired", "message": "...", "details": {}, "requestId": "req_..." } }
+    ```
+
+servers:
+  - url: http://localhost:3001
+    description: Development — replace with the production host before this page ships
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Pins
+    description: Create, resend and verify one-time PINs.
+  - name: Templates
+    description: The templates a PIN can be sent under.
+  - name: Channel Accounts
+    description: The provider accounts a channel dispatches through.
+
+paths:
+  /v1/pins:
+    post:
+      operationId: createPin
+      tags: [Pins]
+      summary: Create and dispatch a PIN
+      description: >
+        Generates a PIN, dispatches it synchronously to every requested channel in parallel,
+        and returns per-channel dispatch status. `201` covers partial failure (at least one
+        channel accepted); `502 dispatch_failed` means every requested channel was rejected.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreatePinRequest' }
+      responses:
+        '201':
+          description: At least one channel accepted the message.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PinDispatchResponse' }
+        '400': { $ref: '#/components/responses/ValidationFailed' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404':
+          description: '`not_found` / `template_not_found`'
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '409':
+          description: '`template_disabled` / `channel_not_configured` / `channel_account_disabled` / `idempotency_key_reuse` / `idempotency_in_progress`'
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '429':
+          description: '`rate_limited` / `daily_cap_exceeded`'
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '502':
+          description: '`dispatch_failed`'
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+
+  /v1/pins/{pinId}/resend:
+    post:
+      operationId: resendPin
+      tags: [Pins]
+      summary: Resend a PIN
+      description: >
+        Issues a new PIN on the same `pinId`, optionally on a different channel than the
+        original send. Every resend regenerates the PIN, its expiry and its attempt
+        allowance — the PIN is only ever stored hashed, so there is no earlier code to
+        re-send. A resend cooldown applies.
+      parameters:
+        - $ref: '#/components/parameters/PinId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ResendPinRequest' }
+      responses:
+        '201':
+          description: At least one channel accepted the message.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PinDispatchResponse' }
+        '400': { $ref: '#/components/responses/ValidationFailed' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404':
+          description: '`not_found` / `pin_not_found` / `template_not_found`'
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '409':
+          description: '`pin_already_verified` / `pin_blocked` / `template_disabled` / `channel_not_configured` / `channel_account_disabled` / `idempotency_key_reuse` / `idempotency_in_progress`'
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '429':
+          description: '`resend_cooldown` / `rate_limited` / `daily_cap_exceeded`'
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '502':
+          description: '`dispatch_failed`'
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+
+  /v1/pins/{pinId}/verify:
+    post:
+      operationId: verifyPin
+      tags: [Pins]
+      summary: Verify a PIN
+      description: >
+        Constant-time comparison against the stored hash. Expired and incorrect are
+        distinct error codes.
+      parameters:
+        - $ref: '#/components/parameters/PinId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/VerifyPinRequest' }
+      responses:
+        '200':
+          description: The PIN matched.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/VerifyPinResponse' }
+        '400': { $ref: '#/components/responses/ValidationFailed' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404':
+          description: '`pin_not_found`'
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '409':
+          description: '`pin_already_verified` / `pin_blocked`'
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '410':
+          description: '`pin_expired`'
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '422':
+          description: '`pin_incorrect`'
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '429':
+          description: '`rate_limited`'
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '502':
+          description: '`dispatch_failed`'
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+
+  /v1/templates:
+    get:
+      operationId: listTemplates
+      tags: [Templates]
+      summary: List templates
+      description: >
+        Page-numbered: pass `page` and `pageSize`, and read `total`/`totalPages` off the
+        response to drive a pager. `page`/`pageSize` are echoed back post-clamp.
+      parameters:
+        - name: q
+          in: query
+          description: Free-text search over the template name.
+          schema: { type: string }
+        - name: status
+          in: query
+          schema: { type: string, enum: [enabled, disabled] }
+        - name: archived
+          in: query
+          description: Include archived templates.
+          schema: { type: boolean }
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PageMeta'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/Template' }
+        '400': { $ref: '#/components/responses/ValidationFailed' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /v1/channel-accounts:
+    get:
+      operationId: listChannelAccounts
+      tags: [Channel Accounts]
+      summary: List channel accounts
+      description: >
+        Page-numbered: pass `page` and `pageSize`, and read `total`/`totalPages` off the
+        response to drive a pager. `page`/`pageSize` are echoed back post-clamp.
+        Secret credential fields are always returned with an empty `value`.
+      parameters:
+        - name: channelType
+          in: query
+          schema: { $ref: '#/components/schemas/ChannelType' }
+        - name: status
+          in: query
+          schema: { type: string, enum: [enabled, disabled] }
+        - name: archived
+          in: query
+          schema: { type: boolean }
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PageMeta'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items: { $ref: '#/components/schemas/ChannelAccount' }
+        '400': { $ref: '#/components/responses/ValidationFailed' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'An API key from the OneXtel portal, **Developers → API Keys**, sent as `Authorization: Bearer <key>`.'
+
+  parameters:
+    PinId:
+      name: pinId
+      in: path
+      required: true
+      schema: { type: string, examples: ["pin_x9k2m1qz"] }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      description: >
+        Protects a send/resend against duplicate dispatch on retry. Replaying the same key +
+        body within 24h returns the original response verbatim; the same key with a
+        different body is rejected (`idempotency_key_reuse`); a concurrent request with the
+        same key still in flight is rejected (`idempotency_in_progress`).
+      schema: { type: string }
+    Page:
+      name: page
+      in: query
+      description: 1-based page number. Out-of-range or unparseable values read as page 1.
+      schema: { type: integer, default: 1 }
+    PageSize:
+      name: pageSize
+      in: query
+      description: Rows per page. Defaults to 25; larger values clamp to 100.
+      schema: { type: integer, default: 25, maximum: 100 }
+    SortBy:
+      name: sortBy
+      in: query
+      description: >
+        Column to sort by. Defaults to `createdAt`. Enum-typed columns sort by declaration
+        order, not alphabetically.
+      schema: { type: string, default: createdAt }
+    SortOrder:
+      name: sortOrder
+      in: query
+      description: Sort direction. Defaults to `desc`.
+      schema: { type: string, enum: [asc, desc], default: desc }
+
+  responses:
+    ValidationFailed:
+      description: '`validation_failed`'
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Unauthenticated:
+      description: '`unauthenticated`'
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Forbidden:
+      description: '`forbidden` / `workspace_disabled`'
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+
+  schemas:
+    ChannelType:
+      type: string
+      enum: [sms, whatsapp, email]
+
+    TemplateParams:
+      type: object
+      description: >
+        Per-send override for a WhatsApp template's non-OTP placeholders, by position.
+        Omitted positions fall back to the template's stored default.
+      additionalProperties: { type: string }
+      examples:
+        - { "1": "Jane Doe", "2": "ORD-1234" }
+
+    CreatePinRequest:
+      type: object
+      required: [destination, templateId]
+      properties:
+        destination:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: Destination, exactly as the active provider expects it — never reformatted.
+          examples: ["+919876543210"]
+        templateId:
+          type: string
+          minLength: 1
+          description: The template to send under.
+          examples: ["tpl_abc123"]
+        channels:
+          type: array
+          minItems: 1
+          description: Channels to dispatch on. Omit to use the template's default channel.
+          items: { $ref: '#/components/schemas/ChannelType' }
+          examples: [["sms"]]
+        referenceId:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Optional caller-supplied correlation id, searchable in Verifications.
+          examples: ["order_1234"]
+        templateParams: { $ref: '#/components/schemas/TemplateParams' }
+
+    ResendPinRequest:
+      type: object
+      properties:
+        channels:
+          type: array
+          minItems: 1
+          description: Channels to resend on. Omit to reuse the channels of the original send.
+          items: { $ref: '#/components/schemas/ChannelType' }
+          examples: [["whatsapp"]]
+        templateParams: { $ref: '#/components/schemas/TemplateParams' }
+
+    VerifyPinRequest:
+      type: object
+      required: [pin]
+      properties:
+        pin:
+          type: string
+          description: The code as the end user typed it.
+          examples: ["123456"]
+
+    ChannelDispatch:
+      type: object
+      properties:
+        channel: { $ref: '#/components/schemas/ChannelType' }
+        status:
+          type: string
+          enum: [accepted, rejected, error]
+          description: >
+            `accepted` — the provider took the message. `rejected` — the provider refused it.
+            `error` — the dispatch itself failed (timeout, transport, unexpected response).
+        providerMessageId:
+          type: string
+          description: The provider's id for the message, when it returned one.
+        errorCode: { type: string }
+        errorMessage: { type: string }
+
+    PinDispatchResponse:
+      type: object
+      properties:
+        pinId: { type: string, examples: ["pin_x9k2m1qz"] }
+        status:
+          type: string
+          enum: [PENDING, VERIFIED, EXPIRED, BLOCKED]
+          examples: ["PENDING"]
+        expiresAt: { type: string, format: date-time, examples: ["2026-08-04T10:22:03.221Z"] }
+        attemptsRemaining: { type: integer, examples: [3] }
+        channels:
+          type: array
+          items: { $ref: '#/components/schemas/ChannelDispatch' }
+
+    VerifyPinResponse:
+      type: object
+      properties:
+        pinId: { type: string, examples: ["pin_x9k2m1qz"] }
+        status: { type: string, examples: ["VERIFIED"] }
+        attemptsRemaining: { type: integer, examples: [2] }
+
+    TemplateChannel:
+      type: object
+      properties:
+        id: { type: string }
+        channelType: { $ref: '#/components/schemas/ChannelType' }
+        channelAccountId: { type: string }
+        providerTemplateRef:
+          type: string
+          description: The provider's own template identifier (WhatsApp template name, DLT id, …).
+        contentText: { type: string }
+        subjectText: { type: string, description: Email only. }
+        isDefault:
+          type: boolean
+          description: Used when a send omits `channels`.
+        languageCode: { type: string }
+        copyCodeButtonIndex:
+          type: integer
+          description: WhatsApp only — index of the copy-code button in the template.
+        pinPlaceholder:
+          type: string
+          description: The placeholder in `contentText` the generated PIN is substituted into.
+        paramDefaults:
+          type: object
+          additionalProperties: { type: string }
+          description: Stored fallbacks for non-OTP placeholders, by position.
+        entityId: { type: string, description: SMS only — DLT entity id. }
+        unicode: { type: boolean, description: SMS only. }
+
+    Template:
+      type: object
+      properties:
+        id: { type: string, examples: ["tpl_abc123"] }
+        name: { type: string }
+        status: { type: string, enum: [enabled, disabled] }
+        archivedAt: { type: [string, "null"], format: date-time }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        createdBy: { type: string }
+        updatedBy: { type: string }
+        pinLength: { type: integer, examples: [6] }
+        pinType: { type: string, enum: [numeric, alphabetic, alphanumeric] }
+        pinAttempts: { type: integer, description: Verify attempts allowed per PIN. }
+        pinTimeToLive: { type: string, description: 'Duration string, e.g. `10m`.' }
+        verifyPinLimit: { type: string }
+        sendPinPerTemplateLimit: { type: string }
+        sendPinPerPhoneNumberLimit: { type: string }
+        resendCooldown: { type: string, description: 'Duration string, e.g. `30s`.' }
+        channels:
+          type: array
+          items: { $ref: '#/components/schemas/TemplateChannel' }
+
+    CredentialField:
+      type: object
+      properties:
+        key: { type: string }
+        label: { type: string }
+        secret:
+          type: boolean
+          description: Secret fields are always returned with an empty `value`.
+        value: { type: string }
+
+    ChannelAccount:
+      type: object
+      properties:
+        id: { type: string, examples: ["ca_abc123"] }
+        name: { type: string }
+        channelType: { $ref: '#/components/schemas/ChannelType' }
+        status: { type: string, enum: [enabled, disabled] }
+        archivedAt: { type: [string, "null"], format: date-time }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        createdBy: { type: string }
+        updatedBy: { type: string }
+        credentialFields:
+          type: array
+          items: { $ref: '#/components/schemas/CredentialField' }
+
+    PageMeta:
+      type: object
+      properties:
+        page: { type: integer, examples: [1] }
+        pageSize: { type: integer, examples: [25] }
+        total: { type: integer, examples: [137] }
+        totalPages: { type: integer, examples: [6] }
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code: { type: string, examples: ["pin_expired"] }
+            message: { type: string }
+            requestId: { type: string, examples: ["req_9f3a2c"] }
+            details: { type: object, additionalProperties: true }
