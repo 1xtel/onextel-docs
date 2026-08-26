@@ -134,7 +134,7 @@ into a OneXtel message and returns delivery status to MoEngage.
   <Step title="Enter the sender details">
     | Field | Value |
     | --- | --- |
-    | Sender type | The message type this sender carries |
+    | Sender type | The message type this sender carries — **Transactional or Promotional** |
     | Sender Name | Your sender name, suffixed with the message type |
     | Sender ID | Your OneXtel sender profile, suffixed with the message type |
     | API URL | `https://mo.onexaura.com/moengage/rcs/outbound` |
@@ -143,6 +143,11 @@ into a OneXtel message and returns delivery status to MoEngage.
     <Frame caption="MoEngage RCS sender details">
       <img src="/images/plugins/moengage-rcs-senderform.png" alt="MoEngage RCS sender details form with sender type, name, ID, API URL and authorization" />
     </Frame>
+
+    <Warning>
+      MoEngage's **Sender type** list offers a third option, OTP. RCS supports Promotional and
+      Transactional only — do not create an OTP sender.
+    </Warning>
 
     Both **Sender Name** and **Sender ID** must carry the message type as an underscore suffix:
 
@@ -162,6 +167,14 @@ into a OneXtel message and returns delivery status to MoEngage.
 
     Under **Request Configuration**, set **Type** to `Delivery Notification` and **HTTP Method**
     to `POST`, then paste the callback URL you copied from MoEngage. Save.
+
+    <Frame caption="Callback Configuration — Add New Callback">
+      <img src="/images/plugins/moengage-rcs-callback-list.png" alt="OneXtel Config page on the Callback Configuration tab with the Add New Callback button highlighted" />
+    </Frame>
+
+    <Frame caption="RCS delivery notification callback with Callback Format set to MoEngage">
+      <img src="/images/plugins/moengage-rcs-callback-dlr.png" alt="OneXtel Edit Callback screen with Channel RCS, Callback Format MoEngage, Type Delivery Notification and the MoEngage callback URL" />
+    </Frame>
   </Step>
 
   <Step title="Configure the button-click callback in OneXtel">
@@ -173,6 +186,10 @@ into a OneXtel message and returns delivery status to MoEngage.
     ```
 
     In the **Header** section, add the key `cbUrl` with your MoEngage DLR URL as the value.
+
+    <Frame caption="Button click callback — note the cbUrl header at the bottom">
+      <img src="/images/plugins/moengage-rcs-callback-buttonclick.png" alt="OneXtel Edit Callback screen with Type Button Click, the suggestion-clicked request preview, and a cbUrl header" />
+    </Frame>
   </Step>
 </Steps>
 

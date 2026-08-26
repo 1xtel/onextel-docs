@@ -62,6 +62,10 @@ Have these ready:
 
     Authentication is set to none because the API key travels as a header, not as an auth
     scheme CleverTap manages.
+
+    <Frame caption="Provider Configuration — provider, messaging endpoint, and the apikey header">
+      <img src="/images/plugins/clevertap-provider-config.png" alt="CleverTap Provider Configuration with Generic RCS Provider selected, the messaging endpoint, No Authentication, and an apikey header" />
+    </Frame>
   </Step>
 
   <Step title="Set the RCS sender and body parameters">
@@ -74,6 +78,10 @@ Have these ready:
     | --- | --- |
     | `message_type` | `$$message_type` |
     | `template_id` | `$$template_id` |
+
+    <Frame caption="RCS Config — sender ID and body parameters">
+      <img src="/images/plugins/clevertap-rcs-params.png" alt="CleverTap RCS Config showing the RCS Sender ID and the message_type and template_id body parameters" />
+    </Frame>
   </Step>
 
   <Step title="Enable SMS fallback">
@@ -89,6 +97,10 @@ Have these ready:
     | `unicode` | `$$unicode` |
     | `entityId` | `$$entityId` |
     | `fallback_id` | `$$fallback_id` |
+
+    <Frame caption="SMS Configuration — fallback sender and body parameters">
+      <img src="/images/plugins/clevertap-sms-params.png" alt="CleverTap SMS Configuration with Enable Fallback SMS on, the SMS Sender ID, and five SMS body parameters" />
+    </Frame>
   </Step>
 
   <Step title="Save, then copy both callback URLs">
@@ -137,6 +149,26 @@ Two things that catch people out:
 See [Callback configuration](/guides/platform/callback-configuration) for how to add a callback
 and its headers.
 
+<Frame caption="RCS delivery notification webhook — Channel RCS, Type Delivery Notification, POST">
+  <img src="/images/plugins/clevertap-webhook-rcs-dlr.png" alt="OneXtel Edit Callback screen with Channel RCS, Callback Format RCS, Type Delivery Notification and HTTP method POST" />
+</Frame>
+
+<Frame caption="Additional Configuration — the callback header carries the CleverTap URL">
+  <img src="/images/plugins/clevertap-webhook-callback-header.png" alt="OneXtel Additional Configuration section with a header named callback set to a CleverTap cb.wzrkt.com URL" />
+</Frame>
+
+<Frame caption="Inbound webhook — Type Incoming">
+  <img src="/images/plugins/clevertap-webhook-inbound.png" alt="OneXtel Edit Callback screen with Type Incoming and the inbound request preview" />
+</Frame>
+
+<Frame caption="URL click webhook — Type URL Click">
+  <img src="/images/plugins/clevertap-webhook-urlclick.png" alt="OneXtel Edit Callback screen with Type URL Click and the click event request preview" />
+</Frame>
+
+<Frame caption="SMS fallback webhook — note the channel is SMS, not RCS">
+  <img src="/images/plugins/clevertap-webhook-sms-fallback.png" alt="OneXtel Edit Callback screen with Channel SMS and the SMS delivery report default parameters" />
+</Frame>
+
 ## Part C — Build and send a campaign
 
 <Steps>
@@ -149,9 +181,13 @@ and its headers.
   <Step title="Add the RCS custom key-value pairs">
     | Key | Example | Notes |
     | --- | --- | --- |
-    | `message_type` | `Transactional` | The message category |
+    | `message_type` | `Transactional` | `Promotional` or `Transactional` |
     | `template_id` | `payment_success_onex` | Selects a pre-made OneXtel template. Omit to use the composer output |
     | any other key | — | Passed through as a template placeholder value |
+
+    <Frame caption="Campaign composer — RCS body key-value pairs">
+      <img src="/images/plugins/clevertap-campaign-rcs-kv.png" alt="CleverTap campaign composer showing the RCS Body Key-Value Pairs section with message_type, template_id and a custom parameter" />
+    </Frame>
   </Step>
 
   <Step title="Add the fallback SMS block">
@@ -164,6 +200,10 @@ and its headers.
     | `entityId` | Your DLT entity ID | Required for Indian sends |
     | `type` | `SI` | Must match the DLT template's registered category |
     | `unicode` | `0` | `1` if the body contains non-ASCII characters |
+
+    <Frame caption="Campaign composer — Fallback SMS block and its key-value pairs">
+      <img src="/images/plugins/clevertap-campaign-sms-kv.png" alt="CleverTap Fallback SMS block with its text and the type, templateId, unicode, entityId and fallback_id key-value pairs" />
+    </Frame>
   </Step>
 
   <Step title="Schedule and publish">
@@ -242,7 +282,7 @@ configure this directly — it is here for troubleshooting.
 
 | Key | Required | Notes |
 | --- | --- | --- |
-| `message_type` | Yes | The message category |
+| `message_type` | Yes | `Promotional` or `Transactional`. OTP is not a valid RCS message type |
 | `template_id` / `templateid` | No | Selects a pre-made template; both spellings accepted |
 | any other key | No | Passed through as a template placeholder |
 
