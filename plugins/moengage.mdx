@@ -99,37 +99,74 @@ into a OneXtel message and returns delivery status to MoEngage.
 
 <Steps>
   <Step title="Get your OneXtel API key">
-    As above — **API → Show API Key** in the OneXtel portal.
-  </Step>
-  <Step title="Add OneXtel as an RCS sender in MoEngage">
-    Go to **Settings → SMS & RCS**, switch to the **RCS** tab, click **+ Add RCS Sender**, and
-    select **OneXtel**.
+    In the OneXtel portal, go to **API** and click **Show API Key**. If no key exists, click
+    **Generate API Key**. Copy it — you need it twice below.
 
+    <Frame caption="OneXtel API page">
+      <img src="/images/plugins/moengage-rcs-apikey.png" alt="OneXtel API page with Show API and Generate API actions" />
+    </Frame>
+  </Step>
+
+  <Step title="Find your RCS sender profile">
+    In OneXtel, go to **Channels → RCS → Asset Management → Sender Profiles** and note the
+    sender profile you want to send from, along with its message type.
+
+    <Frame caption="RCS sender profiles in OneXtel">
+      <img src="/images/plugins/onextel-rcs-sender-profiles.png" alt="OneXtel RCS Sender Profiles list showing each profile with its message type and status" />
+    </Frame>
+  </Step>
+
+  <Step title="Add OneXtel as an RCS sender in MoEngage">
+    In MoEngage, go to **Settings → SMS & RCS**, switch to the **RCS** tab, and click
+    **+ Add RCS Sender**.
+
+    <Frame caption="MoEngage SMS & RCS settings, RCS tab">
+      <img src="/images/plugins/moengage-rcs-senders.png" alt="MoEngage SMS and RCS settings on the RCS tab with the Add RCS Sender action" />
+    </Frame>
+
+    Select **OneXtel** from the provider list.
+
+    <Frame caption="Selecting OneXtel as the RCS provider">
+      <img src="/images/plugins/moengage-rcs-provider.png" alt="MoEngage provider picker with OneXtel selected" />
+    </Frame>
+  </Step>
+
+  <Step title="Enter the sender details">
     | Field | Value |
     | --- | --- |
+    | Sender type | The message type this sender carries |
+    | Sender Name | Your sender name, suffixed with the message type |
+    | Sender ID | Your OneXtel sender profile, suffixed with the message type |
     | API URL | `https://mo.onexaura.com/moengage/rcs/outbound` |
     | Authorization | The API key from step 1 |
-  </Step>
-  <Step title="Name the sender by message type">
-    Both **Sender Name** and **Sender ID** must carry the message type as a suffix, separated
-    by an underscore:
+
+    <Frame caption="MoEngage RCS sender details">
+      <img src="/images/plugins/moengage-rcs-senderform.png" alt="MoEngage RCS sender details form with sender type, name, ID, API URL and authorization" />
+    </Frame>
+
+    Both **Sender Name** and **Sender ID** must carry the message type as an underscore suffix:
 
     ```
     Name_Promotional        SenderID_Promotional
     Name_Transactional      SenderID_Transactional
     ```
 
-    Find the Sender ID under **Channel → RCS** in the OneXtel dashboard.
+    Save the sender. MoEngage then shows an **Incoming Messages & Delivery callback URL** —
+    copy it, you need it in the next step.
   </Step>
-  <Step title="Configure the delivery report callback">
-    In OneXtel, go to **Configuration → Add New Callback**. Set **Channel** to `RCS`,
-    **Callback Format Type** to `MoEngage`, and select the same API key. Under **Request
-    Configuration**, set **Type** to `Delivery Notification` and **HTTP Method** to `POST`,
-    then paste the callback URL from MoEngage and save.
+
+  <Step title="Configure the delivery report callback in OneXtel">
+    In OneXtel, go to **Configuration → Add New Callback**. Give it a title, set **Channel** to
+    `RCS` and **Callback Format Type** to `MoEngage`, and select the **same API key** you used
+    in MoEngage.
+
+    Under **Request Configuration**, set **Type** to `Delivery Notification` and **HTTP Method**
+    to `POST`, then paste the callback URL you copied from MoEngage. Save.
   </Step>
-  <Step title="Configure the button-click callback">
-    Add a second callback with the same channel and format type. Set **Type** to `Button click`
-    and **HTTP Method** to `POST`, and enter this URL:
+
+  <Step title="Configure the button-click callback in OneXtel">
+    Add a second callback with the same channel, format type, and API key. Set **Type** to
+    `Button click` and **HTTP Method** to `POST`, and enter this URL:
 
     ```
     https://mo.onexaura.com/moengage/rcs/inbound

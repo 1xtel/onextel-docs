@@ -1,152 +1,273 @@
 ---
 title: "CleverTap"
-description: "Send RCS templates from CleverTap through its WhatsApp channel, with template sync, SMS fallback, click tracking, and inbound replies."
+description: "Send RCS from CleverTap campaigns through OneXtel, with SMS fallback, delivery reports, inbound replies, and click tracking."
 ---
 
 <Warning>
-**This connector is in development and not yet available.** The scope below is what it will
-cover at release. Contact your OneXtel account manager to be notified when it ships, or see
-[Coming soon](/plugins/overview#coming-soon) for the rest of the pipeline.
+**This connector is in development and not yet generally available.** The setup below reflects
+the current build. Contact your OneXtel account manager to be notified when it ships, or see
+[Coming soon](/plugins/overview#coming-soon).
 </Warning>
 
-The CleverTap connector lets you send RCS messages from CleverTap. Because CleverTap has no
-native RCS channel, RCS templates are delivered **through CleverTap's WhatsApp channel** —
-OneXtel RCS templates are synced into CleverTap in a WhatsApp-compatible shape, and the
-connector converts each send back into an RCS message.
+The CleverTap connector adds RCS as a sendable channel inside CleverTap. Campaigns are built and
+triggered in CleverTap; a stateless middleware service translates each send into OneXtel's format
+and relays delivery reports, replies, and click events back.
 
-This gives you RCS reach from CleverTap campaigns today, with the trade-offs in
-[Limitations](#limitations) — chiefly that template previews in CleverTap will not look like
-the real RCS message.
+Because the connector holds no database of its own — every routing decision comes from the
+incoming request — OneXtel can run it as multiple parallel instances. You deploy nothing.
 
-## Scope
+## What it handles
 
 <CardGroup cols={2}>
-  <Card title="Template sync" icon="arrows-rotate">
-    Approved OneXtel RCS templates are pulled into CleverTap on the sync schedule you
-    configure.
-  </Card>
   <Card title="Outbound RCS" icon="paper-plane">
-    Text, Rich Card, and Rich Card Carousel templates.
+    RCS sends from CleverTap campaigns, using either CleverTap's composer output or a pre-made
+    OneXtel template.
   </Card>
-  <Card title="Delivery & click tracking" icon="circle-check">
-    Delivery reports and click events are transformed into CleverTap's format and pushed back.
+  <Card title="SMS fallback" icon="shuffle">
+    If RCS delivery fails, OneXtel retries automatically over SMS using a DLT-approved template.
   </Card>
-  <Card title="Inbound" icon="reply">
-    Customer replies are routed back into CleverTap.
+  <Card title="Delivery and clicks" icon="circle-check">
+    Delivery reports, suggestion-button replies, and URL-click events relayed into CleverTap.
+  </Card>
+  <Card title="Inbound replies" icon="reply">
+    Free-form inbound messages — text, media, location, contact — routed back to CleverTap.
   </Card>
 </CardGroup>
 
-## Supported templates
+## Before you start
 
-- Text
-- Rich Card
-- Rich Card Carousel
+Have these ready:
 
-## Channel configuration
+- **The connector URL.** Supplied by OneXtel. Shown below as `{connectorBaseUrl}` — substitute
+  your real URL everywhere it appears.
+- **Your OneXtel API key** — see [API keys](/guides/platform/api-keys).
+- **CleverTap access** to **Settings → Channels → SMS**, with permission to add a provider.
+- **OneXtel access** to [callback configuration](/guides/platform/callback-configuration).
 
-RCS templates in OneXtel are retrieved per message category, so CleverTap needs **one channel
-configuration per message type** — Promotional and Transactional. Each configuration syncs only
-the templates of its own category.
-
-## How template sync works
-
-CleverTap calls the connector's template fetch endpoint on the schedule and with the limits you
-set during channel setup. The connector returns OneXtel RCS templates in a CleverTap-compatible
-format.
-
-**Headers.** When a template header carries a file URL, the media type is inferred from the
-file extension — image, video, or document. If the URL has no filename to read an extension
-from, the header defaults to image.
-
-**Dynamic header variables.** CleverTap renders the header as static, so any variable in the
-header is appended to the template body during sync. This keeps it selectable when you build
-the campaign.
-
-**Button variables.** For buttons with a dynamic parameter — a dynamic URL suffix, for example
-— the parameter name is appended to the button label, so it stays visible in CleverTap's
-campaign builder.
-
-## Mapping variables in a campaign
-
-RCS uses named variables in `[custom_param]` form, which CleverTap's WhatsApp channel cannot
-bind automatically. Mapping is manual.
+## Part A — Configure the CleverTap provider
 
 <Steps>
-  <Step title="Find the variable in the body">
-    Select the synced template. Variable names appear inline in the body text, including any
-    header or button variables appended during sync.
+  <Step title="Create the provider">
+    In CleverTap, go to **Settings → Channels → SMS**, add a provider, and set **Provider** to
+    **Generic RCS Provider**. Give it a clear nickname.
   </Step>
-  <Step title="Copy the variable name">
-    For a body reading `This is a [user] template to capture the CTA response from end users.`,
-    copy `user`.
+
+  <Step title="Set the messaging endpoint">
+    | Field | Value |
+    | --- | --- |
+    | Request Type | `POST` |
+    | HTTPS Endpoint | `{connectorBaseUrl}/rcs/send` |
+    | Authentication | No Authentication |
+    | Headers | Key `apikey` → your OneXtel API key |
+
+    Authentication is set to none because the API key travels as a header, not as an auth
+    scheme CleverTap manages.
   </Step>
-  <Step title="Add it as a key">
-    Paste it as the key in CleverTap's custom key-value pair section.
+
+  <Step title="Set the RCS sender and body parameters">
+    Set **RCS Sender ID** to your OneXtel RCS sender profile.
+
+    Under **RCS Body Parameters**, add these key-value pairs. The `$$` syntax tells CleverTap to
+    fill the value from the campaign's custom params.
+
+    | Key | Value |
+    | --- | --- |
+    | `message_type` | `$$message_type` |
+    | `template_id` | `$$template_id` |
   </Step>
-  <Step title="Map the value">
-    Select the profile attribute or literal value to bind — for example the user's first name.
+
+  <Step title="Enable SMS fallback">
+    Turn on **SMS Configuration / Enable Fallback SMS** and set **SMS Sender ID** to your
+    OneXtel SMS sender ID.
+
+    Under **SMS Body Parameters**, add:
+
+    | Key | Value |
+    | --- | --- |
+    | `type` | `$$type` |
+    | `templateId` | `$$templateId` |
+    | `unicode` | `$$unicode` |
+    | `entityId` | `$$entityId` |
+    | `fallback_id` | `$$fallback_id` |
+  </Step>
+
+  <Step title="Save, then copy both callback URLs">
+    Save the provider, then **reopen it**. Under **Callback Config** you will find two
+    read-only URLs:
+
+    | URL | Used for |
+    | --- | --- |
+    | Delivery Report Callback URL | Delivery reports, clicks, and SMS fallback reports |
+    | Inbound Message Callback URL | Inbound replies — carries a `providerId` parameter |
+
+    The Inbound URL only appears after you reopen the saved provider; immediately after the
+    first save you may see only the Delivery Report URL.
   </Step>
 </Steps>
 
-At send time, the connector collects every key-value pair you configured and passes them to
-OneXtel as the template's named parameters.
-
-## Fallback
-
-Fallback is configured through the same custom key-value pair section, using reserved keys. The
-connector recognises the `Fallback_` prefix and separates these from your template variables
-before sending.
-
-| Key | Purpose |
-| --- | --- |
-| `Fallback_wait_time` | How long to wait for RCS delivery before falling back |
-| `Fallback_template_id` | The fallback template to send |
-| `Fallback_sender_id` | The sender ID used for the fallback message |
-| `Fallback_entity_id` | The entity ID used for the fallback message |
-
 <Warning>
-Do not use `Fallback_` as a prefix on your own template variables. Any key with that prefix is
-treated as a reserved fallback field and will not be passed through as a template parameter.
+**These are two different URLs, and swapping them is the most common setup error.** Pasting the
+Delivery Report URL where the Inbound URL belongs causes CleverTap to reject the relay with
+`providerId query parameter is required for replied events`.
 </Warning>
 
-## Delivery reports and inbound
+## Part B — Configure the OneXtel webhooks
 
-Delivery reports, click-tracking events, and inbound messages are all handled by the connector
-and pushed to CleverTap in its expected format.
+Create **four** separate callbacks in OneXtel. Each one needs a custom header named `callback`,
+set to the matching CleverTap URL from Part A.
 
-To route them, register your CleverTap DLR URL and inbound URL in the OneXtel portal under
-**Configuration → Add New Callback**, against the same API key you used for the channel
-configuration. See
-[RCS delivery notification](/api-reference/rcs/callback-delivery-notification) for the payload
-your endpoint receives.
+| Webhook | Channel | Type | Callback URL | `callback` header |
+| --- | --- | --- | --- | --- |
+| RCS DLR | RCS | Delivery Notification | `{connectorBaseUrl}/dlr` | Delivery Report URL |
+| Inbound | RCS | Incoming | `{connectorBaseUrl}/inbound` | **Inbound Message URL** |
+| URL Click | RCS | URL Click | `{connectorBaseUrl}/click` | Delivery Report URL |
+| SMS fallback DLR | SMS | Delivery Notification | `{connectorBaseUrl}/delivery` | Delivery Report URL |
+
+All four use **HTTP Method `POST`**.
 
 <Note>
-Inbound processing requires a context ID on the incoming message, which CleverTap uses to
-attach the reply to the right conversation.
+Two things that catch people out:
+
+- RCS delivery reports and suggestion-button replies **share the `/dlr` webhook** — OneXtel
+  sends both there.
+- The SMS fallback report is a **genuinely separate webhook on the SMS channel**. Do not reuse
+  the RCS DLR entry for it.
 </Note>
 
-## Requirements
+See [Callback configuration](/guides/platform/callback-configuration) for how to add a callback
+and its headers.
 
-- A CleverTap account with the WhatsApp channel available.
-- A OneXtel account with RCS enabled and a registered
-  [RCS agent](/guides/rcs-platform/sender-profiles).
-- Pre-approved RCS templates in OneXtel. See [RCS templates](/api-reference/rcs/templates).
+## Part C — Build and send a campaign
+
+<Steps>
+  <Step title="Create the campaign">
+    In CleverTap, create a new campaign. Under **From**, select the provider you created in
+    Part A. Under **Who**, choose your audience. Under **What**, choose the **Text Free Form**
+    template type and enter the message body.
+  </Step>
+
+  <Step title="Add the RCS custom key-value pairs">
+    | Key | Example | Notes |
+    | --- | --- | --- |
+    | `message_type` | `Transactional` | The message category |
+    | `template_id` | `payment_success_onex` | Selects a pre-made OneXtel template. Omit to use the composer output |
+    | any other key | — | Passed through as a template placeholder value |
+  </Step>
+
+  <Step title="Add the fallback SMS block">
+    Toggle on **Fallback SMS**, enter the fallback text, and add:
+
+    | Key | Example | Notes |
+    | --- | --- | --- |
+    | `fallback_id` | `4f2005fa-…` | The fallback configuration ID from your OneXtel account |
+    | `templateId` | Your DLT template ID | Required for Indian sends |
+    | `entityId` | Your DLT entity ID | Required for Indian sends |
+    | `type` | `SI` | Must match the DLT template's registered category |
+    | `unicode` | `0` | `1` if the body contains non-ASCII characters |
+  </Step>
+
+  <Step title="Schedule and publish">
+    Choose the send time, review the summary, and publish.
+  </Step>
+</Steps>
+
+<Warning>
+**A fallback only fires if the SMS block is complete.** If `fallback_id`, `templateId`, or
+`entityId` is missing or misnamed, the RCS send still goes out normally — but the fallback
+silently lacks what OneXtel needs, and that failure is **not surfaced back to CleverTap as an
+error**. Verify the fallback explicitly rather than assuming it works.
+</Warning>
+
+<Warning>
+`type` values are narrower than earlier guides stated. Live testing accepts only `SI`, `OTP`,
+and `SE` — `TXN`, `TRANS`, and `Promo` are rejected as `invalid type`. See
+[Send SMS — India](/api-reference/sms/send-sms-omni).
+</Warning>
+
+## Part D — Validate the setup
+
+Confirm each of these independently before calling setup complete:
+
+<Steps>
+  <Step title="RCS delivery">
+    A test send shows as Delivered in OneXtel reporting, and the same event appears in
+    CleverTap's campaign stats.
+  </Step>
+  <Step title="Inbound reply">
+    A reply from a test device appears in CleverTap under **People**, in that profile's event
+    timeline.
+  </Step>
+  <Step title="Click tracking">
+    A button or URL click on a template message reaches CleverTap.
+  </Step>
+  <Step title="SMS fallback">
+    An RCS send to a genuinely non-RCS-capable number triggers the fallback, the SMS arrives,
+    and its delivery status comes back through the `/delivery` webhook.
+  </Step>
+</Steps>
+
+## Buttons and templates
+
+CleverTap's composer cannot reference a saved OneXtel template by ID directly. To send one, use
+the `template_id` custom parameter — every other custom param on that campaign is then passed
+through as a placeholder value.
+
+<Note>
+This is currently the only reliable way to get a working URL-action or dial-action button.
+Ad-hoc, non-template cards reliably support only a plain Reply button.
+</Note>
+
+## Reference
+
+### Connector endpoints
+
+| Endpoint | Direction | Purpose |
+| --- | --- | --- |
+| `POST /rcs/send` | CleverTap → OneXtel | RCS send |
+| `POST /dlr` | OneXtel → CleverTap | Delivery reports and button replies |
+| `POST /inbound` | OneXtel → CleverTap | Free-form inbound messages |
+| `POST /click` | OneXtel → CleverTap | URL-click events |
+| `POST /delivery` | OneXtel → CleverTap | SMS fallback delivery report |
+| `GET /health` | — | Liveness check |
+
+<Note>
+Behind the scenes the connector calls OneXtel's unified send endpoint,
+`POST https://api.onexaura.com/oapi/send_sms`, shared across SMS, RCS, and WhatsApp. You never
+configure this directly — it is here for troubleshooting.
+</Note>
+
+### Custom parameters
+
+**RCS side**
+
+| Key | Required | Notes |
+| --- | --- | --- |
+| `message_type` | Yes | The message category |
+| `template_id` / `templateid` | No | Selects a pre-made template; both spellings accepted |
+| any other key | No | Passed through as a template placeholder |
+
+**SMS fallback side**
+
+| Key | Required | Notes |
+| --- | --- | --- |
+| `fallback_id` | Yes | Fallback configuration ID in OneXtel |
+| `templateId` | For DLT sends | DLT-approved SMS template ID |
+| `entityId` | For DLT sends | Your DLT entity ID |
+| `type` | No | Must match the DLT template's category |
+| `unicode` | No | `1` for non-ASCII bodies |
 
 ## Limitations
 
-- **Template previews will not match the real message.** CleverTap renders synced templates
-  through its WhatsApp channel in its own format, so what you see when building the campaign is
-  not what the recipient receives. Always confirm appearance with a test send.
-- **Variables are positional in CleverTap.** CleverTap's WhatsApp channel supports `{{1}}`,
-  `{{2}}` style placeholders and not named `[custom_param]` variables, which is why templates
-  sync as a static representation and mapping is manual.
-- **Manual variable mapping.** Every dynamic variable must be copied from the body and
-  configured as a key-value pair by hand — there is no automatic binding.
-- **Three channel configurations required**, one per message category.
+- **Template previews will not match the real message.** CleverTap renders through its own
+  composer, so what you see when building is not what the recipient receives. Confirm with a
+  test send.
+- **Fallback failures are silent.** An incomplete SMS block does not raise an error in
+  CleverTap.
+- **Composer templates cannot use saved OneXtel templates directly** — use `template_id`.
 
 ## Related
 
 - [RCS API overview](/api-reference/rcs/overview)
-- [RCS operator error codes](/api-reference/rcs/error-codes)
+- [RCS template guidelines](/guides/rcs-platform/template-guidelines)
 - [Configure fallback](/guides/omnichannel/configure-fallback)
 - [All plugins](/plugins/overview)
