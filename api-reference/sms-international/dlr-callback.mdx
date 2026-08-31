@@ -117,6 +117,14 @@ references. Store what you need against `MSGID` at submission time, or carry it 
 `custref1`–`custref5`.
 </Note>
 
+<Warning>
+**The callback is the only programmatic source of delivery status for international traffic.**
+There is no status-lookup endpoint to poll as a fallback — the equivalent of
+[Message Status](/api-reference/omnichannel/message-status) exists for India but not here. If your
+endpoint is unreachable when a receipt is sent, recover the outcome from the portal reports rather
+than from an API.
+</Warning>
+
 ## Related
 
 - [Error codes](/api-reference/sms-international/error-codes)

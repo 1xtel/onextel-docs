@@ -14,9 +14,10 @@ outcome fields:
 Branch your logic on `ERRORCODE`. Use `ERRORDESP` for reporting buckets.
 
 <Warning>
-**These are the default mappings, not a fixed contract.** Codes can be remapped per account on
-the platform, so the value your integration receives may differ from the table below. Confirm the
-mapping applied to your own account before you hard-code against it.
+**These are OneXtel platform codes, not raw operator codes.** Operators return a much wider and
+less consistent set, which the platform normalises onto the generic codes below — which is why
+some conditions appear under more than one code. The mapping is under active review, so confirm
+it against your own account before you hard-code against it.
 </Warning>
 
 ## Where the message stopped
@@ -76,11 +77,18 @@ receipt for it.
 | --- | --- | --- | --- |
 | `900088` | Throttle error | `REJECTD` | Reduce your send rate, then retry |
 | `900101` | Invalid mobile number | `REJECTD` | Fix the number — include the country code, digits only |
-| `900111` | No balance | `REJECTD` | Top up the account |
+| `900111` | No balance | `REJECTD` | The account has no balance. Top up |
 | `900112` | Submit timeout | `REJECTD` | Retry |
 | `900118` | Encoding limit error | `REJECTD` | Shorten the body, or check for characters that force Unicode encoding |
 | `900124` | DLR expired | `EXPIRED` | No final receipt arrived within the platform's wait window. The message may still have been delivered — treat as unknown, not failed |
-| `900210` | Credit limit breached | `UNDELIV` | Raise the account credit limit |
+| `900210` | Credit limit breached | `UNDELIV` | A configured spend limit was hit. Raise the limit |
+
+<Note>
+`900111` and `900210` look similar but are set at different levels. **No balance** means the
+account itself has nothing left to spend. **Credit limit breached** means a configured ceiling was
+reached — these are applied per country and per user, so one destination or one user can stop
+while the rest of the account keeps sending.
+</Note>
 
 <Warning>
 `900124` (`EXPIRED`) is **not** a delivery failure. It means the operator never returned a final
@@ -89,9 +97,15 @@ state in time. Counting it as failed will understate your delivery rate.
 
 ## Retry guidance
 
+<Warning>
+**The platform does not currently retry on a per-code basis.** Failover today happens at the
+gateway level — if a gateway is down, traffic moves — but a message that comes back `031` or
+`030` is not automatically re-attempted. Any retry on a specific error code has to be yours.
+</Warning>
+
 The **Retry?** column reflects the standard meaning of each condition — a barred or unprovisioned
 number will not start working on a second attempt, while an absent or busy handset often will. It
-is guidance for building your retry policy, not a platform guarantee.
+is guidance for building your own retry policy, not a description of platform behaviour.
 
 <Note>
 Codes marked "No" describe a permanent property of the destination. Repeated sends to them cost

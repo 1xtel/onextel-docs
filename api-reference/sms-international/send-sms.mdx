@@ -265,7 +265,9 @@ The API returns a JSON response under `smslist` → `sms`. Each SMS record inclu
 </ResponseField>
 
 <ResponseField name="messagepartids" type="array">
-  IDs for multiple message parts (empty if single part).
+  IDs for multiple message parts. In practice this is returned empty — **part counts are not
+  currently exposed through the API or the callback.** To see how many parts a message was split
+  into, use the summary and detail reports in the portal.
 </ResponseField>
 
 <ResponseField name="mobileno" type="string">
