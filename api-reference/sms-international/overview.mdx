@@ -39,7 +39,7 @@ the main difference integrators trip over when moving between the two SMS APIs.
 | Path | `/api/jsmslist` | `/oapi/send_sms` |
 | Authentication | `key` in the body | `apikey` header |
 | Message array | `listsms` | `sms` |
-| Batching | Many messages per request | Many messages per request |
+| Batching | Up to 2,500 per request | Many messages per request |
 | DLT fields (`templateId`, `entityId`) | Not used | Required |
 | Shared with WhatsApp and RCS | No — SMS only | Yes, same endpoint |
 | [Channel fallback](/api-reference/omnichannel/fallback) | No | Yes |
@@ -78,6 +78,10 @@ OneXtel. Two common examples:
 | --- | --- |
 | UAE | Sender ID registration before traffic is accepted |
 | USA | A2P 10DLC registration of brand and campaign |
+
+This matters more than it looks, because **OneXtel does not validate the `from` field** — an
+unregistered sender ID submits cleanly and fails downstream. See
+[Sender IDs](/api-reference/sms-international/send-sms#sender-ids).
 
 Others apply elsewhere. There is no consolidated list — check the destinations you intend to send
 to with your account team, early, because registration can take longer than the integration does.

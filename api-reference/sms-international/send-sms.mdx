@@ -50,6 +50,7 @@ curl --location 'https://api.int.onexglobal.io/api/jsmslist' \
 ## Multiple submission
 
 Submit several SMS messages in a single request by adding multiple objects to the `listsms` array.
+A single request may carry up to **2,500** message objects.
 
 ```bash
 curl --location 'https://api.int.onexglobal.io/api/jsmslist' \
@@ -94,7 +95,8 @@ The request body must be in JSON format and include the parameters below.
 </ParamField>
 
 <ParamField body="listsms" type="array">
-  A list containing one or more SMS message objects to be sent.
+  A list containing one or more SMS message objects to be sent. **Maximum 2,500 objects per
+  request.**
 </ParamField>
 
 ### `listsms` object structure
@@ -102,7 +104,9 @@ The request body must be in JSON format and include the parameters below.
 Each object inside the `listsms` array represents an SMS message and contains the following fields:
 
 <ParamField body="from" type="string" required>
-  Sender ID or name that appears as the message originator.
+  Sender ID or name that appears as the message originator. Accepts alphanumeric or numeric
+  values — OneXtel applies no validation to this field. See
+  [Sender IDs](#sender-ids) before you choose one.
 </ParamField>
 
 <ParamField body="to" type="string" required>
@@ -138,6 +142,23 @@ Each object inside the `listsms` array represents an SMS message and contains th
 <ParamField body="custref5" type="string">
   Fifth custom reference value.
 </ParamField>
+
+## Sender IDs
+
+**OneXtel enforces no rules on the `from` field.** Alphanumeric and numeric values are both
+accepted, and the API will not reject a sender ID for being the wrong shape, the wrong length, or
+unregistered.
+
+<Warning>
+A clean submission is not a promise that your sender ID survives. The destination operator decides
+what actually appears on the handset — several countries require the sender ID to be registered in
+advance, and an unregistered one may be replaced or the message rejected after it has already been
+accepted here. Nothing in the submission response will warn you.
+</Warning>
+
+Check what your destinations require before launch, not after — registration can take longer than
+the integration. See
+[Destination obligations](/api-reference/sms-international/overview#destination-obligations).
 
 ## Reference IDs
 
