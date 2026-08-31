@@ -1,23 +1,21 @@
 ---
 title: "DLR Callback"
-description: "Delivery receipt payloads OneXtel posts to your configured URL, for both the Omni and SMS List APIs."
+description: "The delivery receipt OneXtel posts to your configured URL after an India SMS reaches its final state."
 ---
 
 When a message reaches its final state, OneXtel posts a **delivery receipt (DLR)** to the
 callback URL registered against your API key.
 
-There are **two DLR formats**, matching the two SMS APIs. Which one you receive depends on which
-API you send with — see [Which SMS API](/api-reference/sms/overview#which-sms-api).
-
-| You send with | You receive |
-| --- | --- |
-| [Omni API](/api-reference/sms/send-sms-omni) (`/oapi/send_sms`) | [Platform DLR](#platform-dlr) — camelCase fields |
-| [SMS List API](/api-reference/sms/send-sms) (`/api/jsmslist`) | [SMS List DLR](#sms-list-dlr) — uppercase fields |
-
 Register your callback URL under **Configuration → Add New Callback** — see
 [Callback configuration](/guides/platform/callback-configuration).
 
-## Platform DLR
+<Note>
+This receipt uses **camelCase** field names. SMS sent to international destinations through the
+[SMS List API](/api-reference/sms-international/send-sms) produces a different, UPPERCASE
+receipt — see [the international DLR](/api-reference/sms-international/dlr-callback).
+</Note>
+
+## Payload
 
 The full set of parameters currently supported for SMS.
 
@@ -130,74 +128,9 @@ message was submitted at `...122200` and completed at `...122201`, one second la
 the spread across a campaign surfaces routing problems earlier than the delivery rate does.
 </Note>
 
-## SMS List DLR
-
-The receipt format for the [SMS List API](/api-reference/sms/send-sms).
-
-<CodeGroup>
-
-```json Success
-{
-  "STATUS": "success",
-  "STATUSDATETIME": "2025-12-04 13:32:04",
-  "MSGID": "36NIhMgNvTJDx21HSsuZzF0XD4C",
-  "ERRORCODE": "000",
-  "ERRORDESP": "DELIVRD",
-  "CLIENTMSID": "123456789",
-  "MOBILENUMBER": "919999999999"
-}
-```
-
-```json Failed
-{
-  "STATUS": "failed",
-  "STATUSDATETIME": "2025-12-04 13:30:47",
-  "MSGID": "36NIY3sBLynZlLiMLAAudI1CzhY",
-  "ERRORCODE": "011",
-  "ERRORDESP": "UNDELIV",
-  "CLIENTMSID": "123456789",
-  "MOBILENUMBER": "919999999999"
-}
-```
-
-</CodeGroup>
-
-<ResponseField name="STATUS" type="string">
-  Final delivery state — `success` or `failed`.
-</ResponseField>
-
-<ResponseField name="STATUSDATETIME" type="string">
-  Delivery confirmation timestamp.
-</ResponseField>
-
-<ResponseField name="MSGID" type="string">
-  Unique message identifier assigned by the platform.
-</ResponseField>
-
-<ResponseField name="ERRORCODE" type="string">
-  Outcome code — `000` is delivered.
-</ResponseField>
-
-<ResponseField name="ERRORDESP" type="string">
-  Short description, for example `DELIVRD` or `UNDELIV`.
-</ResponseField>
-
-<ResponseField name="CLIENTMSID" type="string">
-  The `clientsmsid` you supplied on the original submission, echoed back so you can match the
-  receipt to your own record.
-</ResponseField>
-
-<ResponseField name="MOBILENUMBER" type="string">
-  Recipient mobile number.
-</ResponseField>
-
-<Note>
-This format carries no template, sender, or message content — only the outcome. If you need
-those on the receipt, use the [Omni API](/api-reference/sms/send-sms-omni).
-</Note>
-
 ## Related
 
 - [SMS error codes](/api-reference/sms/error-codes)
 - [Callback configuration](/guides/platform/callback-configuration)
 - [Message status](/api-reference/omnichannel/message-status) — poll for status instead of receiving it
+- [International DLR callback](/api-reference/sms-international/dlr-callback) — the equivalent for non-India traffic

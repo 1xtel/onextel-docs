@@ -1,61 +1,73 @@
 ---
-title: "SMS API Overview"
-description: "Introduction, base URL, authentication, and endpoint summary for the OneXtel SMS API."
+title: "India SMS Overview"
+description: "Base URL, authentication, DLT requirements, and endpoint summary for sending SMS to Indian numbers."
 ---
 
-You submit message details as a JSON payload and the platform delivers to the recipients.
+SMS to Indian numbers goes through the **Omni send endpoint** — the same endpoint used for
+WhatsApp and RCS, with `channel` set to `sms`. You submit message details as a JSON payload and
+the platform delivers to the recipients.
 
-## Which SMS API
+<Note>
+For destinations **outside India**, use the
+[International SMS List API](/api-reference/sms-international/overview) — a different host, a
+different authentication scheme, and no DLT fields.
+</Note>
 
-There are **two** SMS send APIs, split by destination. They sit on different hosts with
-different authentication and are not interchangeable — check which one your account is
-provisioned for before you build.
+## Endpoint
 
-| | [Omni API](/api-reference/sms/send-sms-omni) | [SMS List API](/api-reference/sms/send-sms) |
-| --- | --- | --- |
-| **Destinations** | **India** | **Outside India** |
-| Endpoint | `api.onexaura.com/oapi/send_sms` | `api.int.onexglobal.io/api/jsmslist` |
-| Authentication | `apikey` request header | `key` field in the request body |
-| Message array | `sms` | `listsms` |
-| Shared with WhatsApp and RCS | Yes — same endpoint | No |
-| Supports [channel fallback](/api-reference/omnichannel/fallback) | Yes | No |
-| DLT fields (`templateId`, `entityId`) | Yes | — |
-
-<Tip>
-If you send WhatsApp or RCS as well as SMS, use the **Omni API** — one endpoint, one API key,
-and fallback between channels. The SMS List API is SMS-only.
-</Tip>
+```
+POST https://api.onexaura.com/oapi/send_sms
+```
 
 ## Authentication
 
-The Omni API authenticates with an `apikey` HTTP header. The SMS List API authenticates with a
-`key` value inside the JSON request body, not as a header.
+An `apikey` HTTP header carrying your account's API key — see
+[API keys](/guides/platform/api-keys).
 
-<ParamField body="key" type="string" required>
-  SMS List API only — API key assigned to the user for authentication.
+<ParamField header="apikey" type="string" required>
+  Your OneXtel API key.
 </ParamField>
+
+<ParamField header="Content-Type" type="string" required>
+  `application/json`
+</ParamField>
+
+## DLT is mandatory
+
+Indian SMS traffic is regulated by TRAI's DLT framework. Every message must reference a
+registered entity, sender ID, and template, supplied on the send as `entityId` and `templateId`.
+Messages that fail these checks are rejected before they reach an operator — see
+[DLT registration](/guides/sms/dlt) and the `201`–`227` band in
+[SMS error codes](/api-reference/sms/error-codes).
+
+## How it compares to international SMS
+
+| | India | [International](/api-reference/sms-international/overview) |
+| --- | --- | --- |
+| Host | `api.onexaura.com` | `api.int.onexglobal.io` |
+| Path | `/oapi/send_sms` | `/api/jsmslist` |
+| Authentication | `apikey` header | `key` in the body |
+| Message array | `sms` | `listsms` |
+| DLT fields (`templateId`, `entityId`) | Required | Not used |
+| Shared with WhatsApp and RCS | Yes — same endpoint | No — SMS only |
+| [Channel fallback](/api-reference/omnichannel/fallback) | Yes | No |
+| DLR field style | camelCase | UPPERCASE |
+
+<Tip>
+If you send WhatsApp or RCS as well as SMS to India, this endpoint gives you one integration, one
+API key, and fallback between channels.
+</Tip>
 
 ## Endpoints at a glance
 
 | Endpoint | Method | Purpose |
-|---|---|---|
-| [`/oapi/send_sms`](/api-reference/sms/send-sms-omni) | POST | Send SMS via the Omni API, with DLT fields, campaign tagging, and URL shortening |
-| [`/api/jsmslist`](/api-reference/sms/send-sms) | POST | Submit one or more SMS messages (single or multiple submission) |
-| [DLR callback](/api-reference/sms/dlr-callback) | POST (inbound, to your configured URL) | Receive final delivery status for a submitted message |
-
-## Request format
-
-All requests are sent as JSON with the header:
-
-<ParamField header="Content-Type" type="string" required>
-  Must be `application/json`.
-</ParamField>
-
-<Warning>
-The source guide's header sample is written as `Contest-Type: application/json` — this is a typo in the source document for `Content-Type`. The cURL examples throughout this API reference use the correct `Content-Type` header.
-</Warning>
+| --- | --- | --- |
+| [`/oapi/send_sms`](/api-reference/sms/send-sms-omni) | POST | Send SMS, with DLT fields, campaign tagging, and URL shortening |
+| [DLR callback](/api-reference/sms/dlr-callback) | POST (inbound, to your URL) | Receive the final delivery state |
+| [Message status](/api-reference/omnichannel/message-status) | GET | Poll for status instead of receiving it |
 
 ## Next steps
 
-- [Send SMS](/api-reference/sms/send-sms) — single and multiple submission payloads, request/response parameters
-- [DLR callback](/api-reference/sms/dlr-callback) — delivery receipt callback format sent to your configured URL
+- [Send SMS — India](/api-reference/sms/send-sms-omni) — payload, DLT fields, and responses
+- [DLR callback](/api-reference/sms/dlr-callback) — the receipt posted to your URL
+- [SMS error codes](/api-reference/sms/error-codes) — what each `errorCode` means

@@ -155,13 +155,21 @@
             ]
           },
           {
-            "group": "SMS",
+            "group": "SMS (India)",
             "pages": [
               "api-reference/sms/overview",
               "api-reference/sms/send-sms-omni",
-              "api-reference/sms/send-sms",
               "api-reference/sms/dlr-callback",
               "api-reference/sms/error-codes"
+            ]
+          },
+          {
+            "group": "SMS (International)",
+            "pages": [
+              "api-reference/sms-international/overview",
+              "api-reference/sms-international/send-sms",
+              "api-reference/sms-international/dlr-callback",
+              "api-reference/sms-international/error-codes"
             ]
           },
           {
@@ -260,6 +268,11 @@
     {
       "source": "/guides/platform/dlt",
       "destination": "/guides/sms/dlt",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/sms/send-sms",
+      "destination": "/api-reference/sms-international/send-sms",
       "permanent": true
     }
   ],

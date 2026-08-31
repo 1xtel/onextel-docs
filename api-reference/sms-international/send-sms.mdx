@@ -5,8 +5,9 @@ description: "Send SMS to destinations outside India via the SMS List API — si
 
 <Note>
 This API covers **international destinations (outside India)**. For SMS to Indian numbers, use
-the [Omni API](/api-reference/sms/send-sms-omni), which carries the DLT fields Indian traffic
-requires. See [Which SMS API](/api-reference/sms/overview#which-sms-api).
+the [India send endpoint](/api-reference/sms/send-sms-omni), which carries the DLT fields Indian
+traffic requires. See
+[How it compares](/api-reference/sms-international/overview#how-it-compares-to-india-sms).
 </Note>
 
 ## Endpoint
@@ -20,8 +21,11 @@ POST https://api.int.onexglobal.io/api/jsmslist
 </ParamField>
 
 <Note>
-The source guide lists the endpoint header sample as `Contest-Type: application/json`, which is a typo for `Content-Type`. Use `Content-Type` as shown in the cURL examples below.
+The source guide lists the endpoint header sample as `Contest-Type: application/json`, which is
+a typo for `Content-Type`. Use `Content-Type` as shown in the cURL examples below.
 </Note>
+
+Authentication is the `key` field **inside the body**, not a header.
 
 ## Single submission
 
@@ -110,8 +114,95 @@ Each object inside the `listsms` array represents an SMS message and contains th
 </ParamField>
 
 <ParamField body="clientsmsid" type="string">
-  Client-side unique identifier for tracking the message.
+  Client-side unique identifier for tracking the message. Echoed back as `CLIENTMSID` on the
+  delivery receipt.
 </ParamField>
+
+<ParamField body="custref1" type="string">
+  Custom reference value. Echoed back unchanged on both the submission response and the delivery
+  receipt. See [Reference IDs](#reference-ids).
+</ParamField>
+
+<ParamField body="custref2" type="string">
+  Second custom reference value.
+</ParamField>
+
+<ParamField body="custref3" type="string">
+  Third custom reference value.
+</ParamField>
+
+<ParamField body="custref4" type="string">
+  Fourth custom reference value.
+</ParamField>
+
+<ParamField body="custref5" type="string">
+  Fifth custom reference value.
+</ParamField>
+
+## Reference IDs
+
+Every message can carry your own identifier so you can match a delivery receipt back to your own
+record. There are two mechanisms, and you can use either.
+
+| | `clientsmsid` | `custref1`–`custref5` |
+| --- | --- | --- |
+| How many values | One | Up to five |
+| On the submission response | Returned on failures | Returned on success and failure |
+| On the DLR | Returned as `CLIENTMSID` | Returned as `custref1`–`custref5` |
+| Use it for | A single correlation ID | Splitting campaign, segment, order, and batch across separate fields |
+
+<Note>
+**Custom references are only returned if you sent them.** A message submitted without
+`custref` fields comes back — and produces a receipt — without them.
+</Note>
+
+### Sending custom references
+
+```bash
+curl --location 'https://api.int.onexglobal.io/api/jsmslist' \
+--header 'Content-Type: application/json' \
+--data '{
+  "key": "XXXXXX",
+  "listsms": [
+    {
+      "from": "XXXXX",
+      "to": "XXXXX",
+      "body": "Your verification code is XXXX. url",
+      "custref1": "1111",
+      "custref2": "111111",
+      "custref3": "11111111",
+      "custref4": "111111111",
+      "custref5": "1111111111"
+    }
+  ]
+}'
+```
+
+The response carries the same five values back:
+
+```json
+{
+  "smslist": {
+    "sms": [
+      {
+        "reason": "success",
+        "code": 0,
+        "messageid": "3IS8bmoxK0Y6bjYKVVohHjwUUt3",
+        "messagepartids": [],
+        "mobileno": "918872725225",
+        "status": "success",
+        "custref1": "1111",
+        "custref2": "111111",
+        "custref3": "11111111",
+        "custref4": "111111111",
+        "custref5": "1111111111"
+      }
+    ]
+  }
+}
+```
+
+So does the [delivery receipt](/api-reference/sms-international/dlr-callback).
 
 ## Response
 
@@ -204,11 +295,23 @@ The API returns a JSON response under `smslist` → `sms`. Each SMS record inclu
 
 ## Submission response codes
 
+These are the codes returned by the **submission** call — whether the platform accepted the
+message, not whether it was delivered.
+
 | Code | Description |
-|---|---|
-| `0` | Submission Successful. |
-| `700` | Invalid mobile number. |
+| --- | --- |
+| `0` | Submission successful |
+| `700` | Invalid mobile number |
 
 <Note>
-The source guide's consolidated response-codes table also lists `000` (Delivered) and `011` (Undelivered). Those codes apply to the DLR callback's `ERRORCODE` field, not to this submission response — see [DLR callback](/api-reference/sms/dlr-callback).
+Delivery outcome is a separate set of codes, returned later on the
+[DLR callback](/api-reference/sms-international/dlr-callback) as `ERRORCODE` — see
+[Error codes](/api-reference/sms-international/error-codes). A `0` here means accepted for
+delivery, not delivered.
 </Note>
+
+## Related
+
+- [DLR callback](/api-reference/sms-international/dlr-callback)
+- [Error codes](/api-reference/sms-international/error-codes)
+- [International SMS overview](/api-reference/sms-international/overview)

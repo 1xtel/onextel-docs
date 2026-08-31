@@ -1,0 +1,75 @@
+---
+title: "International SMS Overview"
+description: "Base URL, authentication, reference IDs, and endpoint summary for the OneXtel International SMS List API."
+---
+
+The **SMS List API** delivers SMS to destinations outside India through the OneX Global platform.
+You submit message details as JSON and the platform forwards them to the recipients.
+
+<Note>
+This API is for **international destinations**. SMS to Indian numbers goes through a different
+API on a different host, because Indian traffic carries DLT registration fields — see
+[Send SMS — India](/api-reference/sms/send-sms-omni).
+</Note>
+
+## Endpoint
+
+```
+POST https://api.int.onexglobal.io/api/jsmslist
+```
+
+<ParamField header="Content-Type" type="string" required>
+  `application/json`
+</ParamField>
+
+## Authentication
+
+Authentication is a `key` value **inside the JSON request body** — not an HTTP header. This is
+the main difference integrators trip over when moving between the two SMS APIs.
+
+<ParamField body="key" type="string" required>
+  API key assigned to your account.
+</ParamField>
+
+## How it compares to India SMS
+
+| | International | [India](/api-reference/sms/send-sms-omni) |
+| --- | --- | --- |
+| Host | `api.int.onexglobal.io` | `api.onexaura.com` |
+| Path | `/api/jsmslist` | `/oapi/send_sms` |
+| Authentication | `key` in the body | `apikey` header |
+| Message array | `listsms` | `sms` |
+| Batching | Many messages per request | Many messages per request |
+| DLT fields (`templateId`, `entityId`) | Not used | Required |
+| Shared with WhatsApp and RCS | No — SMS only | Yes, same endpoint |
+| [Channel fallback](/api-reference/omnichannel/fallback) | No | Yes |
+| DLR field style | UPPERCASE | camelCase |
+
+<Tip>
+The two APIs are not interchangeable. Check which one your account is provisioned for before
+you build.
+</Tip>
+
+## Tracking your own reference IDs
+
+Every message can carry your own identifier, echoed back on both the submission response and the
+delivery receipt. There are two mechanisms — see
+[Reference IDs](/api-reference/sms-international/send-sms#reference-ids).
+
+| Field | Count | Echoed back in |
+| --- | --- | --- |
+| `clientsmsid` | One | Submission response, and DLR as `CLIENTMSID` |
+| `custref1`–`custref5` | Up to five | Submission response and DLR, under the same names |
+
+## Endpoints at a glance
+
+| Endpoint | Method | Purpose |
+| --- | --- | --- |
+| [`/api/jsmslist`](/api-reference/sms-international/send-sms) | POST | Submit one or more SMS messages |
+| [DLR callback](/api-reference/sms-international/dlr-callback) | POST (inbound, to your URL) | Receive the final delivery state |
+
+## Next steps
+
+- [Send SMS](/api-reference/sms-international/send-sms) — payloads, reference IDs, and responses
+- [DLR callback](/api-reference/sms-international/dlr-callback) — the receipt posted to your URL
+- [Error codes](/api-reference/sms-international/error-codes) — what each `ERRORCODE` means
