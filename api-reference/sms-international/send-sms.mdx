@@ -148,9 +148,12 @@ message, and each is echoed back only if you sent it.
 | | `clientsmsid` | `custref1`–`custref5` |
 | --- | --- | --- |
 | How many values | One | Up to five |
-| On the submission response | Returned on failures | Returned on success and failure |
+| On the submission response | Returned as `clientsmsid` | Returned as `custref1`–`custref5` |
 | On the DLR | Returned as `CLIENTMSID` | Returned as `custref1`–`custref5` |
 | Use it for | A single correlation ID | Splitting campaign, segment, order, and batch across separate fields |
+
+Both behave the same way: send it and it comes back, on **success and failure alike**, on both
+the submission response and the delivery receipt.
 
 <Note>
 **Reference fields are only returned if you sent them.** A message submitted without `custref`
@@ -272,6 +275,20 @@ The API returns a JSON response under `smslist` → `sms`. Each SMS record inclu
 <ResponseField name="status" type="string">
   Submission status (`success`).
 </ResponseField>
+
+<ResponseField name="clientsmsid" type="string">
+  The `clientsmsid` from your submission, if you sent one.
+</ResponseField>
+
+<ResponseField name="custref1" type="string">
+  The first custom reference from your submission, if you sent one. `custref2` through `custref5`
+  follow the same pattern.
+</ResponseField>
+
+<Note>
+The success example above carries no `clientsmsid` because that submission did not send one — not
+because success responses omit it. See [Reference IDs](#reference-ids).
+</Note>
 
 ### Response parameters — failure
 
