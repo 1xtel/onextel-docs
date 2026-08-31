@@ -142,7 +142,8 @@ Each object inside the `listsms` array represents an SMS message and contains th
 ## Reference IDs
 
 Every message can carry your own identifier so you can match a delivery receipt back to your own
-record. There are two mechanisms, and you can use either.
+record. There are two mechanisms. They are **independent** — use either, or both on the same
+message, and each is echoed back only if you sent it.
 
 | | `clientsmsid` | `custref1`–`custref5` |
 | --- | --- | --- |
@@ -152,8 +153,9 @@ record. There are two mechanisms, and you can use either.
 | Use it for | A single correlation ID | Splitting campaign, segment, order, and batch across separate fields |
 
 <Note>
-**Custom references are only returned if you sent them.** A message submitted without
-`custref` fields comes back — and produces a receipt — without them.
+**Reference fields are only returned if you sent them.** A message submitted without `custref`
+fields comes back — and produces a receipt — without them, and the same is true of
+`clientsmsid`. Neither field is required, and neither excludes the other.
 </Note>
 
 ### Sending custom references
