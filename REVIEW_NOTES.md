@@ -5,6 +5,11 @@ handled with **fidelity over invention** — where the Postman collection and a 
 the Postman value was documented as authoritative and the conflict flagged inline. Reconcile
 each against the live platform, then update the page and delete the note here.
 
+**Closed items are deleted, not archived.** Once an answer is reflected in a published page, its
+row goes — git history is the record of what was asked and when. A row only survives if something
+is still outstanding: an unanswered question, a source to correct, or a page to revisit when
+something ships.
+
 This file is **not** part of the published site (it isn't in `docs.json`).
 
 ## API — endpoint / payload conflicts
@@ -33,28 +38,20 @@ This file is **not** part of the published site (it isn't in `docs.json`).
 | 19 | Omnichannel | Message Status & History have no saved example responses | **Message Status resolved** — real response captured and documented. **Message History still has none** | Capture a History response |
 | 20 | Omnichannel | Message Status request is `auth: noauth` in Postman but still sends `apikey` header | Documented header auth | Confirm auth |
 | 20b | Omnichannel | Message Status `channel` enum and `taId`/`tucId` requirement | **Resolved by live testing (Aug 2026).** `channel` is not validated on `messageId` lookups — `whatsapp`, `wa`, `sms`, a bogus string, and omitting it all return the same record. `taId`/`tucId` are optional. Response schema captured and documented; bad key returns HTTP 400 "NO VALID AUTH_KEY FOUND!" | Closed — retest `channel` on a `mobileNumber` lookup, where it may matter |
-| 20c | SMS | `/oapi/send_sms` is not currently shared with clients for domestic SMS (per domestic SMS owner, Aug 2026) | **Decided: the Omni SMS API page stays public.** Both APIs are documented with a "Which SMS API" comparison so readers pick the right one | Closed — no action |
 | 20d | SMS DLR | Platform DLR carries both `dlrCode` (`001`) and `errorCode` (`000`) on the same delivered message. Only `errorCode` maps to the documented error table | Page tells integrators to branch on `errorCode` and treat `dlrCode` as informational | Confirm what `dlrCode` represents and its value set |
 | 20e | SMS error codes | Code `995` arrived mojibake-encoded (`Platform_Time window Ã¢â‚¬â€œ discarded`) — that byte sequence is a UTF-8 en dash misread as Windows-1252 | Documented as "Time window — discarded", i.e. the message fell outside the SMS Time Window account setting | Confirm the reading |
 | 21 | Fallback / SMS send | SMS `type` enum — **re-resolved by live testing (Aug 2026)**. The *SMS API Omni Channel* guide lists `SI, TRANS, OTP, SE, Promo`, but the live API accepts only **`SI`, `OTP`, `SE`** (case-sensitive). `TRANS`, `Promo`, and `TXN` all return `invalid type` (status 700), and `type` is **required**, not optional | Examples across the fallback and send pages now use `SI`; the verified matrix is documented on both. **The source PDF enum is wrong and should be corrected at source** | `Promo` may be rejected due to account entitlement rather than being invalid — retest with a promo-enabled key |
 | 21b | SMS send | Send returns `messageid` in ULID form (`01M0QSEJ...`) while Message Status keys on `uuid` (`3I7dnaYRaiTVj8f5EgxsoiJrT5R`). Status lookups by the returned `messageid` returned no record shortly after send | Not documented as interchangeable | **Confirm whether `messageid` and `uuid` are the same identifier, and how long status takes to populate** |
 | 21c | RCS templates | `guides/rcs-platform/template-guidelines` is derived from a **single operator's** internal template-approval SOP (Vi, classified "Vodafone Idea Internal"). All operator branding, the internal classification footer, the "RBM" terminology, and the escalation path to that operator's ops team were stripped | Published as generic RCS approval guidance with a note that requirements vary by operator | **Confirm these rules hold across Jio and Airtel, or scope the page per operator** |
-| 21d | RCS message types | The MoEngage setup guide, MoEngage's **Sender type** radio, and a stale OneXtel sender profile all showed **OTP** as an RCS message type | **Resolved (Aug 2026) — OTP is not valid for RCS.** Docs state Promotional and Transactional only; the MoEngage page carries an explicit warning not to create an OTP sender; the stale `Otp` chip was masked out of the OneXtel sender-profile screenshot | Closed — but the stale Otp-tagged test profile still exists in the platform and MoEngage still offers the radio |
 | 21e | CleverTap RCS | The connector setup guide gives the SMS-fallback `type` as "Optional (default TXN)" and "e.g. TXN or SI". Live testing shows `TXN` is rejected | Page uses `SI` and carries the verified matrix | Correct the vendor guide at source |
 | 21f | Connector screenshots | Source screenshots carried live API keys, an ngrok dev host, and a named customer (`PinelabDemo`, `Pinelab Dlr`, `fallbackCTpinelab`) | **Published (Aug 2026).** Keys confirmed rotated and left visible; customer names and the ngrok host masked; the MoEngage callback list cropped to drop the key/URL table; the two Pinelabs-flow campaign shots had their `sender_id` row masked so they match the Normal flow | Re-capture against the production connector URL when one is available |
 | 21g | Intl SMS codes | Scope of `ERRORCODE` remapping | **Partly answered (Aug 2026).** The platform normalises many operator codes onto a generic set for customer and internal clarity — that is the mechanism, and it explains the duplicate descriptions. Warning rewritten from "remapped per account" to "platform codes, not raw operator codes, mapping under review" | **Still open: is the mapping identical for every account, or can it differ, and where is it configured?** Error descriptions are also being reworked to map onto native connectors (MoEngage, Braze, CleverTap, Adobe) — the published tables need reissuing when that lands |
 | 21h | Intl SMS codes | Source inconsistencies: the API guide's consolidated table glosses `011` as "Undelivered" while the code list gives it as "Teleservice not provisioned" (`UNDELIV` is the class, not the meaning); `001`/`033` both read "Unknown subscriber" and `027`/`029` both "Absent subscriber"; the `9xxxxx` table is headed "Value (hex)" though the values read as decimal | `011` documented as teleservice not provisioned; duplicates documented as equivalent with a note; the hex/decimal label dropped and codes documented as returned strings | Confirm the duplicate pairs really are equivalent, and whether `9xxxxx` is genuinely hex |
-| 21i | Intl SMS | `clientsmsid` and `custref1`–`custref5` are two separate reference mechanisms | **Resolved (Aug 2026) — they are separate and both usable.** Documented as independent: either or both may be sent, and each is echoed back on the response and the DLR only if it was sent | Closed |
-| 21k | Intl SMS | The API guide's submission-response samples show `clientsmsid` on failure but not on success, suggesting the two differ | **Resolved (Aug 2026) — it is returned on success too, whenever it is sent in the POST.** The guide's success sample simply did not send one. Documented alongside `custref1`–`custref5`: every reference field is echoed on both outcomes | Closed |
 | 21j | Intl SMS codes | The **Retry?** column was inferred, not sourced | **Partly answered (Aug 2026).** Platform behaviour is now known: only gateway-level failover exists today, with no per-error-code retry. The page says so, and the column is framed as guidance for the customer's own logic | Still open: have routing confirm the retryable set. Per-code retry via a secondary gateway is on the roadmap — republish when it ships |
 | 21l | Intl SMS | **DLR TTL is a live capability we document nowhere.** There are two — an operator-level default set per API key on the platform, and a value the customer supplies in the submission, which supersedes it. The API guide covers neither, and the sample payload has no TTL field | Not documented; the field name is unknown | **Blocking: what is the field called, what unit and range does it take, and what is the operator-level default?** |
 | 21m | Intl SMS | Message part counts are not returned by the API or the callback — `messagepartids` comes back empty, and parts appear only in the portal summary/detail reports | Documented on the send page as a stated limitation | Platform side is open to exposing it; republish if added |
-| 21n | Intl SMS | No status-lookup/poll endpoint exists for international traffic, unlike India | Documented as a warning on the DLR page: the callback is the only programmatic source, otherwise recover from portal reports | Closed as a fact; remains a product gap |
 | 21o | Intl SMS | Coverage and destination obligations | **Answered (Aug 2026).** Service is offered A–Z with no published country list. Obligations vary and several fall on the customer — UAE sender-ID registration, USA A2P 10DLC | Documented as "confirm with your account team" plus the two named examples. **A consolidated obligations list would be worth building** |
 | 21p | Intl SMS | Billing is undocumented. No wallet exists; 1 credit = the destination country unit price, and charges are tracked manually. A wallet has been pending roughly a year | Nothing published | **What can a customer be told about pricing and balance today, and how do they check either?** |
-| 21q | Intl SMS | Multi-submission payload limit | **Answered (Aug 2026) — 2,500 objects per request.** Published on the send page, in the `listsms` parameter, and in the overview comparison | Closed |
-| 21r | Intl SMS | Sender ID (`from`) rules | **Answered (Aug 2026) — OneXtel enforces none.** Alphanumeric and numeric are both accepted and nothing is validated. Documented as a new Sender IDs section warning that a clean submission does not mean the sender ID survives, since destination operators may replace it or reject the message after acceptance | Closed. Worth revisiting if the destination-obligations list (21o) gets built — that is where the per-country detail belongs |
-| 21s | Intl SMS | Whether a sandbox or test key exists | **Answered (Aug 2026) — no, and the position is that one is not required.** Documented as a Testing section: integrate against the live key, send only to numbers you control, and treat test sends as real traffic on live routes | Closed |
 | 22 | Legacy | Legacy Aura API domain is `api.onex-aura.com` (hyphenated) vs current `api.onexaura.com` | Flagged in `legacy/sms-aura.mdx` | Historical — confirm |
 | 23 | RCS / WhatsApp error codes | Source tables (Soham Shirke, 25 Jun 2025) give operator codes but never state **which response or callback field carries them** | Documented with a `<Warning>` on both pages | Confirm the carrying field |
 | 24 | RCS error codes (Jio) | "Default account TPS exceeded" is listed with **no error code** (`—`); codes 8, 10, 18, 19, 22, 26, 27, 29 undefined | Reproduced with `—`, flagged | Supply the missing code |
@@ -98,32 +95,10 @@ and SLA tables, vendor escalation contacts, signature blocks, and internal deliv
 
 ### Open questions
 
-### Resolved (Aug 2026)
-
-- **P5 — Authentication templates.** Not supported via plugins by design: authentication needs
-  direct API integration because plugins add latency. Per product decision, this is **not
-  mentioned in the docs at all** — the limitation was removed from the Salesforce page rather
-  than reworded.
-- **P7 — Message categories.** RCS has two: **Promotional** and **Transactional** (Utility is
-  part of Transactional). WhatsApp via plugins is **Marketing** and **Utility**. OTP is not
-  supported via plugins on either channel. Pages now state supported categories positively and
-  never enumerate what is excluded. Documented in `plugins/overview.mdx`.
-- **P8 — Callback configuration is self-serve.** Customers configure their own callback URLs in
-  the portal's callback designer (**Configuration → Add New Callback**). CleverTap and
-  WebEngage pages updated; the WebEngage *setup guide* still says "reach out to the Onextel
-  team" — fix at source.
-- **P11 — Multi-region routing.** OnexAura is the domestic deployment, OnexGlobal the
-  international one. The docs stay deployment-generic, so the Shopify multi-region feature is
-  **not documented at all**. Removed from the Shopify page and from Coming soon.
-- **P12 — TTL.** Status unclear for WebEngage and unverified elsewhere. Per product decision,
-  **TTL is not mentioned anywhere in `plugins/`**. Note that `ttl` remains documented in the
-  RCS API reference (`api-reference/rcs/send-messages`), which was left untouched — confirm
-  that is intended.
-
-### Open questions
-
 | # | Plugin | Open question |
 |---|--------|---------------|
+| P8 | WebEngage | Callback configuration is self-serve and the pages say so, but the WebEngage *setup guide* still tells customers to "reach out to the Onextel team". Fix at source. |
+| P12 | RCS API | TTL is deliberately absent from `plugins/` per product decision, but `ttl` remains documented in `api-reference/rcs/send-messages`, which was left untouched. Confirm that is intended. |
 | P2 | All | Onboarding is written as "contact your account manager". Confirm the real provisioning route. |
 | P4 | Salesforce | Confirm SMS and WhatsApp ship as separate packages, and what the "with WA inbox" variant adds. |
 | P9 | WebEngage | "The index won't be sent from Webengage, so it will be added arbitrarily" — documented as connector-assigned variable ordering with a test-send warning. Confirm actual behaviour. |
@@ -149,14 +124,15 @@ and SLA tables, vendor escalation contacts, signature blocks, and internal deliv
 
 ## Screenshots
 
-Source PDFs/DOCX are screenshot-heavy, but images could not be reliably extracted, so all UI
-actions are described in prose. A follow-up pass could capture real portal screenshots and add
-them under `/images` for the campaign and platform guides.
+Portal and connector screenshots are published under `images/` for the platform, SMS, and plugin
+pages — masked where a source carried live keys, a named customer, or a dev host. Coverage is
+partial: the WhatsApp and RCS campaign guides still describe UI actions in prose because their
+source PDFs did not yield usable images.
 
 ## Suggested follow-ups
 
-1. ~~Add an **RCS Delivery Notification callback** page~~ — done.
-2. Resolve the endpoint-path conflicts (#1, #2, #7, #8) with engineering and delete the inline notes.
-3. Supply production portal URLs and real response examples (#18, #19).
-4. Capture portal screenshots for the user guides.
-5. Add a **Callback Designer** guide page (see P15) and point the plugin pages at it.
+1. Resolve the endpoint-path conflicts (#1, #2, #7, #8) with engineering and delete the inline notes.
+2. Supply production portal URLs and real response examples (#18, #19).
+3. Capture screenshots for the WhatsApp and RCS campaign guides.
+4. Add a **Callback Designer** guide page (see P15) and point the plugin pages at it.
+5. Close the international SMS items (#21g–#21p) on the joint call with routing and commercial.
