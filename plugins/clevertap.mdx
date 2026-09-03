@@ -38,11 +38,28 @@ incoming request — OneXtel can run it as multiple parallel instances. You depl
 
 Have these ready:
 
-- **The connector URL.** Supplied by OneXtel. Shown below as `{connectorBaseUrl}` — substitute
-  your real URL everywhere it appears.
 - **Your OneXtel API key** — see [API keys](/guides/platform/api-keys).
 - **CleverTap access** to **Settings → Channels → SMS**, with permission to add a provider.
 - **OneXtel access** to [callback configuration](/guides/platform/callback-configuration).
+
+### Connector endpoints
+
+Every URL in this guide sits on one host. Copy them from here as you go.
+
+| Purpose | URL |
+| --- | --- |
+| RCS send | `https://ct.onex-aura.com/rcs/send` |
+| Delivery reports and button replies | `https://ct.onex-aura.com/dlr` |
+| Inbound messages | `https://ct.onex-aura.com/inbound` |
+| URL clicks | `https://ct.onex-aura.com/click` |
+| SMS fallback delivery report | `https://ct.onex-aura.com/delivery` |
+| Health check | `https://ct.onex-aura.com/health` |
+
+<Warning>
+**The host is `onex-aura.com`, with a hyphen.** Dropping it gives you `ct.onexaura.com`, which
+resolves to a real server that does not run the connector — so the mistake shows up as a timeout
+or a silent failure rather than an obvious DNS error. Check the hyphen before you save anything.
+</Warning>
 
 ## Part A — Configure the CleverTap provider
 
@@ -56,7 +73,7 @@ Have these ready:
     | Field | Value |
     | --- | --- |
     | Request Type | `POST` |
-    | HTTPS Endpoint | `{connectorBaseUrl}/rcs/send` |
+    | HTTPS Endpoint | `https://ct.onex-aura.com/rcs/send` |
     | Authentication | No Authentication |
     | Headers | Key `apikey` → your OneXtel API key |
 
@@ -130,10 +147,10 @@ set to the matching CleverTap URL from Part A.
 
 | Webhook | Channel | Type | Callback URL | `callback` header |
 | --- | --- | --- | --- | --- |
-| RCS DLR | RCS | Delivery Notification | `{connectorBaseUrl}/dlr` | Delivery Report URL |
-| Inbound | RCS | Incoming | `{connectorBaseUrl}/inbound` | **Inbound Message URL** |
-| URL Click | RCS | URL Click | `{connectorBaseUrl}/click` | Delivery Report URL |
-| SMS fallback DLR | SMS | Delivery Notification | `{connectorBaseUrl}/delivery` | Delivery Report URL |
+| RCS DLR | RCS | Delivery Notification | `https://ct.onex-aura.com/dlr` | Delivery Report URL |
+| Inbound | RCS | Incoming | `https://ct.onex-aura.com/inbound` | **Inbound Message URL** |
+| URL Click | RCS | URL Click | `https://ct.onex-aura.com/click` | Delivery Report URL |
+| SMS fallback DLR | SMS | Delivery Notification | `https://ct.onex-aura.com/delivery` | Delivery Report URL |
 
 All four use **HTTP Method `POST`**.
 
@@ -261,6 +278,8 @@ Ad-hoc, non-template cards reliably support only a plain Reply button.
 
 ### Connector endpoints
 
+All on `https://ct.onex-aura.com`.
+
 | Endpoint | Direction | Purpose |
 | --- | --- | --- |
 | `POST /rcs/send` | CleverTap → OneXtel | RCS send |
@@ -268,7 +287,7 @@ Ad-hoc, non-template cards reliably support only a plain Reply button.
 | `POST /inbound` | OneXtel → CleverTap | Free-form inbound messages |
 | `POST /click` | OneXtel → CleverTap | URL-click events |
 | `POST /delivery` | OneXtel → CleverTap | SMS fallback delivery report |
-| `GET /health` | — | Liveness check |
+| `GET /health` | — | Liveness check. Returns `200` when the connector is up |
 
 <Note>
 Behind the scenes the connector calls OneXtel's unified send endpoint,

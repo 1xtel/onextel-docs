@@ -363,6 +363,31 @@ misconfigured does not stop the RCS send, so a successful campaign tells you not
 whether fallback works.
 </Note>
 
+## Connector endpoints
+
+Every URL this connector uses sits on one host, `https://mo.onexaura.com`. Copy them from here
+rather than retyping — MoEngage rejects nothing at save time, so a wrong path fails silently at
+send.
+
+| Purpose | Where you enter it | URL |
+| --- | --- | --- |
+| WhatsApp outbound | MoEngage sender — URL | `https://mo.onexaura.com/moengage/whatsapp/outbound` |
+| WhatsApp inbound and button clicks | OneXtel callback — Callback URL | `https://mo.onexaura.com/moengage/whatsapp/inbound` |
+| RCS outbound | MoEngage sender — API URL | `https://mo.onexaura.com/moengage/rcs/outbound` |
+| RCS button clicks | OneXtel callback — Callback URL | `https://mo.onexaura.com/moengage/rcs/inbound` |
+| SMS fallback outbound | MoEngage SMS provider — API URL | `https://mo.onexaura.com/moengage/sms` |
+
+<Note>
+The RCS and SMS **delivery notification** callbacks are the exception — those take the callback
+URL MoEngage generates for you, not a OneXtel one. You copy that from the MoEngage sender screen
+after saving it.
+</Note>
+
+<Warning>
+This host has **no hyphen** — `onexaura.com`. OneXtel runs other connectors on similar-looking
+hosts, so check it before saving.
+</Warning>
+
 ## Requirements
 
 - A MoEngage account with the custom-provider channel available. RCS requires MoEngage to
