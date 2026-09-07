@@ -1,20 +1,26 @@
 ---
 title: "WhatsApp Error Codes"
-description: "Meta Cloud API error codes surfaced through the OneXtel WhatsApp APIs, with HTTP status and retry guidance."
+description: "Every error code a WhatsApp message can return — Meta Cloud API codes and OneXtel platform codes — with retry guidance."
 ---
 
-WhatsApp messages submitted to OneXtel are delivered onward through the Meta WhatsApp Cloud
-API. When Meta rejects a request, it returns its own error code, which OneXtel surfaces back
-to you unchanged.
+A failed WhatsApp message returns a code from one of two places. Knowing which one you are
+looking at tells you who can fix it.
 
-The most likely place to encounter them is the `errors.code` field of the
-[delivery notification callback](/api-reference/whatsapp/callback-delivery-notification), though
-the source table does not confirm which field carries them.
+| Range | Returned by | Who fixes it |
+| --- | --- | --- |
+| `0`–`190`, `1xxxxx` | **Meta Cloud API** — the message reached Meta and was rejected | Usually you: the request, the template, or the account's standing with Meta |
+| `4xxx`, `900xxx` | **OneXtel platform** — the message never left OneXtel | You, in your account or payload |
+
+A `4xxx` or `900xxx` code means the message was stopped before Meta ever saw it, so it was never
+charged and nothing reached the recipient. Those are the ones you can usually resolve yourself.
+
+The most likely place to encounter any of them is the `errors.code` field of the
+[delivery notification callback](/api-reference/whatsapp/callback-delivery-notification).
 
 <Warning>
-Meta's error taxonomy changes independently of OneXtel. The table below is a snapshot of the
-codes OneXtel has observed — treat any unlisted code as non-retryable and check Meta's Cloud
-API error reference for its current meaning.
+Meta's error taxonomy changes independently of OneXtel. The Meta codes below are a snapshot of
+what OneXtel has observed — treat any unlisted code as non-retryable and check Meta's Cloud API
+error reference for its current meaning.
 </Warning>
 
 ## Retry guidance
@@ -27,20 +33,28 @@ Every code below is marked with whether re-sending the same message is worthwhil
 | **NO** | Permanent for this message or account. Retrying will fail again — fix the request, the account, or the permissions first. |
 | **UNSURE** | Behaviour not confirmed. Treat as non-retryable until verified, or retry once with a long delay. |
 
-## Authorization and policy errors
+<Note>
+The **HTTP Status Code** column appears only where a code is returned as an API response.
+Delivery-time codes arrive on the callback instead and have no HTTP status, so those tables omit
+the column.
+</Note>
+
+## Meta Cloud API errors
+
+### Authorization and policy
 
 Raised when the app, token, or WhatsApp Business Account is not permitted to send.
 
 | Code | Error Type | Details | HTTP Status Code | Retry Allowed |
 | --- | --- | --- | --- | --- |
 | 0 | AuthException | Unable to authenticate the app user. Token may be expired or invalid. | 401 | YES |
-| 3 | API Method | Capability or permissions issue. | 500 | NO |
-| 10 | Permission Denied | Permission not granted or removed. Use token debugger to verify. | 403 | NO |
+| 3 | API Method | Capability or permissions issue requiring proper endpoint authorization. | 500 | NO |
+| 10 | Permission Denied | Permission not granted or removed. Use the token debugger to verify. | 403 | NO |
 | 190 | Access token has expired | Get a new access token. | 401 | YES |
-| 200 | API Permission | Permission not granted or removed. | 403 | NO |
-| 368 | Policy Violation | Account restricted/disabled for violating policy. | 403 | NO |
-| 130497 | Country Messaging Restriction | Account restricted from messaging users in this country. | 403 | NO |
-| 131031 | Account Locked | Account locked or failed to verify request data. | 403 | NO |
+| 200-299 | API Permission | Missing or revoked endpoint authorization. | 403 | NO |
+| 368 | Policy Violation | Temporarily blocked. The WhatsApp Business Account has been restricted or disabled. | 403 | NO |
+| 130497 | Country Messaging Restriction | Account cannot message users in certain countries under Meta's messaging policy. | 403 | NO |
+| 131031 | Account Locked | Restricted for a policy violation or failed verification, such as an incorrect 2-step PIN. | 403 | NO |
 
 <Note>
 Codes 0 and 190 are the only recoverable errors in this group — refresh the access token and
@@ -48,20 +62,21 @@ resend. Codes 368, 130497, and 131031 are account-level restrictions that no amo
 will clear; raise them with OneXtel support.
 </Note>
 
-## Request and parameter errors
+### Request and parameter
 
 Raised when the request itself is malformed, or when Meta fails to process it.
 
 | Code | Error Type | Details | HTTP Status Code | Retry Allowed |
 | --- | --- | --- | --- | --- |
-| 1 | API Unknown | Invalid request or server error. | 400 | YES |
-| 2 | API Service | Temporary issue or overloaded service. | 503 | YES |
+| 1 | API Unknown | Invalid request or possible server error. | 400 | YES |
+| 2 | API Service | Temporary error due to downtime or an overloaded API. | 503 | YES |
 | 33 | Invalid Parameter Value | The business phone number has been deleted. | 400 | NO |
 | 100 | Invalid Parameter | Unsupported or misspelled parameter. | 400 | NO |
-| 130472 | Experiment User | Message was not sent as part of an experiment. | 400 | NO |
-| 131000 | Unknown Error | Message failed to send due to unknown error. | 500 | UNSURE |
+| 130472 | Experiment User | The recipient is part of a Meta experiment; the message was not sent. | 400 | NO |
+| 131000 | Unknown Error | Message failed to send due to an unknown error. | 500 | UNSURE |
 | 131008 | Missing Parameter | Request is missing a required parameter. | 400 | NO |
 | 131009 | Invalid Parameter Value | One or more parameter values are invalid. | 400 | NO |
+| 135000 | Generic User Error | Unknown error with the request parameters. | 400 | UNSURE |
 
 <Note>
 Code 130472 is expected behaviour, not a fault: the recipient is part of a Meta experiment
@@ -69,16 +84,18 @@ group that excludes them from delivery. Do not retry, and do not count it as a f
 delivery-rate reporting.
 </Note>
 
-## Rate-limit errors
+### Rate limits
 
-Raised when a throughput ceiling is hit — at the app, account, or messaging-quality level.
+Raised when a throughput ceiling is hit — at the app, account, recipient, or messaging-quality
+level.
 
 | Code | Error Type | Details | HTTP Status Code | Retry Allowed |
 | --- | --- | --- | --- | --- |
 | 4 | Too Many API Calls | App has reached its API call rate limit. | 400 | YES |
-| 80007 | Account Rate Limit | WhatsApp Business Account has reached rate limit. | 400 | UNSURE |
+| 80007 | Account Rate Limit | WhatsApp Business Account has reached its rate limit. | 400 | UNSURE |
 | 130429 | Rate Limit Hit | Cloud API message throughput has been reached. | 400 | UNSURE |
-| 131048 | Spam Rate Limit Hit | Messages blocked/flagged as spam. | 400 | NO |
+| 131048 | Spam Rate Limit Hit | Phone number restricted because messages were blocked or flagged. | 400 | NO |
+| 131056 | Pair Rate Limit Hit | Too many messages sent to the same recipient in a short window. | 400 | YES |
 
 <Warning>
 Code 131048 is a quality signal, not a throughput one. It means Meta has flagged your messaging
@@ -86,8 +103,103 @@ as spam and is throttling delivery to protect recipients. Retrying makes the qua
 worse — review template content, opt-in provenance, and send frequency instead.
 </Warning>
 
+### Message delivery
+
+Raised after the message is accepted, when Meta cannot deliver it to the recipient.
+
+| Code | Error Type | Details | Retry Allowed |
+| --- | --- | --- | --- |
+| 131005 | Access Denied | Missing or removed permission for the endpoint. | NO |
+| 131016 | Service Unavailable | Temporarily unavailable. | YES |
+| 131021 | Recipient Cannot Be Sender | Sender and recipient numbers cannot be identical. | NO |
+| 131026 | Message Undeliverable | Recipient is not on WhatsApp, has not accepted the terms, or is on an outdated client. | NO |
+| 131037 | Display Name Not Approved | The WhatsApp-provided number needs display name approval. | NO |
+| 131045 | Incorrect Certificate | Send failed due to a phone number registration or certificate error. | NO |
+| 131047 | Re-engagement Message | More than 24 hours since the recipient last replied. Send a template message instead. | NO |
+| 131049 | Not Delivered By Meta | Meta blocked the message to maintain ecosystem engagement quality. | NO |
+| 131050 | Marketing Opt-Out | The user has stopped receiving marketing messages. | NO |
+| 131051 | Unsupported Message Type | The message type is not supported. | NO |
+| 131052 | Media Download Error | Unable to download the media sent by the user. | UNSURE |
+| 131053 | Media Upload Error | Unable to upload the media used in the message. | UNSURE |
+| 131057 | Account In Maintenance Mode | The account is temporarily in maintenance mode. | YES |
+
+<Note>
+`131047` is the 24-hour customer service window closing, not a fault. Once more than 24 hours
+have passed since the recipient's last message, only an approved template can be sent — see
+[Send template messages](/api-reference/whatsapp/send-template-message).
+</Note>
+
+### Templates, flows and marketing
+
+| Code | Error Type | Details | Retry Allowed |
+| --- | --- | --- | --- |
+| 131055 | Method Not Allowed | Only marketing template messages are supported on this endpoint. | NO |
+| 131063 | Marketing Templates Disabled | Marketing templates are disabled for the Cloud API; use the Marketing Messages API instead. | NO |
+| 132000 | Template Param Count Mismatch | The variable parameter count does not match the template definition. | NO |
+| 132001 | Template Does Not Exist | Not present in the specified language, or not approved. | NO |
+| 132005 | Hydrated Text Too Long | The filled-in template text exceeds the length limit. | NO |
+| 132007 | Format Character Policy Violated | Template formatting breaks Meta's character policy. | NO |
+| 132012 | Parameter Format Mismatch | Variable values use an incorrect format. | NO |
+| 132015 | Template Paused | Paused for low quality and cannot be sent. | NO |
+| 132016 | Template Disabled | Permanently disabled after repeated quality issues. | NO |
+| 132018 | Template Validation Error | Parameter issues in the template. Update it and resend. | NO |
+| 132068 | Flow Is Blocked | The flow requires correction before it can be sent. | NO |
+| 132069 | Flow Is Throttled | Ten flow messages already sent in the last hour. | YES |
+| 134100 | Only Marketing Messages Supported | Authentication and utility templates are not allowed on this API. | NO |
+| 134101 | Template Still Syncing | Syncing can take up to 10 minutes to complete. | YES |
+| 134102 | Template Unavailable | Ad synchronization is incomplete, or the account is not eligible. | UNSURE |
+
+<Warning>
+`132015` and `132016` are quality outcomes, not request errors. A paused template can recover;
+a disabled one cannot. Both mean the template's content or its recipients need attention, and
+neither is fixed by resending.
+</Warning>
+
+### Payments and eligibility
+
+| Code | Error Type | Details | Retry Allowed |
+| --- | --- | --- | --- |
+| 131042 | Business Eligibility | Payment setup error, over credit limit, or missing timezone or currency. | NO |
+| 134011 | Payments Terms Not Accepted | The WhatsApp Payments terms of service have not been accepted. | NO |
+
+## OneXtel platform errors
+
+Returned when OneXtel stops the message before it reaches Meta. Nothing was sent and nothing was
+charged.
+
+| Code | Error Type | Details | Retry Allowed |
+| --- | --- | --- | --- |
+| 4001 | Invalid Template Name | The template name does not match one registered on the account. | NO |
+| 4010 | Insufficient Credit | Not enough available credit to send. | NO |
+| 4013 | User Opt-Out | The recipient has opted out. | NO |
+| 4017 | Missing Provider | No provider is configured for this account or channel. | NO |
+| 4018 | Invalid Payload Or Template | The payload or the template it references failed validation. | NO |
+| 4019 | Provided Details Invalid | One or more supplied values are not valid for this account. | NO |
+| 4021 | Invalid WABA Phone Number | The WhatsApp Business Account phone number is not valid. | NO |
+| 4022 | Invalid API Key And Phone Number Combination | The API key is not authorised for this WABA phone number. | NO |
+| 900115 | Frequency Limit Reached | A configured send-frequency limit was hit. | YES |
+| 900117 | Timeout | The platform timed out while processing the message. | YES |
+| 900118 | Template Category Blocked | The template's category is blocked for this account. | NO |
+| 900119 | Template Category Changed | The template's category changed after approval; resubmit it. | NO |
+| 900120 | Monthly Frequency Limit Reached | The account's monthly send limit was reached. | NO |
+| 900121 | Daily Frequency Limit Reached | The account's daily send limit was reached. | YES |
+| 900122 | Blacklisted | The recipient is on the account blacklist. | NO |
+| 900256 | Third-Party Message Failed | A message submitted through a third-party integration failed on the platform. | UNSURE |
+
+<Warning>
+**`900xxx` codes are channel-specific.** The same number means different things on different
+channels — `900118` is a blocked template category here, but an encoding limit on
+[international SMS](/api-reference/sms-international/error-codes). Always interpret a platform
+code against the channel that produced it.
+</Warning>
+
+<Note>
+`900120` and `900121` are both frequency ceilings, but only the daily one clears on its own.
+A monthly limit needs the cap raised before sending resumes.
+</Note>
+
 ## Related
 
 - [Delivery notification callback](/api-reference/whatsapp/callback-delivery-notification) — where these codes are returned
 - [Send template messages](/api-reference/whatsapp/send-template-message)
-- [RCS operator error codes](/api-reference/rcs/error-codes) — Jio and Vi equivalents
+- [RCS error codes](/api-reference/rcs/error-codes) — Jio, Vi, and the same platform codes

@@ -3,10 +3,18 @@ title: "RCS Operator Error Codes"
 description: "Error codes returned by the Jio and Vi RCS platforms, with HTTP status and retry guidance."
 ---
 
-RCS messages submitted to OneXtel are delivered onward to the recipient's operator RCS
-platform. When that platform rejects a message, it returns its own error code, which OneXtel
-surfaces back to you unchanged. The codes are **operator-specific** — the same numeric value
-means different things on Jio and Vi.
+A failed RCS message returns a code from one of three places, and knowing which one tells you
+who can fix it.
+
+| Range | Returned by | Who fixes it |
+| --- | --- | --- |
+| `2`–`30` | **Jio** RCS platform | Usually the request, the agent, or the recipient's RCS status |
+| `4xx-A` … `5xx-M01` | **Vi** RCS platform | Same, with Vi's own numbering |
+| `4xxx`, `900xxx` | **OneXtel platform** — the message never left OneXtel | You, in your account or payload |
+
+Operator codes are **operator-specific**: the same numeric value means different things on Jio
+and Vi, and OneXtel surfaces them back to you unchanged. A `4xxx` or `900xxx` code means the
+message was stopped before any operator saw it, so it was never charged.
 
 These are distinct from the OneXtel API validation errors (`API_Invalid_Auth_Key`,
 `API_Missing_Recipient`, and so on) documented under
@@ -115,10 +123,77 @@ will not help — whitelist the IP first, then retry.
 Two pairs of Vi codes overlap in meaning but differ in handling: "Test template limit exceeded"
 appears as both `400-C` (retry UNSURE) and `429-B` (retry YES), and "Curfew hours" appears as
 both `403-D` and `503-A`. Both pairs are reproduced as given in the source.
+
+`403-D` does **not** appear in OneXtel's current unified code list — only `503-A` does. It is
+kept here because a message may still return it; confirm with support before removing it from
+your own handling.
+</Warning>
+
+## OneXtel platform
+
+Returned when OneXtel stops the message before it reaches an operator. Nothing was sent and
+nothing was charged. These codes are the same across channels except where noted.
+
+### Payload and template
+
+| Code | Error Type | Details | Retry Allowed |
+| --- | --- | --- | --- |
+| 4001 | Invalid Template Name | The template name does not match one registered on the account. | NO |
+| 4002 | Unsupported Field | `fileName` is not supported in this payload. | NO |
+| 4003 | Unsupported Field | `fileId` is not supported in this payload. | NO |
+| 4004 | Unsupported Field | `showLocation` is not supported in this payload. | NO |
+| 4005 | Unsupported Field | `calendarAction` is not supported in this payload. | NO |
+| 4006 | No Template For Bot | No template found for the `botId` supplied. | NO |
+| 4007 | Invalid Custom Parameters | One or more custom parameters are not valid. | NO |
+| 4018 | Invalid Payload Or Template | The payload or the template it references failed validation. | NO |
+| 4019 | Provided Details Invalid | One or more supplied values are not valid for this account. | NO |
+
+### Account and routing
+
+| Code | Error Type | Details | Retry Allowed |
+| --- | --- | --- | --- |
+| 4010 | Insufficient Credit | Not enough available credit to send. | NO |
+| 4013 | User Opt-Out | The recipient has opted out. | NO |
+| 4017 | Missing Provider | No provider is configured for this account or channel. | NO |
+| 4020 | Invalid Key, Profile and Type Combination | The API key is not authorised for that sender profile and message type together. | NO |
+| 900117 | Timeout | The platform timed out while processing the message. | YES |
+| 900122 | Blacklisted | The recipient is on the account blacklist. | NO |
+| 900256 | Third-Party Message Failed | A message submitted through a third-party integration failed on the platform. | UNSURE |
+
+### Expiry
+
+| Code | Error Type | Details | Retry Allowed |
+| --- | --- | --- | --- |
+| 4009 | TTL Expiration Revoked | The message expired and was revoked before delivery. | NO |
+| 4011 | TTL Expiration Revoke Failed | The message expired but the revoke did not complete. | UNSURE |
+| 4012 | TTL Expiration Revoked | The message expired and was revoked before delivery. | NO |
+
+<Warning>
+`4009` and `4012` carry the same meaning in the source list, differing only in case
+(`ttl_expiration_revoked` and `TTL_EXPIRATION_REVOKED`). Treat them as equivalent, and handle
+both — the source does not say which one the platform actually emits.
+</Warning>
+
+### Frequency and category
+
+| Code | Error Type | Details | Retry Allowed |
+| --- | --- | --- | --- |
+| 900115 | Frequency Limit Reached | A configured send-frequency limit was hit. | YES |
+| 900118 | Template Category Blocked | The template's category is blocked for this account. | NO |
+| 900119 | Template Category Changed | The template's category changed after approval; resubmit it. | NO |
+| 900120 | Monthly Frequency Limit Reached | The account's monthly send limit was reached. | NO |
+| 900121 | Daily Frequency Limit Reached | The account's daily send limit was reached. | YES |
+
+<Warning>
+**`900xxx` codes are channel-specific.** The same number means different things on different
+channels — `900118` is a blocked template category here and on
+[WhatsApp](/api-reference/whatsapp/error-codes), but an encoding limit on
+[international SMS](/api-reference/sms-international/error-codes). Always interpret a platform
+code against the channel that produced it.
 </Warning>
 
 ## Related
 
 - [Send RCS messages](/api-reference/rcs/send-messages) — OneXtel API-level error codes
 - [Send RCS template messages](/api-reference/rcs/send-template-message)
-- [WhatsApp error codes](/api-reference/whatsapp/error-codes) — Meta Cloud API equivalents
+- [WhatsApp error codes](/api-reference/whatsapp/error-codes) — Meta equivalents and the same platform codes
