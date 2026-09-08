@@ -80,7 +80,9 @@ or a silent failure rather than an obvious DNS error. Check the hyphen before yo
   </Step>
 
   <Step title="Set the RCS sender and body parameters">
-    Set **RCS Sender ID** to your OneXtel RCS sender profile.
+    Set **RCS Sender ID** to your OneXtel RCS sender profile, or to a
+    [pool](/plugins/overview#pools-instead-of-a-single-sender). If you use a pool, only
+    templates assigned to that pool will resolve.
 
     Under **RCS Body Parameters**, add these key-value pairs. The `$$` syntax tells CleverTap to
     fill the value from the campaign's custom params.

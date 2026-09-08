@@ -71,12 +71,24 @@ Whichever plugin you use:
   [RCS templates](/api-reference/rcs/templates).
 - **A registered sender.** A WhatsApp Business number, an
   [RCS agent](/guides/rcs-platform/sender-profiles), or an
-  [SMS sender ID](/guides/sms/sender-id), depending on channel.
-- **Matching template names.** Several platforms match templates by name rather than ID, so
-  the name in the host platform must match the name in OneXtel exactly.
+  [SMS sender ID](/guides/sms/sender-id), depending on channel. Every plugin also accepts a
+  **pool** in place of a single sender — see below.
+- **Matching templates.** The template name **and** ID must match between the host platform and
+  OneXtel exactly. A change to either on either side breaks the send.
 - **A callback configured in OneXtel.** Delivery reports and inbound messages only reach the
   host platform once the corresponding callback is registered against your API key, under
   **Configuration → Add New Callback** in the portal.
+
+### Pools instead of a single sender
+
+Anywhere a plugin asks for a sender, you can give it a **pool** instead — a group of sender
+profiles that OneXtel distributes traffic across.
+
+<Warning>
+A pool narrows what you can send. **Only templates assigned to that pool are available to it**,
+so a template belonging to a different profile will not resolve. Confirm which templates the
+pool carries before building campaigns against it.
+</Warning>
 
 ## Message categories
 
