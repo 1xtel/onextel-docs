@@ -305,23 +305,46 @@ it in OneXtel.
     **Authorization** field with four tilde-separated values:
 
     ```
-    <apikey>~<ttl>~<smsFallbackId>~<fallbackWaitTime>
+    <apikey>~<ttl_Seconds>~<smsFallbackId>~<fallbackWaitTime_seconds>
+    ```
+
+    For example:
+
+    ```
+    QkLuVxXI~60s~0004d861-8a30-47c3-90d4-c06eb391ec3a~90
     ```
 
     | Value | What it is |
     | --- | --- |
     | `apikey` | The API key already configured for this provider |
-    | `ttl` | Time-to-live, written with its unit — for example `10s` |
+    | `ttl_Seconds` | How long operators keep trying to deliver the RCS message, in seconds **with the `s` suffix** — for example `60s`. After this the message is marked failed |
     | `smsFallbackId` | The Fallback ID generated in step 1 |
-    | `fallbackWaitTime` | How long to wait for RCS delivery before falling back |
+    | `fallbackWaitTime_seconds` | How long OneXtel waits for an RCS delivery or failure report before sending the SMS, in seconds **as a plain number** — for example `90`. Defaults to `30` if missing or not numeric |
+
+    <Note>
+      You only need the extended value if you want SMS fallback. Without fallback, leave the
+      field as the plain API key.
+    </Note>
 
     <Warning>
-      All four values are required, in this order, separated by `~`. There is no separate
-      fallback section in the MoEngage form — this single field is the whole configuration, so a
-      missing value or a wrong separator disables fallback silently.
+      With fallback, all four values are required, in this order, separated by `~`. There is
+      no separate fallback section in the MoEngage form — this single field is the whole
+      configuration, so a missing value or a wrong separator disables fallback silently.
     </Warning>
 
-    Use the `ttl` and `fallbackWaitTime` values OneXtel supplies for your account.
+    **Choosing TTL and wait time.** The two clocks start together at send time and do
+    different jobs: TTL is the operator's deadline to deliver the RCS message, and wait time is
+    OneXtel's deadline to hear back before it sends the SMS. Fallback fires on whichever comes
+    first — a failure report from the operator, or the wait time running out with no report at
+    all.
+
+    | Setting | Example | What happens |
+    | --- | --- | --- |
+    | TTL longer than wait time | `30s` TTL, `10` wait | The SMS goes out at 10 seconds if no report has arrived, while the operator can still deliver the RCS message until 30 seconds. The recipient can get **both** |
+    | TTL shorter than wait time | `30s` TTL, `60` wait | The RCS attempt stops at 30 seconds. The SMS goes out when the operator's failure report arrives, or at 60 seconds at the latest. No double delivery, but the recipient may wait the full 60 seconds |
+
+    Keep TTL at or below the wait time. OneXtel's own campaign fallback sets TTL to 95% of the
+    wait time for this reason — see [Fallback overview](/guides/omnichannel/fallback-overview).
   </Step>
 
   <Step title="Add an SMS custom service provider in MoEngage">
