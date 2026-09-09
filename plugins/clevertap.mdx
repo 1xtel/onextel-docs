@@ -187,8 +187,10 @@ and its headers.
 <Steps>
   <Step title="Create the campaign">
     In CleverTap, create a new campaign. Under **From**, select the provider you created in
-    Part A. Under **Who**, choose your audience. Under **What**, choose the **Text Free Form**
-    template type and enter the message body.
+    Part A. Under **Who**, choose your audience. Under **What**, either pick an approved
+    template from the provider's **Templates** tab, or choose the **Text Free Form** type and
+    enter the message body. Both work with a pre-made OneXtel template — see
+    [Personalize a template](#personalize-a-template) for what each one needs.
   </Step>
 
   <Step title="Add the RCS custom key-value pairs">
@@ -196,7 +198,7 @@ and its headers.
     | --- | --- | --- |
     | `message_type` | `Transactional` | `Promotional` or `Transactional` |
     | `template_id` | `payment_success_onex` | Selects a pre-made OneXtel template. Omit to use the composer output |
-    | any other key | — | Passed through as a template placeholder value |
+    | any other key | — | Passed through as a template placeholder value. The key must match the placeholder name in the OneXtel template — see below |
 
     <Frame caption="Campaign composer — RCS body key-value pairs">
       <img src="/images/plugins/clevertap-campaign-rcs-kv.png" alt="CleverTap campaign composer showing the RCS Body Key-Value Pairs section with message_type, template_id and a custom parameter" />
@@ -270,6 +272,81 @@ This is currently the only reliable way to get a working URL-action or dial-acti
 Ad-hoc, non-template cards reliably support only a plain Reply button.
 </Note>
 
+## Personalize a template
+
+Personalization happens in CleverTap, before the send reaches OneXtel. The connector does not
+substitute anything itself: it forwards each custom key-value pair to OneXtel as a template
+variable under the same key name, and OneXtel fills the matching `[placeholder]` in the approved
+template. So a variable renders correctly only when **the key in CleverTap is spelled exactly
+like the placeholder in the OneXtel template**, and the value carries a CleverTap
+personalization token.
+
+Two kinds of personalization are involved. Use the right one in the right place:
+
+| Where in the campaign | What to use | What it does |
+| --- | --- | --- |
+| **What → template body** (an approved CleverTap template) | Positional placeholders `{{1}}`, `{{2}}` | Required by CleverTap for approved templates. Their values are **not** forwarded to OneXtel by the connector, so fill them with anything. |
+| **What → RCS Body Key-Value Pairs** | A key named after the OneXtel placeholder, with a value inserted from the **@** personalization menu (a user property, with a default) | This is the value OneXtel receives and renders. |
+
+<Steps>
+  <Step title="Check the placeholder name in the OneXtel template">
+    Open the template in the OneXtel portal, or fetch it with
+    [Fetch templates](/api-reference/rcs/templates#fetch-template), and note the exact variable
+    name between the square brackets — for example `[custom_param1]`.
+
+    When you create templates for CleverTap, name the variables `[custom_param1]`,
+    `[custom_param2]` and so on, in the same order as `{{1}}`, `{{2}}` in the CleverTap copy.
+    Any name is technically accepted, but one convention keeps campaigns predictable.
+  </Step>
+
+  <Step title="Add a key-value pair for each placeholder">
+    In the campaign's **What** section, under **RCS Body Key-Value Pairs**, add one pair per
+    placeholder alongside `sender_id`, `message_type` and `template_id`:
+
+    | Key | Value |
+    | --- | --- |
+    | `custom_param1` | `@Profile - Name \| default: "Customer"` |
+
+    Type `@` in the value field to open CleverTap's personalization menu, pick the profile or
+    event property, and set a default for users who do not have it. CleverTap resolves the
+    token per recipient at send time. Do not type the placeholder name into the value — the
+    key already carries it.
+
+    <Frame caption="Campaign composer — a personalized key-value pair for the template placeholder">
+      <img src="/images/plugins/clevertap-campaign-personalization.png" alt="CleverTap RCS Body Key-Value Pairs with sender_id, message_type, template_id, and a custom_param0 key whose value is the @Profile - Name token with a default" />
+    </Frame>
+  </Step>
+
+  <Step title="Send a test and read the message">
+    On the handset the variable should read as the recipient's value, for example `Hi Kabir`.
+    If the message shows the raw placeholder, such as `Hi [custom_param1]`, the key in
+    CleverTap does not match the variable name in the OneXtel template — compare the two
+    character by character.
+  </Step>
+</Steps>
+
+What the connector sends to OneXtel for the example above:
+
+```json
+{
+  "templateMessage": {
+    "templateCode": "ct_var1",
+    "customParams": "{\"custom_param1\":\"Kabir Sethi\"}"
+  }
+}
+```
+
+<Warning>
+**Provider-level parameters are not personalized per user.** A key added under
+**RCS Body Parameters** in the provider setup (Part A) takes one value per campaign. Per-user
+values must come from a key-value pair added on the campaign itself, in the **What** section.
+</Warning>
+
+For CleverTap's own guidance on personalization tokens, defaults, and Liquid expressions, see
+[RCS Message Editor](https://docs.clevertap.com/docs/rcs-message-editor),
+[Personalize Message](https://docs.clevertap.com/docs/personalize-message-sms), and
+[Liquid Tags](https://docs.clevertap.com/docs/liquid-tags) in the CleverTap documentation.
+
 ## Reference
 
 ### Connector endpoints
@@ -299,7 +376,7 @@ configure this directly — it is here for troubleshooting.
 | --- | --- | --- |
 | `message_type` | Yes | `Promotional` or `Transactional`. OTP is not a valid RCS message type |
 | `template_id` / `templateid` | No | Selects a pre-made template; both spellings accepted |
-| any other key | No | Passed through as a template placeholder |
+| any other key | No | Passed through as a template placeholder. Key must equal the `[placeholder]` name in the OneXtel template; value may be a personalization token — see [Personalize a template](#personalize-a-template) |
 
 **SMS fallback side**
 
@@ -319,6 +396,9 @@ configure this directly — it is here for troubleshooting.
 - **Fallback failures are silent.** An incomplete SMS block does not raise an error in
   CleverTap.
 - **Composer templates cannot use saved OneXtel templates directly** — use `template_id`.
+- **`{{1}}`-style values in an approved CleverTap template are not forwarded.** Personalize
+  through a campaign key-value pair named after the OneXtel placeholder instead — see
+  [Personalize a template](#personalize-a-template).
 
 ## Related
 
