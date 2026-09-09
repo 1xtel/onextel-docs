@@ -128,6 +128,21 @@ or a silent failure rather than an obvious DNS error. Check the hyphen before yo
     The Inbound URL only appears after you reopen the saved provider; immediately after the
     first save you may see only the Delivery Report URL.
   </Step>
+
+  <Step title="Add your OneXtel templates to the provider">
+    To send an approved OneXtel template from the campaign composer, the same template must
+    also exist in CleverTap. Open the saved provider, switch to its **Templates** tab, and
+    create each template there with the **exact same name** as its OneXtel template code —
+    for example `payment_success_onex`. Use the same type (Text, Rich Card or Carousel) and
+    put `{{1}}`, `{{2}}` where the OneXtel template has `[custom_param1]`, `[custom_param2]`.
+
+    CleverTap documents this in
+    [Generic RCS → Add a Template](https://docs.clevertap.com/docs/generic-rcs#add-a-template)
+    and, for the fields of each template type, in
+    [RCS Message Templates](https://docs.clevertap.com/docs/rcs-message-templates#add-message-template).
+    Template names are unique per provider, so the same name can be reused across a UAT and a
+    production provider.
+  </Step>
 </Steps>
 
 <Warning>
@@ -188,9 +203,9 @@ and its headers.
   <Step title="Create the campaign">
     In CleverTap, create a new campaign. Under **From**, select the provider you created in
     Part A. Under **Who**, choose your audience. Under **What**, either pick an approved
-    template from the provider's **Templates** tab, or choose the **Text Free Form** type and
-    enter the message body. Both work with a pre-made OneXtel template — see
-    [Personalize a template](#personalize-a-template) for what each one needs.
+    template from the provider's **Templates** tab (added in Part A, step 6), or choose the
+    **Text Free Form** type and enter the message body. Both work with a pre-made OneXtel
+    template — see [Personalize a template](#personalize-a-template) for what each one needs.
   </Step>
 
   <Step title="Add the RCS custom key-value pairs">
