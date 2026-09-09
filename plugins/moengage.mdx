@@ -334,14 +334,13 @@ it in OneXtel.
 
     **Choosing TTL and wait time.** The two clocks start together at send time and do
     different jobs: TTL is the operator's deadline to deliver the RCS message, and wait time is
-    OneXtel's deadline to hear back before it sends the SMS. Fallback fires on whichever comes
-    first — a failure report from the operator, or the wait time running out with no report at
-    all.
+    how long OneXtel waits before it sends the SMS. Fallback fires when the wait time runs out
+    without a delivery report.
 
     | Setting | Example | What happens |
     | --- | --- | --- |
-    | TTL longer than wait time | `30s` TTL, `10` wait | The SMS goes out at 10 seconds if no report has arrived, while the operator can still deliver the RCS message until 30 seconds. The recipient can get **both** |
-    | TTL shorter than wait time | `30s` TTL, `60` wait | The RCS attempt stops at 30 seconds. The SMS goes out when the operator's failure report arrives, or at 60 seconds at the latest. No double delivery, but the recipient may wait the full 60 seconds |
+    | TTL longer than wait time | `30s` TTL, `10` wait | The SMS goes out at 10 seconds if no delivery report has arrived, while the operator can still deliver the RCS message until 30 seconds. The recipient can get **both** |
+    | TTL shorter than wait time | `30s` TTL, `60` wait | The RCS attempt stops at 30 seconds, but fallback still waits the full 60 seconds before the SMS goes out. No double delivery, but the recipient waits for the whole wait time |
 
     Keep TTL at or below the wait time. OneXtel's own campaign fallback sets TTL to 95% of the
     wait time for this reason — see [Fallback overview](/guides/omnichannel/fallback-overview).
@@ -469,6 +468,32 @@ hosts, so check it before saving.
 - **Audio and PDF are not supported** by MoEngage on RCS.
 - **Carousel templates are not yet available** — see
   [Coming soon](/plugins/overview#coming-soon).
+
+## Get support
+
+If a campaign does not behave as this page describes, email
+[omni.tech@onextel.com](mailto:omni.tech@onextel.com) with the plugin name (MoEngage), the
+channel, and what you saw. To let OneXtel see exactly what MoEngage sent and what OneXtel
+answered:
+
+<Steps>
+  <Step title="Ask for the logging endpoint">
+    Support will give you a logging version of the connector URL for the affected channel.
+  </Step>
+  <Step title="Point the sender at it">
+    In MoEngage, open the OneXtel sender and replace the **API URL** with the logging URL.
+    Nothing else changes.
+  </Step>
+  <Step title="Run the campaign again">
+    Send the campaign to a small test audience.
+  </Step>
+  <Step title="Share the campaign ID">
+    Reply to support with the MoEngage campaign ID. OneXtel matches it against the logged
+    requests and responses and comes back with the exact cause.
+  </Step>
+</Steps>
+
+Switch the API URL back to the normal connector URL once the issue is closed.
 
 ## Related
 

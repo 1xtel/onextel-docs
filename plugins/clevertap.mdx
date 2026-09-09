@@ -404,6 +404,34 @@ configure this directly — it is here for troubleshooting.
   through a campaign key-value pair named after the OneXtel placeholder instead — see
   [Personalize a template](#personalize-a-template).
 
+## Get support
+
+If a campaign does not behave as this page describes, email
+[omni.tech@onextel.com](mailto:omni.tech@onextel.com) with the plugin name (CleverTap), the
+provider nickname, and what you saw. To let OneXtel see exactly what CleverTap sent and what
+OneXtel answered:
+
+<Steps>
+  <Step title="Ask for the logging endpoint">
+    Support will give you a logging version of the connector's RCS send URL.
+  </Step>
+  <Step title="Point the provider at it">
+    In CleverTap, open the provider under **Settings → Channels → SMS** and replace the
+    **HTTPS Endpoint** with the logging URL. Keep the `apikey` header and everything else as
+    it is.
+  </Step>
+  <Step title="Run the campaign again">
+    Send the campaign to a small test audience.
+  </Step>
+  <Step title="Share the campaign ID">
+    Reply to support with the CleverTap campaign ID, shown under the campaign name in the
+    campaigns list. OneXtel matches it against the logged requests and responses and comes
+    back with the exact cause.
+  </Step>
+</Steps>
+
+Switch the endpoint back to `https://ct.onex-aura.com/rcs/send` once the issue is closed.
+
 ## Related
 
 - [RCS API overview](/api-reference/rcs/overview)
