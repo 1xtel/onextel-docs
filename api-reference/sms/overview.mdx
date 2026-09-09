@@ -13,11 +13,17 @@ For destinations **outside India**, use the
 different authentication scheme, and no DLT fields.
 </Note>
 
-## Endpoint
+## Endpoints
 
 ```
+POST https://api.onexaura.com/send_sms
 POST https://api.onexaura.com/oapi/send_sms
 ```
+
+Both are live and take the same key and body. `/send_sms` carries the fuller SMS feature set;
+`/oapi/send_sms` is the shared Omni endpoint used for WhatsApp and RCS too, and is the one
+[channel fallback](/api-reference/omnichannel/fallback) requires. See
+[Endpoints](/api-reference/sms/send-sms-omni#endpoints).
 
 ## Authentication
 
@@ -45,7 +51,7 @@ Messages that fail these checks are rejected before they reach an operator — s
 | | India | [International](/api-reference/sms-international/overview) |
 | --- | --- | --- |
 | Host | `api.onexaura.com` | `api.int.onexglobal.io` |
-| Path | `/oapi/send_sms` | `/api/jsmslist` |
+| Path | `/send_sms` or `/oapi/send_sms` | `/api/jsmslist` |
 | Authentication | `apikey` header | `key` in the body |
 | Message array | `sms` | `listsms` |
 | DLT fields (`templateId`, `entityId`) | Required | Not used |
@@ -62,7 +68,8 @@ API key, and fallback between channels.
 
 | Endpoint | Method | Purpose |
 | --- | --- | --- |
-| [`/oapi/send_sms`](/api-reference/sms/send-sms-omni) | POST | Send SMS, with DLT fields, campaign tagging, and URL shortening |
+| [`/send_sms`](/api-reference/sms/send-sms-omni) | POST | Send SMS, with DLT fields, custom references, campaign tagging, and URL shortening |
+| [`/oapi/send_sms`](/api-reference/sms/send-sms-omni#endpoints) | POST | The same, on the endpoint shared with WhatsApp and RCS |
 | [DLR callback](/api-reference/sms/dlr-callback) | POST (inbound, to your URL) | Receive the final delivery state |
 | [Message status](/api-reference/omnichannel/message-status) | GET | Poll for status instead of receiving it |
 

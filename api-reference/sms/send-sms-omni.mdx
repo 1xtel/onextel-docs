@@ -15,11 +15,30 @@ outside India, use the [SMS List API](/api-reference/sms-international/send-sms)
 different authentication scheme. See [how the two compare](/api-reference/sms/overview#how-it-compares-to-international-sms).
 </Note>
 
-## Endpoint
+## Endpoints
 
-```
-POST https://api.onexaura.com/oapi/send_sms
-```
+Two send paths are live, and they are separate implementations rather than one aliasing the
+other.
+
+| Path | Use it for |
+| --- | --- |
+| `POST https://api.onexaura.com/send_sms` | The fuller SMS feature set — custom references, campaign tagging, and URL shortening |
+| `POST https://api.onexaura.com/oapi/send_sms` | The shared Omni endpoint, also used for WhatsApp and RCS, and required for [channel fallback](/api-reference/omnichannel/fallback) |
+
+Both take the same `apikey` header and the same request body, and everything documented on this
+page is supported on `/send_sms`.
+
+<Note>
+These are genuinely different handlers rather than a redirect — verified Sept 2026, they return
+differently shaped error envelopes for the same rejected key. If a field on this page does not
+behave as documented on `/oapi/send_sms`, try it on `/send_sms` before raising it.
+</Note>
+
+<Warning>
+Call these over **HTTPS**. An `http://` request is answered with a `301` redirect, and a client
+that does not follow redirects — or that follows one without re-sending the body — will appear
+to send nothing while reporting no error.
+</Warning>
 
 ## Headers
 
@@ -58,6 +77,44 @@ curl --location 'https://api.onexaura.com/oapi/send_sms' \
   "campaignName": "SMS2026",
   "prefix": "+91",
   "validation": false
+}'
+```
+
+```bash cURL — full feature set
+curl --location 'https://api.onexaura.com/send_sms' \
+--header 'apikey: YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data '{
+  "sms": [
+    {
+      "sender": "ONEXTL",
+      "recipient": "919999999999",
+      "templateId": "YOUR_DLT_TEMPLATE_ID",
+      "entityId": "YOUR_DLT_ENTITY_ID",
+      "type": "SI",
+      "custRef1": "order-4821",
+      "custRef2": "",
+      "custRef3": "",
+      "custRef4": "",
+      "custRef5": "",
+      "messageBody": "Hi {#var#}, your secure code is {#var#}. Click here {#var#}",
+      "unicode": 0
+    }
+  ],
+  "validation": false,
+  "campaignName": "SpringPromo2026",
+  "prefix": "+91",
+  "urlShortener": {
+    "flag": 1,
+    "urlDetails": [
+      {
+        "longUrl": "https://example.com/offers/spring",
+        "senderId": "ONEXTL",
+        "domain": "links.example.com",
+        "track_user": 1
+      }
+    ]
+  }
 }'
 ```
 
@@ -150,10 +207,28 @@ may be accepted on a promotional key — this has not been verified.
   `1` for a Unicode message, `0` for normal text. **Required when sending Unicode.**
 </ParamField>
 
-<ParamField body="sms[].custRef1" type="object">
-  Custom reference object for tracking — for example `CustomReference1` and
-  `CustomReference2`. Echoed back on the [delivery report](/api-reference/sms/dlr-callback).
+<ParamField body="sms[].custRef1 … custRef5" type="string | object">
+  Up to five custom references of your own, echoed back on the
+  [delivery report](/api-reference/sms/dlr-callback) so you can match a receipt to your own
+  record. Each slot takes either a plain string or a nested object:
+
+  ```json
+  "custRef1": "order-4821"
+
+  "custRef1": {
+    "CustomReference1": "testSMS",
+    "CustomReference2": "123"
+  }
+  ```
+
+  The nested form lets one slot carry several values — useful when five slots are not enough,
+  or when you want the pairs kept together.
 </ParamField>
+
+<Note>
+**The nested object form is supported on SMS only.** WhatsApp and RCS take custom references as
+plain values. Sending an object on those channels is not supported.
+</Note>
 
 <Warning>
 **The message type is ultimately determined by your API key configuration, regardless of the
