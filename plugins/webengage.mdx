@@ -7,6 +7,13 @@ The WebEngage connector adds WhatsApp and RCS as sendable channels inside WebEng
 are built and triggered in WebEngage; the connector translates each payload into a OneXtel
 message and returns delivery status.
 
+<Info>
+**Two versions of this connector exist.** The setup below is **V1**, live today. **V2** is a
+native rebuild that is being brought live — same WebEngage-side configuration, new delivery-report
+flow, SMS on the same host, and more. See [V2 — coming live](#v2--coming-live) before you start a
+new integration.
+</Info>
+
 ## Scope
 
 <Tabs>
@@ -46,7 +53,123 @@ message and returns delivery status.
   </Tab>
 </Tabs>
 
-## Set up WhatsApp
+## V2 — coming live
+
+<Warning>
+V2 is not yet accepting production traffic. The endpoints below are fixed and UAT access is
+available on request from omni.tech@onextel.com; do not repoint a live V1 configuration until
+OneXtel confirms your account has been moved.
+</Warning>
+
+V2 replaces the connector behind `we.onexaura.com` with OneXtel's native build. What you gain:
+
+- **Delivery reports relayed with mapped error codes.** OneXtel's delivery callbacks go to the
+  connector, which converts each into a WebEngage Delivery Status Notification with the Meta,
+  RCS-operator or OneXtel failure code mapped onto WebEngage's own status-code table, and the
+  original code kept in the `reason` field. In V1 you register WebEngage's webhook directly at
+  OneXtel and the codes arrive unmapped.
+- **Lower delivery latency.** Sends go to OneXtel's regional host directly — Indian numbers to
+  `api.onexaura.com`, all other numbers to `api.onexglobal.ae` — with no intermediate hop.
+- **Higher throughput.** Each connector instance is stateless, so OneXtel scales it horizontally
+  to the TPS your account is provisioned for.
+- **More template types.** WhatsApp text, image, video, document and carousel templates with
+  quick-reply, URL, dynamic-URL and copy-code buttons; RCS text, rich card and rich carousel.
+- **SMS on the same host.** The WebEngage SMS connector, with its own delivery-report mapping,
+  moves next to WhatsApp and RCS under `we.onexaura.com`.
+- **Listed natively in WebEngage.** OneXtel appears as a named provider in WebEngage's channel
+  setup, so the endpoint and headers no longer have to be typed into a Private WSP / RSP form.
+  Until that listing is live, the Private WSP / RSP steps in V1 work unchanged with the V2 URLs.
+
+### V2 endpoints
+
+All on `https://we.onexaura.com`. Send routes take the OneXtel API key in an `apikey` header, or
+as `?apikey=` on the URL if the WebEngage form cannot set headers.
+
+| Purpose | Direction | URL |
+| --- | --- | --- |
+| WhatsApp send | WebEngage → connector | `https://we.onexaura.com/webengage/whatsapp/send` |
+| RCS send | WebEngage → connector | `https://we.onexaura.com/webengage/rcs/send` |
+| SMS send | WebEngage → connector | `https://we.onexaura.com/api/we` |
+| WhatsApp delivery reports | OneXtel → connector → WebEngage | `https://we.onexaura.com/webengage/whatsapp/dlr` |
+| RCS delivery reports | OneXtel → connector → WebEngage | `https://we.onexaura.com/webengage/rcs/dlr` |
+| Health check | — | `https://we.onexaura.com/webengage/health` |
+
+Append `/in`, `/ksa` or `/us` to a delivery-report URL to pin the WebEngage data centre the DSN is
+sent to; without it the connector uses the region on file for your account.
+
+### What changes in the setup
+
+The WebEngage side is the same as V1: a Private WSP or RSP configuration pointing at the send
+URL, with the `apikey` header (and `campaigntype` for RCS), and a template that replicates the
+OneXtel one. Two steps on the OneXtel side change:
+
+<Steps>
+  <Step title="Register the connector, not WebEngage, as the OneXtel callback">
+    In the OneXtel portal, go to **Configuration → Add New Callback** and register the
+    delivery-report URL above for the channel — `…/webengage/whatsapp/dlr` for WhatsApp,
+    `…/webengage/rcs/dlr` for RCS — against the API key used for sending. Method `POST`, no
+    extra headers. In V1 this is where you pasted WebEngage's webhook URL; in V2 that URL is
+    configured on the connector instead.
+  </Step>
+  <Step title="Hand the WebEngage callback tokens to OneXtel">
+    Send omni.tech@onextel.com the WebEngage callback token for each channel and data centre
+    you use (WhatsApp and RCS tokens are separate from the SMS token). OneXtel configures them
+    on the connector; nothing is forwarded to WebEngage until they are in place.
+  </Step>
+</Steps>
+
+### What WebEngage receives
+
+One DSN per delivery event, in WebEngage's Private WSP format, sent to WebEngage's tracking
+endpoint for your data centre with your callback token:
+
+```json
+{
+  "version": "1.0",
+  "messageId": "ed70a6d4-431c-4d18-a062-a4d0a6c68153",
+  "toNumber": "919999999999",
+  "status": "whatsapp_failed",
+  "statusCode": 2009,
+  "reason": "Message undeliverable — recipient not on WhatsApp or has not accepted terms [onextel=131026]",
+  "timestamp": "2026-09-10T07:21:03+0000"
+}
+```
+
+`messageId` is the one WebEngage sent, carried through OneXtel as `custref1`. `sent`,
+`delivered` and `read` map to `whatsapp_sent`, `whatsapp_delivered` and `whatsapp_read` with
+`statusCode` 0. A failure maps as follows; anything not listed becomes `9988` with the raw code
+in `reason`.
+
+| OneXtel / Meta code | Meaning | WebEngage code |
+| --- | --- | --- |
+| 131026 | Recipient not on WhatsApp | 2009 not delivered |
+| 131047 | Outside the 24-hour window | 2024 not opted in |
+| 131049, 900115, 900120, 900121 | Meta or account frequency caps | 2026 frequency cap |
+| 131050, 4013, 900122 | Opted out or blacklisted | 2006 user blocked |
+| 132001, 4001, 134102 | Template missing or unapproved | 2021 template missing |
+| 132000, 132012, 132018, 4018 | Template parameter mismatch | 2022 parameter mismatch |
+| 132015, 132016, 900118, 900119 | Template paused, disabled or category blocked | 2023 template did not match |
+| 4, 80007, 130429, 131056, 131016, 900117 | Rate limits and temporary outages | 2015 throttled |
+| 4010, 131042 | Credit or payment | 2000 insufficient credit |
+| 0, 190 | Token expired | 2011 authentication failure |
+| 10, 200–299, 368, 131031, 4022 | Permission or account restriction | 2005 authorization failure |
+
+RCS events map the same way with an `rcs_` prefix: `rcs_sent`, `rcs_delivered`, `rcs_read`,
+`rcs_failed`. Operator failures are classified from the operator's own wording — invalid or
+non-RCS number 2003, DND or opt-out 2006, expired 2008, throttled 2015, template rejected 2023,
+otherwise 2009 — because Jio and Vi reuse the same numeric codes for different conditions
+(see [RCS operator error codes](/api-reference/rcs/error-codes)). SMS delivery reports follow the
+[India](/api-reference/sms/error-codes) and
+[international](/api-reference/sms-international/error-codes) code tables.
+
+### V2 limitations
+
+- Inbound messages are still not supported on WhatsApp and RCS.
+- `LOCATION` WhatsApp templates are not accepted by the send route.
+- WebEngage has not published an RCS delivery-status contract; the `rcs_` status words above are
+  OneXtel's and can be changed on the connector if WebEngage specifies others.
+
+## Set up WhatsApp (V1)
 
 <Steps>
   <Step title="Get your OneXtel API key">
@@ -84,7 +207,7 @@ message and returns delivery status.
   </Step>
 </Steps>
 
-## Set up RCS
+## Set up RCS (V1)
 
 <Steps>
   <Step title="Get your OneXtel API key">
