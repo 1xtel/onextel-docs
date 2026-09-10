@@ -1,6 +1,6 @@
 ---
 title: "MoEngage"
-description: "Set up the OneXtel WhatsApp and RCS connectors in MoEngage — sender configuration, callbacks, and supported message types."
+description: "Set up the OneXtel WhatsApp and RCS connectors in MoEngage — senders, templates, campaigns, callbacks, and SMS fallback."
 ---
 
 The MoEngage connector adds WhatsApp and RCS as sendable channels inside MoEngage. You build
@@ -51,7 +51,7 @@ into a OneXtel message and returns delivery status to MoEngage.
     **SMS fallback**
 
     Supported. If RCS is not delivered, OneXtel retries over SMS — see
-    [SMS fallback](#sms-fallback).
+    [Set up RCS with SMS fallback](#set-up-rcs-with-sms-fallback).
 
     **Inbound**
 
@@ -59,6 +59,42 @@ into a OneXtel message and returns delivery status to MoEngage.
     see [Limitations](#limitations).
   </Tab>
 </Tabs>
+
+## Before you start
+
+- A MoEngage account with the custom-provider channel available. RCS requires MoEngage to
+  register OneXtel as a partner — raise this with your MoEngage account team before starting.
+- A OneXtel account with the relevant channels enabled.
+- Pre-approved templates in OneXtel. See
+  [RCS templates](/api-reference/rcs/templates) and
+  [WhatsApp templates](/api-reference/whatsapp/templates-create).
+- For SMS fallback, an SMS sender ID and a DLT-approved SMS template registered against it in
+  OneXtel.
+
+### Connector endpoints
+
+Every URL this connector uses sits on one host, `https://mo.onexaura.com`. Copy them from here
+rather than retyping — MoEngage rejects nothing at save time, so a wrong path fails silently at
+send.
+
+| Purpose | Where you enter it | URL |
+| --- | --- | --- |
+| WhatsApp outbound | MoEngage sender — URL | `https://mo.onexaura.com/moengage/whatsapp/outbound` |
+| WhatsApp inbound and button clicks | OneXtel callback — Callback URL | `https://mo.onexaura.com/moengage/whatsapp/inbound` |
+| RCS outbound | MoEngage sender — API URL | `https://mo.onexaura.com/moengage/rcs/outbound` |
+| RCS button clicks | OneXtel callback — Callback URL | `https://mo.onexaura.com/moengage/rcs/inbound` |
+| SMS fallback outbound | MoEngage SMS provider — API URL | `https://mo.onexaura.com/moengage/sms` |
+
+<Note>
+The RCS and SMS **delivery notification** callbacks are the exception — those take the callback
+URL MoEngage generates for you, not a OneXtel one. You copy that from the MoEngage sender screen
+after saving it.
+</Note>
+
+<Warning>
+This host has **no hyphen** — `onexaura.com`. OneXtel runs other connectors on similar-looking
+hosts, so check it before saving.
+</Warning>
 
 ## Set up WhatsApp
 
@@ -106,7 +142,25 @@ into a OneXtel message and returns delivery status to MoEngage.
   </Step>
 </Steps>
 
-## Set up RCS
+## Set up RCS with SMS fallback
+
+If an RCS message is not delivered, OneXtel can retry it over SMS. Fallback spans both
+platforms: you create the fallback configuration and its DLR in OneXtel, then reference it from
+MoEngage in two places — the RCS provider's Authorization value, and a separate SMS provider that
+carries the actual fallback message. Fallback is optional; skip the steps marked
+**(SMS fallback)** if you send RCS only.
+
+Work through the parts in order.
+
+| Part | What you do | Where |
+| --- | --- | --- |
+| [A](#part-a--create-the-rcs-sender-and-configure-sms) | Create the RCS sender and configure SMS fallback | OneXtel and MoEngage |
+| [B](#part-b--create-templates-in-moengage) | Create templates | MoEngage |
+| [C](#part-c--build-the-campaign) | Build the campaign and fill its variables | MoEngage |
+| [D](#part-d--configure-the-callbacks-before-you-send) | Configure the callbacks | OneXtel |
+| [E](#part-e--test-then-launch) | Test, then launch | Both |
+
+### Part A — Create the RCS sender and configure SMS
 
 <Steps>
   <Step title="Get your OneXtel API key">
@@ -167,6 +221,13 @@ into a OneXtel message and returns delivery status to MoEngage.
     Name_Transactional      SenderID_Transactional
     ```
 
+    <Note>
+      **Create one sender per message type.** RCS templates in OneXtel are retrieved per message
+      category, so you need a separate RCS sender for each message type you send — Promotional
+      and Transactional. Each sender carries only the templates of its own type, which is why the
+      type is encoded in the sender name.
+    </Note>
+
     **Sender ID** accepts either a single sender profile or a **pool**. A pool groups several
     sender profiles so OneXtel can distribute traffic across them.
 
@@ -177,12 +238,13 @@ into a OneXtel message and returns delivery status to MoEngage.
       [Sender profiles](/guides/rcs-platform/sender-profiles).
     </Warning>
 
-    <Frame caption="A completed RCS sender. The Authorization value is blanked here — see SMS fallback for what goes in it. The api-01 callback host is region-specific; copy yours from your own screen.">
+    <Frame caption="A completed RCS sender. The Authorization value is blanked here — see the Authorization step below for what goes in it with SMS fallback. The api-01 callback host is region-specific; copy yours from your own screen.">
       <img src="/images/plugins/moengage-rcs-sender-filled.png" alt="Completed MoEngage RCS sender showing sender type, name, ID, the OneXtel outbound API URL, and the MoEngage callback URL" />
     </Frame>
 
     Save the sender. MoEngage then shows an **Incoming Messages & Delivery callback URL** —
-    copy it, you need it in the next step.
+    copy it, you paste it into OneXtel in
+    [Part D](#part-d--configure-the-callbacks-before-you-send).
 
     <Warning>
       **Copy this URL from your own provider screen. Do not retype it, and do not take it from
@@ -193,114 +255,18 @@ into a OneXtel message and returns delivery status to MoEngage.
     </Warning>
   </Step>
 
-  <Step title="Configure the delivery report callback in OneXtel">
-    In OneXtel, go to **Configuration → Add New Callback**. Give it a title, set **Channel** to
-    `RCS` and **Callback Format Type** to `MoEngage`, and select the **same API key** you used
-    in MoEngage.
-
-    Under **Request Configuration**, set **Type** to `Delivery Notification` and **HTTP Method**
-    to `POST`, then paste the callback URL you copied from MoEngage. Save.
-
-    <Frame caption="Callback Configuration — Add New Callback">
-      <img src="/images/plugins/moengage-rcs-callback-list.png" alt="OneXtel Config page on the Callback Configuration tab with the Add New Callback button highlighted" />
-    </Frame>
-
-    <Frame caption="RCS delivery notification callback with Callback Format set to MoEngage. The callback URL is the one copied from your own MoEngage sender screen.">
-      <img src="/images/plugins/moengage-rcs-callback-dlr.png" alt="OneXtel Edit Callback screen with Channel RCS, Callback Format MoEngage, Type Delivery Notification and the MoEngage callback URL" />
-    </Frame>
-  </Step>
-
-  <Step title="Configure the button-click callback in OneXtel">
-    Add a second callback with the same channel, format type, and API key. Set **Type** to
-    `Button click` and **HTTP Method** to `POST`, and enter this URL:
-
-    ```
-    https://mo.onexaura.com/moengage/rcs/inbound
-    ```
-
-    In the **Header** section, add the key `cbUrl` with your MoEngage DLR URL as the value —
-    the same region-specific URL you copied from the sender screen, not one typed from this
-    page.
-
-    <Frame caption="Button click callback — note the cbUrl header at the bottom">
-      <img src="/images/plugins/moengage-rcs-callback-buttonclick.png" alt="OneXtel Edit Callback screen with Type Button Click, the suggestion-clicked request preview, and a cbUrl header" />
-    </Frame>
-  </Step>
-</Steps>
-
-<Warning>
-The inbound header key differs by channel — WhatsApp uses `callback_url`, RCS uses `cbUrl`.
-Using the wrong one silently breaks callback routing.
-</Warning>
-
-## Create templates in MoEngage
-
-Templates are built in OneXtel and recreated in MoEngage. Create the MoEngage template by
-selecting the matching **Provider** and **Sender ID**, then copy the message body across from
-the OneXtel dashboard.
-
-<Warning>
-**The two platforms use different placeholder syntax.** OneXtel wraps parameters in square
-brackets; MoEngage wraps them in double curly braces. Copying a body across unchanged leaves the
-placeholders unsubstituted, and the message goes out with literal `[custom_param]` text in it.
-</Warning>
-
-<CodeGroup>
-
-```text OneXtel
-Your money transfer of Rs. [custom_param] was successfully completed.
-Transaction ID: [custom_param1]. Thank you for using our service.
-```
-
-```text MoEngage
-Your money transfer of Rs. {{custom_param}} was successfully completed.
-Transaction ID: {{custom_param1}}. Thank you for using our service.
-```
-
-</CodeGroup>
-
-Apply the same conversion to every parameter in the template.
-
-## One sender per message type
-
-RCS templates in OneXtel are retrieved per message category, so you need **a separate RCS
-sender for each message type** you send — Promotional and Transactional. Each sender carries
-only the templates of its own type, which is why the type is encoded in the sender name.
-
-## SMS fallback
-
-If an RCS message is not delivered, OneXtel can retry it over SMS. Fallback spans both
-platforms: you create the fallback configuration and its DLR in OneXtel, then reference it from
-MoEngage in two places — the RCS provider's Authorization value, and a separate SMS provider that
-carries the actual fallback message.
-
-**Before you start,** have your SMS sender ID and a DLT-approved SMS template registered against
-it in OneXtel.
-
-<Steps>
-  <Step title="Create the fallback configuration in OneXtel">
+  <Step title="Create the fallback configuration in OneXtel (SMS fallback)">
     Go to the **Fallback** module, create a new configuration, give it a name, and select **SMS**
     as the fallback channel. Save.
 
-    OneXtel generates a **Fallback ID** — copy it, you need it twice below.
+    OneXtel generates a **Fallback ID** — copy it, you need it in the next step.
 
     <Frame caption="Creating an SMS fallback configuration in OneXtel">
       <img src="/images/plugins/moengage-fallback-config.png" alt="OneXtel Create Fallback Configuration dialog with a fallback name and one SMS fallback channel" />
     </Frame>
   </Step>
 
-  <Step title="Configure the SMS delivery callback in OneXtel">
-    Add a callback exactly as you did for RCS, but with **Channel** set to `SMS`. Use the **same
-    API key**, **Callback Format** `MoEngage`, **HTTP Method** `POST`, and the same MoEngage DLR
-    URL you used for the RCS delivery notification.
-
-    <Warning>
-      The SMS DLR callback **cannot currently be created from the portal**. Contact OneXtel
-      support to have it configured for you.
-    </Warning>
-  </Step>
-
-  <Step title="Extend the RCS provider Authorization value">
+  <Step title="Extend the RCS sender Authorization value (SMS fallback)">
     Fallback is switched on by replacing the plain API key in the MoEngage RCS sender's
     **Authorization** field with four tilde-separated values:
 
@@ -318,7 +284,7 @@ it in OneXtel.
     | --- | --- |
     | `apikey` | The API key already configured for this provider |
     | `ttl_Seconds` | How long operators keep trying to deliver the RCS message, in seconds **with the `s` suffix** — for example `60s`. After this the message is marked failed |
-    | `smsFallbackId` | The Fallback ID generated in step 1 |
+    | `smsFallbackId` | The Fallback ID from the previous step |
     | `fallbackWaitTime_seconds` | How long OneXtel waits for an RCS delivery or failure report before sending the SMS, in seconds **as a plain number** — for example `90`. Defaults to `30` if missing or not numeric |
 
     <Note>
@@ -346,7 +312,7 @@ it in OneXtel.
     wait time for this reason — see [Fallback overview](/guides/omnichannel/fallback-overview).
   </Step>
 
-  <Step title="Add an SMS custom service provider in MoEngage">
+  <Step title="Add an SMS custom service provider in MoEngage (SMS fallback)">
     Fallback sends the SMS through a separate MoEngage provider. Go to **Settings → SMS & RCS**,
     open the **SMS** tab, and click **Add Custom Service Provider**.
 
@@ -362,7 +328,7 @@ it in OneXtel.
     </Frame>
   </Step>
 
-  <Step title="Set the request body">
+  <Step title="Set the SMS provider request body (SMS fallback)">
     Set **Method** to `POST`, **Body type** to `Raw`, and paste:
 
     ```json
@@ -386,58 +352,138 @@ it in OneXtel.
 
     Save.
   </Step>
+</Steps>
 
-  <Step title="Enable fallback on the campaign">
-    Fallback is switched on per campaign, not globally. Open the campaign, select your RCS
-    provider, tick **Use SMS as fallback**, then choose the SMS sender and enter the SMS template
-    and message content.
+### Part B — Create templates in MoEngage
+
+Templates are built in OneXtel and recreated in MoEngage. Create the MoEngage template by
+selecting the matching **Provider** and **Sender ID**, then copy the message body across from
+the OneXtel dashboard.
+
+<Warning>
+**The two platforms use different placeholder syntax.** OneXtel wraps parameters in square
+brackets; MoEngage wraps them in double curly braces. Copying a body across unchanged leaves the
+placeholders unsubstituted, and the message goes out with literal `[custom_param]` text in it.
+</Warning>
+
+<CodeGroup>
+
+```text OneXtel
+Your money transfer of Rs. [custom_param] was successfully completed.
+Transaction ID: [custom_param1]. Thank you for using our service.
+```
+
+```text MoEngage
+Your money transfer of Rs. {{custom_param}} was successfully completed.
+Transaction ID: {{custom_param1}}. Thank you for using our service.
+```
+
+</CodeGroup>
+
+Apply the same conversion to every parameter in the template.
+
+### Part C — Build the campaign
+
+<Steps>
+  <Step title="Create the campaign and select the template">
+    Create or open the campaign in MoEngage and select your OneXtel RCS sender. Under
+    **Select template**, choose the template you created in Part B. If the template has
+    placeholders, MoEngage shows a field for each — fill them, using MoEngage personalization
+    where the value varies per recipient. Media URLs can be personalised the same way.
+  </Step>
+
+  <Step title="Enable fallback on the campaign (SMS fallback)">
+    Fallback is switched on per campaign, not globally. Tick **Use SMS as fallback**, then
+    choose the SMS sender you created in Part A and enter the SMS template and message content.
 
     <Frame caption="Campaign content step with SMS fallback enabled">
       <img src="/images/plugins/moengage-campaign-fallback.png" alt="MoEngage campaign content step with Use SMS as fallback ticked and the SMS sender picker open" />
     </Frame>
   </Step>
+
+  <Step title="Save without launching">
+    Save the campaign, but do not launch it until the callbacks in Part D are in place —
+    otherwise the delivery reports and button clicks from the first send never reach MoEngage.
+  </Step>
 </Steps>
 
-<Note>
-**Test before you launch.** Send a test message and confirm two things separately: that the RCS
-message is delivered, and that the SMS fallback actually fires and arrives. A fallback that is
-misconfigured does not stop the RCS send, so a successful campaign tells you nothing about
-whether fallback works.
-</Note>
+### Part D — Configure the callbacks before you send
 
-## Connector endpoints
+Before you launch, create the callbacks in OneXtel that carry delivery reports and button clicks
+back to MoEngage. Each uses **Callback Format Type** `MoEngage` and the **same API key** you
+entered in the MoEngage sender.
 
-Every URL this connector uses sits on one host, `https://mo.onexaura.com`. Copy them from here
-rather than retyping — MoEngage rejects nothing at save time, so a wrong path fails silently at
-send.
+<Steps>
+  <Step title="Configure the delivery report callback">
+    In OneXtel, go to **Configuration → Add New Callback**. Give it a title, set **Channel** to
+    `RCS` and **Callback Format Type** to `MoEngage`, and select the **same API key** you used
+    in MoEngage.
 
-| Purpose | Where you enter it | URL |
-| --- | --- | --- |
-| WhatsApp outbound | MoEngage sender — URL | `https://mo.onexaura.com/moengage/whatsapp/outbound` |
-| WhatsApp inbound and button clicks | OneXtel callback — Callback URL | `https://mo.onexaura.com/moengage/whatsapp/inbound` |
-| RCS outbound | MoEngage sender — API URL | `https://mo.onexaura.com/moengage/rcs/outbound` |
-| RCS button clicks | OneXtel callback — Callback URL | `https://mo.onexaura.com/moengage/rcs/inbound` |
-| SMS fallback outbound | MoEngage SMS provider — API URL | `https://mo.onexaura.com/moengage/sms` |
+    Under **Request Configuration**, set **Type** to `Delivery Notification` and **HTTP Method**
+    to `POST`, then paste the callback URL you copied from MoEngage in Part A. Save.
 
-<Note>
-The RCS and SMS **delivery notification** callbacks are the exception — those take the callback
-URL MoEngage generates for you, not a OneXtel one. You copy that from the MoEngage sender screen
-after saving it.
-</Note>
+    <Frame caption="Callback Configuration — Add New Callback">
+      <img src="/images/plugins/moengage-rcs-callback-list.png" alt="OneXtel Config page on the Callback Configuration tab with the Add New Callback button highlighted" />
+    </Frame>
+
+    <Frame caption="RCS delivery notification callback with Callback Format set to MoEngage. The callback URL is the one copied from your own MoEngage sender screen.">
+      <img src="/images/plugins/moengage-rcs-callback-dlr.png" alt="OneXtel Edit Callback screen with Channel RCS, Callback Format MoEngage, Type Delivery Notification and the MoEngage callback URL" />
+    </Frame>
+  </Step>
+
+  <Step title="Configure the button-click callback">
+    Add a second callback with the same channel, format type, and API key. Set **Type** to
+    `Button click` and **HTTP Method** to `POST`, and enter this URL:
+
+    ```
+    https://mo.onexaura.com/moengage/rcs/inbound
+    ```
+
+    In the **Header** section, add the key `cbUrl` with your MoEngage DLR URL as the value —
+    the same region-specific URL you copied from the sender screen, not one typed from this
+    page.
+
+    <Frame caption="Button click callback — note the cbUrl header at the bottom">
+      <img src="/images/plugins/moengage-rcs-callback-buttonclick.png" alt="OneXtel Edit Callback screen with Type Button Click, the suggestion-clicked request preview, and a cbUrl header" />
+    </Frame>
+  </Step>
+
+  <Step title="Configure the SMS delivery callback (SMS fallback)">
+    Add a callback exactly as you did for RCS, but with **Channel** set to `SMS`. Use the **same
+    API key**, **Callback Format** `MoEngage`, **HTTP Method** `POST`, and the same MoEngage DLR
+    URL you used for the RCS delivery notification.
+
+    <Warning>
+      The SMS DLR callback **cannot currently be created from the portal**. Contact OneXtel
+      support to have it configured for you.
+    </Warning>
+  </Step>
+</Steps>
 
 <Warning>
-This host has **no hyphen** — `onexaura.com`. OneXtel runs other connectors on similar-looking
-hosts, so check it before saving.
+The inbound header key differs by channel — WhatsApp uses `callback_url`, RCS uses `cbUrl`.
+Using the wrong one silently breaks callback routing.
 </Warning>
 
-## Requirements
+### Part E — Test, then launch
 
-- A MoEngage account with the custom-provider channel available. RCS requires MoEngage to
-  register OneXtel as a partner — raise this with your MoEngage account team before starting.
-- A OneXtel account with the relevant channels enabled.
-- Pre-approved templates in OneXtel. See
-  [RCS templates](/api-reference/rcs/templates) and
-  [WhatsApp templates](/api-reference/whatsapp/templates-create).
+A fallback that is misconfigured does not stop the RCS send, so a successful campaign tells you
+nothing about whether fallback works. Test each path separately before you launch:
+
+<Steps>
+  <Step title="Run a test message">
+    Send the campaign as a test message to a device you control.
+  </Step>
+  <Step title="Confirm RCS delivery">
+    The RCS message is delivered, and its delivery report reaches MoEngage.
+  </Step>
+  <Step title="Confirm SMS fallback">
+    The SMS fallback actually fires and arrives.
+  </Step>
+  <Step title="Launch">
+    Once both check out, launch the campaign to your full audience.
+  </Step>
+</Steps>
 
 ## Limitations
 
