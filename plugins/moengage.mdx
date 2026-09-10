@@ -84,6 +84,7 @@ send.
 | RCS outbound | MoEngage sender — API URL | `https://mo.onexaura.com/moengage/rcs/outbound` |
 | RCS button clicks | OneXtel callback — Callback URL | `https://mo.onexaura.com/moengage/rcs/inbound` |
 | SMS fallback outbound | MoEngage SMS provider — API URL | `https://mo.onexaura.com/moengage/sms` |
+| SMS delivery reports | OneXtel callback — Callback URL, header `callback` | `https://mo.onexaura.com/moengage/sms/dlr` |
 
 <Note>
 The RCS and SMS **delivery notification** callbacks are the exception — those take the callback
@@ -449,20 +450,25 @@ entered in the MoEngage sender.
   </Step>
 
   <Step title="Configure the SMS delivery callback (SMS fallback)">
-    Add a callback exactly as you did for RCS, but with **Channel** set to `SMS`. Use the **same
-    API key**, **Callback Format** `MoEngage`, **HTTP Method** `POST`, and the same MoEngage DLR
-    URL you used for the RCS delivery notification.
+    Add a callback with **Channel** `SMS`, **Type** `Delivery Notification`, the **same API key**,
+    **Callback Format** `MoEngage` and **HTTP Method** `POST`. Unlike the RCS delivery report,
+    this one goes through the connector, which translates OneXtel's SMS receipt into MoEngage's
+    format:
 
-    <Warning>
-      The SMS DLR callback **cannot currently be created from the portal**. Contact OneXtel
-      support to have it configured for you.
-    </Warning>
+    | Field | Value |
+    | --- | --- |
+    | Callback URL | `https://mo.onexaura.com/moengage/sms/dlr` |
+    | Header | key `callback`, value = the MoEngage DLR URL from the SMS provider screen |
+
+    The header carries MoEngage's own DLR URL so one connector can serve several MoEngage
+    accounts. `callback` is the header name every OneXtel connector uses for this; the older
+    `cburl` is still accepted on this route.
   </Step>
 </Steps>
 
 <Warning>
-The inbound header key differs by channel — WhatsApp uses `callback_url`, RCS uses `cbUrl`.
-Using the wrong one silently breaks callback routing.
+The inbound header key differs by channel — WhatsApp uses `callback_url`, RCS uses `cbUrl`, and
+the SMS delivery report uses `callback`. Using the wrong one silently breaks callback routing.
 </Warning>
 
 ### Part E — Test, then launch
