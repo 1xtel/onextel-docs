@@ -94,7 +94,9 @@ Work through the parts in order.
   <Step title="Set the RCS sender and body parameters">
     Set **RCS Sender ID** to your OneXtel RCS sender profile, or to a
     [pool](/plugins/overview#pools-instead-of-a-single-sender). If you use a pool, only
-    templates assigned to that pool will resolve.
+    templates assigned to that pool will resolve. If your account has more than one sender
+    profile, you can also choose the profile per campaign with an optional `sender_id` pair —
+    see [Part C](#part-c--build-the-campaign-and-personalize-it).
 
     Under **RCS Body Parameters**, add these key-value pairs. The `$$` syntax tells CleverTap to
     fill the value from the campaign's custom params.
@@ -191,6 +193,7 @@ Pairs**: which template to send, its message category, and the value of each var
     | --- | --- | --- |
     | `message_type` | `Transactional` | `Promotional` or `Transactional` |
     | `template_id` | `payment_success_onex` | The OneXtel template to send. Omit to send the composer output instead |
+    | `sender_id` | `Acme_1` | **Optional** — only when your account has more than one sender profile. Names the profile to send from; omit it to use the provider's **RCS Sender ID**. The `template_id` template must belong to this profile |
     | `custom_param1` | `@Profile - Name \| default: "Customer"` | One pair per template variable. The **key** is the placeholder name from the OneXtel template, without the square brackets. The **value** is a CleverTap personalization token |
     | any other key | — | Passed through to OneXtel as a template placeholder value |
 
@@ -349,6 +352,7 @@ OneXtel fills the matching `[placeholder]` in the approved template. The step-by
 | --- | --- | --- |
 | `template_id` | The OneXtel template code | `ct_var2` |
 | `message_type` | `Promotional` or `Transactional` | `Promotional` |
+| `sender_id` — optional | The OneXtel sender profile, only when the account has more than one | `Acme_1` |
 | The placeholder name, without brackets | A CleverTap `@` personalization token, with a default | `custom_param0` set to `@Profile - Name \| default: "Customer"` |
 
 <Warning>
@@ -425,6 +429,7 @@ configure this directly — it is here for troubleshooting.
 | --- | --- | --- |
 | `message_type` | Yes | `Promotional` or `Transactional`. OTP is not a valid RCS message type |
 | `template_id` / `templateid` | No | Selects a pre-made template; both spellings accepted |
+| `sender_id` | No | Only for accounts with more than one sender profile. Omit it to use the provider's RCS Sender ID |
 | any other key | No | Passed through as a template placeholder. Key must equal the `[placeholder]` name in the OneXtel template; value may be a personalization token — see [Personalize a template](#personalize-a-template) |
 
 **SMS fallback side**
