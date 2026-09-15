@@ -36,13 +36,11 @@ the main difference integrators trip over when moving between the two SMS APIs.
 | | International | [India](/api-reference/sms/send-sms-omni) |
 | --- | --- | --- |
 | Host | `api.int.onexglobal.io` | `api.onexaura.com` |
-| Path | `/api/jsmslist` | `/oapi/send_sms` |
+| Path | `/api/jsmslist` | `/send_sms` |
 | Authentication | `key` in the body | `apikey` header |
 | Message array | `listsms` | `sms` |
 | Batching | Up to 2,500 per request | Many messages per request |
 | DLT fields (`templateId`, `entityId`) | Not used | Required |
-| Shared with WhatsApp and RCS | No — SMS only | Yes, same endpoint |
-| [Channel fallback](/api-reference/omnichannel/fallback) | No | Yes |
 | DLR field style | UPPERCASE | camelCase |
 
 <Tip>

@@ -3,9 +3,8 @@ title: "India SMS Overview"
 description: "Base URL, authentication, DLT requirements, and endpoint summary for sending SMS to Indian numbers."
 ---
 
-SMS to Indian numbers goes through the **Omni send endpoint** — the same endpoint used for
-WhatsApp and RCS, with `channel` set to `sms`. You submit message details as a JSON payload and
-the platform delivers to the recipients.
+SMS to Indian numbers is sent to one endpoint, `/send_sms`. You submit message details as a JSON
+payload and the platform delivers to the recipients.
 
 <Note>
 For destinations **outside India**, use the
@@ -13,17 +12,11 @@ For destinations **outside India**, use the
 different authentication scheme, and no DLT fields.
 </Note>
 
-## Endpoints
+## Endpoint
 
 ```
 POST https://api.onexaura.com/send_sms
-POST https://api.onexaura.com/oapi/send_sms
 ```
-
-Both are live and take the same key and body. `/send_sms` carries the fuller SMS feature set;
-`/oapi/send_sms` is the shared Omni endpoint used for WhatsApp and RCS too, and is the one
-[channel fallback](/api-reference/omnichannel/fallback) requires. See
-[Endpoints](/api-reference/sms/send-sms-omni#endpoints).
 
 ## Authentication
 
@@ -51,27 +44,19 @@ Messages that fail these checks are rejected before they reach an operator — s
 | | India | [International](/api-reference/sms-international/overview) |
 | --- | --- | --- |
 | Host | `api.onexaura.com` | `api.int.onexglobal.io` |
-| Path | `/send_sms` or `/oapi/send_sms` | `/api/jsmslist` |
+| Path | `/send_sms` | `/api/jsmslist` |
 | Authentication | `apikey` header | `key` in the body |
 | Message array | `sms` | `listsms` |
 | DLT fields (`templateId`, `entityId`) | Required | Not used |
-| Shared with WhatsApp and RCS | Yes — same endpoint | No — SMS only |
-| [Channel fallback](/api-reference/omnichannel/fallback) | Yes | No |
 | DLR field style | camelCase | UPPERCASE |
-
-<Tip>
-If you send WhatsApp or RCS as well as SMS to India, this endpoint gives you one integration, one
-API key, and fallback between channels.
-</Tip>
 
 ## Endpoints at a glance
 
 | Endpoint | Method | Purpose |
 | --- | --- | --- |
 | [`/send_sms`](/api-reference/sms/send-sms-omni) | POST | Send SMS, with DLT fields, custom references, campaign tagging, and URL shortening |
-| [`/oapi/send_sms`](/api-reference/sms/send-sms-omni#endpoints) | POST | The same, on the endpoint shared with WhatsApp and RCS |
 | [DLR callback](/api-reference/sms/dlr-callback) | POST (inbound, to your URL) | Receive the final delivery state |
-| [Message status](/api-reference/omnichannel/message-status) | GET | Poll for status instead of receiving it |
+| [Message status](/api-reference/omnichannel/message-status) | POST | Poll for status instead of receiving it |
 
 ## Next steps
 

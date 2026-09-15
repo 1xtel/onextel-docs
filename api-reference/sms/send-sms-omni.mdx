@@ -1,13 +1,9 @@
 ---
 title: "Send SMS — India"
-description: "Send SMS to Indian numbers through the Omni send endpoint, with DLT fields, campaign tagging, and URL shortening."
+description: "Send SMS to Indian numbers with DLT fields, custom references, campaign tagging, and URL shortening."
 ---
 
-The Omni send endpoint delivers SMS through the same API used for WhatsApp and RCS. The channel
-is determined by the request body: SMS messages are wrapped in an `sms` array.
-
-Because it shares an endpoint with the other channels, this is the API to use if you also send
-WhatsApp or RCS, or if you want [fallback](/api-reference/omnichannel/fallback) between them.
+Send SMS to Indian numbers. Messages go in an `sms` array, so one request can carry several.
 
 <Note>
 This API covers **India**, and carries the DLT fields Indian traffic requires. For destinations
@@ -15,29 +11,16 @@ outside India, use the [SMS List API](/api-reference/sms-international/send-sms)
 different authentication scheme. See [how the two compare](/api-reference/sms/overview#how-it-compares-to-international-sms).
 </Note>
 
-## Endpoints
+## Endpoint
 
-Two send paths are live, and they are separate implementations rather than one aliasing the
-other.
-
-| Path | Use it for |
-| --- | --- |
-| `POST https://api.onexaura.com/send_sms` | The fuller SMS feature set — custom references, campaign tagging, and URL shortening |
-| `POST https://api.onexaura.com/oapi/send_sms` | The shared Omni endpoint, also used for WhatsApp and RCS, and required for [channel fallback](/api-reference/omnichannel/fallback) |
-
-Both take the same `apikey` header and the same request body, and everything documented on this
-page is supported on `/send_sms`.
-
-<Note>
-These are genuinely different handlers rather than a redirect — verified Sept 2026, they return
-differently shaped error envelopes for the same rejected key. If a field on this page does not
-behave as documented on `/oapi/send_sms`, try it on `/send_sms` before raising it.
-</Note>
+```
+POST https://api.onexaura.com/send_sms
+```
 
 <Warning>
-Call these over **HTTPS**. An `http://` request is answered with a `301` redirect, and a client
-that does not follow redirects — or that follows one without re-sending the body — will appear
-to send nothing while reporting no error.
+Call the endpoint over **HTTPS**. An `http://` request is answered with a `301` redirect, and a
+client that does not follow redirects — or that follows one without re-sending the body — will
+appear to send nothing while reporting no error.
 </Warning>
 
 ## Headers
@@ -55,32 +38,6 @@ to send nothing while reporting no error.
 <CodeGroup>
 
 ```bash cURL
-curl --location 'https://api.onexaura.com/oapi/send_sms' \
---header 'apikey: YOUR_API_KEY' \
---header 'Content-Type: application/json' \
---data '{
-  "sms": [
-    {
-      "sender": "ONEXTL",
-      "recipient": "919999999999",
-      "type": "SI",
-      "messageBody": "This is a test sms.",
-      "templateId": "YOUR_DLT_TEMPLATE_ID",
-      "entityId": "YOUR_DLT_ENTITY_ID",
-      "unicode": 0,
-      "custRef1": {
-        "CustomReference1": "testSMS",
-        "CustomReference2": "123"
-      }
-    }
-  ],
-  "campaignName": "SMS2026",
-  "prefix": "+91",
-  "validation": false
-}'
-```
-
-```bash cURL — full feature set
 curl --location 'https://api.onexaura.com/send_sms' \
 --header 'apikey: YOUR_API_KEY' \
 --header 'Content-Type: application/json' \
@@ -171,28 +128,12 @@ The `sms` array carries one or more messages in a single call. Each object is on
 </ParamField>
 
 <ParamField body="sms[].type" type="string" required>
-  Message type. **Verified accepted:** `SI`, `OTP`, `SE`. Case-sensitive.
+  Message type: `SI`, `OTP`, or `SE`. Case-sensitive.
 </ParamField>
 
-<Warning>
-**`type` is required, and the accepted values are narrower than earlier documentation stated.**
-Verified against the live API (Aug 2026):
-
-| Value | Result |
-| --- | --- |
-| `SI`, `OTP`, `SE` | Accepted |
-| `TRANS`, `Promo`, `TXN` | Rejected — `invalid type`, status `700` |
-| Lowercase (`si`, `otp`, `se`) | Rejected — the field is case-sensitive |
-| Omitted | Rejected — `invalid type` |
-
+<Note>
 `SI` and `SE` correspond to the DLT consent categories Service Implicit and Service Explicit —
 see [DLT registration](/guides/sms/dlt#template-types).
-</Warning>
-
-<Note>
-`Promo` was rejected on the account used for testing, which is provisioned for transactional
-traffic. Because the message type is ultimately governed by the API key configuration, `Promo`
-may be accepted on a promotional key — this has not been verified.
 </Note>
 
 <ParamField body="sms[].templateId" type="string">
@@ -292,66 +233,55 @@ Click data captured this way appears in the
 
 ## Response
 
-Both success and failure return **HTTP 200**. The outcome is inside `smsList.sms[]`, one entry
-per message in your request.
-
-<CodeGroup>
+A request with a valid API key returns **HTTP 200**, with one entry per message inside
+`smslist.sms[]`. The wrapper key is lowercase `smslist`.
 
 ```json Accepted
 {
-  "smsList": {
+  "smslist": {
     "sms": [
       {
         "description": "Message submitted with tracking id ( UID )",
-        "status": 200,
-        "messageid": "01M0QSEJDWTYJTCJ533TRH165A"
+        "messageid": "3JLkExampleMessageId0000000",
+        "status": 200
       }
     ]
   }
 }
 ```
 
-```json Rejected
-{
-  "smsList": {
-    "sms": [
-      {
-        "description": "invalid type",
-        "status": 700
-      }
-    ]
-  }
-}
-```
-
-</CodeGroup>
-
-<ResponseField name="smsList.sms[].status" type="integer">
-  Per-message result. `200` accepted; `700` rejected.
+<ResponseField name="smslist.sms[].status" type="integer">
+  Per-message result. `200` means the message was accepted for processing.
 </ResponseField>
 
-<ResponseField name="smsList.sms[].description" type="string">
-  Outcome text — the tracking-id confirmation on success, or the rejection reason.
+<ResponseField name="smslist.sms[].description" type="string">
+  Outcome text — for an accepted message, the tracking-id confirmation.
 </ResponseField>
 
-<ResponseField name="smsList.sms[].messageid" type="string">
-  Tracking ID, present only when the message was accepted.
+<ResponseField name="smslist.sms[].messageid" type="string">
+  Tracking ID for the accepted message.
 </ResponseField>
 
 <Warning>
-**The HTTP status tells you nothing about the outcome.** A rejected message still returns
-HTTP 200 — the rejection is `smsList.sms[].status: 700` inside the body. Parse the per-message
-status; do not branch on the HTTP code.
+**Accepted is not delivered.** A `200` entry means OneXtel accepted the message for processing —
+not that it reached the handset, and not that the recipient number is valid. Confirm the outcome
+from the [delivery report](/api-reference/sms/dlr-callback).
 </Warning>
 
-<Note>
-Because `sms` is an array, each message carries its own status. A request with several
-recipients can be partly accepted and partly rejected in the same response.
-</Note>
+### Authentication errors
+
+A request with an invalid API key is rejected with **HTTP 401**, before any message is read:
+
+```json
+{
+  "status": "Failed",
+  "reason": "API_Invalid_Authorisation",
+  "code": 401
+}
+```
 
 ## Related
 
-- [Fallback API](/api-reference/omnichannel/fallback) — SMS as a fallback channel for WhatsApp or RCS
 - [DLR callback](/api-reference/sms/dlr-callback)
-- [Message status](/api-reference/omnichannel/message-status)
+- [SMS error codes](/api-reference/sms/error-codes)
 - [DLT registration](/guides/sms/dlt)
