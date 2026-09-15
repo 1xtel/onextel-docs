@@ -67,12 +67,20 @@ same set.
 </ParamField>
 
 <ParamField body="sms[].templateId" type="string">
-  Template ID. Optional.
+  DLT template ID. Optional only when template auto-match is enabled on the API key; otherwise
+  required for DLT-registered SMS in India.
 </ParamField>
 
 <ParamField body="sms[].entityId" type="string">
-  Entity ID. Optional.
+  DLT entity ID. Optional only when template auto-match is enabled on the API key; otherwise
+  required for DLT-registered SMS in India.
 </ParamField>
+
+<Note>
+With template auto-match enabled on the API key, OneXtel matches `messageBody` against your
+registered DLT templates and fills in `templateId` and `entityId`. When you do pass both, they
+are used as sent.
+</Note>
 
 <ParamField body="sms[].unicode" type="number">
   `0` or `1` — enable Unicode encoding. Optional.
@@ -150,13 +158,16 @@ Defines fallback behavior when the primary channel fails to deliver.
 </ParamField>
 
 <ParamField body="fallback.waittime" type="string" required>
-  Maximum time (in seconds) to wait for Delivery / Failure before triggering fallback.
+  Maximum time (in seconds) to wait for Delivery / Failure before triggering fallback. If the
+  primary message carries a `ttl` longer than this wait time, the wait time overrides the TTL, so
+  the primary attempt ends when fallback fires and the recipient does not get both messages.
 </ParamField>
 
 <ParamField body="fallback.sms" type="object">
   SMS fallback object: `sender`, `type`, `messageBody` plus optional `unicode`,
   `templateId`, `entityId`, and `custRef1`–`custRef5`. Include as per your fallback
-  configuration.
+  configuration. `templateId` and `entityId` follow the same auto-match rule as the `sms`
+  channel above.
 </ParamField>
 
 <ParamField body="fallback.wa" type="object">

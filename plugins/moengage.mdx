@@ -204,7 +204,7 @@ Work through the parts in order.
     | Sender Name | Your sender name, suffixed with the message type |
     | Sender ID | Your OneXtel sender profile, suffixed with the message type |
     | API URL | `https://mo.onexaura.com/moengage/rcs/outbound` |
-    | Authorization | The API key from step 1 |
+    | Authorization | The API key from step 1. To add a TTL or SMS fallback, see [the Authorization step](#authorization-value) below |
 
     <Frame caption="MoEngage RCS sender details. The callback URL shown is one region's host — yours may differ.">
       <img src="/images/plugins/moengage-rcs-senderform.png" alt="MoEngage RCS sender details form with sender type, name, ID, API URL and authorization" />
@@ -267,55 +267,83 @@ Work through the parts in order.
     </Frame>
   </Step>
 
-  <Step title="Extend the RCS sender Authorization value (SMS fallback)">
-    Fallback is switched on by replacing the plain API key in the MoEngage RCS sender's
-    **Authorization** field with four tilde-separated values:
+  <Step title="Set the RCS sender Authorization value">
+    <a id="authorization-value"></a>
+    The MoEngage RCS sender form has no fields for delivery or fallback settings, so everything
+    beyond the API key is packed into its **Authorization** field as tilde-separated values. Use
+    the shortest form that covers what you need:
+
+    | You want | Authorization value |
+    | --- | --- |
+    | RCS only | `<apikey>` |
+    | RCS only, with a TTL | `<apikey>~<ttl_Seconds>` |
+    | RCS with SMS fallback | `<apikey>~<ttl_Seconds>~<smsFallbackId>~<fallbackWaitTime_seconds>~<dltEntityId>` |
+
+    The fallback values are only needed when you want SMS fallback. Without it,
+    `<apikey>~<ttl_Seconds>` is enough.
+
+    For example, with SMS fallback:
 
     ```
-    <apikey>~<ttl_Seconds>~<smsFallbackId>~<fallbackWaitTime_seconds>
-    ```
-
-    For example:
-
-    ```
-    QkLuVxXI~60s~0004d861-8a30-47c3-90d4-c06eb391ec3a~90
+    QkLuVxXI~60s~0004d861-8a30-47c3-90d4-c06eb391ec3a~90~1101234567890123456
     ```
 
     | Value | What it is |
     | --- | --- |
     | `apikey` | The API key already configured for this provider |
-    | `ttl_Seconds` | How long operators keep trying to deliver the RCS message, in seconds **with the `s` suffix** — for example `60s`. After this the message is marked failed |
+    | `ttl_Seconds` | How long operators keep trying to deliver the RCS message, in seconds **with the `s` suffix** — for example `60s`. After this the message is marked failed. With fallback, see [Choosing TTL and wait time](#choosing-ttl-and-wait-time) |
     | `smsFallbackId` | The Fallback ID from the previous step |
     | `fallbackWaitTime_seconds` | How long OneXtel waits for an RCS delivery or failure report before sending the SMS, in seconds **as a plain number** — for example `90`. Defaults to `30` if missing or not numeric |
+    | `dltEntityId` | The DLT principal entity ID the fallback SMS is registered under. Leave it off when template auto-match is enabled on the API key — see [Template ID and entity ID](#template-id-and-entity-id) |
 
     <Note>
-      You only need the extended value if you want SMS fallback. Without fallback, leave the
-      field as the plain API key.
+      **Why the entity ID goes here.** MoEngage sends an RCS campaign's fallback SMS inside the
+      RCS request, and that request carries only the SMS sender, message, and DLT template ID.
+      The request body you set on the SMS custom service provider, including its `entityid`, is
+      not used for RCS fallback, and the RCS sender form has no other field that could carry it.
     </Note>
 
     <Warning>
-      With fallback, all four values are required, in this order, separated by `~`. There is
-      no separate fallback section in the MoEngage form — this single field is the whole
-      configuration, so a missing value or a wrong separator disables fallback silently.
+      With fallback, the values must be in this order, separated by `~`. There is no separate
+      fallback section in the MoEngage form — this single field is the whole configuration, so a
+      missing value or a wrong separator disables fallback silently. Only the last value, the
+      entity ID, can be left off.
     </Warning>
 
-    **Choosing TTL and wait time.** The two clocks start together at send time and do
-    different jobs: TTL is the operator's deadline to deliver the RCS message, and wait time is
-    how long OneXtel waits before it sends the SMS. Fallback fires when the wait time runs out
-    without a delivery report.
+    <a id="template-id-and-entity-id"></a>
+    **Template ID and entity ID.** DLT-registered SMS in India needs both a template ID and an
+    entity ID. You can leave both out only when **template auto-match** is enabled on your OneXtel
+    API key: OneXtel then matches the SMS content against your registered DLT templates and fills
+    in both IDs. In that case, drop the entity ID from the Authorization value and leave the SMS
+    template ID empty in the campaign. Without auto-match, pass both, or the fallback SMS is
+    rejected. Ask OneXtel support to enable auto-match for the API key.
+
+    <a id="choosing-ttl-and-wait-time"></a>
+    **Choosing TTL and wait time.** The two clocks start together at send time and do different
+    jobs: TTL is the operator's deadline to deliver the RCS message, and wait time is how long
+    OneXtel waits for a delivery report before it sends the SMS. Fallback fires when the wait time
+    runs out without a delivery report.
 
     | Setting | Example | What happens |
     | --- | --- | --- |
-    | TTL longer than wait time | `30s` TTL, `10` wait | The SMS goes out at 10 seconds if no delivery report has arrived, while the operator can still deliver the RCS message until 30 seconds. The recipient can get **both** |
-    | TTL shorter than wait time | `30s` TTL, `60` wait | The RCS attempt stops at 30 seconds, but fallback still waits the full 60 seconds before the SMS goes out. No double delivery, but the recipient waits for the whole wait time |
+    | TTL longer than wait time | `90s` TTL, `60` wait | **The wait time overrides the TTL.** The RCS attempt ends when fallback fires at 60 seconds, so the recipient does not get both the RCS message and the SMS |
+    | TTL at or below wait time | `30s` TTL, `60` wait | The RCS attempt stops at 30 seconds, but fallback still waits the full 60 seconds before the SMS goes out. The recipient waits for the whole wait time |
 
-    Keep TTL at or below the wait time. OneXtel's own campaign fallback sets TTL to 95% of the
-    wait time for this reason — see [Fallback overview](/guides/omnichannel/fallback-overview).
+    With fallback, set the wait time to how long you are willing to wait for RCS. A TTL longer
+    than that has no effect. See [Fallback overview](/guides/omnichannel/fallback-overview#ttl-time-to-live).
   </Step>
 
   <Step title="Add an SMS custom service provider in MoEngage (SMS fallback)">
-    Fallback sends the SMS through a separate MoEngage provider. Go to **Settings → SMS & RCS**,
-    open the **SMS** tab, and click **Add Custom Service Provider**.
+    The campaign's **Use SMS as fallback** option lists SMS senders from a separate MoEngage
+    provider, so one must exist. Go to **Settings → SMS & RCS**, open the **SMS** tab, and click
+    **Add Custom Service Provider**.
+
+    <Note>
+      For RCS fallback, MoEngage does not call this provider or use its request body. The fallback
+      SMS travels inside the RCS request, which is why its entity ID goes in the
+      [RCS sender Authorization value](#authorization-value). The request body below applies to
+      plain SMS campaigns sent through this provider.
+    </Note>
 
     Give it a name, and set **Sender Name** and **Sender ID** to match the values configured in
     OneXtel — the Sender ID must match exactly. Then set the API URL:
@@ -346,6 +374,10 @@ Work through the parts in order.
     The `Moesms_` values are MoEngage macros and must be left exactly as written — MoEngage
     substitutes them at send time. Replace `from` with your OneXtel sender ID, and `entityid`
     with your DLT entity ID.
+
+    If template auto-match is enabled on the API key, you can remove the `templateid` and
+    `entityid` lines. OneXtel then matches the message content to your registered DLT template
+    instead.
 
     <Frame caption="Method POST, body type Raw, and the request body">
       <img src="/images/plugins/moengage-sms-provider-body.png" alt="MoEngage SMS provider API details with POST selected, Raw body type, and the JSON request body" />
@@ -396,6 +428,7 @@ Apply the same conversion to every parameter in the template.
   <Step title="Enable fallback on the campaign (SMS fallback)">
     Fallback is switched on per campaign, not globally. Tick **Use SMS as fallback**, then
     choose the SMS sender you created in Part A and enter the SMS template and message content.
+    The DLT template ID can be left empty only if template auto-match is enabled on the API key.
 
     <Frame caption="Campaign content step with SMS fallback enabled">
       <img src="/images/plugins/moengage-campaign-fallback.png" alt="MoEngage campaign content step with Use SMS as fallback ticked and the SMS sender picker open" />
