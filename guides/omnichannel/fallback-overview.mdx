@@ -77,7 +77,14 @@ Wait time is defined at two points in the journey:
 TTL defines the maximum duration operators should attempt message delivery before
 marking the message as failed.
 
-**TTL is automatically set to 95% of Wait Time in case of fallback.**
+**In a fallback journey, TTL never outlasts the wait time.**
+
+- **Campaigns:** TTL is automatically set to 95% of the wait time.
+- **API and plugin sends:** if the TTL you pass is longer than the wait time, the wait time
+  overrides it. The primary attempt ends when fallback fires, which cuts down duplicate delivery
+  on both channels. A TTL at or below the wait time is used as sent.
+
+How TTL reaches the operator depends on the channel:
 
 - For SMS, TTL is submitted to operators during message submission.
 - For RCS, TTL is submitted to operators during message submission.

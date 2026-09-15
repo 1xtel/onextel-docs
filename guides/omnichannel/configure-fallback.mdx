@@ -111,7 +111,10 @@ All pre-defined fields are displayed during campaign setup.
 | custRef1 – custRef5 | Optional | Custom reference fields for storing additional information |
 
 <Note>
-Template ID and Entity ID may be mandatory depending on country regulations.
+Template ID and Entity ID may be mandatory depending on country regulations. For DLT-registered
+SMS in India, you can leave both out only when template auto-match is enabled on the API key.
+OneXtel then matches the message body against your registered templates and fills in both IDs.
+Without auto-match, provide both.
 </Note>
 
 **WhatsApp fallback fields**
