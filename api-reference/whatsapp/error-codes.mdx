@@ -14,8 +14,11 @@ looking at tells you who can fix it.
 A `4xxx` or `900xxx` code means the message was stopped before Meta ever saw it, so it was never
 charged and nothing reached the recipient. Those are the ones you can usually resolve yourself.
 
-The most likely place to encounter any of them is the `errors.code` field of the
-[delivery notification callback](/api-reference/whatsapp/callback-delivery-notification).
+Codes arrive on the delivery notification webhook at
+`entry[0].changes[0].value.errors[0].code`, alongside `title`, `message`, and
+`error_data.details`. See Meta's
+[webhook error reference](https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks/reference/messages/errors)
+and the [delivery notification callback](/api-reference/whatsapp/callback-delivery-notification).
 
 <Warning>
 Meta's error taxonomy changes independently of OneXtel. The Meta codes below are a snapshot of

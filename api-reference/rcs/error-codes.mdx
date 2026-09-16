@@ -21,11 +21,13 @@ These are distinct from the OneXtel API validation errors (`API_Invalid_Auth_Key
 [Send messages](/api-reference/rcs/send-messages#error-codes). A request that passes OneXtel
 validation can still fail downstream with one of the codes below.
 
-<Warning>
-The source table does not state which response or callback field carries the operator code.
-Confirm with OneXtel support how these values appear in your delivery reports before you build
-retry logic against them.
-</Warning>
+<Note>
+**Every operator's codes arrive in the same place.** Jio, Vi and Airtel each use their own error
+schema upstream, but OneXtel normalises them into a single
+[delivery notification callback](/api-reference/rcs/callback-delivery-notification): the code
+arrives as `errCode`, with `error` carrying its description. You do not need per-operator
+parsing — only the meaning of the code differs, which is what the tables below are for.
+</Note>
 
 ## Retry guidance
 
