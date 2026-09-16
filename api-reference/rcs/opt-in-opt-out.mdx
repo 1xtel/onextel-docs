@@ -29,6 +29,52 @@ curl --location 'https://api.onexaura.com/opt/out/rcs' \
 --header 'apikey: YOUR_API_KEY'
 ```
 
+**Response**
+
+```json
+{
+  "status": "success",
+  "description": "success",
+  "data": [
+    {
+      "tucid": "YOUR_TUC_ID",
+      "sender": "your_rcs_sender",
+      "number": "919999999999",
+      "name": "Customer name",
+      "message_type": "promotional",
+      "channel": "rcs",
+      "category_id": "1234"
+    }
+  ]
+}
+```
+
+<ResponseField name="status" type="string">
+  `success` when the request was served. Present on both lists, empty or not.
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  One entry per number on the list. An empty list returns `"data": []`.
+</ResponseField>
+
+<ResponseField name="data[].number" type="string">
+  The recipient's number, with country code.
+</ResponseField>
+
+<ResponseField name="data[].sender" type="string">
+  The RCS sender the entry applies to. The list covers the whole account, so entries for
+  several senders can come back together.
+</ResponseField>
+
+<ResponseField name="data[].message_type" type="string">
+  `promotional` or `transactional` — an entry is scoped to one type.
+</ResponseField>
+
+<ResponseField name="data[].tucid" type="string">
+  The account the entry belongs to.
+</ResponseField>
+
+
 ### Add to opt-out list
 
 <ParamField header="apikey" type="string" required>
@@ -113,6 +159,52 @@ GET https://api.onexaura.com/opt/in/rcs
 curl --location 'https://api.onexaura.com/opt/in/rcs' \
 --header 'apikey: YOUR_API_KEY'
 ```
+
+**Response**
+
+```json
+{
+  "status": "success",
+  "description": "success",
+  "data": [
+    {
+      "tucid": "YOUR_TUC_ID",
+      "sender": "your_rcs_sender",
+      "number": "919999999999",
+      "name": "Customer name",
+      "message_type": "promotional",
+      "channel": "rcs",
+      "category_id": "1234"
+    }
+  ]
+}
+```
+
+<ResponseField name="status" type="string">
+  `success` when the request was served. Present on both lists, empty or not.
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  One entry per number on the list. An empty list returns `"data": []`.
+</ResponseField>
+
+<ResponseField name="data[].number" type="string">
+  The recipient's number, with country code.
+</ResponseField>
+
+<ResponseField name="data[].sender" type="string">
+  The RCS sender the entry applies to. The list covers the whole account, so entries for
+  several senders can come back together.
+</ResponseField>
+
+<ResponseField name="data[].message_type" type="string">
+  `promotional` or `transactional` — an entry is scoped to one type.
+</ResponseField>
+
+<ResponseField name="data[].tucid" type="string">
+  The account the entry belongs to.
+</ResponseField>
+
 
 ### Add to opt-in list
 

@@ -16,14 +16,11 @@ This file is **not** part of the published site (it isn't in `docs.json`).
 
 | # | Area | Discrepancy | Resolved as | Verify |
 |---|------|-------------|-------------|--------|
-| 1 | WhatsApp media | Media Upload path: PDF `/wa/mediaupload` vs Postman `/oapi/wa/mediaupload` | Postman `/oapi/wa/mediaupload` | Confirm live path |
 | 2 | SMS send | Send path: PDF `/send_sms` vs Postman `/oapi/send_sms` | **Resolved (15 Sept 2026) — directive: `/send_sms` only for the three SMS v2 plugins, so the India SMS pages now document `/send_sms` alone.** Verified on it: HTTP 200 with a lowercase `smslist` envelope, the accepted-entry shape, an empty `sms` array answered 200 with an empty list, an invalid key answered 401 `API_Invalid_Authorisation` (`status: "Failed"`), and `http://` answers 301. The two paths are different deployed services: `/oapi/send_sms` returns `smsList`, rejects recipient `12345` (700) and empty arrays (400); `/send_sms` accepted both | Closed as a path decision — see 2c for what still needs re-verifying on `/send_sms` |
 | 3 | WhatsApp templates | Single Product Message: PDF `CAROUSEL` wrapper vs Postman flat `HEADER format: PRODUCT` | Both shown | Which shape is valid |
 | 4 | WhatsApp templates | Limited Time Offer `category`: Postman `marketing` vs PDF `LTO` | Both shown | Correct enum |
 | 5 | WhatsApp fetch | Date filter: PDF `createdDate` vs Postman `start_date`/`end_date` | `createdDate` authoritative | Confirm params |
 | 6 | WhatsApp create template | No distinct success/failure response body documented (reused Delete Template shape) | Noted inline | Provide real response |
-| 7 | RCS fetch | Path: PDF `/templates/fetch` vs Postman `/oapi/templates/fetch` | Postman `/oapi/templates/fetch` | Confirm live path |
-| 8 | RCS media | Heading says `/rcs/mediaupload` but PDF sample cURL hits `/wa/mediaupload`; error codes imply an undocumented `url` field | Documented `/rcs/mediaupload`; no `url` invented | Confirm path + whether `url` exists |
 | 9 | RCS send | Sender-ID field named `domain` in param table but examples use both `senderId` and `domain` | Both documented | Correct field name |
 | 10 | RCS send | Calendar Event `customParams` example is malformed JSON (two comma-separated objects) | Reproduced as-is, flagged | Fix source example |
 | 11 | RCS send | "Dynamic Query with Tracking" nests `ttl` inside `contentMessage` (contradicts every other example) | Reproduced as-is, flagged | Confirm `ttl` placement |
@@ -31,7 +28,6 @@ This file is **not** part of the published site (it isn't in `docs.json`).
 | 13 | RCS send | Suggestions `displayText` mandatory in one table, omitted for `calendar_event` in another | Treated as required | Confirm |
 | 14 | RCS send / templates | Carousel `width` and `height` enums differ across three sources | **Narrowed (Sept 2026) against Google's RBM reference:** the underlying spec defines `Media.Height` as `SHORT`/`MEDIUM`/`TALL`, `CarouselCard.CardWidth` as `SMALL`/`MEDIUM`, and `CardOrientation` as `HORIZONTAL`/`VERTICAL` — none of the `_WIDTH`/`_HEIGHT` suffixed forms our sources show, which look like aggregator naming | **Still needs a test template: does OneXtel accept Google's bare names, the suffixed forms, or both?** |
 | 14b | RCS templates | Rich card `height` enum: one source lists `TALL_HEIGHT`, another omits it | All three listed, flagged inline | Confirm `TALL_HEIGHT` |
-| 15 | RCS opt-in/out | Entire feature sourced only from Postman (no PDF coverage); GET list response schema undocumented | Documented request only | Provide response schema |
 | 16 | RCS callbacks | Delivery Notification (RCS API Guide p.52–53) | **Resolved** — now `api-reference/rcs/callback-delivery-notification` | Outgoing sample uses `api_key` while the param table says `apiKey`; sample also carries an undocumented `tuc_id`. Both flagged inline — confirm against a live callback |
 | 17 | Intl SMS | Source header sample reads `Contest-Type` (typo for `Content-Type`) | Corrected in cURL, flagged | Fix source |
 | 18 | Intl SMS | DLR callback: URL registration, request headers, and expected ack response not documented | Noted as gap | Provide callback setup details |

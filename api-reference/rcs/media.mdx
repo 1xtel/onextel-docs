@@ -35,19 +35,47 @@ This is a `multipart/form-data` request, not JSON.
   Type of RCS message the media will be used with, e.g. `transactional` or `promotional`.
 </ParamField>
 
-<ParamField body="file" type="file" required>
-  The media file to upload (multipart), e.g. an image, GIF, or video.
+<ParamField body="file" type="file">
+  The media file to upload (multipart), e.g. an image, GIF, or video. Required unless you supply
+  `url` instead.
 </ParamField>
+
+<ParamField body="url" type="string">
+  A public URL to fetch the media from, instead of uploading a file.
+</ParamField>
+
+<Warning>
+**Supply exactly one of `file` or `url`.** Sending neither is rejected with
+`Either file or url must be provided`, and sending both with
+`Only one file or url can be provided`.
+</Warning>
 
 ## cURL
 
-```bash
+<CodeGroup>
+
+```bash Upload a file
 curl --location 'https://api.onexaura.com/rcs/mediaupload' \
 --header 'apikey: YOUR_API_KEY' \
 --form 'senderProfileName="your_rcs_sender"' \
 --form 'message_type="transactional"' \
 --form 'file=@"/path/to/file"'
 ```
+
+```bash Fetch from a URL
+curl --location 'https://api.onexaura.com/rcs/mediaupload' \
+--header 'apikey: YOUR_API_KEY' \
+--form 'senderProfileName="your_rcs_sender"' \
+--form 'message_type="transactional"' \
+--form 'url="https://example.com/banner.jpg"'
+```
+
+</CodeGroup>
+
+<Note>
+Use the RCS path. `/wa/mediaupload` is the WhatsApp handler and rejects this request with
+`Missing phone_number` — verified September 2026.
+</Note>
 
 ## Response
 
