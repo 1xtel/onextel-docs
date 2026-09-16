@@ -22,6 +22,7 @@ This file is **not** part of the published site (it isn't in `docs.json`).
 | 5 | WhatsApp fetch | Date filter: PDF `createdDate` vs Postman `start_date`/`end_date` | `createdDate` authoritative | Confirm params |
 | 6 | WhatsApp create template | No distinct success/failure response body documented (reused Delete Template shape) | Noted inline | Provide real response |
 | 9 | RCS send | Sender-ID field named `domain` in param table but examples use both `senderId` and `domain` | Both documented | Correct field name |
+| 8b | RCS media (source) | The RCS API Guide's media-upload sample cURL points at `/wa/mediaupload`, which is the **WhatsApp** endpoint — a different channel's API, not an RCS path. It rejects an RCS upload with `Missing phone_number` | The page documents `/rcs/mediaupload` and no longer mentions the WhatsApp endpoint | Fix the sample in the source guide |
 | 10 | RCS send | Calendar Event `customParams` example is malformed JSON (two comma-separated objects) | Reproduced as-is, flagged | Fix source example |
 | 11 | RCS send | "Dynamic Query with Tracking" nests `ttl` inside `contentMessage` (contradicts every other example) | Reproduced as-is, flagged | Confirm `ttl` placement |
 | 12 | RCS send | `prefix` marked mandatory in table but optional/commented in Postman | Both readings noted | Confirm required? |
