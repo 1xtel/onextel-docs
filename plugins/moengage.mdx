@@ -254,6 +254,12 @@ Work through the parts in order.
       region's host, which will not be yours unless you happen to share it. A wrong region is
       accepted at save time and then silently never delivers a report.
     </Warning>
+
+    <Note>
+      **Your host matches your dashboard.** MoEngage runs six data centres, `DC-01` to `DC-06`,
+      and each pairs `dashboard-0N.moengage.com` with `api-0N.moengage.com`. An account that
+      signs in at `dashboard-03` has its callback URLs on `api-03`.
+    </Note>
   </Step>
 
   <Step title="Create the fallback configuration in OneXtel (SMS fallback)">
