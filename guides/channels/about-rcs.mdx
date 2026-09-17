@@ -1,0 +1,89 @@
+---
+title: "About RCS"
+description: "What RCS is, what you can send with it, and what has to happen before your first message goes out."
+---
+
+RCS — Rich Communication Services — is the upgrade to SMS that lives in the phone's own
+messaging app. There is nothing for your customer to install. Where SMS gives you 160 characters
+from an unfamiliar short code, RCS gives you your brand name, your logo, images, carousels and
+buttons, inside the same conversation thread.
+
+Google runs the business side of it as
+[RCS Business Messaging](https://developers.google.com/business-communications/rcs-business-messaging),
+which reaches customers on Android and iOS.
+
+## What you can send
+
+| | RCS | SMS |
+| --- | --- | --- |
+| Sender shown as | Your brand name and logo, with a verified badge | A sender ID or a number |
+| Message body | Rich text, images, video, audio | 160 characters of plain text |
+| Layouts | Rich cards and carousels of 2–10 cards | None |
+| Buttons | Suggested replies and actions — open a link, dial, share or request a location, add a calendar event | None |
+| Feedback | Delivered, read, and which button was tapped | Delivered only |
+
+That last row is the one people underestimate. On SMS you learn whether the message arrived. On
+RCS you learn whether it was read and what the customer did next, which makes the channel
+measurable in a way SMS never has been.
+
+## Who is involved
+
+RCS has more parties than SMS, and that is why setting it up takes longer than switching on a
+sender ID.
+
+| Party | Role |
+| --- | --- |
+| **You**, the brand | Own the content, the templates and the customer relationship |
+| **OneXtel**, your agent | Registers you, submits templates, and sends on your behalf |
+| **The operator** — Jio, Airtel or Vi in India | Carries the message and approves the sender on its network |
+| **Google** | Runs the RCS Business Messaging platform underneath |
+
+Each of those is a gate. A template is approved per operator, and a sender profile is launched
+per operator, so "RCS is live" usually means live on one network before the others.
+
+## Before your first message
+
+<Steps>
+  <Step title="A sender profile, launched">
+    Your brand identity on the channel — name, logo, colour, description. It has to be created
+    and then launched with each operator you want to reach. See
+    [Sender profiles](/guides/rcs-platform/sender-profiles).
+  </Step>
+  <Step title="Approved templates">
+    Message content is approved in advance, like DLT for SMS. See
+    [Templates](/guides/rcs-platform/templates) and the
+    [template guidelines](/guides/rcs-platform/template-guidelines) for what gets rejected.
+  </Step>
+  <Step title="A plan for handsets that cannot receive RCS">
+    Not every device, network or subscriber is RCS-capable. Configure
+    [SMS fallback](/guides/omnichannel/fallback-overview) so those customers still get the
+    message.
+  </Step>
+</Steps>
+
+<Note>
+**Fallback is not optional in practice.** RCS coverage is good and growing, but it is never
+total. A campaign without fallback silently reaches fewer people than you think.
+</Note>
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Send your first campaign" icon="paper-plane" href="/guides/rcs-campaigns/overview">
+    Build and launch RCS campaigns from the portal.
+  </Card>
+  <Card title="Set up the channel" icon="sliders" href="/guides/rcs-platform/overview">
+    Sender profiles, templates, billing and reports.
+  </Card>
+  <Card title="Send from your own code" icon="code" href="/api-reference/rcs/overview">
+    The RCS API — templates, sends, callbacks and error codes.
+  </Card>
+  <Card title="Send from your marketing platform" icon="plug" href="/plugins/overview">
+    MoEngage, CleverTap and the other connectors.
+  </Card>
+</CardGroup>
+
+## Reference
+
+- [RCS Business Messaging](https://developers.google.com/business-communications/rcs-business-messaging) — Google's own documentation for the platform underneath
+- [RCS error codes](/api-reference/rcs/error-codes) — what each operator rejection means

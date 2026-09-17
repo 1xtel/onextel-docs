@@ -1,0 +1,91 @@
+---
+title: "About WhatsApp"
+description: "What the WhatsApp Business Platform gives you, the rules that shape every message, and what to set up first."
+---
+
+WhatsApp reaches customers in the app they already use all day, in a thread they can reply to.
+Businesses send through Meta's
+[WhatsApp Business Platform](https://developers.facebook.com/documentation/business-messaging/whatsapp/get-started),
+and OneXtel connects you to it — so the platform's rules are Meta's, and they shape how you plan
+every campaign.
+
+## The one rule that shapes everything
+
+Meta separates messages into two kinds, and which one you can send depends entirely on when the
+customer last wrote to you.
+
+| | Template message | Session message |
+| --- | --- | --- |
+| When you can send it | Any time | Only within **24 hours** of the customer's last message |
+| Approval | Pre-approved by Meta before first use | None — write it freely |
+| Typical use | You start the conversation: an order update, a reminder, an offer | You reply while a conversation is live |
+
+That 24-hour window is Meta's customer service window. Once it closes, a free-form reply will not
+send, and you have to fall back to an approved template. Support teams feel this first.
+
+## Message categories
+
+Every template is approved into a category, which decides what it may say and how it is priced.
+
+| Category | For |
+| --- | --- |
+| [Marketing](/guides/whatsapp/template-categories-marketing) | Offers, launches, re-engagement |
+| [Utility](/guides/whatsapp/template-categories-utility) | Updates about something the customer already did — orders, payments, bookings |
+| [Authentication](/guides/whatsapp/template-categories-authentication) | One-time passcodes |
+
+<Warning>
+**Getting the category wrong is the most common reason a template is rejected.** A message that
+reads like an offer will not pass as utility, however it is labelled. See
+[Template categories](/guides/whatsapp/template-categories).
+</Warning>
+
+## What you can send
+
+Text, images, video, documents and location, with quick-reply buttons and call-to-action buttons
+that open a link or dial a number. Customers can reply, and their replies come back to you —
+which is the part that makes WhatsApp a conversation rather than a broadcast.
+
+## Before your first message
+
+<Steps>
+  <Step title="A WhatsApp Business Account and a number">
+    A number that is not already in use on the consumer WhatsApp app, with a display name Meta
+    approves. See [Onboarding WhatsApp](/guides/whatsapp/activation).
+  </Step>
+  <Step title="Approved templates">
+    Anything that starts a conversation needs an approved template, so write these before you
+    plan the campaign, not after. See
+    [Create templates](/api-reference/whatsapp/templates-create).
+  </Step>
+  <Step title="Opt-in, and a way to opt out">
+    Meta requires customers to have agreed to hear from you, and to be able to stop. See
+    [Opt in and opt out](/api-reference/whatsapp/opt-in-opt-out).
+  </Step>
+</Steps>
+
+<Note>
+Meta also applies quality ratings and messaging limits per number, based on how customers react
+to your messages. Blocks and reports lower your limit; useful, expected messages protect it.
+</Note>
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Send your first campaign" icon="paper-plane" href="/guides/whatsapp/quickstart">
+    Build and launch WhatsApp campaigns from the portal.
+  </Card>
+  <Card title="Get the channel switched on" icon="circle-check" href="/guides/whatsapp/activation">
+    What you supply, what you decide, what to have ready.
+  </Card>
+  <Card title="Send from your own code" icon="code" href="/api-reference/whatsapp/overview">
+    The WhatsApp API — templates, sends, callbacks and error codes.
+  </Card>
+  <Card title="Send from your marketing platform" icon="plug" href="/plugins/overview">
+    MoEngage, WebEngage and the other connectors.
+  </Card>
+</CardGroup>
+
+## Reference
+
+- [WhatsApp Business Platform](https://developers.facebook.com/documentation/business-messaging/whatsapp/get-started) — Meta's own documentation for the platform underneath
+- [WhatsApp error codes](/api-reference/whatsapp/error-codes) — what each Meta rejection means

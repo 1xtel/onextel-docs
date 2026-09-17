@@ -21,6 +21,13 @@
         "tab": "Guides",
         "groups": [
           {
+            "group": "Channels",
+            "pages": [
+              "guides/channels/about-rcs",
+              "guides/channels/about-whatsapp"
+            ]
+          },
+          {
             "group": "Platform",
             "pages": [
               "guides/platform/overview",
