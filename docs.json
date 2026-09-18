@@ -254,6 +254,15 @@
     },
     "links": []
   },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "download-pdf"
+    ]
+  },
   "footer": {
     "socials": {
       "website": "https://www.onextel.com",
