@@ -26,10 +26,10 @@ it against your own account before you hard-code against it.
 | --- | --- | --- |
 | `000` | Delivered | — |
 | `001`–`044` | Handset, subscriber, or operator network | Usually nobody — it's a property of the number or the moment |
-| `900xxx` | OneXtel platform, before the message left | You, in your account or your payload |
+| `9xxxxx` | OneXtel platform, before the message left | You, in your account or your payload |
 
 <Note>
-A `900xxx` code almost always means the message **never reached an operator**. Those are the ones you can
+A `9xxxxx` code means the message **never reached an operator**. Those are the ones you can
 resolve yourself.
 </Note>
 
@@ -68,96 +68,31 @@ subscriber, `027` and `029` both report an absent subscriber. Treat them as equi
 bucket results.
 </Note>
 
-## Platform — `900xxx`
+## Platform — `9xxxxx`
 
-The platform stopped the message before it reached an operator, or never got a final receipt
-back for it. Most of these arrive with `ERRORDESP` set to `REJECTD`. Two don't: `900124` arrives
-as `EXPIRED`, and `900210` as `UNDELIV`.
+Returned when the platform stopped the message before submission, or never received a final
+receipt for it.
 
-### Sending rate and repeats
-
-| Code | Description | What to do |
-| --- | --- | --- |
-| `900088` | Throttle error | You sent faster than your account allows. Slow down, then retry |
-| `900115` | SMS frequency limit reached | A configured send-frequency limit was hit. Wait for it to reset, or ask your account team to raise it |
-| `900130` | Duplicate message dropped | The platform took this for a repeat of a message it had already accepted, and dropped it. Don't resend |
-
-### The recipient
-
-| Code | Description | What to do |
-| --- | --- | --- |
-| `900101` | Invalid destination | Fix the number — include the country code, digits only |
-| `900103` | Blacklisted number | The number is on a [blacklist](/guides/platform/blacklist). Remove it there if the block is a mistake |
-| `900105` | Number blacklisted for this user | The number is blacklisted for the user who sent the message |
-| `900107` | DND number found | The number is registered as do-not-disturb |
-| `900129` | Blacklisted country | Sending to this country is blocked on your account. Ask your account team to open it |
-
-### The sender ID
-
-| Code | Description | What to do |
-| --- | --- | --- |
-| `900100` | Invalid source ID | The value in `from` isn't a valid sender ID. Check what you sent |
-| `900126` | Unauthorised source address — discarded | The sender ID isn't authorised for your account, so the message was dropped |
-| `900128` | Invalid or inactive sender ID | The sender ID isn't registered, or has been deactivated |
-| `900104` | Blacklisted sender ID | The sender ID is blocked. Ask your account team why |
-| `900106` | Sender ID blacklisted for this user | The sender ID is blocked for the user who sent the message |
-| `900119` | Sender ID restricted for this user ID | That user isn't allowed to send with this sender ID |
-
-### The content
-
-| Code | Description | What to do |
-| --- | --- | --- |
-| `900102` | Message filter / spam blocked | A spam filter caught the content. Review the wording and any links |
-| `900118` | Encoding limit exceeded | Shorten the body, or check for characters that force Unicode encoding |
-| `900127` | Variable length exceeded | A variable's value is longer than allowed. Shorten it |
-| `900108` | Content mismatch | The body doesn't match the registered template |
-| `900109` | Entity ID mismatch | The entity ID doesn't match the registration |
-| `900110` | Template ID mismatch | The template ID doesn't match the registration |
+| Code | Description | `ERRORDESP` | What to do |
+| --- | --- | --- | --- |
+| `900088` | Throttle error | `REJECTD` | Reduce your send rate, then retry |
+| `900101` | Invalid mobile number | `REJECTD` | Fix the number — include the country code, digits only |
+| `900111` | No balance | `REJECTD` | The account has no balance. Top up |
+| `900112` | Submit timeout | `REJECTD` | Retry |
+| `900118` | Encoding limit error | `REJECTD` | Shorten the body, or check for characters that force Unicode encoding |
+| `900124` | DLR expired | `EXPIRED` | No final receipt arrived within the platform's wait window. The message may still have been delivered — treat as unknown, not failed |
+| `900210` | Credit limit breached | `UNDELIV` | A configured spend limit was hit. Raise the limit |
 
 <Note>
-`900107`–`900110` come from India's DND and DLT rules. They're listed because every SMS route
-runs through the same set of platform checks.
+`900111` and `900210` look similar but are set at different levels. **No balance** means the
+account itself has nothing left to spend. **Credit limit breached** means a configured ceiling was
+reached — these are applied per country and per user, so one destination or one user can stop
+while the rest of the account keeps sending.
 </Note>
-
-### Your account and balance
-
-| Code | Description | What to do |
-| --- | --- | --- |
-| `900111` | Credit check failed / no balance | The account has nothing left to spend. Top up |
-| `900116` | Credit limit exceeded | A configured spend limit was reached. Raise the limit |
-| `900210` | Credit limit breached | Arrives as `UNDELIV`. Handle it the same way as `900116` |
-| `900120` | SMPP account disabled | The SMPP account you send through is disabled. Contact your account team |
-| `900121` | TUC account disabled | The account the message was billed to is disabled. See [user management](/guides/platform/user-management) |
-| `900122` | TUC validity expired | That account's validity period has run out. Extend it in [user management](/guides/platform/user-management) |
-| `900123` | Account disabled | Your account is disabled. Contact your account team |
-
-<Note>
-**No balance and a credit limit are different things.** `900111` means the account has nothing
-left to spend. `900116` and `900210` mean a configured ceiling was reached. Those ceilings are set
-per country and per user, so one destination or one user can stop while the rest of the account
-keeps sending.
-</Note>
-
-### Delivery and timing
-
-| Code | Description | What to do |
-| --- | --- | --- |
-| `900112` | Nack failure or submit timeout | The submission wasn't acknowledged in time. Retry |
-| `900113` | Bind not found | No connection was open to carry the message. Retry, and contact support if it keeps happening |
-| `900114` | Expired message | The message's validity ran out before it could be sent |
-| `900124` | DLR expired | No final receipt came back in time. The message may still have been delivered |
-| `900125` | Time window — discarded | The message fell outside your account's permitted sending hours, and was dropped rather than queued |
 
 <Warning>
 `900124` (`EXPIRED`) is **not** a delivery failure. It means the operator never returned a final
 state in time. Counting it as failed will understate your delivery rate.
-</Warning>
-
-<Warning>
-**The same `900xxx` number can mean something else on another channel.** `900118`–`900122` all
-do: `900118` is an encoding limit here but a blocked template category on
-[WhatsApp](/api-reference/whatsapp/error-codes) and [RCS](/api-reference/rcs/error-codes). If one
-handler reads codes from several channels, key it on the channel as well as the code.
 </Warning>
 
 ## Retry guidance
@@ -182,4 +117,4 @@ retry it.
 
 - [DLR callback](/api-reference/sms-international/dlr-callback)
 - [Send SMS](/api-reference/sms-international/send-sms)
-- [India SMS error codes](/api-reference/sms/error-codes) — a different, longer set. Its `970`–`995` band is this platform list under three-digit codes
+- [India SMS error codes](/api-reference/sms/error-codes) — a different, longer set

@@ -18,17 +18,18 @@ shorter set — see
 | `101`–`143` | Handset, network, or operator | Sometimes — many are transient |
 | `201`–`227` | DLT / regulatory checks (India) | No — fix the registration |
 | `527` | Message assembly | No — fix the payload |
-| `970`–`995` | OneXtel platform, before submission | No — fix the account, config, or content |
+| `970`–`995`, `900xxx` | OneXtel platform, before submission | No — fix the account, config, or content |
 
 <Note>
-A `9xx` code means the message **never left the platform**, so it was never charged to an
+A `9xx` or `900xxx` code means the message **never left the platform**, so it was never charged to an
 operator and nothing reached the network. Those are the ones you can resolve yourself, usually
 in the portal.
 </Note>
 
 <Note>
-**This is the complete set — 90 codes**, checked against the platform's own list in September
-2026. The gaps in the numbering (`105`, `106`, `122`, `202`, `212`, `217`, `219`, `221`) are
+**This is the complete set**, checked against the platform's own lists in September 2026: 90
+three-digit codes, plus five newer platform checks that so far have only a six-digit code. The
+gaps in the three-digit numbering (`105`, `106`, `122`, `202`, `212`, `217`, `219`, `221`) are
 unused values, not omissions from this page.
 </Note>
 
@@ -150,15 +151,15 @@ rather than paying for the rejection.
 | --- | --- |
 | `527` | ESME multipart missing |
 
-## Platform — `970`–`995`
+## Platform — `970`–`995` and `900xxx`
 
 The message was rejected by OneXtel before it reached an operator. Every one of these is
 something you or your account team can resolve.
 
-International receipts report the same checks under six-digit codes, shown in the last column. If
-you send to both, you can map each pair to one status.
+The platform records each of these checks under a six-digit code as well as the three-digit one.
+The table gives both, so you can match whichever form you see.
 
-| Code | Description | International code |
+| Code | Description | Six-digit code |
 | --- | --- | --- |
 | `970` | Throttle error | `900088` |
 | `971` | Invalid source ID | `900100` |
@@ -186,6 +187,16 @@ you send to both, you can map each pair to one status.
 | `993` | Account disabled | `900123` |
 | `994` | DLR expired | `900124` |
 | `995` | Time window — discarded | `900125` |
+
+These five newer checks have a six-digit code only:
+
+| Six-digit code | Description | What to do |
+| --- | --- | --- |
+| `900126` | Unauthorised source address — discarded | The sender ID isn't authorised for your account, so the message was dropped |
+| `900127` | Variable length exceeded | A variable's value is longer than the template allows. Shorten it |
+| `900128` | Invalid or inactive sender ID | The sender ID isn't registered, or has been deactivated |
+| `900129` | Blacklisted country | The destination country is blocked on your account |
+| `900130` | Duplicate message dropped | The platform took this for a repeat of a message it had already accepted, and dropped it. Don't resend |
 
 <Note>
 Several of these map directly to settings you control:
