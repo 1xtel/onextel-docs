@@ -155,34 +155,37 @@ rather than paying for the rejection.
 The message was rejected by OneXtel before it reached an operator. Every one of these is
 something you or your account team can resolve.
 
-| Code | Description |
-| --- | --- |
-| `970` | Throttle error |
-| `971` | Invalid source ID |
-| `972` | Invalid destination |
-| `973` | Message filter / spam blocked |
-| `974` | Blacklisted number |
-| `975` | Blacklisted sender ID |
-| `976` | Number blacklisted for this user |
-| `977` | Sender ID blacklisted for this user |
-| `978` | DND number found |
-| `979` | Content mismatch |
-| `980` | Entity ID mismatch |
-| `981` | Template ID mismatch |
-| `982` | Credit check failed / no balance |
-| `983` | Nack failure or timeout on the request |
-| `984` | Bind not found |
-| `985` | Expired message |
-| `986` | SMS frequency limit reached |
-| `987` | Credit limit exceeded |
-| `988` | Encoding limit exceeded |
-| `989` | Sender ID restricted for this user ID |
-| `990` | SMPP account disabled |
-| `991` | TUC account disabled |
-| `992` | TUC validity expired |
-| `993` | Account disabled |
-| `994` | DLR expired |
-| `995` | Time window — discarded |
+International receipts report the same checks under six-digit codes, shown in the last column. If
+you send to both, you can map each pair to one status.
+
+| Code | Description | International code |
+| --- | --- | --- |
+| `970` | Throttle error | `900088` |
+| `971` | Invalid source ID | `900100` |
+| `972` | Invalid destination | `900101` |
+| `973` | Message filter / spam blocked | `900102` |
+| `974` | Blacklisted number | `900103` |
+| `975` | Blacklisted sender ID | `900104` |
+| `976` | Number blacklisted for this user | `900105` |
+| `977` | Sender ID blacklisted for this user | `900106` |
+| `978` | DND number found | `900107` |
+| `979` | Content mismatch | `900108` |
+| `980` | Entity ID mismatch | `900109` |
+| `981` | Template ID mismatch | `900110` |
+| `982` | Credit check failed / no balance | `900111` |
+| `983` | Nack failure or timeout on the request | `900112` |
+| `984` | Bind not found | `900113` |
+| `985` | Expired message | `900114` |
+| `986` | SMS frequency limit reached | `900115` |
+| `987` | Credit limit exceeded | `900116` |
+| `988` | Encoding limit exceeded | `900118` |
+| `989` | Sender ID restricted for this user ID | `900119` |
+| `990` | SMPP account disabled | `900120` |
+| `991` | TUC account disabled | `900121` |
+| `992` | TUC validity expired | `900122` |
+| `993` | Account disabled | `900123` |
+| `994` | DLR expired | `900124` |
+| `995` | Time window — discarded | `900125` |
 
 <Note>
 Several of these map directly to settings you control:

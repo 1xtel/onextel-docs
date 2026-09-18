@@ -191,9 +191,11 @@ charged.
 
 <Warning>
 **`900xxx` codes are channel-specific.** The same number means different things on different
-channels — `900118` is a blocked template category here, but an encoding limit on
-[international SMS](/api-reference/sms-international/error-codes). Always interpret a platform
-code against the channel that produced it.
+channels. `900118`–`900122` all mean something else on
+[international SMS](/api-reference/sms-international/error-codes): `900118` is a blocked template
+category here but an encoding limit there, and `900122` is a blacklisted recipient here but an
+expired account validity there. Always interpret a platform code against the channel that
+produced it.
 </Warning>
 
 <Note>
