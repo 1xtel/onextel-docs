@@ -1,6 +1,6 @@
 ---
 title: "Plugins & Connectors"
-description: "Send WhatsApp, RCS, and SMS through OneXtel directly from MoEngage, WebEngage, Salesforce, LeadSquared, Shopify, Zoho CRM, and Optimove."
+description: "Send WhatsApp, RCS, and SMS through OneXtel directly from MoEngage, CleverTap, WebEngage, Salesforce, LeadSquared, Shopify, Zoho CRM, and Optimove."
 ---
 
 OneXtel plugins let your team send messages through OneXtel from the tools they already work
@@ -12,9 +12,9 @@ reports, and inbound replies underneath.
 
 | Plugin | Channels | Build campaigns in |
 | --- | --- | --- |
-| [MoEngage](/plugins/moengage) | WhatsApp, RCS | MoEngage campaigns |
-| [CleverTap](/plugins/clevertap) | RCS | CleverTap campaigns |
-| [WebEngage](/plugins/webengage) | WhatsApp, RCS | WebEngage campaigns |
+| [MoEngage](/plugins/moengage) | WhatsApp, RCS, SMS | MoEngage campaigns |
+| [CleverTap](/plugins/clevertap) | RCS, SMS | CleverTap campaigns |
+| [WebEngage](/plugins/webengage) | WhatsApp, RCS, SMS | WebEngage campaigns |
 | [Salesforce Sales & Service Cloud](/plugins/salesforce) | SMS, WhatsApp | Salesforce records, Flows, and Apex |
 | [Salesforce Marketing Cloud](/plugins/salesforce-marketing-cloud) | SMS, WhatsApp | Journey Builder |
 | [LeadSquared](/plugins/leadsquared) | WhatsApp | Lead actions and automations |
@@ -50,8 +50,9 @@ itself can express — a limitation of the platform, not of OneXtel.
 
 | Plugin | SMS | WhatsApp | RCS | Inbound | Delivery reports |
 | --- | :---: | :---: | :---: | :---: | :---: |
-| MoEngage | — | ✅ | ✅ | WhatsApp only | ✅ |
-| WebEngage | — | ✅ | ✅ | — | ✅ |
+| MoEngage | ✅ | ✅ | ✅ | WhatsApp only | ✅ |
+| CleverTap | ✅ | — | ✅ | RCS only | ✅ |
+| WebEngage | ✅ | ✅ | ✅ | — | ✅ |
 | Salesforce Sales & Service Cloud | ✅ | ✅ | — | ✅ | ✅ |
 | Salesforce Marketing Cloud | ✅ | ✅ | — | ✅ | ✅ |
 | LeadSquared | — | ✅ | — | ✅ | ✅ |
@@ -98,6 +99,7 @@ Templates are approved by category, and plugins send on these:
 | --- | --- |
 | RCS | Promotional, Transactional |
 | WhatsApp | Marketing, Utility |
+| SMS | The DLT category each template is registered under — `SI`, `SE` or `OTP` |
 
 Because templates are fetched per category, most platforms need a separate sender or channel
 configuration for each category you send on. The per-plugin pages show how each one expresses

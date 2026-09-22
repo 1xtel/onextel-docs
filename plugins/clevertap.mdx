@@ -1,14 +1,19 @@
 ---
 title: "CleverTap"
-description: "Send RCS from CleverTap campaigns through OneXtel, with SMS fallback, delivery reports, inbound replies, and click tracking."
+description: "Send RCS and SMS from CleverTap campaigns through OneXtel — providers, campaigns, callbacks, SMS fallback, and how each OneXtel error code reaches CleverTap."
 ---
 
-The CleverTap connector adds RCS as a sendable channel inside CleverTap. Campaigns are built and
-triggered in CleverTap; a stateless middleware service translates each send into OneXtel's format
-and relays delivery reports, replies, and click events back.
+The CleverTap connector adds RCS and SMS as sendable channels inside CleverTap. Campaigns are built
+and triggered in CleverTap; a stateless middleware service translates each send into OneXtel's
+format and relays delivery reports, replies, and click events back.
 
 Because the connector holds no database of its own — every routing decision comes from the
 incoming request — OneXtel can run it as multiple parallel instances. You deploy nothing.
+
+<Tip>
+**Pick your channel once.** The sections below have an **RCS** and an **SMS** tab. Choosing a tab
+in any section switches every section on the page to that channel.
+</Tip>
 
 ## What it handles
 
@@ -17,6 +22,10 @@ incoming request — OneXtel can run it as multiple parallel instances. You depl
     RCS sends from CleverTap campaigns, using either CleverTap's composer output or a pre-made
     OneXtel template.
   </Card>
+  <Card title="Outbound SMS" icon="message">
+    DLT-registered SMS from CleverTap's Generic SMS provider, with delivery reports mapped onto
+    CleverTap's SMS error codes.
+  </Card>
   <Card title="SMS fallback" icon="shuffle">
     If RCS delivery fails, OneXtel retries automatically over SMS using a DLT-approved template.
   </Card>
@@ -24,7 +33,7 @@ incoming request — OneXtel can run it as multiple parallel instances. You depl
     Delivery reports, suggestion-button replies, and URL-click events relayed into CleverTap.
   </Card>
   <Card title="Inbound replies" icon="reply">
-    Free-form inbound messages — text, media, location, contact — routed back to CleverTap.
+    Free-form RCS replies — text, media, location, contact — routed back to CleverTap.
   </Card>
 </CardGroup>
 
@@ -35,19 +44,22 @@ Have these ready:
 - **Your OneXtel API key** — see [API keys](/guides/platform/api-keys).
 - **CleverTap access** to **Settings → Channels → SMS**, with permission to add a provider.
 - **OneXtel access** to [callback configuration](/guides/platform/callback-configuration).
+- **For SMS:** a DLT-registered sender ID, DLT entity ID, and DLT templates in OneXtel. See
+  [DLT registration](/guides/sms/dlt).
 
 ### Connector endpoints
 
 Every URL in this guide sits on one host. Copy them from here as you go.
 
-| Purpose | URL |
-| --- | --- |
-| RCS send | `https://ct.onex-aura.com/rcs/send` |
-| Delivery reports and button replies | `https://ct.onex-aura.com/dlr` |
-| Inbound messages | `https://ct.onex-aura.com/inbound` |
-| URL clicks | `https://ct.onex-aura.com/click` |
-| SMS fallback delivery report | `https://ct.onex-aura.com/delivery` |
-| Health check | `https://ct.onex-aura.com/health` |
+| Channel | Purpose | URL |
+| --- | --- | --- |
+| RCS | RCS send | `https://ct.onex-aura.com/rcs/send` |
+| RCS | Delivery reports and button replies | `https://ct.onex-aura.com/dlr` |
+| RCS | Inbound messages | `https://ct.onex-aura.com/inbound` |
+| RCS | URL clicks | `https://ct.onex-aura.com/click` |
+| SMS | SMS send | `https://ct.onex-aura.com/sms/send` |
+| SMS | SMS delivery reports — standalone SMS and RCS fallback alike | `https://ct.onex-aura.com/delivery` |
+| — | Health check | `https://ct.onex-aura.com/health` |
 
 <Warning>
 **The host is `onex-aura.com`, with a hyphen.** Dropping it gives you `ct.onexaura.com`, which
@@ -55,19 +67,22 @@ resolves to a real server that does not run the connector — so the mistake sho
 or a silent failure rather than an obvious DNS error. Check the hyphen before you save anything.
 </Warning>
 
-## Setup at a glance
+## Set up
+
+<Tabs>
+<Tab title="RCS">
 
 Work through the parts in order.
 
 | Part | What you do | Where |
 | --- | --- | --- |
-| [A](#part-a--create-the-provider-and-configure-rcs-and-sms) | Create the provider and configure RCS and SMS fallback | CleverTap |
+| [A](#part-a--create-the-provider-and-configure-rcs-and-sms-fallback) | Create the provider and configure RCS and SMS fallback | CleverTap |
 | [B](#part-b--add-templates-in-clevertap-optional) | Add templates — **optional** | CleverTap |
 | [C](#part-c--build-the-campaign-and-personalize-it) | Build the campaign and set up personalization | CleverTap |
 | [D](#part-d--configure-the-callbacks-before-you-send) | Configure the callbacks | OneXtel |
 | [E](#part-e--send-and-validate) | Send to a test audience, validate, then go live | Both |
 
-## Part A — Create the provider and configure RCS and SMS
+### Part A — Create the provider and configure RCS and SMS fallback
 
 <Steps>
   <Step title="Create the provider">
@@ -145,7 +160,7 @@ Work through the parts in order.
   </Step>
 </Steps>
 
-## Part B — Add templates in CleverTap (optional)
+### Part B — Add templates in CleverTap (optional)
 
 You do not need a CleverTap template to send a OneXtel template. The `template_id` key-value pair
 you add to the campaign in [Part C](#part-c--build-the-campaign-and-personalize-it) tells OneXtel
@@ -173,7 +188,7 @@ lets you publish — fill it with anything. What the recipient sees comes from t
 key-value pairs, set up in Part C.
 </Warning>
 
-## Part C — Build the campaign and personalize it
+### Part C — Build the campaign and personalize it
 
 Everything OneXtel needs to render the message travels in the campaign's **RCS Body Key-Value
 Pairs**: which template to send, its message category, and the value of each variable.
@@ -257,7 +272,7 @@ and `SE` — `TXN`, `TRANS`, and `Promo` are rejected as `invalid type`. See
 [Send SMS — India](/api-reference/sms/send-sms-omni).
 </Warning>
 
-## Part D — Configure the callbacks before you send
+### Part D — Configure the callbacks before you send
 
 Before you publish, create **four** callbacks in OneXtel. They carry delivery reports, replies,
 clicks, and fallback reports back to CleverTap. Each one needs a custom header named `callback`,
@@ -310,7 +325,7 @@ and its headers.
   <img src="/images/plugins/clevertap-webhook-sms-fallback.png" alt="OneXtel Edit Callback screen with Channel SMS and the SMS delivery report default parameters" />
 </Frame>
 
-## Part E — Send and validate
+### Part E — Send and validate
 
 Send to a small test audience first, and confirm each of these independently before sending to
 everyone:
@@ -340,7 +355,7 @@ everyone:
   </Step>
 </Steps>
 
-## Personalize a template
+### Personalize a template
 
 Personalization happens in CleverTap, before the send reaches OneXtel, and it travels entirely in
 the campaign's RCS key-value pairs. The connector does not substitute anything itself: it forwards
@@ -389,7 +404,7 @@ For CleverTap's own guidance on personalization tokens, defaults, and Liquid exp
 [Personalize Message](https://docs.clevertap.com/docs/personalize-message-sms), and
 [Liquid Tags](https://docs.clevertap.com/docs/liquid-tags) in the CleverTap documentation.
 
-## Buttons and templates
+### Buttons and templates
 
 CleverTap's composer cannot reference a saved OneXtel template by ID directly. To send one, use
 the `template_id` custom parameter — every other custom param on that campaign is then passed
@@ -400,30 +415,255 @@ This is currently the only reliable way to get a working URL-action or dial-acti
 Ad-hoc, non-template cards reliably support only a plain Reply button.
 </Note>
 
-## Reference
+</Tab>
+<Tab title="SMS">
 
-### Connector endpoints
+Standalone SMS uses its own CleverTap provider — a **Generic SMS Provider** — separate from the
+RCS provider and from the fallback SMS block inside it. A project can run both.
 
-All on `https://ct.onex-aura.com`.
-
-| Endpoint | Direction | Purpose |
+| Part | What you do | Where |
 | --- | --- | --- |
-| `POST /rcs/send` | CleverTap → OneXtel | RCS send |
-| `POST /dlr` | OneXtel → CleverTap | Delivery reports and button replies |
-| `POST /inbound` | OneXtel → CleverTap | Free-form inbound messages |
-| `POST /click` | OneXtel → CleverTap | URL-click events |
-| `POST /delivery` | OneXtel → CleverTap | SMS fallback delivery report |
-| `GET /health` | — | Liveness check. Returns `200` when the connector is up |
+| [A](#part-a--create-the-generic-sms-provider) | Create the SMS provider and its request body | CleverTap |
+| [B](#part-b--configure-the-sms-callbacks) | Configure the delivery callback | OneXtel |
+| [C](#part-c--build-the-sms-campaign) | Build the campaign | CleverTap |
+| [D](#part-d--send-a-test-sms-and-go-live) | Send to a test audience, then go live | Both |
+
+### Part A — Create the Generic SMS provider
+
+<Steps>
+  <Step title="Create the provider">
+    In CleverTap, go to **Settings → Channels → SMS**, add a provider, and set **Provider** to
+    **Generic SMS Provider**. Give it a clear nickname — it is what you pick in the campaign
+    composer.
+  </Step>
+
+  <Step title="Set the messaging endpoint">
+    | Field | Value |
+    | --- | --- |
+    | Request Type | `POST`, with a **JSON** body |
+    | HTTPS Endpoint | `https://ct.onex-aura.com/sms/send` |
+    | Authentication | No Authentication |
+    | Headers | Key `apikey` → your OneXtel API key |
+
+    As with RCS, the API key travels as a header rather than an auth scheme CleverTap manages.
+  </Step>
+
+  <Step title="Set the request body">
+    Paste this into the provider's parameters JSON, then replace the last three values with your
+    own:
+
+    ```json
+    {
+      "to": "$$To",
+      "body": "$$Body",
+      "templateId": "$$TemplateID",
+      "msgId": "$$MessageID",
+      "campaignId": "$$CampaignID",
+      "senderId": "YOUR_SENDER_ID",
+      "entityId": "YOUR_DLT_ENTITY_ID",
+      "type": "SI"
+    }
+    ```
+
+    The `$$` values are CleverTap's own macros and stay exactly as written — CleverTap fills them
+    for each recipient at send time.
+
+    | Key | Value | Notes |
+    | --- | --- | --- |
+    | `to` | `$$To` | Recipient number |
+    | `body` | `$$Body` | Message text. Must match the DLT template word for word |
+    | `templateId` | `$$TemplateID` | The DLT template ID, set per campaign |
+    | `msgId` | `$$MessageID` | **Required.** CleverTap matches each delivery report to its message by this value |
+    | `campaignId` | `$$CampaignID` | Passed to OneXtel as the campaign name, for reporting |
+    | `senderId` | Your DLT sender ID | For example `ONEXTL` |
+    | `entityId` | Your DLT entity ID | The principal entity ID the templates are registered under |
+    | `type` | `SI`, `OTP` or `SE` | The DLT category the template is registered under. Case-sensitive; defaults to `SI` if left out |
+    | `unicode` | `1` | **Optional.** Add it for bodies with non-ASCII characters. Any value other than `0` or `1` is ignored |
+
+    <Warning>
+    **Key names are exact.** A misspelled key — `templateID` instead of `templateId`, say — is
+    dropped without an error, and the SMS goes out without it. Keep the quotes around every value
+    too: a long ID sent as a bare number loses digits before it arrives.
+    </Warning>
+
+    To choose a value per campaign instead of fixing it here, make it a CleverTap custom
+    replacement — for example `"senderId": "$$senderId"`. CleverTap then asks for it as a
+    required field on every campaign that uses this provider.
+  </Step>
+
+  <Step title="Save, then copy the callback URL">
+    Save the provider, then **reopen it** and copy the **Delivery Report Callback URL** under
+    **Callback Config**. You paste it into OneXtel in
+    [Part B](#part-b--configure-the-sms-callbacks).
+  </Step>
+</Steps>
+
+### Part B — Configure the SMS callbacks
+
+In OneXtel, go to **Configuration → Add New Callback** and add the SMS delivery callback against
+the **same API key** you put on the provider:
+
+| Field | Value |
+| --- | --- |
+| Channel | `SMS` |
+| Type | `Delivery Notification` |
+| HTTP Method | `POST` |
+| Callback URL | `https://ct.onex-aura.com/delivery` |
+| Header | Key `callback`, value = the Delivery Report Callback URL from Part A |
+| Callback Format | Default |
+
+<Warning>
+**The `callback` header is required.** It tells the connector which CleverTap account the report
+belongs to. A report that arrives without it is rejected with code `2004` and never reaches
+CleverTap. Never save a callback with an empty header row either — OneXtel then sends a header
+with no name, which the connector's web server refuses.
+</Warning>
+
+If you also run RCS with SMS fallback on the same API key, this is the same callback as the RCS
+tab's **SMS fallback DLR** — one SMS delivery callback serves both.
+
+### Part C — Build the SMS campaign
+
+<Steps>
+  <Step title="Create the campaign">
+    In CleverTap, create an SMS campaign. Under **From**, select the Generic SMS provider from
+    Part A, and choose your audience under **Who**.
+  </Step>
+  <Step title="Write the message and set the DLT template ID">
+    Under **What**, enter the message exactly as registered on DLT, with personalization where
+    the template has variables, and set the DLT template ID CleverTap passes as `$$TemplateID`.
+    Fill any custom replacements you added to the provider body.
+  </Step>
+  <Step title="Save the campaign as a draft">
+    Save it, but do not publish until the Part B callback is in place — otherwise the delivery
+    reports from the first send never reach CleverTap.
+  </Step>
+</Steps>
+
+### Part D — Send a test SMS and go live
+
+<Steps>
+  <Step title="Publish to a test audience">
+    Send to test devices you control.
+  </Step>
+  <Step title="Confirm the send was accepted">
+    A send OneXtel refuses comes back in the provider's reply with code `900` and OneXtel's own
+    reason, rather than as a delivery report — see [Error code mapping](#error-code-mapping).
+  </Step>
+  <Step title="Confirm delivery">
+    The SMS arrives, shows as Delivered in OneXtel reporting, and the same event appears in
+    CleverTap's campaign stats.
+  </Step>
+  <Step title="Go live">
+    Once both check out, send the campaign to your full audience.
+  </Step>
+</Steps>
 
 <Note>
-Behind the scenes the connector calls OneXtel's unified send endpoint,
-`POST https://api.onexaura.com/send_sms`. You never
-configure this directly — it is here for troubleshooting.
+CleverTap's **Preview & Test** sends all share one placeholder message ID, so their delivery
+reports cannot be matched one-to-one. Judge delivery tracking from a real test campaign.
 </Note>
 
-### Custom parameters
+</Tab>
+</Tabs>
 
-**RCS side**
+## Error code mapping
+
+The connector translates OneXtel's outcome codes into CleverTap's own vocabulary, so campaign
+stats in CleverTap show a CleverTap reason. OneXtel's original description travels with each
+failure in the `description` field.
+
+<Tabs>
+<Tab title="RCS">
+
+**Delivery events**
+
+| OneXtel RCS event | CleverTap event |
+| --- | --- |
+| `MESSAGE_DELIVERED` | `delivered` |
+| `MESSAGE_READ` | `viewed` |
+| `SEND_MESSAGE_FAILURE` | `failed`, with a code from the table below |
+| Suggestion reply | `replied` |
+| Suggestion action or URL click | `clicked` |
+| `SEND_MESSAGE_SUCCESS` | Not forwarded — CleverTap waits for delivered or failed |
+
+**Failure codes**
+
+RCS failure codes differ by operator — Jio and Vi reuse the same numbers for different
+conditions — so the connector classifies a failure by the operator's wording rather than its
+number.
+
+| The failure says | CleverTap code |
+| --- | --- |
+| RCS disabled, not RCS enabled, invalid phone or number, user not found, or Vi `404-A` / `400-H` | `910` Invalid subscriber |
+| Anything else — for example template errors, opt-outs or throttling | `914` Undelivered |
+
+For what each operator code means, see [RCS error codes](/api-reference/rcs/error-codes).
+
+**Connector response codes**
+
+When the connector refuses a request itself, it answers with one of these:
+
+| Code | Meaning |
+| --- | --- |
+| `2000` | Missing `apikey` header on a send, or OneXtel rejected the API key |
+| `2001` | Invalid send — a missing or wrong `message_type`, a missing `fallback_id` or fallback sender, or OneXtel answered HTTP 400 |
+| `2004` | A OneXtel callback arrived without its `callback` header — the report is not relayed |
+| `2014` | OneXtel did not confirm the message, or another upstream failure |
+
+</Tab>
+<Tab title="SMS">
+
+**Send responses**
+
+Every send gets the Generic SMS reply CleverTap expects: `status` of `success`, `partial` or
+`fail`. A rejected message is listed under `unprocessed` with code `900` and OneXtel's own reason
+in `error` — for example an invalid `type`, a DLT mismatch caught at submission, or a rejected
+number. A missing `apikey` header is the one exception: it is refused with HTTP 400, code `2000`.
+
+**Delivery reports**
+
+A report is `delivered` only when OneXtel's code is `000`. Every other code is reported as
+`failed`, with the CleverTap code below. The India codes appear in both their three-digit and
+six-digit forms — see [India SMS error codes](/api-reference/sms/error-codes).
+
+| CleverTap code | CleverTap meaning | OneXtel codes |
+| --- | --- | --- |
+| `901` | DND failure | `978`, `900107` |
+| `902` | Spam detected | `973`, `900102` |
+| `903` | Blacklist rejected | `974`, `976`, `900103`, `900105`, `900129` |
+| `904` | System error — a problem on the sending account or platform, not the recipient | `036`, `970`, `971`, `975`, `977`, `982`–`984`, `986`–`993`, `900088`, `900100`, `900104`, `900106`, `900111`–`900113`, `900115`, `900116`, `900118`–`900123`, `900210` |
+| `905` | Subscriber error | `011`, `013`, `015`, `019`, `021` |
+| `910` | Invalid subscriber | `001`, `009`, `033`, `972`, `900101` |
+| `912` | Inbox full | `022` |
+| `914` | Undelivered | `027`, `029`, `030`, `031`, `208` |
+| `915` | Dropped | `044` |
+| `916` | Expired | `313`, `985`, `994`, `900114`, `900124` |
+| `917` | Force expired — dropped by a sending-hours policy | `995`, `900125` |
+| `918` | Duplicate drop | `900130` |
+| `919` | DLT failure | `979`–`981`, `900108`–`900110`, `900126`–`900128` |
+
+Any code not in the table — including the DLT band `201`–`227` — falls back to the report's
+status: `UNDELIV` or `UNDELIVRD` becomes `914`, `EXPIRED` becomes `916`, and anything else
+becomes CleverTap's generic `900`.
+
+<Note>
+Two codes are mapped on how they arrive in practice rather than on their table meaning. `208`
+arrives on live reports described as *Absent subscriber*, so it maps to `914`; `313` always
+arrives with the status `EXPIRED`, so it maps to `916`.
+</Note>
+
+The same mapping applies to the SMS leg of an RCS fallback — both report through `/delivery`.
+
+</Tab>
+</Tabs>
+
+## Parameter reference
+
+<Tabs>
+<Tab title="RCS">
+
+**RCS key-value pairs**
 
 | Key | Required | Notes |
 | --- | --- | --- |
@@ -432,7 +672,7 @@ configure this directly — it is here for troubleshooting.
 | `sender_id` | No | Only for accounts with more than one sender profile. Omit it to use the provider's RCS Sender ID |
 | any other key | No | Passed through as a template placeholder. Key must equal the `[placeholder]` name in the OneXtel template; value may be a personalization token — see [Personalize a template](#personalize-a-template) |
 
-**SMS fallback side**
+**SMS fallback key-value pairs**
 
 | Key | Required | Notes |
 | --- | --- | --- |
@@ -442,7 +682,36 @@ configure this directly — it is here for troubleshooting.
 | `type` | No | Must match the DLT template's category |
 | `unicode` | No | `1` for non-ASCII bodies |
 
+</Tab>
+<Tab title="SMS">
+
+**Generic SMS provider body**
+
+| Key | Required | Notes |
+| --- | --- | --- |
+| `to` | Yes | `$$To` |
+| `body` | Yes | `$$Body` |
+| `msgId` | Yes | `$$MessageID`. Without it, delivery reports cannot be matched |
+| `senderId` | Yes | Your DLT sender ID |
+| `templateId` | For DLT sends | `$$TemplateID` — the DLT template ID |
+| `entityId` | For DLT sends | Your DLT entity ID |
+| `campaignId` | No | `$$CampaignID`, used as the OneXtel campaign name |
+| `type` | No | `SI`, `OTP` or `SE`, case-sensitive. Defaults to `SI` |
+| `unicode` | No | `1` for non-ASCII bodies, `0` otherwise |
+
+</Tab>
+</Tabs>
+
+<Note>
+Behind the scenes the connector calls OneXtel's send API — `/oapi/send_sms` for RCS and
+`/send_sms` for SMS, both on `https://api.onexaura.com`. You never configure these directly;
+they are here for troubleshooting.
+</Note>
+
 ## Limitations
+
+<Tabs>
+<Tab title="RCS">
 
 - **Template previews will not match the real message.** CleverTap renders through its own
   composer, so what you see when building is not what the recipient receives. Confirm with a
@@ -453,6 +722,22 @@ configure this directly — it is here for troubleshooting.
 - **CleverTap's `{{1}}` placeholder values are not passed to OneXtel.** Personalize through a
   campaign key-value pair named after the OneXtel placeholder instead — see
   [Personalize a template](#personalize-a-template).
+- **RCS failure codes are coarse.** Every failure reaches CleverTap as `910` or `914`; the
+  operator's own code is in OneXtel reporting.
+
+</Tab>
+<Tab title="SMS">
+
+- **Inbound SMS is not supported.** Replies to an SMS are not relayed to CleverTap.
+- **India only.** Numbers are sent to OneXtel's India platform with the `+91` prefix; a leading
+  `91` on a longer number is treated as the country code.
+- **Rejections at submission all carry code `900`.** The specific reason is in the `error` text,
+  not the code.
+- **`unicode` is not detected for you.** Set it on the provider body when your templates use
+  non-ASCII characters.
+
+</Tab>
+</Tabs>
 
 ## Get support
 
@@ -463,7 +748,8 @@ OneXtel answered:
 
 <Steps>
   <Step title="Ask for the logging endpoint">
-    Support will give you a logging version of the connector's RCS send URL.
+    Support will give you a logging version of the connector's send URL for the affected
+    channel.
   </Step>
   <Step title="Point the provider at it">
     In CleverTap, open the provider under **Settings → Channels → SMS** and replace the
@@ -480,11 +766,14 @@ OneXtel answered:
   </Step>
 </Steps>
 
-Switch the endpoint back to `https://ct.onex-aura.com/rcs/send` once the issue is closed.
+Switch the endpoint back to the normal connector URL — `https://ct.onex-aura.com/rcs/send` or
+`https://ct.onex-aura.com/sms/send` — once the issue is closed.
 
 ## Related
 
 - [RCS API overview](/api-reference/rcs/overview)
 - [RCS template guidelines](/guides/rcs-platform/template-guidelines)
 - [Configure fallback](/guides/omnichannel/configure-fallback)
+- [India SMS error codes](/api-reference/sms/error-codes)
+- [DLT registration](/guides/sms/dlt)
 - [All plugins](/plugins/overview)
