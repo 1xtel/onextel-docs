@@ -4,10 +4,10 @@ description: "Set up OneXtel WhatsApp, RCS and SMS in WebEngage — Private WSP,
 ---
 
 OneXtel adds WhatsApp, RCS and SMS as sendable channels inside WebEngage. Campaigns are built and
-triggered in WebEngage. WhatsApp and RCS sends go through the OneXtel connector, which translates
-each payload into a OneXtel message; SMS goes straight to OneXtel's own WebEngage endpoint. On the
-way back, the connector turns every OneXtel delivery report into a WebEngage Delivery Status
-Notification (DSN), with OneXtel's code mapped onto WebEngage's status-code table.
+triggered in WebEngage, and every channel goes through the OneXtel connector on one host, which
+translates each payload into a OneXtel message. On the way back, the connector turns every OneXtel
+delivery report into a WebEngage Delivery Status Notification (DSN), with OneXtel's code mapped
+onto WebEngage's status-code table.
 
 <Tip>
 **Pick your channel once.** The sections below have **WhatsApp**, **RCS** and **SMS** tabs.
@@ -98,22 +98,28 @@ Choosing a tab in any section switches every section on the page to that channel
 
 | Channel | Purpose | Direction | URL |
 | --- | --- | --- | --- |
-| WhatsApp | Send | WebEngage → connector | `https://we.onexaura.com/webengage/whatsapp/send` |
-| WhatsApp | Delivery reports | OneXtel → connector → WebEngage | `https://we.onexaura.com/webengage/whatsapp/dlr/<dc>` |
-| RCS | Send | WebEngage → connector | `https://we.onexaura.com/webengage/rcs/send` |
-| RCS | Delivery reports | OneXtel → connector → WebEngage | `https://we.onexaura.com/webengage/rcs/dlr/<dc>` |
-| SMS | Send | WebEngage → OneXtel | `https://api.onexaura.com/api/we/` |
-| SMS | Delivery reports | OneXtel → connector → WebEngage | `https://we.onexaura.com/webengage/sms/dlr/<dc>` |
-| — | Health check | — | `https://we.onexaura.com/webengage/health` |
+| WhatsApp | Send | WebEngage → connector | `https://wen.onexaura.com/webengage/whatsapp/send` |
+| WhatsApp | Delivery reports | OneXtel → connector → WebEngage | `https://wen.onexaura.com/webengage/whatsapp/dlr/<dc>` |
+| RCS | Send | WebEngage → connector | `https://wen.onexaura.com/webengage/rcs/send` |
+| RCS | Delivery reports | OneXtel → connector → WebEngage | `https://wen.onexaura.com/webengage/rcs/dlr/<dc>` |
+| SMS | Send | WebEngage → connector | `https://wen.onexaura.com/webengage/sms/send` |
+| SMS | Delivery reports | OneXtel → connector → WebEngage | `https://wen.onexaura.com/webengage/sms/dlr/<dc>` |
+| — | Health check | — | `https://wen.onexaura.com/webengage/health` |
 
 Replace `<dc>` with your WebEngage data centre — `in`, `ksa` or `us`. It decides where the
 connector sends each report, so it must match your account.
 
 <Warning>
-**The SMS send URL is on a different host and ends in a slash.** SMS goes to OneXtel's own
-endpoint, `api.onexaura.com`, not to the connector — and without the trailing `/` it answers with
-an error. Copy it exactly.
+**The host is `wen.onexaura.com`.** An earlier build ran on `we.onexaura.com`, which still answers
+for WhatsApp and RCS sends but carries none of the delivery-report routes. Point every
+configuration and callback at `wen`.
 </Warning>
+
+<Note>
+**Which OneXtel gateway a send uses comes from the `region` header** — `IN` or `GLOBAL` — on the
+send configuration, not from the recipient's number. Without it, sends go to India. Set
+`region: GLOBAL` if your account sends outside India.
+</Note>
 
 <Note>
 **Never save a OneXtel callback with an empty header row.** OneXtel then sends a header with no
@@ -142,11 +148,17 @@ a header, add one named `callback` with the callback URL as its value — the co
     | --- | --- |
     | Configuration Name | Any name you choose |
     | WABA Number | Your registered WhatsApp **business phone number**, with the country code — for example `919999999999`. Not the WABA ID |
-    | URL | `https://we.onexaura.com/webengage/whatsapp/send` |
+    | URL | `https://wen.onexaura.com/webengage/whatsapp/send` |
     | Request Type | **Send personalization variables** |
 
-    Add a custom header with the key `apikey` and your OneXtel API key as the value. Copy and
-    paste the key rather than typing it. Save the configuration.
+    Add custom headers:
+
+    | Header key | Value |
+    | --- | --- |
+    | `apikey` | Your OneXtel API key |
+    | `region` | `IN`, or `GLOBAL` for accounts sending outside India. Optional — India is the default |
+
+    Copy and paste the key rather than typing it. Save the configuration.
 
     <Note>
     The connector also accepts the key as `Authorization: Bearer <key>`, or as `?apikey=` on the
@@ -168,7 +180,7 @@ a header, add one named `callback` with the callback URL as its value — the co
     | Channel | `WhatsApp` |
     | Type | `Delivery Notification` |
     | HTTP Method | `POST` |
-    | Callback URL | `https://we.onexaura.com/webengage/whatsapp/dlr/<dc>` — `in`, `ksa` or `us` |
+    | Callback URL | `https://wen.onexaura.com/webengage/whatsapp/dlr/<dc>` — `in`, `ksa` or `us` |
 
     The connector maps each report and forwards it to WebEngage's tracking endpoint for that
     data centre.
@@ -221,7 +233,7 @@ to the connector's, as above, to get mapped codes.
     | --- | --- |
     | Configuration Name | Any name you choose |
     | RCS Business number | Your sender profile name |
-    | URL | `https://we.onexaura.com/webengage/rcs/send` |
+    | URL | `https://wen.onexaura.com/webengage/rcs/send` |
 
     Add two custom headers:
 
@@ -229,6 +241,7 @@ to the connector's, as above, to get mapped codes.
     | --- | --- |
     | `apikey` | Your OneXtel API key |
     | `campaigntype` | `Promotional` or `Transactional` |
+    | `region` | `IN`, or `GLOBAL` for accounts sending outside India. Optional — India is the default |
 
     Save the configuration.
 
@@ -246,7 +259,7 @@ to the connector's, as above, to get mapped codes.
     | Channel | `RCS` |
     | Type | `Delivery Notification` |
     | HTTP Method | `POST` |
-    | Callback URL | `https://we.onexaura.com/webengage/rcs/dlr/<dc>` — `in`, `ksa` or `us` |
+    | Callback URL | `https://wen.onexaura.com/webengage/rcs/dlr/<dc>` — `in`, `ksa` or `us` |
 
     See [RCS delivery notification](/api-reference/rcs/callback-delivery-notification) for what
     OneXtel sends.
@@ -276,9 +289,9 @@ to the connector's, as above, to get mapped codes.
 </Tab>
 <Tab title="SMS">
 
-SMS sends go from WebEngage straight to OneXtel's own WebEngage endpoint, which accepts
-WebEngage's payload as it is — India DLT fields included. The connector's only part is the return
-leg: it maps each OneXtel delivery report onto WebEngage's SMS codes and forwards it.
+SMS sends go to the connector, which checks the payload and forwards it to OneXtel's own WebEngage
+endpoint — WebEngage's payload as it is, India DLT fields included. On the return leg the connector
+maps each OneXtel delivery report onto WebEngage's SMS codes and forwards it to WebEngage.
 
 | Part | What you do | Where |
 | --- | --- | --- |
@@ -302,7 +315,7 @@ leg: it maps each OneXtel delivery report onto WebEngage's SMS codes and forward
     | Field | Value |
     | --- | --- |
     | SSP Name | Any name you choose |
-    | URL | `https://api.onexaura.com/api/we/` — keep the trailing `/` |
+    | URL | `https://wen.onexaura.com/webengage/sms/send` |
 
     Add a custom header:
 
@@ -311,13 +324,19 @@ leg: it maps each OneXtel delivery report onto WebEngage's SMS codes and forward
     | `Authorization` | `Bearer <your OneXtel API key>` |
 
     Save the configuration.
+
+    <Note>
+    If your account is already configured with `…/api/we`, it keeps working — that is the same
+    route under its original name.
+    </Note>
   </Step>
   <Step title="Set the India DLT details">
     In WebEngage's India DLT settings, enter your **principal entity ID**, and set each
     template's **DLT template ID**. Add your **telemarketer ID** too if your route needs one.
     WebEngage then sends every SMS with the DLT fields OneXtel needs.
 
-    Store recipient numbers in WebEngage with the country code — `91XXXXXXXXXX`.
+    Store recipient numbers in WebEngage with the country code — `91XXXXXXXXXX`. A ten-digit
+    Indian number is completed for you; see [Indian numbers](#indian-numbers).
   </Step>
 </Steps>
 
@@ -332,7 +351,7 @@ In the OneXtel portal, go to **Configuration → Add New Callback** and add a ca
 | Type | `Delivery Notification` |
 | HTTP Method | `POST` |
 | Callback Format | `WebEngage` |
-| Callback URL | `https://we.onexaura.com/webengage/sms/dlr/<dc>` — `in`, `ksa` or `us` |
+| Callback URL | `https://wen.onexaura.com/webengage/sms/dlr/<dc>` — `in`, `ksa` or `us` |
 
 <Warning>
 **The URL suffix is the only way the connector learns your data centre for SMS.** Without it,
@@ -364,6 +383,22 @@ reports for your data centre are held back until it is in place.
 
 </Tab>
 </Tabs>
+
+## Indian numbers
+
+The connector completes a ten-digit Indian number in the **6–9 series** to `91XXXXXXXXXX` before
+sending, so the number and the gateway agree. Anything else India cannot dial is refused by the
+connector before it reaches OneXtel, in the channel's own code: WhatsApp `2003`, RCS `2021`,
+SMS `2003`.
+
+Numbers outside India are passed through as stored — 8 to 15 digits, with reachability left to
+Meta or the operator. Send `region: GLOBAL` for those accounts, since the gateway comes from that
+header rather than from the number.
+
+<Note>
+This replaces older behaviour where a number stored without its country code was treated as
+international, sent to the global gateway and refused there as an authorisation failure.
+</Note>
 
 ## Error code mapping
 
@@ -412,9 +447,10 @@ The send route answers WebEngage straight away, with a code and the matching HTT
 | Payload `version` is not `1.0` | `2010` | 400 |
 | Missing template data, recipient, business number or template name | `2002`, `2003`, `2004` or `2019` | 400 |
 | OneXtel rejected the sender — for example a WABA ID in place of the business number | `2004` | 400 |
-| OneXtel rejected the recipient | `2003` | 400 |
+| Recipient India cannot dial — not ten digits in the 6–9 series — or OneXtel rejected it | `2003` | 400 |
 | Template or template-parameter problem | `2021` or `2022` | 400 |
 | Rate limited | `2015` | 429 |
+| OneXtel answered `AUTHENTICATION FAILURE!` inside an HTTP 200 | `2011` | 401 |
 | Any other rejection | `9988` | 200 |
 
 </Tab>
@@ -460,16 +496,34 @@ unauthorised → `2005`; anything else → `9988`. For what each operator code m
 | No API key, or OneXtel rejected it | `2005` | 403 / 401 |
 | Payload `version` is not `1.0` | `2010` | 400 |
 | Missing sender | `2022` | 413 |
-| Missing recipient, or OneXtel rejected it | `2021` | 200 |
+| Missing recipient, one India cannot dial, or OneXtel rejected it | `2021` | 200 |
 | Missing template data | `2020` | 403 |
 | Number is not RCS-capable | `1001` | 200 |
 | Template or template-parameter problem | `2023` or `2024` | 200 |
 | Insufficient credit | `1000` | 200 |
 | Opted out, blacklisted or DND | `2025` | 200 |
+| OneXtel answered `AUTHENTICATION FAILURE!` inside an HTTP 200 | `2005` | 401 |
 | Any other rejection | `9988` | 400 |
 
 </Tab>
 <Tab title="SMS">
+
+**Send replies**
+
+The connector checks each send before forwarding it to OneXtel, and answers WebEngage with a code
+and the matching HTTP status:
+
+| Situation | WebEngage code | HTTP |
+| --- | --- | --- |
+| Accepted by OneXtel | `0` (`sms_accepted`) | 200 |
+| No API key, or OneXtel rejected it | `2011` | 401 |
+| Payload `version` is not supported | `2010` | 400 |
+| Empty message body | `2002` | 400 |
+| Missing sender ID | `2004` | 400 |
+| Recipient India cannot dial, or OneXtel rejected the number | `2003` | 400 |
+| Missing `metadata.messageId` — the delivery receipt could not be matched without it | `9988` | 200 |
+| OneXtel unreachable, throttled, or answering 5xx | `2015` | 200 |
+| Any other rejection | `9988` | 200 |
 
 **Delivery reports**
 
