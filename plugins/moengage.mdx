@@ -815,7 +815,9 @@ A report is `delivered` only when OneXtel's code is `000`. Every other code is r
 | `7000` | `990`–`993` | The sending account is disabled or expired |
 | `7004` | Every other code — for example an absent handset, network congestion, expiry, `982` no balance or `987` credit limit | Anything else |
 
-`111` (delivery awaited) is not forwarded — the final report follows it. For what each OneXtel
+Interim receipts are not forwarded: `111` (delivery awaited), and the `SUBMITTED` receipt OneXtel
+posts when it hands the SMS to the operator. MoEngage only ever sees the final report, so a
+message still in flight is never counted as failed. For what each OneXtel
 code means, see [India SMS error codes](/api-reference/sms/error-codes).
 
 **Send replies**
@@ -877,6 +879,10 @@ Every send gets `status: "success"` with a `messageId`, or `status: "failure"` w
 - **`unicode` is not detected for you.** Add it to the request body when your templates use
   non-ASCII characters.
 - **Delivery awaited is not reported.** MoEngage sees a message only once it has a final outcome.
+- **Delivery reports go through the connector, never straight to MoEngage.** OneXtel posts each
+  receipt to `https://mo.onexaura.com/moengage/sms/dlr`, and the connector translates it and
+  forwards it to the MoEngage URL in the callback's `callback` header. A callback pointed at the
+  MoEngage URL directly is accepted by MoEngage but never matched to a message.
 
 </Tab>
 </Tabs>
