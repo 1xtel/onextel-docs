@@ -106,7 +106,7 @@ send.
 | WhatsApp | Inbound and button clicks | OneXtel callback — Callback URL | `https://mo.onexaura.com/moengage/whatsapp/inbound` |
 | RCS | Outbound | MoEngage sender — API URL | `https://mo.onexaura.com/moengage/rcs/outbound` |
 | RCS | Button clicks | OneXtel callback — Callback URL | `https://mo.onexaura.com/moengage/rcs/inbound` |
-| SMS | Outbound — plain SMS campaigns, and the provider RCS fallback needs | MoEngage SMS provider — API URL | `https://mo.onexaura.com/moengage/sms` |
+| SMS | Outbound — plain SMS campaigns, and the provider RCS fallback needs | MoEngage SMS provider — API URL | `https://mo.onexaura.com/moengage/sms/outbound` |
 | SMS | Delivery reports — plain SMS and RCS fallback | OneXtel callback — Callback URL, header `callback` | `https://mo.onexaura.com/moengage/sms/dlr` |
 
 <Note>
@@ -383,7 +383,7 @@ Work through the parts in order.
     OneXtel — the Sender ID must match exactly. Then set the API URL:
 
     ```
-    https://mo.onexaura.com/moengage/sms
+    https://mo.onexaura.com/moengage/sms/outbound
     ```
 
     <Frame caption="SMS custom service provider — the outbound URL must be on the same host as the RCS one">
@@ -592,7 +592,7 @@ request body against Part A below — plain SMS campaigns use it.
     URL:
 
     ```
-    https://mo.onexaura.com/moengage/sms
+    https://mo.onexaura.com/moengage/sms/outbound
     ```
 
     <Frame caption="SMS custom service provider — the connector's SMS URL">
@@ -625,6 +625,7 @@ request body against Part A below — plain SMS campaigns use it.
     | `type` | `SI`, `OTP` or `SE` | The DLT category your templates are registered under. Case-sensitive; defaults to `SI` |
     | `unicode` | `"1"` | For messages with non-ASCII characters. Not detected for you |
     | `campaignName` | `"Moesms_campaignId"` | Tags each SMS with the MoEngage campaign in OneXtel reporting |
+    | `urlTracking` | `"0"` | Turns click tracking off for this provider. Leave it out to keep tracking on |
 
     <Warning>
     **Keep every value in quotes.** A DLT ID of 19 digits sent as a bare number is rounded
@@ -643,6 +644,20 @@ request body against Part A below — plain SMS campaigns use it.
     <Frame caption="Method POST, body type Raw, and the request body">
       <img src="/images/plugins/moengage-sms-provider-body.png" alt="MoEngage SMS provider API details with POST selected, Raw body type, and the JSON request body" />
     </Frame>
+  </Step>
+
+  <Step title="Decide on click tracking">
+    Click tracking is on by default. OneXtel rewrites every link in the SMS into its own short
+    domain and counts the taps, which you see in OneXtel reporting. You configure nothing to get
+    it.
+
+    <Warning>
+    Because every link is rewritten, the **OneXtel short domain** is the one that must be
+    whitelisted on your DLT template, not your own link domain.
+    </Warning>
+
+    To turn it off for a provider, add `"urlTracking": "0"` to the request body. Any other value
+    leaves tracking on. RCS messages and RCS fallback SMS are not shortened.
   </Step>
 
   <Step title="Tell MoEngage how to read the replies">
