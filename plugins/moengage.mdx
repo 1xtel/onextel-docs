@@ -601,7 +601,8 @@ request body against Part A below — plain SMS campaigns use it.
   </Step>
 
   <Step title="Set the request body">
-    Set **Method** to `POST`, **Body type** to `Raw`, and paste:
+    Set **Method** to `POST`, **Body type** to `Raw`, and paste. MoEngage selects **Form** by
+    default, so change it before you paste:
 
     ```json
     {
@@ -672,8 +673,8 @@ request body against Part A below — plain SMS campaigns use it.
     | Success values for delivery status | `delivered` |
     | Attribute storing failure reason | `errorCode` |
 
-    A send the connector or OneXtel refuses comes back with `status` set to `failure` and an
-    `errorCode` from `7000` to `7004` — see [Error code mapping](#error-code-mapping).
+    A send the connector or OneXtel refuses comes back as HTTP `401` or `400`, with `status` set to
+    `failure` and an `errorCode` from `7000` to `7004` — see [Error code mapping](#error-code-mapping).
   </Step>
 
   <Step title="Save, then copy the SMS delivery tracking URL">
@@ -701,7 +702,7 @@ key** you put in the provider body:
 | Type | `Delivery Notification` |
 | HTTP Method | `POST` |
 | Callback URL | `https://mo.onexaura.com/moengage/sms/dlr` |
-| Header | Key `callback`, value = the SMS delivery tracking URL from Part A |
+| Header | Key `callback`, value = the SMS delivery tracking URL from Part A, and nothing else |
 
 The header carries MoEngage's own URL, so one connector can serve many MoEngage accounts. The
 older header name `cburl` is still accepted.
@@ -709,6 +710,11 @@ older header name `cburl` is still accepted.
 <Warning>
 **Without the `callback` header, your reports do not reach your MoEngage account.** Check the
 header on this callback specifically, and never save it with an empty header row.
+
+The header **value** is the URL alone, for example
+`https://api-01.moengage.com/sms/dlr/custom/2612531631`. Do not type `callback = …` into the value
+field. MoEngage answers every report with success, even one it cannot match, so a wrong value is
+only visible as a Delivered count that stays at zero.
 </Warning>
 
 If you also run RCS with SMS fallback on the same API key, this is the same callback as the RCS
@@ -837,8 +843,9 @@ code means, see [India SMS error codes](/api-reference/sms/error-codes).
 
 **Send replies**
 
-Every send gets `status: "success"` with a `messageId`, or `status: "failure"` with an
-`errorCode` and a `description`:
+Every accepted send gets HTTP `200` with `status: "success"` and a `messageId`. A refused send gets
+HTTP `401` (code `7000`) or `400` (every other code), with `status: "failure"`, an `errorCode` and a
+`description`:
 
 | Situation | MoEngage code |
 | --- | --- |
@@ -849,6 +856,13 @@ Every send gets `status: "success"` with a `messageId`, or `status: "failure"` w
 
 `7003` is never returned on a send — only on a delivery report. OneXtel's own reason is always in
 `description`.
+
+<Note>
+MoEngage decides whether a send failed from the HTTP status alone. A refused send therefore appears
+in the campaign report as a send failure named after the status, **Unauthorized** or **Bad
+Request**. The `7000`–`7004` code and the description are in the reply body, not in MoEngage's
+report.
+</Note>
 
 </Tab>
 </Tabs>
