@@ -113,6 +113,22 @@ Work through the parts in order.
     profile, you can also choose the profile per campaign with an optional `sender_id` pair —
     see [Part C](#part-c--build-the-campaign-and-personalize-it).
 
+    <Note>
+    **Sending from several senders through one provider.** CleverTap fixes the RCS Sender ID on
+    the provider, not on the campaign, so by default one provider sends from one profile. If you
+    run several brands or senders on one CleverTap project, put a placeholder of the form
+    `<brand>_onextel_rcs` in **RCS Sender ID** instead of a real profile — for example
+    `acme_onextel_rcs`.
+
+    OneXtel reads any sender ID in that shape as a placeholder rather than a real sender, and
+    takes the actual profile from the `sender_id` key-value pair on each campaign. That pair
+    stops being optional and becomes required: a campaign that omits it is rejected rather than
+    sent from the placeholder.
+
+    The same applies to SMS, with `<brand>_onextel_sms` and the SMS provider's **Sender ID**.
+    One provider and one endpoint then serve every sender on the account.
+    </Note>
+
     Under **RCS Body Parameters**, add these key-value pairs. The `$$` syntax tells CleverTap to
     fill the value from the campaign's custom params.
 
@@ -208,7 +224,7 @@ Pairs**: which template to send, its message category, and the value of each var
     | --- | --- | --- |
     | `message_type` | `Transactional` | `Promotional` or `Transactional` |
     | `template_id` | `payment_success_onex` | The OneXtel template to send. Omit to send the composer output instead |
-    | `sender_id` | `Acme_1` | **Optional** — only when your account has more than one sender profile. Names the profile to send from; omit it to use the provider's **RCS Sender ID**. The `template_id` template must belong to this profile |
+    | `sender_id` | `Acme_1` | **Optional** — only when your account has more than one sender profile. Names the profile to send from; omit it to use the provider's **RCS Sender ID**. **Required**, not optional, when the provider's RCS Sender ID is a `<brand>_onextel_rcs` placeholder. The `template_id` template must belong to this profile |
     | `custom_param1` | `@Profile - Name \| default: "Customer"` | One pair per template variable. The **key** is the placeholder name from the OneXtel template, without the square brackets. The **value** is a CleverTap personalization token |
     | any other key | — | Passed through to OneXtel as a template placeholder value |
 
@@ -669,7 +685,7 @@ The same mapping applies to the SMS leg of an RCS fallback — both report throu
 | --- | --- | --- |
 | `message_type` | Yes | `Promotional` or `Transactional`. OTP is not a valid RCS message type |
 | `template_id` / `templateid` | No | Selects a pre-made template; both spellings accepted |
-| `sender_id` | No | Only for accounts with more than one sender profile. Omit it to use the provider's RCS Sender ID |
+| `sender_id` | No | Only for accounts with more than one sender profile. Omit it to use the provider's RCS Sender ID. Required when that field holds a `<brand>_onextel_rcs` placeholder |
 | any other key | No | Passed through as a template placeholder. Key must equal the `[placeholder]` name in the OneXtel template; value may be a personalization token — see [Personalize a template](#personalize-a-template) |
 
 **SMS fallback key-value pairs**
