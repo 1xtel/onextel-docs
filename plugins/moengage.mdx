@@ -703,6 +703,10 @@ request body against Part A below — plain SMS campaigns use it.
     | Success values for delivery status | `delivered` |
     | Attribute storing failure reason | `errorCode` |
 
+    <Frame caption="Delivery tracking on the SMS provider, mapped manually. The callback URL at the top is the one you copy in the next step.">
+      <img src="/images/plugins/moengage-sms-delivery-tracking.png" alt="MoEngage SMS provider delivery tracking step with the Incoming Messages and Delivery callback URL, Map fields manually selected, and the five attributes set to messageId, messageId, status, delivered and errorCode" />
+    </Frame>
+
     A send the connector or OneXtel refuses comes back as HTTP `401` or `400`, with `status` set to
     `failure` and an `errorCode` from `7000` to `7004` — see [Error code mapping](#error-code-mapping).
   </Step>
@@ -714,8 +718,10 @@ request body against Part A below — plain SMS campaigns use it.
 
     <Warning>
       **Copy this URL from your own provider screen.** The `api-0N` host matches the data centre
-      of your MoEngage dashboard, and the ID at the end is your provider's. A URL copied from
-      another account is accepted at save time and then silently never delivers a report.
+      of your MoEngage dashboard, and the ID at the end belongs to the provider (connector): senders
+      under one connector share it, but another connector in the same workspace has a different ID.
+      A URL copied from another account or connector is accepted at save time and then silently
+      never credits a report.
     </Warning>
   </Step>
 </Steps>
