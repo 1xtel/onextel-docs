@@ -495,7 +495,7 @@ RCS provider and from the fallback SMS block inside it. A project can run both.
     | `entityId` | Your DLT entity ID | The principal entity ID the templates are registered under |
     | `type` | `SI`, `OTP` or `SE` | The DLT category the template is registered under. Case-sensitive; defaults to `SI` if left out |
     | `unicode` | `1` | **Optional.** Add it for bodies with non-ASCII characters. Any value other than `0` or `1` is ignored |
-    | `urlTracking` | `0` | **Optional.** Turns link shortening OFF. Leave it out and OneXtel shortens every link in the message — see below |
+    | `urlTracking` | `1` | **Optional.** Turns link shortening ON. Leave it out and your links are sent untouched — see below |
 
     <Warning>
     **Key names are exact.** A misspelled key — `templateID` instead of `templateId`, say — is
@@ -508,12 +508,18 @@ RCS provider and from the fallback SMS block inside it. A project can run both.
     required field on every campaign that uses this provider.
 
     <Note>
-    **Link shortening is on by default.** Every link in the message body is rewritten to a
-    OneXtel short link, and the taps are counted in the Clicker Data and Clicker Details
-    reports — you do not have to configure anything to get this. It does mean the OneXtel short
-    domain has to be whitelisted on the DLT template, in place of your own link's domain. Add
-    `"urlTracking": "0"` to the parameters JSON to turn it off and send your links untouched.
-    Values `0`, `false`, `no` and `off` all turn it off; anything else leaves it on.
+    **Link shortening is off by default.** Your links are sent exactly as written unless you ask
+    for shortening. Add `"urlTracking": "1"` to the parameters JSON to turn it on: every link in
+    the message body is then rewritten to a OneXtel short link, and the taps are counted in the
+    Clicker Data and Clicker Details reports.
+
+    Shortening is opt-in because the rewrite has consequences under DLT — once it is on, the
+    OneXtel short domain has to be whitelisted on the DLT template in place of your own link's
+    domain, so switching it on without updating the template registration gets the message
+    rejected at scrubbing.
+
+    Values `1`, `true`, `yes` and `on` turn it on; anything else, including a missing or
+    misspelled value, leaves your links untouched.
     </Note>
   </Step>
 
