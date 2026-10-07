@@ -510,8 +510,13 @@ RCS provider and from the fallback SMS block inside it. A project can run both.
     <Note>
     **Link shortening is off by default.** Your links are sent exactly as written unless you ask
     for shortening. Add `"urlTracking": "1"` to the parameters JSON to turn it on: every link in
-    the message body is then rewritten to a OneXtel short link, and the taps are counted in the
-    Clicker Data and Clicker Details reports.
+    the message body is then rewritten to a OneXtel short link, and the taps are counted in
+    OneXtel's Clicker Data and Clicker Details reports.
+
+    **Those taps stay in OneXtel.** SMS clicks are not sent back to CleverTap — the `/click`
+    webhook above carries RCS URL clicks only, so turning this on will not populate click metrics
+    on your CleverTap SMS campaign. If you want SMS clicks in CleverTap, use CleverTap's own link
+    tracking instead, and leave `urlTracking` off so the link is not rewritten a second time.
 
     Shortening is opt-in because the rewrite has consequences under DLT — once it is on, the
     OneXtel short domain has to be whitelisted on the DLT template in place of your own link's
