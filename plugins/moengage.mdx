@@ -105,16 +105,25 @@ send.
 | WhatsApp | Outbound | MoEngage sender — URL | `https://mo.onexaura.com/moengage/whatsapp/outbound` |
 | WhatsApp | Inbound and button clicks | OneXtel callback — Callback URL | `https://mo.onexaura.com/moengage/whatsapp/inbound` |
 | RCS | Outbound | MoEngage sender — API URL | `https://mo.onexaura.com/moengage/rcs/outbound` |
-| RCS | Button clicks | OneXtel callback — Callback URL | `https://mo.onexaura.com/moengage/rcs/inbound` |
-| SMS | Outbound — plain SMS campaigns, and the provider RCS fallback needs | MoEngage SMS provider — API URL | `https://mo.onexaura.com/moengage/sms` |
-| SMS | Delivery reports — plain SMS and RCS fallback | OneXtel callback — Callback URL, header `callback` | `https://mo.onexaura.com/moengage/sms/dlr` |
+| RCS | Button clicks | OneXtel callback — Callback URL, header `callback` | `https://mo.onexaura.com/moengage/rcs/inbound` |
+| RCS | Delivery reports, through the connector (optional, see the note) | OneXtel callback — Callback URL, header `callback` | `https://mo.onexaura.com/moengage/rcs/dlr` |
+| SMS | Outbound — plain SMS campaigns, and the provider RCS fallback needs | MoEngage SMS provider — API URL | `https://mo.onexaura.com/moengage/sms/outbound` |
+| SMS | Delivery reports — plain SMS, and the SMS leg of an RCS fallback | OneXtel callback — Callback URL, header `callback` | `https://mo.onexaura.com/moengage/sms/dlr` |
 
 <Note>
-The WhatsApp and RCS **delivery notification** callbacks are the exception — those take the
-callback URL MoEngage generates for you, not a OneXtel one, and go straight to MoEngage. You copy
-it from the MoEngage sender screen after saving it. SMS delivery reports instead go through the
-connector, with MoEngage's URL in a header.
+The WhatsApp **delivery notification** callback is the exception — it takes the callback URL
+MoEngage generates for you and goes straight to MoEngage. RCS delivery notifications can go either
+way: straight to MoEngage's URL, or through the connector's `/moengage/rcs/dlr` with MoEngage's URL
+in the `callback` header. Going through the connector puts every receipt in the connector's logs,
+which is the only way to tell later whether OneXtel sent a report that MoEngage did not count. SMS
+delivery reports always go through the connector.
 </Note>
+
+<Warning>
+**OneXtel fixes a callback's settings when the message is sent, not when the report is sent.** If
+you change a callback's URL or header, messages already sent keep reporting to the old one. After
+any callback change, judge it only on messages sent afterwards.
+</Warning>
 
 <Warning>
 This host has **no hyphen** — `onexaura.com`. OneXtel runs other connectors on similar-looking
@@ -383,7 +392,7 @@ Work through the parts in order.
     OneXtel — the Sender ID must match exactly. Then set the API URL:
 
     ```
-    https://mo.onexaura.com/moengage/sms
+    https://mo.onexaura.com/moengage/sms/outbound
     ```
 
     <Frame caption="SMS custom service provider — the outbound URL must be on the same host as the RCS one">
@@ -478,8 +487,8 @@ Apply the same conversion to every parameter in the template.
 ### Part D — Configure the callbacks before you send
 
 Before you launch, create the callbacks in OneXtel that carry delivery reports and button clicks
-back to MoEngage. Each uses **Callback Format Type** `MoEngage` and the **same API key** you
-entered in the MoEngage sender.
+back to MoEngage. Each uses the **same API key** you entered in the MoEngage sender — callbacks are
+set per API key, so a sender on a different key does not pick them up.
 
 <Steps>
   <Step title="Configure the delivery report callback">
@@ -489,6 +498,12 @@ entered in the MoEngage sender.
 
     Under **Request Configuration**, set **Type** to `Delivery Notification` and **HTTP Method**
     to `POST`, then paste the callback URL you copied from MoEngage in Part A. Save.
+
+    **Or, through the connector:** set the Callback URL to
+    `https://mo.onexaura.com/moengage/rcs/dlr` and add the header key `callback` with the MoEngage
+    URL from Part A as its value — the URL alone. Callback Format can stay `MoEngage`. If you use
+    OneXtel's default format instead, tick `custref1` in the field list: it carries MoEngage's
+    message reference, and a report without it is dropped and logged.
 
     <Frame caption="Callback Configuration — Add New Callback">
       <img src="/images/plugins/moengage-rcs-callback-list.png" alt="OneXtel Config page on the Callback Configuration tab with the Add New Callback button highlighted" />
@@ -507,12 +522,12 @@ entered in the MoEngage sender.
     https://mo.onexaura.com/moengage/rcs/inbound
     ```
 
-    In the **Header** section, add the key `cbUrl` with your MoEngage DLR URL as the value —
+    In the **Header** section, add the key `callback` with your MoEngage DLR URL as the value —
     the same region-specific URL you copied from the sender screen, not one typed from this
     page.
 
-    <Frame caption="Button click callback — note the cbUrl header at the bottom">
-      <img src="/images/plugins/moengage-rcs-callback-buttonclick.png" alt="OneXtel Edit Callback screen with Type Button Click, the suggestion-clicked request preview, and a cbUrl header" />
+    <Frame caption="Button click callback — note the header at the bottom">
+      <img src="/images/plugins/moengage-rcs-callback-buttonclick.png" alt="OneXtel Edit Callback screen with Type Button Click, the suggestion-clicked request preview, and a header row" />
     </Frame>
   </Step>
 
@@ -525,17 +540,24 @@ entered in the MoEngage sender.
     | Field | Value |
     | --- | --- |
     | Callback URL | `https://mo.onexaura.com/moengage/sms/dlr` |
-    | Header | key `callback`, value = the MoEngage DLR URL from the SMS provider screen |
+    | Header | key `callback`, value = the **RCS** callback URL from the RCS sender screen (Part A) |
 
-    The header carries MoEngage's own DLR URL so one connector can serve several MoEngage
-    accounts. `callback` is the header name every OneXtel connector uses for this; the older
-    `cburl` is still accepted on this route.
+    A fallback SMS is reported on MoEngage's RCS contract, against the RCS message it replaced, so
+    the header must carry the RCS callback URL — not the SMS provider's. The connector recognises a
+    fallback receipt by the reference it attached at send time and reports it as `SMS_DELIVERED`
+    or `SMS_DELIVERY_FAILED`.
+
+    <Warning>
+      Plain SMS campaigns need the **SMS provider's** URL in this same header. Because callbacks are
+      set per API key, use **separate API keys** for RCS-with-fallback and for plain SMS campaigns.
+    </Warning>
   </Step>
 </Steps>
 
 <Warning>
-The inbound header key differs by channel — WhatsApp uses `callback_url`, RCS uses `cbUrl`, and
-the SMS delivery report uses `callback`. Using the wrong one silently breaks callback routing.
+The header key differs by channel — WhatsApp uses `callback_url`; RCS and SMS use `callback`.
+Put the URL alone in the value, not `callback = …`.
+Using the wrong key silently breaks callback routing.
 </Warning>
 
 ### Part E — Test, then launch
@@ -557,6 +579,14 @@ nothing about whether fallback works. Test each path separately before you launc
     Once both check out, launch the campaign to your full audience.
   </Step>
 </Steps>
+
+<Tip>
+**Test sends that never go out.** MoEngage applies the workspace's frequency cap to test
+campaigns too. After a few sends in a day, test users are silently removed and the campaign shows
+nothing sent; the campaign's delivery funnel shows them dropping out at **Users After FC
+Removal**. Tick **Ignore frequency capping** on test campaigns, and leave **Count for the frequency
+capping** off.
+</Tip>
 
 </Tab>
 <Tab title="SMS">
@@ -592,7 +622,7 @@ request body against Part A below — plain SMS campaigns use it.
     URL:
 
     ```
-    https://mo.onexaura.com/moengage/sms
+    https://mo.onexaura.com/moengage/sms/outbound
     ```
 
     <Frame caption="SMS custom service provider — the connector's SMS URL">
@@ -601,7 +631,8 @@ request body against Part A below — plain SMS campaigns use it.
   </Step>
 
   <Step title="Set the request body">
-    Set **Method** to `POST`, **Body type** to `Raw`, and paste:
+    Set **Method** to `POST`, **Body type** to `Raw`, and paste. MoEngage selects **Form** by
+    default, so change it before you paste:
 
     ```json
     {
@@ -625,6 +656,7 @@ request body against Part A below — plain SMS campaigns use it.
     | `type` | `SI`, `OTP` or `SE` | The DLT category your templates are registered under. Case-sensitive; defaults to `SI` |
     | `unicode` | `"1"` | For messages with non-ASCII characters. Not detected for you |
     | `campaignName` | `"Moesms_campaignId"` | Tags each SMS with the MoEngage campaign in OneXtel reporting |
+    | `urlTracking` | `"0"` | Turns click tracking off for this provider. Leave it out to keep tracking on |
 
     <Warning>
     **Keep every value in quotes.** A DLT ID of 19 digits sent as a bare number is rounded
@@ -645,6 +677,20 @@ request body against Part A below — plain SMS campaigns use it.
     </Frame>
   </Step>
 
+  <Step title="Decide on click tracking">
+    Click tracking is on by default. OneXtel rewrites every link in the SMS into its own short
+    domain and counts the taps, which you see in OneXtel reporting. You configure nothing to get
+    it.
+
+    <Warning>
+    Because every link is rewritten, the **OneXtel short domain** is the one that must be
+    whitelisted on your DLT template, not your own link domain.
+    </Warning>
+
+    To turn it off for a provider, add `"urlTracking": "0"` to the request body. Any other value
+    leaves tracking on. RCS messages and RCS fallback SMS are not shortened.
+  </Step>
+
   <Step title="Tell MoEngage how to read the replies">
     In the provider's delivery-tracking settings, map these attributes. MoEngage matches each
     delivery report to its message through the two ID fields, so both must be `messageId`:
@@ -657,8 +703,12 @@ request body against Part A below — plain SMS campaigns use it.
     | Success values for delivery status | `delivered` |
     | Attribute storing failure reason | `errorCode` |
 
-    A send the connector or OneXtel refuses comes back with `status` set to `failure` and an
-    `errorCode` from `7000` to `7004` — see [Error code mapping](#error-code-mapping).
+    <Frame caption="Delivery tracking on the SMS provider, mapped manually. The callback URL at the top is the one you copy in the next step.">
+      <img src="/images/plugins/moengage-sms-delivery-tracking.png" alt="MoEngage SMS provider delivery tracking step with the Incoming Messages and Delivery callback URL, Map fields manually selected, and the five attributes set to messageId, messageId, status, delivered and errorCode" />
+    </Frame>
+
+    A send the connector or OneXtel refuses comes back as HTTP `401` or `400`, with `status` set to
+    `failure` and an `errorCode` from `7000` to `7004` — see [Error code mapping](#error-code-mapping).
   </Step>
 
   <Step title="Save, then copy the SMS delivery tracking URL">
@@ -668,8 +718,10 @@ request body against Part A below — plain SMS campaigns use it.
 
     <Warning>
       **Copy this URL from your own provider screen.** The `api-0N` host matches the data centre
-      of your MoEngage dashboard, and the ID at the end is your provider's. A URL copied from
-      another account is accepted at save time and then silently never delivers a report.
+      of your MoEngage dashboard, and the ID at the end belongs to the provider (connector): senders
+      under one connector share it, but another connector in the same workspace has a different ID.
+      A URL copied from another account or connector is accepted at save time and then silently
+      never credits a report.
     </Warning>
   </Step>
 </Steps>
@@ -686,18 +738,23 @@ key** you put in the provider body:
 | Type | `Delivery Notification` |
 | HTTP Method | `POST` |
 | Callback URL | `https://mo.onexaura.com/moengage/sms/dlr` |
-| Header | Key `callback`, value = the SMS delivery tracking URL from Part A |
+| Header | Key `callback`, value = the SMS delivery tracking URL from Part A, and nothing else |
 
-The header carries MoEngage's own URL, so one connector can serve many MoEngage accounts. The
-older header name `cburl` is still accepted.
+The header carries MoEngage's own URL, so one connector can serve many MoEngage accounts.
 
 <Warning>
 **Without the `callback` header, your reports do not reach your MoEngage account.** Check the
 header on this callback specifically, and never save it with an empty header row.
+
+The header **value** is the URL alone, for example
+`https://api-01.moengage.com/sms/dlr/custom/2612531631`. Do not type `callback = …` into the value
+field. MoEngage answers every report with success, even one it cannot match, so a wrong value is
+only visible as a Delivered count that stays at zero.
 </Warning>
 
-If you also run RCS with SMS fallback on the same API key, this is the same callback as the RCS
-tab's **SMS delivery callback** — one serves both.
+Do not share this API key with RCS-with-fallback campaigns. Their SMS delivery callback needs the
+**RCS** callback URL in the same header, and OneXtel uses only one SMS delivery callback per key — see
+the RCS tab, **Configure the SMS delivery callback (SMS fallback)**.
 
 ### Part C — Build the SMS campaign
 
@@ -737,8 +794,8 @@ tab's **SMS delivery callback** — one serves both.
 </Steps>
 
 <Warning>
-The header key differs by channel — WhatsApp uses `callback_url`, RCS uses `cbUrl`, and the SMS
-delivery report uses `callback`. Using the wrong one silently breaks callback routing.
+The header key differs by channel — WhatsApp uses `callback_url`; RCS and SMS use `callback`.
+Using the wrong one silently breaks callback routing.
 </Warning>
 
 </Tab>
@@ -780,10 +837,12 @@ see [WhatsApp error codes](/api-reference/whatsapp/error-codes).
 
 **Delivery reports**
 
-RCS delivery reports go straight from OneXtel to MoEngage, on the callback URL MoEngage
-generated for your sender, without passing through the connector. For what an operator code
-means, see [RCS error codes](/api-reference/rcs/error-codes). Button clicks go through the
-connector and reach MoEngage as `SUGGESTION_CLICKED` events.
+RCS delivery reports reach MoEngage on its RCS message-status contract, either straight from
+OneXtel or through the connector's `/moengage/rcs/dlr`. Through the connector, a delivery is
+`RCS_DELIVERED`, a read `RCS_READ`, a sent-only event `RCS_SENT` (never counted as delivered), and
+a failure `RCS_DELIVERY_FAILED` with OneXtel's reason. For what an operator code means, see
+[RCS error codes](/api-reference/rcs/error-codes). Button clicks go through the connector and reach
+MoEngage as `SUGGESTION_CLICKED` events.
 
 **Send replies**
 
@@ -796,8 +855,8 @@ RCS replies carry a status per message rather than a numbered code:
 | No messages in the payload | `FAILURE` — `Invalid payload` |
 | OneXtel refused the request | `FAILURE` — with the HTTP error OneXtel returned |
 
-The SMS leg of an RCS fallback reports through the SMS delivery callback, and maps as described
-on the **SMS** tab.
+The SMS leg of an RCS fallback reports through the SMS delivery callback and reaches MoEngage as
+`SMS_DELIVERED` or `SMS_DELIVERY_FAILED` against the original RCS message.
 
 </Tab>
 <Tab title="SMS">
@@ -815,13 +874,16 @@ A report is `delivered` only when OneXtel's code is `000`. Every other code is r
 | `7000` | `990`–`993` | The sending account is disabled or expired |
 | `7004` | Every other code — for example an absent handset, network congestion, expiry, `982` no balance or `987` credit limit | Anything else |
 
-`111` (delivery awaited) is not forwarded — the final report follows it. For what each OneXtel
+Interim receipts are not forwarded: `111` (delivery awaited), and the `SUBMITTED` receipt OneXtel
+posts when it hands the SMS to the operator. MoEngage only ever sees the final report, so a
+message still in flight is never counted as failed. For what each OneXtel
 code means, see [India SMS error codes](/api-reference/sms/error-codes).
 
 **Send replies**
 
-Every send gets `status: "success"` with a `messageId`, or `status: "failure"` with an
-`errorCode` and a `description`:
+Every accepted send gets HTTP `200` with `status: "success"` and a `messageId`. A refused send gets
+HTTP `401` (code `7000`) or `400` (every other code), with `status: "failure"`, an `errorCode` and a
+`description`:
 
 | Situation | MoEngage code |
 | --- | --- |
@@ -832,6 +894,13 @@ Every send gets `status: "success"` with a `messageId`, or `status: "failure"` w
 
 `7003` is never returned on a send — only on a delivery report. OneXtel's own reason is always in
 `description`.
+
+<Note>
+MoEngage decides whether a send failed from the HTTP status alone. A refused send therefore appears
+in the campaign report as a send failure named after the status, **Unauthorized** or **Bad
+Request**. The `7000`–`7004` code and the description are in the reply body, not in MoEngage's
+report.
+</Note>
 
 </Tab>
 </Tabs>
@@ -877,6 +946,10 @@ Every send gets `status: "success"` with a `messageId`, or `status: "failure"` w
 - **`unicode` is not detected for you.** Add it to the request body when your templates use
   non-ASCII characters.
 - **Delivery awaited is not reported.** MoEngage sees a message only once it has a final outcome.
+- **Delivery reports go through the connector, never straight to MoEngage.** OneXtel posts each
+  receipt to `https://mo.onexaura.com/moengage/sms/dlr`, and the connector translates it and
+  forwards it to the MoEngage URL in the callback's `callback` header. A callback pointed at the
+  MoEngage URL directly is accepted by MoEngage but never matched to a message.
 
 </Tab>
 </Tabs>
