@@ -655,8 +655,8 @@ six-digit forms — see [India SMS error codes](/api-reference/sms/error-codes).
 
 | CleverTap code | CleverTap meaning | OneXtel codes |
 | --- | --- | --- |
-| `901` | DND failure | `978`, `900107` |
-| `902` | Spam detected | `973`, `900102` |
+| `901` | DND failure | `218`, `978`, `900107` |
+| `902` | Spam detected | `224`, `973`, `900102` |
 | `903` | Blacklist rejected | `974`, `976`, `900103`, `900105`, `900129` |
 | `904` | System error — a problem on the sending account or platform, not the recipient | `036`, `970`, `971`, `975`, `977`, `982`–`984`, `986`–`993`, `900088`, `900100`, `900104`, `900106`, `900111`–`900113`, `900115`, `900116`, `900118`–`900123`, `900210` |
 | `905` | Subscriber error | `011`, `013`, `015`, `019`, `021` |
@@ -667,11 +667,13 @@ six-digit forms — see [India SMS error codes](/api-reference/sms/error-codes).
 | `916` | Expired | `313`, `985`, `994`, `900114`, `900124` |
 | `917` | Force expired — dropped by a sending-hours policy | `995`, `900125` |
 | `918` | Duplicate drop | `900130` |
-| `919` | DLT failure | `979`–`981`, `900108`–`900110`, `900126`–`900128` |
+| `919` | DLT failure | `201`, `203`–`207`, `209`–`211`, `213`–`216`, `220`, `222`, `223`, `225`–`227`, `979`–`981`, `900108`–`900110`, `900126`–`900128` |
 
-Any code not in the table — including the DLT band `201`–`227` — falls back to the report's
-status: `UNDELIV` or `UNDELIVRD` becomes `914`, `EXPIRED` becomes `916`, and anything else
-becomes CleverTap's generic `900`.
+Any code not in the table falls back to the report's status: `UNDELIV` or `UNDELIVRD` becomes
+`914`, `EXPIRED` becomes `916`, and anything else becomes CleverTap's generic `900`. Within the
+DLT band this now applies only to `202`, `212`, `217`, `219` and `221`, which OneXtel's error-code
+sheet does not define — they are left to the status fallback rather than reported as a DLT
+failure on the strength of their position in the numbering.
 
 <Note>
 Two codes are mapped on how they arrive in practice rather than on their table meaning. `208`
