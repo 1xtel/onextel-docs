@@ -656,7 +656,7 @@ request body against Part A below — plain SMS campaigns use it.
     | `type` | `SI`, `OTP` or `SE` | The DLT category your templates are registered under. Case-sensitive; defaults to `SI` |
     | `unicode` | `"1"` | For messages with non-ASCII characters. Not detected for you |
     | `campaignName` | `"Moesms_campaignId"` | Tags each SMS with the MoEngage campaign in OneXtel reporting |
-    | `urlTracking` | `"0"` | Turns click tracking off for this provider. Leave it out to keep tracking on |
+    | `urlTracking` | `"1"` | Turns click tracking on for this provider. Leave it out and your links are sent untouched |
 
     <Warning>
     **Keep every value in quotes.** A DLT ID of 19 digits sent as a bare number is rounded
@@ -678,17 +678,21 @@ request body against Part A below — plain SMS campaigns use it.
   </Step>
 
   <Step title="Decide on click tracking">
-    Click tracking is on by default. OneXtel rewrites every link in the SMS into its own short
-    domain and counts the taps, which you see in OneXtel reporting. You configure nothing to get
-    it.
+    Click tracking is off by default. Your links are sent exactly as written unless you ask for
+    tracking. Add `"urlTracking": "1"` to the request body to turn it on: OneXtel then rewrites
+    every link in the SMS into its own short domain and counts the taps, which you see in OneXtel
+    reporting.
 
     <Warning>
-    Because every link is rewritten, the **OneXtel short domain** is the one that must be
-    whitelisted on your DLT template, not your own link domain.
+    Tracking is opt-in because the rewrite has consequences under DLT. Once it is on, the
+    **OneXtel short domain** is the one that must be whitelisted on your DLT template, in place of
+    your own link domain — so switching it on without updating the template registration gets the
+    message rejected at scrubbing.
     </Warning>
 
-    To turn it off for a provider, add `"urlTracking": "0"` to the request body. Any other value
-    leaves tracking on. RCS messages and RCS fallback SMS are not shortened.
+    Values `"1"`, `"true"`, `"yes"` and `"on"` turn tracking on. Anything else, including a missing
+    or misspelled value, leaves your links untouched. RCS messages and RCS fallback SMS are never
+    shortened.
   </Step>
 
   <Step title="Tell MoEngage how to read the replies">
