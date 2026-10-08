@@ -4,8 +4,9 @@ description: "Let customers call your business from inside WhatsApp, and have th
 ---
 
 WhatsApp Voice lets your customers tap the call button in a WhatsApp chat and speak to your business.
-OneXtel connects that call to your own voice platform — your IVR, contact centre or voice bot — as a
-standard SIP call. You do not need to build anything WhatsApp-specific.
+OneXtel connects that call to the voice platform you choose, as a standard SIP call: your own IVR, a
+contact-centre platform, any third-party voice platform, or a voice AI agent. You do not need to build
+anything WhatsApp-specific.
 
 <Info>
 WhatsApp Voice currently supports **inbound calls only**: a customer calls your business. Calling
@@ -16,9 +17,9 @@ customers from your business over WhatsApp is not part of this release.
 
 - **A call button in your WhatsApp chat.** Customers call your WhatsApp Business number without
   dialling a phone number or paying a call charge.
-- **Calls delivered over SIP.** Your voice platform receives each call on a SIP trunk that you
-  control, so it can run an IVR, route to agents, or hand the call to a voice bot exactly as it does
-  for calls from the phone network.
+- **Calls delivered over SIP.** Your voice platform, whichever vendor it comes from, receives each
+  call on a SIP trunk that you control, so it can run an IVR, route to agents, or hand the call to a
+  voice AI agent exactly as it does for calls from the phone network.
 - **No WhatsApp integration work on your side.** OneXtel handles the connection with Meta,
   the encryption, and the audio format conversion between WhatsApp and your platform.
 - **Call records and monitoring.** Each call is recorded with its start, answer and end times,
@@ -27,7 +28,7 @@ customers from your business over WhatsApp is not part of this release.
 ## How it fits together
 
 <Frame caption="WhatsApp Voice: the path of an inbound call">
-  <img src="/images/whatsapp-voice-architecture.svg" alt="A customer's WhatsApp call goes to Meta, then to the OneXtel WhatsApp Voice gateway over SIP on TLS with encrypted audio. The gateway delivers it to your voice platform over SIP and RTP." />
+  <img src="/images/whatsapp-voice-architecture.svg" alt="A customer's WhatsApp call goes to Meta, then to the OneXtel WhatsApp Voice gateway over SIP on TLS with encrypted audio. The gateway delivers it to any third-party voice platform, including voice AI agents, over SIP and RTP." />
 </Frame>
 
 OneXtel sits between Meta and your voice platform. Meta delivers the call to the OneXtel gateway.
