@@ -1,0 +1,77 @@
+---
+title: "WhatsApp Voice overview"
+description: "Let customers call your business from inside WhatsApp, and have those calls arrive at your existing voice platform as ordinary SIP calls."
+---
+
+WhatsApp Voice lets your customers tap the call button in a WhatsApp chat and speak to your business.
+OneXtel connects that call to your own voice platform — your IVR, contact centre or voice bot — as a
+standard SIP call. You do not need to build anything WhatsApp-specific.
+
+<Info>
+WhatsApp Voice currently supports **inbound calls only**: a customer calls your business. Calling
+customers from your business over WhatsApp is not part of this release.
+</Info>
+
+## What you get
+
+- **A call button in your WhatsApp chat.** Customers call your WhatsApp Business number without
+  dialling a phone number or paying a call charge.
+- **Calls delivered over SIP.** Your voice platform receives each call on a SIP trunk that you
+  control, so it can run an IVR, route to agents, or hand the call to a voice bot exactly as it does
+  for calls from the phone network.
+- **No WhatsApp integration work on your side.** OneXtel handles the connection with Meta,
+  the encryption, and the audio format conversion between WhatsApp and your platform.
+- **Call records and monitoring.** Each call is recorded with its start, answer and end times,
+  duration, result, and whether audio flowed in both directions.
+
+## How it fits together
+
+```mermaid
+flowchart LR
+  A[Customer in WhatsApp] -->|WhatsApp call| B[Meta]
+  B -->|SIP over TLS| C[OneXtel WhatsApp Voice gateway]
+  C -->|SIP + RTP| D[Your voice platform]
+```
+
+OneXtel sits between Meta and your voice platform. Meta delivers the call to the OneXtel gateway.
+The gateway answers Meta's authentication, anchors the audio, converts it to a format your platform
+accepts, and forwards the call to your SIP trunk. See [How it works](/guides/whatsapp-voice/how-it-works)
+for the full call flow.
+
+## What it does not do
+
+<AccordionGroup>
+  <Accordion title="It does not provide the IVR or the agent desktop">
+    The call menus, languages, speech handling and any integration with your backend systems run on your
+    voice platform. WhatsApp Voice delivers the call to it.
+  </Accordion>
+  <Accordion title="It does not record calls">
+    Meta provides no recording for WhatsApp calls. If you need recordings, record on your voice platform,
+    where the call arrives as a normal SIP call.
+  </Accordion>
+  <Accordion title="It does not make outbound calls">
+    Inbound only. Customers call you; you do not call them over WhatsApp.
+  </Accordion>
+</AccordionGroup>
+
+## Cost
+
+Meta does not charge for calls that customers place to your business. Commercial terms for the OneXtel
+service are agreed with your account team.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="How it works" icon="diagram-project" href="/guides/whatsapp-voice/how-it-works">
+    The path of a call, step by step.
+  </Card>
+  <Card title="Get started" icon="rocket" href="/guides/whatsapp-voice/getting-started">
+    What you supply, and what OneXtel sets up.
+  </Card>
+  <Card title="Connect your voice platform" icon="phone" href="/guides/whatsapp-voice/connect-your-voice-platform">
+    The SIP trunk your platform needs to provide.
+  </Card>
+  <Card title="Protocols and media" icon="sliders" href="/guides/whatsapp-voice/protocols-and-media">
+    Transport, codecs, ports and headers.
+  </Card>
+</CardGroup>

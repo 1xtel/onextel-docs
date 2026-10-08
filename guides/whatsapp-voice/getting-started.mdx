@@ -1,0 +1,97 @@
+---
+title: "Get started with WhatsApp Voice"
+description: "What you supply, what OneXtel sets up, and how to test your first WhatsApp call before going live."
+---
+
+Enabling WhatsApp Voice on a number takes a short onboarding with your OneXtel account team. Most of the
+configuration is done for you; this page covers what you provide and what to check at the end.
+
+## Before you start
+
+You need:
+
+- A **WhatsApp Business number** that is already active on the WhatsApp Business Platform through OneXtel.
+- A **voice platform that accepts SIP calls** and can be reached from the internet. See
+  [Connect your voice platform](/guides/whatsapp-voice/connect-your-voice-platform).
+- Someone with **admin access to your Meta Business account**, to share your WhatsApp Business Account
+  with OneXtel.
+
+<Note>
+Meta applies its own eligibility rules to calling on a number. OneXtel checks these with you during
+onboarding and tells you if anything needs to change.
+</Note>
+
+## What you supply
+
+| Item | Why it is needed |
+| --- | --- |
+| WhatsApp Business Account ID | Identifies the account the number belongs to. |
+| Phone number ID of the number to enable | Identifies the number inside WhatsApp. This is not the phone number itself. |
+| SIP trunk details | Where your platform wants WhatsApp calls delivered: host or IP address, port, transport, codecs. |
+| The firewall rule on your side | Your platform must accept signalling and audio from the OneXtel gateway. OneXtel gives you the addresses. |
+| A test contact | Someone who can place a test call and confirm what your platform received. |
+
+## What OneXtel sets up
+
+<Steps>
+  <Step title="Access to your WhatsApp Business Account">
+    You share your WhatsApp Business Account with OneXtel in Meta Business Settings and give it full control.
+    Your account team gives you the OneXtel business ID to share it with.
+  </Step>
+  <Step title="Reads the number's current settings">
+    OneXtel reads the number's existing calling settings first. Nothing is changed at Meta until the next steps.
+  </Step>
+  <Step title="Turns calling on">
+    OneXtel enables calling on the number. Customers then see the call button in the chat.
+  </Step>
+  <Step title="Points WhatsApp at the OneXtel gateway">
+    OneXtel sets the number's SIP connection to the gateway and stores the credentials Meta generates.
+    You never handle these credentials.
+  </Step>
+  <Step title="Connects your trunk">
+    OneXtel attaches your SIP trunk to the number. You can attach more than one, in priority order, for failover.
+  </Step>
+</Steps>
+
+<Info>
+Enabling WhatsApp Voice does not change the webhook URL you use for WhatsApp messaging. Only the number's
+calling and SIP settings are updated.
+</Info>
+
+## Test your first call
+
+<Steps>
+  <Step title="Call from a different WhatsApp account">
+    Use a phone with a different WhatsApp account from the business number. WhatsApp calls are supported on
+    iPhone and Android.
+  </Step>
+  <Step title="Refresh the call button">
+    Open the chat with the business number and tap its name once. This refreshes the call button,
+    which can otherwise lag after a settings change.
+  </Step>
+  <Step title="Place the call">
+    Tap the call button. The call should reach your voice platform within a second or two.
+  </Step>
+  <Step title="Check both directions">
+    Confirm that you hear your platform's greeting and that your platform hears you.
+  </Step>
+</Steps>
+
+<Tip>
+If the call connects but you hear nothing, see
+[Troubleshooting](/guides/whatsapp-voice/troubleshooting). The most common cause is a platform that answers
+but waits for the caller to speak first.
+</Tip>
+
+## Go-live checklist
+
+- [ ] A test call connects and audio flows both ways.
+- [ ] The call appears in OneXtel's call records as answered, with two-way audio.
+- [ ] Your platform sees the caller's number in the format you expect.
+- [ ] Your failover trunk, if you have one, has been tested.
+- [ ] Your support team knows how to report a problem. See [Troubleshooting](/guides/whatsapp-voice/troubleshooting).
+
+## Related
+
+- [How it works](/guides/whatsapp-voice/how-it-works)
+- [Protocols and media](/guides/whatsapp-voice/protocols-and-media)

@@ -69,6 +69,17 @@
             ]
           },
           {
+            "group": "WhatsApp Voice",
+            "pages": [
+              "guides/whatsapp-voice/overview",
+              "guides/whatsapp-voice/how-it-works",
+              "guides/whatsapp-voice/getting-started",
+              "guides/whatsapp-voice/connect-your-voice-platform",
+              "guides/whatsapp-voice/protocols-and-media",
+              "guides/whatsapp-voice/troubleshooting"
+            ]
+          },
+          {
             "group": "RCS Campaigns",
             "pages": [
               "guides/rcs-campaigns/overview",
