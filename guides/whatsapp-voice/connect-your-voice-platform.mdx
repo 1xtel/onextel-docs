@@ -16,7 +16,9 @@ standards-compliant SIP platform works: an IVR, a contact-centre platform, a SIP
 | Audio security | Plain RTP, or SRTP with SDES keys | |
 | Codecs | G.711 µ-law (PCMU), G.711 A-law (PCMA), Opus | List the ones your platform accepts. The gateway converts from WhatsApp's Opus when needed. |
 | Maximum calls | A number, or no limit | When a trunk is at its limit, the gateway uses the next trunk, or refuses the call if there is none. |
-| Failover | A time (500 ms to 60 s, default 3 s) and more trunks | See [Failover](#failover). |
+| Failover time | 500 ms to 60 s, default 3 s | How long the gateway waits for any response before trying the next trunk. See [Failover and fallback](#failover-and-fallback). |
+| Ring limit | 3 to 60 seconds, or none | How long the trunk may ring without answering before the gateway tries the next trunk. Without a limit it waits up to 60 seconds. |
+| If your platform rejects the call | Pass the rejection back (default), or try the next trunk | Applies to busy, unavailable and declined answers. |
 
 <Warning>
 Allow the OneXtel gateway to reach your platform for both signalling and audio. OneXtel gives you the
@@ -82,16 +84,31 @@ letters and any leading plus sign. The gateway puts it in both the request line 
 is answered with `404`, the identifier usually does not match. See [Troubleshooting](/guides/whatsapp-voice/troubleshooting#your-platform-answers-with-an-error).
 </Tip>
 
-## Failover
+## Failover and fallback
 
-You can attach more than one trunk to a number. The gateway tries them in priority order. It moves to the
-next trunk when:
+You can attach more than one trunk to a number, for example your main platform, then a backup agent or a human
+queue. The gateway tries them in priority order and moves to the next trunk when:
 
-- the trunk gives no response within the failover time, or
-- the trunk answers with a server error (5xx) or a timeout.
+- the trunk gives **no response** within the failover time,
+- the trunk answers with a **server error** (5xx),
+- the trunk **rings but does not answer** within its ring limit, or
+- the trunk **rejects the call as busy, unavailable or declined** (480, 486, 600 or 603), if you turned on
+  *try the next trunk* for that trunk.
 
-A busy or decline from your platform is passed back to the caller as it is. A trunk that has reached its
-call limit is skipped.
+Without that last setting, a busy or decline is passed back to the caller as it is. A trunk that has reached
+its call limit is skipped. If there is no further trunk, the call fails and the caller hears it.
+
+<Info>
+The ring limit starts when your platform replies Ringing. Until then, the failover time applies. When the limit
+passes, the gateway cancels the call to that trunk and sends it to the next one, so your platform sees a normal
+CANCEL.
+</Info>
+
+<Tip>
+Use a ring limit together with *try the next trunk* on a platform that can be briefly unavailable, such as a voice
+AI agent that is at its concurrency limit. The caller then reaches a working destination instead of waiting for
+the call to fail. Keep the ring limit short. Ask your account team to attach the backup trunk and set the limits.
+</Tip>
 
 ## During the call
 

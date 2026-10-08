@@ -34,8 +34,23 @@ server that sent it. Use the code to find the cause.
 | `404`, for example "Does not match any SIP Trunks" | Your platform found no trunk, number or agent matching the address it was sent. | Check the identifier. Use a fixed SIP user, exactly as imported on your platform, including capital letters and any leading plus. The request line and the `To` header both carry it. |
 | `401` or `407` | Your platform wants a username and password. | Username and password authentication of your trunk is not available yet. Allow the gateway's addresses by IP instead. |
 | `403` | Your platform refused the source or the caller. | Check that the gateway's addresses are allowed, and any list of permitted callers. |
-| `486` or `603` | Busy or declined. | The result is passed back to the caller as it is. Check your platform's availability. |
+| `480`, `486`, `600` or `603` | Unavailable, busy or declined. For example a voice AI agent that is at its limit. | Passed back to the caller as it is, unless the trunk is set to try the next trunk. Check your platform's availability, and consider a backup trunk (see below). |
 | `5xx`, or no answer | Your platform failed or did not respond in time. | The gateway tries the next trunk, if there is one. Check your platform's health. |
+
+## The call rings for a long time and then fails
+
+The caller hears ringing, then the call fails. In the gateway's record, your platform answered "Ringing" and then
+either rejected the call (`486`, "Rejected" or "Busy") or never answered. The gateway delivered the call, so look at
+your platform: the agent or queue it should reach may be unavailable, busy, at its concurrency limit, or out of
+credit.
+
+To keep callers from waiting, set up a fallback:
+
+1. Attach a **backup trunk** to the number (a second platform, a human queue or voicemail) with a later priority.
+2. On the main trunk, set a **ring limit** of a few seconds.
+3. Turn on **try the next trunk** so a rejection moves on too.
+
+See [Failover and fallback](/guides/whatsapp-voice/connect-your-voice-platform#failover-and-fallback).
 
 ## The call connects but there is silence
 
