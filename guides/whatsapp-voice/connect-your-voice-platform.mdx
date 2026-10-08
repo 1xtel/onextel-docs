@@ -1,0 +1,100 @@
+---
+title: "Connect your voice platform"
+description: "The SIP trunk your voice platform needs to provide to receive WhatsApp calls: transport, authentication, call details, audio and failover."
+---
+
+Your voice platform receives WhatsApp calls as ordinary SIP calls on a trunk you provide. Any
+standards-compliant SIP platform works: an IVR, a contact-centre platform, a SIP server or a voice bot.
+
+## What your platform provides
+
+| Setting | Options | Notes |
+| --- | --- | --- |
+| Address | Hostname or IP, and a port | Port 5060 for UDP and TCP, 5061 for TLS, unless you choose another. |
+| Transport | UDP, TCP or TLS | |
+| Authentication | By source IP address | Your platform accepts calls from the OneXtel gateway's addresses. Username and password trunk authentication is not available yet. |
+| Audio security | Plain RTP, or SRTP with SDES keys | |
+| Codecs | G.711 µ-law (PCMU), G.711 A-law (PCMA), Opus | List the ones your platform accepts. The gateway converts from WhatsApp's Opus when needed. |
+| Maximum calls | A number, or no limit | When a trunk is at its limit, the gateway uses the next trunk, or refuses the call if there is none. |
+| Failover | A time (500 ms to 60 s, default 3 s) and more trunks | See [Failover](#failover). |
+
+<Warning>
+Allow the OneXtel gateway to reach your platform for both signalling and audio. OneXtel gives you the
+gateway addresses during onboarding. Keep them allowed in every firewall between the internet and your platform.
+</Warning>
+
+## What your platform receives
+
+Each call arrives as a SIP INVITE with an SDP offer.
+
+```text
+INVITE sip:+919999999999@platform.example.com:5060;transport=udp SIP/2.0
+From: <sip:+918888888888@...>;tag=...
+To: <sip:+919999999999@...>
+X-WA-Tenant: <OneXtel identifier>
+X-WA-Number: <OneXtel identifier>
+Content-Type: application/sdp
+```
+
+| Where | What it carries |
+| --- | --- |
+| Request address user part | Your WhatsApp Business number in international format with a plus sign, by default. See [Routing options](#routing-options). |
+| `From` | The caller's WhatsApp number in international format, as supplied by WhatsApp. |
+| `X-WA-Tenant` and `X-WA-Number` | OneXtel identifiers for your account and number. Quote them when you contact support. |
+| `X-WA-Route` | Only when you choose header routing. See below. |
+
+<Note>
+These values do not tell you the channel. If your platform serves both the phone network and WhatsApp
+on the same number, ask your account team about marking WhatsApp calls so your flows can tell them apart.
+</Note>
+
+## What your platform must do
+
+<Steps>
+  <Step title="Answer the call">
+    Reply with 180 Ringing if you like, then 200 OK with an SDP answer that picks one of your accepted codecs.
+  </Step>
+  <Step title="Send audio first">
+    Start sending audio as soon as you answer: a greeting, music, or silence. WhatsApp waits for the
+    business side to send first. A platform that only listens produces a silent call.
+  </Step>
+  <Step title="Send and receive on the addresses in the SDP">
+    Use the audio address and port in the gateway's SDP. Send your audio from the same address and port
+    you advertise.
+  </Step>
+  <Step title="End the call with BYE">
+    Either side may send BYE. The gateway closes both legs.
+  </Step>
+</Steps>
+
+## Routing options
+
+Choose how the gateway addresses your trunk. This is set per trunk.
+
+| Option | Behaviour |
+| --- | --- |
+| Dialled number (default) | The request address user part is your WhatsApp number in international format. |
+| Fixed user | The request address user part is a fixed value you choose, for example an IVR extension. |
+| Header | The user part stays your number, and the gateway adds an `X-WA-Route` header with the value you choose. |
+
+## Failover
+
+You can attach more than one trunk to a number. The gateway tries them in priority order. It moves to the
+next trunk when:
+
+- the trunk gives no response within the failover time, or
+- the trunk answers with a server error (5xx) or a timeout.
+
+A busy or decline from your platform is passed back to the caller as it is. A trunk that has reached its
+call limit is skipped.
+
+## During the call
+
+- **Re-INVITE** (for example hold and resume) is passed through.
+- **Transfers** should be done inside your platform. The gateway does not transfer calls on to other WhatsApp numbers.
+- **Keypad tones (DTMF)**: see [Protocols and media](/guides/whatsapp-voice/protocols-and-media#keypad-tones-dtmf).
+
+## Related
+
+- [Protocols and media](/guides/whatsapp-voice/protocols-and-media)
+- [Troubleshooting](/guides/whatsapp-voice/troubleshooting)

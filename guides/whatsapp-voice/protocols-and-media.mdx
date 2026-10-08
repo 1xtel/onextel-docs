@@ -1,0 +1,73 @@
+---
+title: "Protocols and media"
+description: "Reference for the signalling, audio, codecs and security used by WhatsApp Voice."
+---
+
+A reference for engineers integrating a voice platform. For the end-to-end picture, see
+[How it works](/guides/whatsapp-voice/how-it-works).
+
+## Signalling
+
+| Leg | Protocol | Detail |
+| --- | --- | --- |
+| Meta to the OneXtel gateway | SIP over TLS | TCP port 5061, TLS 1.2 or later. The certificate matches the gateway hostname. |
+| Authentication of calls | SIP digest | The gateway challenges each call. Meta answers with credentials generated for your number. |
+| OneXtel gateway to your platform | SIP over UDP, TCP or TLS | Your choice per trunk. Authenticated by source IP address. |
+
+The gateway stays in the signalling path for the whole call, so BYE and re-INVITE reach both sides.
+
+## Audio
+
+| Leg | Transport | Encryption | Codecs |
+| --- | --- | --- | --- |
+| WhatsApp (Meta) side | RTP | SRTP, keys exchanged in the SDP (SDES) | Opus, 48 kHz, 20 ms packets |
+| Your platform's side | RTP | Plain RTP, or SRTP with SDES keys, per trunk | G.711 µ-law (PCMU), G.711 A-law (PCMA) or Opus, per trunk |
+
+WhatsApp uses Opus. When your trunk does not accept Opus, the gateway converts between Opus and G.711
+for you. If your trunk lists Opus as a codec, the gateway can offer it to your platform directly.
+
+<Info>
+Audio is carried in both directions through the gateway, which holds the audio address that Meta and your
+platform send to. This keeps NAT and firewall rules on your side simple: allow the gateway.
+</Info>
+
+### Who sends first
+
+Meta expects the business side to send the first audio packet on every call. Make sure your platform
+starts sending audio as soon as it answers.
+
+## Keypad tones (DTMF)
+
+Customers can open a keypad during a WhatsApp call. Meta sends the tones as standard RFC 4733
+telephone-event packets in the audio stream, with an 8,000 Hz clock rate. Meta provides no separate
+notification of the digits.
+
+<Warning>
+Passing these tones through to your platform is being validated. Confirm with your OneXtel account team
+before you design a menu that depends on keypad input.
+</Warning>
+
+## Security
+
+| Area | How it is protected |
+| --- | --- |
+| Signalling | TLS 1.2 or later between Meta and the gateway. |
+| Who can call the gateway | Only networks that belong to Meta are accepted, and calls must pass digest authentication. |
+| WhatsApp audio | SRTP. |
+| Your trunk | Accepts calls only from the gateway's addresses, which you allow in your firewall. |
+| Credentials | The credentials Meta generates for your number are stored encrypted by OneXtel and are never shown. |
+
+## Limits and behaviour
+
+| Item | Detail |
+| --- | --- |
+| Direction | Inbound only. |
+| Devices | WhatsApp on iPhone and Android. Meta does not support calls from WhatsApp on the web or desktop. |
+| Cost | Meta does not charge for calls that customers place to your business. |
+| Recording | None. Record on your own platform. |
+| Hosting | The gateway runs in India. |
+
+## Related
+
+- [Connect your voice platform](/guides/whatsapp-voice/connect-your-voice-platform)
+- [Troubleshooting](/guides/whatsapp-voice/troubleshooting)

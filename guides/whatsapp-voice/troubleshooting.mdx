@@ -1,0 +1,80 @@
+---
+title: "WhatsApp Voice troubleshooting"
+description: "Fixes for the most common WhatsApp Voice problems: no call button, calls that fail, silent calls and one-way audio."
+---
+
+Start with the symptom you see, then follow the checks in order.
+
+## The call button does not appear
+
+| Likely cause | What to do |
+| --- | --- |
+| Calling is not yet enabled on the number. | Ask your OneXtel account team to confirm the number is configured. |
+| WhatsApp has not refreshed the button yet. | Open the chat with the business number and tap its name once. This forces a refresh. Meta notes that changes can otherwise take a while to reach customers. |
+| The customer is on an unsupported device. | WhatsApp calls to a business work on iPhone and Android. Web and desktop are not supported. |
+| The business hours or call icon setting hides the button. | Ask your account team to check the number's calling settings. |
+
+## The call fails straight away
+
+| Likely cause | What to do |
+| --- | --- |
+| The number is not configured. | Confirm onboarding is complete and that a trunk is attached. |
+| Your platform is not reachable from the gateway. | Check the firewall allows the OneXtel gateway addresses on your signalling port. |
+| Your trunk is at its call limit. | Raise the maximum calls on the trunk, or attach a second trunk. |
+| Your platform rejected the call. | Look in your platform's logs for the incoming INVITE and the response it gave. Busy and decline responses are passed back to the caller. |
+| Every trunk failed. | The gateway tries each trunk in priority order. If all fail, the call is refused. Check each one. |
+
+## The call connects but there is silence
+
+This is the most common problem. The call is established, but neither side hears anything.
+
+<Steps>
+  <Step title="Does your platform send audio first?">
+    WhatsApp waits for the business side to send the first audio packet. Make your platform start
+    sending a greeting, music or silence the moment it answers.
+  </Step>
+  <Step title="Is audio allowed through your firewall?">
+    Allow the OneXtel gateway to send audio to the address and port in your SDP answer, and to receive from you.
+  </Step>
+  <Step title="Is the address in your SDP reachable?">
+    Behind NAT, advertise your public audio address, not a private one.
+  </Step>
+  <Step title="Did you accept a codec the gateway offered?">
+    Your SDP answer must pick a codec from your trunk's accepted list.
+  </Step>
+</Steps>
+
+## Audio goes one way only
+
+- If the caller hears you but you do not hear them, check that your platform accepts audio from the gateway's
+  address and that symmetric RTP is on.
+- If you hear the caller but they do not hear you, check that your platform sends audio to the address and port
+  in the gateway's SDP, not to the signalling address.
+
+## Keypad tones are not recognised
+
+Customers can press keys on a keypad during a call. Passing these to your platform is being validated.
+See [Protocols and media](/guides/whatsapp-voice/protocols-and-media#keypad-tones-dtmf) and ask your account
+team before relying on keypad input.
+
+## The call drops after a while
+
+Check that your platform answers every re-INVITE and does not use a session timer that the call fails to
+refresh. If calls end at a regular interval, tell your account team the interval.
+
+## Reporting a problem
+
+Send your OneXtel support contact:
+
+1. Your WhatsApp Business number.
+2. The date, time and timezone of the call.
+3. What the caller experienced, in a sentence.
+4. The `X-WA-Number` value from your platform's log of the INVITE, if you have it.
+
+OneXtel can then find the call record, which shows how far the call got, how it ended, and whether audio flowed
+both ways.
+
+## Related
+
+- [Connect your voice platform](/guides/whatsapp-voice/connect-your-voice-platform)
+- [Protocols and media](/guides/whatsapp-voice/protocols-and-media)
