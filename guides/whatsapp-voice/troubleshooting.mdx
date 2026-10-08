@@ -24,6 +24,19 @@ Start with the symptom you see, then follow the checks in order.
 | Your platform rejected the call. | Look in your platform's logs for the incoming INVITE and the response it gave. Busy and decline responses are passed back to the caller. |
 | Every trunk failed. | The gateway tries each trunk in priority order. If all fail, the call is refused. Check each one. |
 
+## Your platform answers with an error
+
+When your platform refuses a call, the gateway records its answer: the status code, the reason text and the
+server that sent it. Use the code to find the cause.
+
+| Answer from your platform | What it usually means | What to do |
+| --- | --- | --- |
+| `404`, for example "Does not match any SIP Trunks" | Your platform found no trunk, number or agent matching the address it was sent. | Check the identifier. Use a fixed SIP user, exactly as imported on your platform, including capital letters and any leading plus. The request line and the `To` header both carry it. |
+| `401` or `407` | Your platform wants a username and password. | Username and password authentication of your trunk is not available yet. Allow the gateway's addresses by IP instead. |
+| `403` | Your platform refused the source or the caller. | Check that the gateway's addresses are allowed, and any list of permitted callers. |
+| `486` or `603` | Busy or declined. | The result is passed back to the caller as it is. Check your platform's availability. |
+| `5xx`, or no answer | Your platform failed or did not respond in time. | The gateway tries the next trunk, if there is one. Check your platform's health. |
+
 ## The call connects but there is silence
 
 This is the most common problem. The call is established, but neither side hears anything.
@@ -53,9 +66,13 @@ This is the most common problem. The call is established, but neither side hears
 
 ## Keypad tones are not recognised
 
-Customers can press keys on a keypad during a call. Passing these to your platform is being validated.
-See [Protocols and media](/guides/whatsapp-voice/protocols-and-media#keypad-tones-dtmf) and ask your account
-team before relying on keypad input.
+Customers can press keys on a keypad during a call, and the key presses are passed to your platform as RFC 4733
+telephone-events. If your platform does not react to them, check that:
+
+- your SDP answer includes `telephone-event/8000`, using the payload type from the gateway's offer, and
+- your platform reads RFC 4733 events. It will not see the digits as audio tones or as SIP INFO messages.
+
+See [Protocols and media](/guides/whatsapp-voice/protocols-and-media#keypad-tones-dtmf).
 
 ## The call drops after a while
 
@@ -73,6 +90,17 @@ Send your OneXtel support contact:
 
 OneXtel can then find the call record, which shows how far the call got, how it ended, and whether audio flowed
 both ways.
+
+### What OneXtel can see
+
+For every call the gateway keeps a timeline of the SIP messages, for troubleshooting:
+
+- the call arriving from WhatsApp,
+- the INVITE sent to your trunk, with the request line and `To` header, and
+- each reply from your platform, with its status code, reason text and server name.
+
+Audio, credentials and full caller numbers are not included, and the timeline is kept for 30 days. Ask your
+OneXtel support contact to look up a call by number and time.
 
 ## Related
 

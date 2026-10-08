@@ -30,23 +30,21 @@ Each call arrives as a SIP INVITE with an SDP offer.
 ```text
 INVITE sip:+919999999999@platform.example.com:5060;transport=udp SIP/2.0
 From: <sip:+918888888888@...>;tag=...
-To: <sip:+919999999999@...>
+To: <sip:+919999999999@platform.example.com>
 X-WA-Tenant: <OneXtel identifier>
 X-WA-Number: <OneXtel identifier>
+X-WA-Channel: whatsapp
 Content-Type: application/sdp
 ```
 
 | Where | What it carries |
 | --- | --- |
 | Request address user part | Your WhatsApp Business number in international format with a plus sign, by default. See [Routing options](#routing-options). |
+| `To` | The same address as the request line: the same user and your platform's host. Platforms that route on the `To` header (many voice AI agent platforms do) match exactly what you configured. With a fixed SIP user, `To` carries that user too. |
 | `From` | The caller's WhatsApp number in international format, as supplied by WhatsApp. |
 | `X-WA-Tenant` and `X-WA-Number` | OneXtel identifiers for your account and number. Quote them when you contact support. |
+| `X-WA-Channel` | Always `whatsapp`. If your platform serves both the phone network and WhatsApp on the same number, use it to tell WhatsApp calls apart. |
 | `X-WA-Route` | Only when you choose header routing. See below. |
-
-<Note>
-These values do not tell you the channel. If your platform serves both the phone network and WhatsApp
-on the same number, ask your account team about marking WhatsApp calls so your flows can tell them apart.
-</Note>
 
 ## What your platform must do
 
@@ -77,6 +75,13 @@ Choose how the gateway addresses your trunk. This is set per trunk.
 | Fixed user | The request address user part is a fixed value you choose, for example an IVR extension. |
 | Header | The user part stays your number, and the gateway adds an `X-WA-Route` header with the value you choose. |
 
+<Tip>
+Some platforms, such as voice AI agent platforms, match the call to a number or agent you imported there by an
+identifier. Choose **A fixed SIP user** and enter the identifier exactly as you imported it, including capital
+letters and any leading plus sign. The gateway puts it in both the request line and the `To` header. If the call
+is answered with `404`, the identifier usually does not match. See [Troubleshooting](/guides/whatsapp-voice/troubleshooting#your-platform-answers-with-an-error).
+</Tip>
+
 ## Failover
 
 You can attach more than one trunk to a number. The gateway tries them in priority order. It moves to the
@@ -92,7 +97,7 @@ call limit is skipped.
 
 - **Re-INVITE** (for example hold and resume) is passed through.
 - **Transfers** should be done inside your platform. The gateway does not transfer calls on to other WhatsApp numbers.
-- **Keypad tones (DTMF)**: see [Protocols and media](/guides/whatsapp-voice/protocols-and-media#keypad-tones-dtmf).
+- **Keypad tones (DTMF)** arrive as standard RFC 4733 telephone-events. See [Protocols and media](/guides/whatsapp-voice/protocols-and-media#keypad-tones-dtmf).
 
 ## Related
 

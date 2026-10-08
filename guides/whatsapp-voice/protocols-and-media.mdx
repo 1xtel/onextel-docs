@@ -38,14 +38,20 @@ starts sending audio as soon as it answers.
 
 ## Keypad tones (DTMF)
 
-Customers can open a keypad during a WhatsApp call. Meta sends the tones as standard RFC 4733
-telephone-event packets in the audio stream, with an 8,000 Hz clock rate. Meta provides no separate
-notification of the digits.
+Customers can open a keypad during a WhatsApp call, and the key presses reach your platform. Meta sends
+each press as a standard RFC 4733 telephone-event packet in the audio stream, with an 8,000 Hz clock rate.
+The gateway passes these on to your platform as RFC 4733 telephone-events, with the digit, volume and
+duration intact. Meta provides no separate notification of the digits, so they travel only in the audio stream.
 
-<Warning>
-Passing these tones through to your platform is being validated. Confirm with your OneXtel account team
-before you design a menu that depends on keypad input.
-</Warning>
+To receive them, your platform must:
+
+- **Accept telephone-event in the SDP.** The gateway offers `telephone-event/8000`. Include it in your SDP
+  answer and use the payload type from the offer.
+- **Read digits as RFC 4733 events.** They are not sent as audio tones, and not as SIP INFO messages.
+
+<Tip>
+Platforms that listen rather than use a keypad, such as voice AI agents, can ignore keypad events.
+</Tip>
 
 ## Security
 

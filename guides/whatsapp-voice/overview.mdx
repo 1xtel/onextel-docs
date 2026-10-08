@@ -20,10 +20,13 @@ customers from your business over WhatsApp is not part of this release.
 - **Calls delivered over SIP.** Your voice platform, whichever vendor it comes from, receives each
   call on a SIP trunk that you control, so it can run an IVR, route to agents, or hand the call to a
   voice AI agent exactly as it does for calls from the phone network.
+- **Keypad input.** Customers can press keys during the call, and your platform receives them as standard
+  RFC 4733 events.
 - **No WhatsApp integration work on your side.** OneXtel handles the connection with Meta,
   the encryption, and the audio format conversion between WhatsApp and your platform.
 - **Call records and monitoring.** Each call is recorded with its start, answer and end times,
-  duration, result, and whether audio flowed in both directions.
+  duration, result, and whether audio flowed in both directions. A timeline of the SIP messages for each
+  call helps OneXtel troubleshoot quickly.
 
 ## How it fits together
 
