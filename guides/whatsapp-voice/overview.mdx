@@ -26,12 +26,9 @@ customers from your business over WhatsApp is not part of this release.
 
 ## How it fits together
 
-```mermaid
-flowchart LR
-  A[Customer in WhatsApp] -->|WhatsApp call| B[Meta]
-  B -->|SIP over TLS| C[OneXtel WhatsApp Voice gateway]
-  C -->|SIP + RTP| D[Your voice platform]
-```
+<Frame caption="WhatsApp Voice: the path of an inbound call">
+  <img src="/images/whatsapp-voice-architecture.svg" alt="A customer's WhatsApp call goes to Meta, then to the OneXtel WhatsApp Voice gateway over SIP on TLS with encrypted audio. The gateway delivers it to your voice platform over SIP and RTP." />
+</Frame>
 
 OneXtel sits between Meta and your voice platform. Meta delivers the call to the OneXtel gateway.
 The gateway answers Meta's authentication, anchors the audio, converts it to a format your platform
