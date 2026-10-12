@@ -14,7 +14,7 @@ standards-compliant SIP platform works: an IVR, a contact-centre platform, a SIP
 | Transport | UDP, TCP or TLS | |
 | Authentication | By source IP address | Your platform accepts calls from the OneXtel gateway's addresses. Username and password trunk authentication is not available yet. |
 | Audio security | Plain RTP, or SRTP with SDES keys | |
-| Codecs | G.711 µ-law (PCMU), G.711 A-law (PCMA), Opus | List the ones your platform accepts. The gateway converts from WhatsApp's Opus when needed. |
+| Codecs | G.711 µ-law (PCMU), G.711 A-law (PCMA), G.729, Opus | List the ones your platform accepts. The gateway converts from WhatsApp's Opus when needed, including to G.729. |
 | Maximum calls | A number, or no limit | When a trunk is at its limit, the gateway uses the next trunk, or refuses the call if there is none. |
 | Failover time | 500 ms to 60 s, default 3 s | How long the gateway waits for any response before trying the next trunk. See [Failover and fallback](#failover-and-fallback). |
 | Ring limit | 3 to 60 seconds, or none | How long the trunk may ring without answering before the gateway tries the next trunk. Without a limit it waits up to 60 seconds. |

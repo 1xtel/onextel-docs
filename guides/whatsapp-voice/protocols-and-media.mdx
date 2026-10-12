@@ -21,10 +21,14 @@ The gateway stays in the signalling path for the whole call, so BYE and re-INVIT
 | Leg | Transport | Encryption | Codecs |
 | --- | --- | --- | --- |
 | WhatsApp (Meta) side | RTP | SRTP, keys exchanged in the SDP (SDES) | Opus, 48 kHz, 20 ms packets |
-| Your platform's side | RTP | Plain RTP, or SRTP with SDES keys, per trunk | G.711 µ-law (PCMU), G.711 A-law (PCMA) or Opus, per trunk |
+| Your platform's side | RTP | Plain RTP, or SRTP with SDES keys, per trunk | G.711 µ-law (PCMU), G.711 A-law (PCMA), G.729 or Opus, per trunk |
 
 WhatsApp uses Opus. When your trunk does not accept Opus, the gateway converts between Opus and G.711
 for you. If your trunk lists Opus as a codec, the gateway can offer it to your platform directly.
+
+Trunks can also use **G.729**, a compressed 8 kHz codec found on older contact-centre and carrier equipment. The
+gateway converts between it and WhatsApp's Opus. If a trunk lists only G.729, it is offered G.729 only. Converting
+to G.729 uses more processing than G.711, which matters when planning for many simultaneous calls.
 
 <Info>
 Audio is carried in both directions through the gateway, which holds the audio address that Meta and your
