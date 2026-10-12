@@ -82,7 +82,8 @@ Calls to a number that is not configured are refused.
 | Situation | What the gateway does |
 | --- | --- |
 | Your trunk does not answer within the failover time (3 seconds by default), or replies with a 5xx or timeout | It tries the next trunk in priority order. |
-| Your trunk replies with a busy or decline | The result is passed back to the caller as is. |
+| Your trunk rings but does not answer within its ring limit | It cancels that trunk and tries the next one. |
+| Your trunk replies with a busy, unavailable or decline | If the trunk is set to try the next trunk, it moves on. Otherwise the result is passed back to the caller as it is. |
 | Every trunk is unavailable or at its call limit | The call is refused. |
 | The number is not configured, or the call does not come from Meta | The call is refused. |
 

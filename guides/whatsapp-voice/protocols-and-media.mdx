@@ -21,10 +21,14 @@ The gateway stays in the signalling path for the whole call, so BYE and re-INVIT
 | Leg | Transport | Encryption | Codecs |
 | --- | --- | --- | --- |
 | WhatsApp (Meta) side | RTP | SRTP, keys exchanged in the SDP (SDES) | Opus, 48 kHz, 20 ms packets |
-| Your platform's side | RTP | Plain RTP, or SRTP with SDES keys, per trunk | G.711 µ-law (PCMU), G.711 A-law (PCMA) or Opus, per trunk |
+| Your platform's side | RTP | Plain RTP, or SRTP with SDES keys, per trunk | G.711 µ-law (PCMU), G.711 A-law (PCMA), G.729 or Opus, per trunk |
 
 WhatsApp uses Opus. When your trunk does not accept Opus, the gateway converts between Opus and G.711
 for you. If your trunk lists Opus as a codec, the gateway can offer it to your platform directly.
+
+Trunks can also use **G.729**, a compressed 8 kHz codec found on older contact-centre and carrier equipment. The
+gateway converts between it and WhatsApp's Opus. If a trunk lists only G.729, it is offered G.729 only. Converting
+to G.729 uses more processing than G.711, which matters when planning for many simultaneous calls.
 
 <Info>
 Audio is carried in both directions through the gateway, which holds the audio address that Meta and your
@@ -38,14 +42,20 @@ starts sending audio as soon as it answers.
 
 ## Keypad tones (DTMF)
 
-Customers can open a keypad during a WhatsApp call. Meta sends the tones as standard RFC 4733
-telephone-event packets in the audio stream, with an 8,000 Hz clock rate. Meta provides no separate
-notification of the digits.
+Customers can open a keypad during a WhatsApp call, and the key presses reach your platform. Meta sends
+each press as a standard RFC 4733 telephone-event packet in the audio stream, with an 8,000 Hz clock rate.
+The gateway passes these on to your platform as RFC 4733 telephone-events, with the digit, volume and
+duration intact. Meta provides no separate notification of the digits, so they travel only in the audio stream.
 
-<Warning>
-Passing these tones through to your platform is being validated. Confirm with your OneXtel account team
-before you design a menu that depends on keypad input.
-</Warning>
+To receive them, your platform must:
+
+- **Accept telephone-event in the SDP.** The gateway offers `telephone-event/8000`. Include it in your SDP
+  answer and use the payload type from the offer.
+- **Read digits as RFC 4733 events.** They are not sent as audio tones, and not as SIP INFO messages.
+
+<Tip>
+Platforms that listen rather than use a keypad, such as voice AI agents, can ignore keypad events.
+</Tip>
 
 ## Security
 
