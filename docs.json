@@ -3,9 +3,9 @@
   "theme": "mint",
   "name": "OneXtel",
   "colors": {
-    "primary": "#242c6a",
-    "light": "#C23B34",
-    "dark": "#C23B34"
+    "primary": "#242C6A",
+    "light": "#242C6A",
+    "dark": "#242C6A"
   },
   "favicon": {
     "light": "/images/Xsymbol.png",
@@ -216,7 +216,7 @@
       },
       {
         "tab": "Plugins",
-        "groups": [
+        "pages": [
           {
             "group": "Overview",
             "pages": [
@@ -236,7 +236,8 @@
               "plugins/shopify",
               "plugins/optimove"
             ]
-          }
+          },
+          "zoho-crm-wa-and-rcs"
         ]
       },
       {
@@ -304,8 +305,8 @@
   ],
   "background": {
     "color": {
-      "light": "#dae6f1",
-      "dark": "#242c6a"
+      "light": "#ffffff",
+      "dark": "#ffffff"
     },
     "decoration": "grid"
   },
