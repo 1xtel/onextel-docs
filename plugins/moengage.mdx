@@ -103,7 +103,7 @@ send.
 | Channel | Purpose | Where you enter it | URL |
 | --- | --- | --- | --- |
 | WhatsApp | Outbound | MoEngage sender — URL | `https://mo.onexaura.com/moengage/whatsapp/outbound` |
-| WhatsApp | Inbound and button clicks | OneXtel callback — Callback URL | `https://mo.onexaura.com/moengage/whatsapp/inbound` |
+| WhatsApp | Inbound and button clicks | OneXtel callback — Callback URL, `?callback_url=` query param | `https://mo.onexaura.com/moengage/whatsapp/inbound` |
 | RCS | Outbound | MoEngage sender — API URL | `https://mo.onexaura.com/moengage/rcs/outbound` |
 | RCS | Button clicks | OneXtel callback — Callback URL, header `callback` | `https://mo.onexaura.com/moengage/rcs/inbound` |
 | RCS | Delivery reports | OneXtel callback — Callback URL, header `callback` | `https://mo.onexaura.com/moengage/rcs/dlr` |
@@ -166,15 +166,23 @@ hosts, so check it before saving.
     enter this URL:
 
     ```
-    https://mo.onexaura.com/moengage/whatsapp/inbound
+    https://mo.onexaura.com/moengage/whatsapp/inbound?callback_url=YOUR_MOENGAGE_DLR_URL
     ```
 
-    In the **Header** section, add the key `callback_url` with your MoEngage DLR URL as the
-    value. Save.
+    Your MoEngage DLR URL goes in the URL itself, as the `callback_url` **query parameter** —
+    percent-encode it, so `https://api-01.moengage.com/...` becomes
+    `https%3A%2F%2Fapi-01.moengage.com%2F...`. Add no header. Save.
+
+    <Warning>
+    **This one is a query parameter, not a header** — unlike every other callback on this page.
+    A `callback_url` header does not survive the hop: header names containing an underscore are
+    dropped before they reach the connector, so the callback arrives with no URL and is refused
+    with `400 Callback URL is missing`. Verified live on 2026-10-13.
+    </Warning>
   </Step>
   <Step title="Configure the button-click callback">
-    Repeat step 4 exactly, changing **Type** to `Button Click`. The URL, header key, and
-    header value are all identical to the inbound callback.
+    Repeat step 4 exactly, changing **Type** to `Button Click`. The URL, including its
+    `callback_url` query parameter, is identical to the inbound callback.
   </Step>
 </Steps>
 
@@ -574,9 +582,11 @@ set per API key, so a sender on a different key does not pick them up.
 </Steps>
 
 <Warning>
-The header key differs by channel — WhatsApp uses `callback_url`; RCS and SMS use `callback`.
-Put the URL alone in the value, not `callback = …`.
-Using the wrong key silently breaks callback routing.
+RCS and SMS carry the MoEngage URL in a header named `callback`. Put the URL alone in the value,
+not `callback = …`. WhatsApp inbound is the exception: it takes a `callback_url` **query
+parameter** on the URL and no header at all — a header will not reach the connector, because
+header names containing an underscore are dropped in transit.
+Using the wrong one silently breaks callback routing.
 </Warning>
 
 ### Part E — Test, then launch
@@ -822,7 +832,9 @@ the RCS tab, **Configure the SMS delivery callback (SMS fallback)**.
 </Steps>
 
 <Warning>
-The header key differs by channel — WhatsApp uses `callback_url`; RCS and SMS use `callback`.
+RCS and SMS carry the MoEngage URL in a header named `callback`. WhatsApp inbound instead takes a
+`callback_url` **query parameter** on the URL, with no header — a header containing an underscore
+is dropped in transit and never arrives.
 Using the wrong one silently breaks callback routing.
 </Warning>
 
