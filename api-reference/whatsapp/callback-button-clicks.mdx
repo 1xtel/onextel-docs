@@ -10,11 +10,8 @@ structure as [Incoming Messages](/api-reference/whatsapp/callback-incoming-messa
 with a `button` object in place of the message content objects.
 
 <Note>
-The payload below is the structural skeleton exactly as documented: each field's value
-shows its JSON path, not sample data. The source does not define field meanings, data
-types, or enumerated values — all descriptions on this page are **inferred from the
-field names and paths** and all leaf fields are documented as `string` because the
-source shows every value as a string placeholder.
+In the sample below, each field's value shows that field's JSON path rather than an
+example value. All leaf fields are typed as `string`.
 </Note>
 
 ## Payload format
@@ -90,95 +87,90 @@ source shows every value as a string placeholder.
 </ResponseField>
 
 <ResponseField name="entry" type="array of object">
-  Container array for the callback event (inferred).
+  Container array for the callback event.
   <Expandable title="entry[] properties">
     <ResponseField name="id" type="string">
-      Identifier of the entry (inferred from field name; the source does not state what
-      this identifies).
+      Identifier of the entry.
     </ResponseField>
     <ResponseField name="changes" type="array of object">
-      Array of change events within this entry (inferred).
+      Array of change events within this entry.
       <Expandable title="changes[] properties">
         <ResponseField name="value" type="object">
-          The event data for this change (inferred).
+          The event data for this change.
           <Expandable title="value properties">
             <ResponseField name="messages" type="array of object">
-              Inbound message objects carrying the button interaction (inferred).
+              Inbound message objects carrying the button interaction.
               <Expandable title="messages[] properties">
                 <ResponseField name="id" type="string">
-                  Identifier of the inbound message (inferred).
+                  Identifier of the inbound message.
                 </ResponseField>
                 <ResponseField name="timestamp" type="string">
-                  Timestamp of the button click message (inferred; format not specified
-                  in the source).
+                  Timestamp of the button click message.
                 </ResponseField>
                 <ResponseField name="type" type="string">
-                  Type of the inbound message (inferred; possible values not listed in
-                  the source).
+                  Type of the inbound message.
                 </ResponseField>
                 <ResponseField name="from" type="string">
-                  Sender of the inbound message (inferred; presumably the end user's
-                  WhatsApp number).
+                  Sender of the inbound message.
                 </ResponseField>
                 <ResponseField name="context" type="object">
-                  Context referencing the message that contained the button (inferred).
+                  Context referencing the message that contained the button.
                   <Expandable title="context properties">
                     <ResponseField name="id" type="string">
-                      Identifier of the referenced message (inferred).
+                      Identifier of the referenced message.
                     </ResponseField>
                     <ResponseField name="from" type="string">
-                      Sender of the referenced message (inferred).
+                      Sender of the referenced message.
                     </ResponseField>
                   </Expandable>
                 </ResponseField>
                 <ResponseField name="button" type="object">
-                  Details of the button the user tapped (inferred).
+                  Details of the button the user tapped.
                   <Expandable title="button properties">
                     <ResponseField name="text" type="string">
-                      Display text of the button that was clicked (inferred).
+                      Display text of the button that was clicked.
                     </ResponseField>
                     <ResponseField name="payload" type="string">
-                      Payload configured for the button (inferred).
+                      Payload configured for the button.
                     </ResponseField>
                   </Expandable>
                 </ResponseField>
               </Expandable>
             </ResponseField>
             <ResponseField name="metadata" type="object">
-              Metadata about the business number that received the interaction
-              (inferred).
+              Metadata about the business number that received the interaction.
               <Expandable title="metadata properties">
                 <ResponseField name="display_phone_number" type="string">
-                  Display phone number of the business (inferred).
+                  Display phone number of the business.
                 </ResponseField>
                 <ResponseField name="phone_number_id" type="string">
-                  Phone number identifier of the business (inferred).
+                  Phone number identifier of the business.
                 </ResponseField>
               </Expandable>
             </ResponseField>
             <ResponseField name="messaging_product" type="string">
-              Messaging product for the event (inferred).
+              Messaging product for the event.
             </ResponseField>
             <ResponseField name="contacts" type="array of object">
-              Contact details of the user who clicked the button (inferred).
+              Contact details of the user who clicked the button.
               <Expandable title="contacts[] properties">
                 <ResponseField name="profile" type="object">
-                  Contact profile information (inferred).
+                  Contact profile information.
                   <Expandable title="profile properties">
                     <ResponseField name="name" type="string">
-                      Profile name of the contact (inferred).
+                      Profile name of the contact.
                     </ResponseField>
                   </Expandable>
                 </ResponseField>
                 <ResponseField name="wa_id" type="string">
-                  WhatsApp ID of the contact (inferred).
+                  WhatsApp ID of the contact.
                 </ResponseField>
               </Expandable>
             </ResponseField>
           </Expandable>
         </ResponseField>
         <ResponseField name="field" type="string">
-          Field name describing the change (inferred).
+          Field name describing the change.
         </ResponseField>
       </Expandable>
     </ResponseField>

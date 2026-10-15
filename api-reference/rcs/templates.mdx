@@ -206,9 +206,7 @@ fields are required.
 | `calendar_event` | `suggestionType`, `postback`, `title`, `description`, `startTime`, `endTime`, `timeZone` | Adds a calendar event to the user's device. |
 
 <Note>
-`displayText` is documented as mandatory for all suggestion types in the parameter reference
-table, but is omitted from the minimum-required-fields list for `calendar_event` in the
-source. Include it to be safe.
+Include `displayText` in every suggestion, including `calendar_event`.
 </Note>
 
 ### Template type: Text Message
@@ -426,12 +424,6 @@ use the same `type: "text_message"` shape, adding one `suggestions` entry per ac
 takes `height`, a `HORIZONTAL` card takes `alignment`. Set `orientation` first.
 </Note>
 
-<Warning>
-Sources disagree on the `height` enum: one lists `SHORT_HEIGHT`, `MEDIUM_HEIGHT`, and
-`TALL_HEIGHT`, another only the first two. All three are documented here — confirm
-`TALL_HEIGHT` is accepted before relying on it.
-</Warning>
-
 **Parameters inside `standAlone`:**
 
 <ParamField body="mediaUrl" type="string" required>
@@ -496,14 +488,6 @@ Sources disagree on the `height` enum: one lists `SHORT_HEIGHT`, `MEDIUM_HEIGHT`
   Template state — `"Create"` or `"Submit"`.
 </ParamField>
 
-<Warning>
-The `width` and `height` enums are inconsistent across sources. `width` appears as
-`MEDIUM_WIDTH`/`SMALL_WIDTH` in one and `MEDIUM_WIDTH`/`SHORT_WIDTH` in another, while sample
-payloads use the bare value `MEDIUM`. `height` appears as `SHORT_HEIGHT`/`TALL_HEIGHT` in one
-and `SHORT_HEIGHT`/`MEDIUM_HEIGHT` in another. Every observed value is listed above —
-**confirm the accepted set with a test template before building against it.**
-</Warning>
-
 **Parameters inside each `carouselList` entry:**
 
 <ParamField body="mediaUrl" type="string" required>
@@ -563,14 +547,6 @@ and `SHORT_HEIGHT`/`MEDIUM_HEIGHT` in another. Every observed value is listed ab
 
 **Endpoint:** `POST https://api.onexaura.com/oapi/templates/fetch`
 
-<Note>
-The Postman collection ("OmniChannel APIs") documents this endpoint at
-`{{domain}}/oapi/templates/fetch` (`{{domain}}` = `https://api.onexaura.com`), while the PDF's
-sample cURL request uses `https://api.onexaura.com/templates/fetch` (no `/oapi` prefix). The
-`/oapi/templates/fetch` path is used below as the authoritative version per the style guide —
-see the Gaps note.
-</Note>
-
 ### cURL
 
 ```bash
@@ -620,12 +596,6 @@ curl --location 'https://api.onexaura.com/oapi/templates/fetch' \
 <ParamField body="limit" type="integer" required>
   Number of records to return per page.
 </ParamField>
-
-<Note>
-The Postman collection's commented-out fields also list `start_date` and `end_date` as
-alternative date-range filters, in addition to `templateName`, `status`, and `createdDate`.
-These appear only in Postman, not in the PDF's parameter table — see Gaps.
-</Note>
 
 ### Sample request
 

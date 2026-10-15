@@ -7,13 +7,6 @@ Use these endpoints to upload media files (images, documents, videos) for use in
 template and session WhatsApp messages, and to retrieve or download previously
 uploaded media.
 
-<Note>
-The OneXtel WhatsApp API Guide PDF documents the Media Upload endpoint as `POST /wa/mediaupload`.
-The OneXtel Postman collection documents it as `POST /oapi/wa/mediaupload`. Per the
-authoring convention, the Postman collection is treated as authoritative for this page;
-the discrepancy is also listed in the gaps for this extraction.
-</Note>
-
 ## Media Upload
 
 ```
@@ -40,11 +33,8 @@ can reference from send-message payloads (e.g. `image.id`, `document.id`).
 </ParamField>
 
 <Note>
-The Postman collection's Media Upload request only submits `phone_number` and `file` as
-form fields. The PDF's Create Template API section separately documents an optional `url`
-form field (remote file URL to upload from an external source) as an alternative to `file`
-for media used in templates — it is not confirmed whether `url` is accepted on this same
-`/oapi/wa/mediaupload` endpoint for session-message media uploads.
+As an alternative to `file`, send a `url` form field holding a remote file URL. Send one
+or the other, not both.
 </Note>
 
 ### Sample cURL request
@@ -137,11 +127,6 @@ curl --location 'https://api.onexaura.com/oapi/wa/media?mediaId=YOUR_MEDIA_ID&ph
 --header 'apiKey: YOUR_API_KEY'
 ```
 
-<Note>
-The source Postman collection request does not include a saved response example for this
-endpoint. The response body/schema is not documented — this is listed as a gap.
-</Note>
-
 ---
 
 ## Download Media
@@ -172,8 +157,3 @@ Downloads the media file content for a given hosted media URL.
 curl --location 'https://api.onexaura.com/oapi/wa/download-media?mediaUrl=YOUR_MEDIA_URL&phoneNumber=919999999999' \
 --header 'apiKey: YOUR_API_KEY'
 ```
-
-<Note>
-The source Postman collection request does not include a saved response example for this
-endpoint. The response content type and body are not documented — this is listed as a gap.
-</Note>

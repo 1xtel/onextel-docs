@@ -14,10 +14,8 @@ POST /wa/templates
 ```
 
 <Note>
-The Postman collection sends this request as `{{domain}}/wa/templates` with
-`Content-Type: multipart/form-data`, where the template JSON is passed as a form field
-named `data` alongside a `waba_id` form field. The source PDF's cURL examples match this
-shape exactly.
+Send this request as `multipart/form-data`. Pass the template JSON in a `data` form field
+and the WhatsApp Business Account ID in a `waba_id` form field.
 </Note>
 
 ## Headers
@@ -40,8 +38,7 @@ shape exactly.
   WhatsApp Business Account ID the template is created under.
 </ParamField>
 <ParamField body="update_by" type="string">
-  Free-text string. Shown in the source's reconstructed cURL as an additional form field;
-  purpose is not documented further.
+  Free-text string.
 </ParamField>
 
 ## Common fields inside `data`
@@ -131,19 +128,11 @@ remote file.
   Wrapper object for the result message.
   <Expandable title="description">
     <ResponseField name="description.message" type="string">
-      `"success"` on success, or an error description on failure (see
-      [Delete Template](#) error shape for the equivalent 400 response format
-      documented in the source: `"Required fields are missing, or the template does not exist."`).
+      `"success"` on success, or an error description on failure, such as
+      `"Required fields are missing, or the template does not exist."` on a 400 response.
     </ResponseField>
   </Expandable>
 </ResponseField>
-
-<Note>
-The source PDF does not show a create-template success/failure response body distinct
-from the Delete Template API's. The 200/400 shape above is carried over from the Delete
-Template API documentation in the same guide, since no separate Create Template response
-sample was given.
-</Note>
 
 ## Template types
 
@@ -224,7 +213,7 @@ Components: `BODY` (optional, `add_security_recommendation`), `FOOTER` (optional
 }
 ```
 
-The Postman collection's minimal Authentication example uses a simpler button shape:
+An Authentication payload can also use a shorter OTP button shape:
 
 ```json
 {
@@ -425,10 +414,8 @@ component for LTO templates.
 ```
 
 <Note>
-The Postman collection's LTO example sets `"category": "marketing"` (not `LTO`) in the
-`data` payload. The source PDF's dedicated "Example Request Payload" section uses
-`"category": "LTO"`. Both are shown here; confirm which value your WABA setup expects
-before submitting.
+LTO templates take either `"category": "LTO"` or `"category": "marketing"`. Confirm which
+value your WABA setup accepts before you submit.
 </Note>
 </Tab>
 
@@ -527,9 +514,8 @@ Components: `header` (mandatory, `format: "product"`), `body` (required), `foote
 ```
 
 <Note>
-The source PDF's Single Product Message example uses a `CAROUSEL` component with
-`PRODUCT`-format cards (shown above). The Postman collection's Single Product Message
-request instead shows a flatter shape without a carousel:
+You can also submit a Single Product Message without a carousel, with the `PRODUCT`
+header, `BODY`, and `SPM` button as top-level components:
 
 ```json
 {
@@ -552,8 +538,7 @@ request instead shows a flatter shape without a carousel:
 }
 ```
 
-Both are documented here as a discrepancy — confirm with a test submission which shape
-your WABA accepts.
+Confirm which shape your WABA accepts before you submit.
 </Note>
 </Tab>
 
@@ -678,9 +663,8 @@ Components: `BODY` (required), `FOOTER` (optional), `BUTTONS` (fixed — one `FL
 </Tab>
 
 <Tab title="Complete Flow">
-Same shape as the Flows tab's Marketing example — Postman's "Complete Flow" request is a
-`MARKETING` category flow template. Included separately here because the Postman
-collection lists it as its own folder entry, distinct from "Flows-utility".
+A complete flow is a `MARKETING` category flow template. It uses the same shape as the
+Marketing example in the Flows tab.
 
 ```json
 {
@@ -718,7 +702,7 @@ collection lists it as its own folder entry, distinct from "Flows-utility".
 <Tab title="Order Status">
 `UTILITY` category with `"sub_category": "ORDER_STATUS"`. Components: `BODY` (required),
 `FOOTER` (optional). No buttons required in the create payload — the `ORDER_STATUS`
-button type is used at send time, not creation time, per the source's button-type table.
+button type is used at send time, not creation time.
 
 <ParamField body="sub_category" type="string" required>
   Must be `ORDER_STATUS`.

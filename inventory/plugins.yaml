@@ -1,0 +1,1078 @@
+# Onextel plugin & connector inventory — SOURCE OF TRUTH
+# Generated 2026-08-17 (rev 3). Regenerate per inventory/README.md.
+#
+# STATUS IS DERIVED, NEVER COPIED. See README.md §status and conflicts.md.
+# NO CREDENTIALS IN THIS FILE (C-01).
+#
+# rev 2 adds, at the capability level:
+#   direction  — source platform + source channel → Onextel channel. A plugin is NOT one
+#                integration: CleverTap alone has five distinct directions built by two vendors.
+#   built_by   — who actually wrote the code, evidenced by git commit authorship, not by who
+#                is named on the SOW or in the tracker's Accountability column.
+# and at the plugin level:
+#   tier       — commercial priority. 1 = MoEngage, WebEngage, CleverTap.
+#   rollup     — replaces the old single `rollup_status`; see README.md §rollup.
+
+meta:
+  generated: 2026-08-17
+  revision: 3
+  sources:
+    vendor_tracker:
+      name: "Onextel Project Tracker (Google Sheet)"
+      id: 1ubmAznCBX6FFOY9efQQ5e9MVjpuSMMlEhBZZzAz5_wg
+      authoritative_for: [existence, version_history, sow_links, setup_guide_links, contracted_days]
+      rows_seeded: 31
+    git:
+      orgs: ["github.com/1xtel"]
+      repos_scanned: 163
+      note: "Connector code also lives INSIDE the monorepo-style repo 1xtel/rnd
+             (ct-rcs-gateway, ca-wt-gateway). A repo-name scan alone misses it entirely."
+      authoritative_for: [code_existence, authorship, last_activity, implemented_capabilities]
+    docs:
+      repo: github.com/1xtel/onextel-docs
+    jira:
+      instance: onextel.atlassian.net
+      project: AURA
+      issues_matched: 213
+    meeting_notes:
+      tools: [Granola, "Wispr Flow"]
+      key_session:
+        title: "Moengage CleverTap WebEngage Review"
+        date: 2026-08-10
+        tool: "Wispr Flow"
+        participants: ["Udayan Das Chowdhury", "Pooja Sundaram", "Shrinikkesh SM (vendor)", "Bobert (vendor)"]
+        note: "Dhanush on leave. This session is the single richest status source in the set and
+               moves six capabilities. Cited below as WF-2026-08-10."
+
+  # Who actually builds what. Derived from git commit authorship, NOT from the SOW.
+  vendors:
+    spritle:
+      name: Spritle Software
+      evidence: "@spritle.com commit authorship"
+      engineers: [bobert.e, anish.s, karthikeyan.r, bellarmine.v, benny.immanuel, "saas@spritle.com"]
+      builds: [moengage, webengage, leadsquared, sfdc-sales-service, sfmc, shopify, optimove,
+               activecampaign, salla, zoho-crm, hubspot-crm, "clevertap (2026 variants)"]
+      note: "The vendor tracker's `Accountability` column names Spritle ENGINEERS (Bobert,
+             Anish, Karthikeyan, Bellarmine, Benny) — not Onextel owners. Every tracker row
+             therefore reads as vendor-owned. There is no Onextel-side owner column at all."
+    conscotech:
+      name: "Consco Tech"
+      evidence: "conscotech@gmail.com — 364 commits, ALL of them inside 1xtel/rnd"
+      note: >
+        Not just the earlier CleverTap vendor — the builder of a THREE-CHANNEL gateway family
+        plus its monitoring stack, still shipping (HEAD 2026-08-17, the day this ran).
+        Versions every release in a changelog. Appears in NO tracker row.
+        A repo-name scan of the org finds none of it.
+      gateway_family:
+        - gateway: RCS
+          path: "1xtel/rnd → ct-rcs-gateway"
+          port: 8280
+          endpoint: "POST /ct/rcs-messages"
+          prometheus_job: ct-rcs-gateway
+          release: "2.0.0"
+        - gateway: WhatsApp
+          path: "1xtel/rnd → ca-wt-gateway"
+          port: 8180
+          endpoint: "POST /ct/wa-messages"
+          prometheus_job: ct-wa-gateway
+          release: "shares the CT-RCS release line"
+        - gateway: SMS
+          path: "1xtel/rnd → webquque-gateway-rocksdbv2"
+          port: 8082
+          endpoint: "POST /postsms"
+          prometheus_job: ct-sms-gateway
+          release: "3.0.3 (2026-08-11)"
+          note: "RocksDB queue → Onextel SMS API. HA primary/secondary with config+user sync,
+                 /health for Route53, JWT admin console, audit log, E2E suite. Predecessors:
+                 webqueue-gateway-sqlite, webquque-gateway-rocksdb."
+        - gateway: monitoring
+          path: "1xtel/rnd → ct-gateway-monitoring, webqueue-monitoring"
+          note: "Grafana + Prometheus. Dashboards for rcs-gateway, wa-gateway, sms-gateway and
+                 containers; nginx/DLR and apikey dashboards. This file is the authority for the
+                 table above."
+      binding_model: >
+        All three gateways are SOURCE-AGNOSTIC. A 'plugin' is one entry in the gateway's
+        `apiKeys` config, which resolves a customer/source binding. That config
+        (`config/config.json`, `users.json`) is EXPLICITLY NOT TRACKED IN GIT — so git proves the
+        gateway exists but can never prove which platforms are bound to it. Bindings must be
+        read from the running deployments or from Jira enablement tickets. See C-27.
+    dotsquares:
+      name: DotSquares
+      evidence: "WF/Granola 2026-07-17 only — no commit authorship anywhere"
+      builds: []
+      note: "NOT a builder. DotSquares is the prospective AppExchange wrapping/submission
+             partner for Salesforce. NDA still unsigned. rev 1 of this inventory wrongly
+             attributed the Salesforce and Shopify code to them; git says Spritle."
+    onextel_inhouse:
+      name: "Onextel (in-house)"
+      evidence: "udayan.chowdhury@onextel.com commit authorship"
+      builds: [connector-core, smartico-connector, fasttrack-connector, core_connector]
+
+  known_limitations:
+    - "Granola retention is 30 days. Wispr Flow covers the 2026-08-10 review in full."
+    - "No connector repo carries a git release tag. Consco Tech versions releases in COMMIT
+       MESSAGES only (1.0.0–2.0.0), so even there the tag test cannot fire."
+    - "GitHub pushedAt is unusable (bulk mirror 2026-08-11/12). All last_activity values come
+       from the default-branch HEAD commit date."
+    - "Jira searched on `summary ~ <alias>` in project AURA only."
+
+# ===========================================================================
+# TIER 1 — the three that matter commercially: MoEngage, WebEngage, CleverTap
+# ===========================================================================
+plugins:
+
+  - slug: moengage
+    display_name: MoEngage
+    tier: 1
+    category: martech
+    integration_pattern: wrapper_api
+    repo_url: https://github.com/1xtel/moengage
+    docs_url: /plugins/moengage
+    jira_epic: AURA-8844
+    built_by: spritle
+    regions: [IN, INTL]
+    rollup: {shipped: live, weakest_open: proposed, live_count: "2 of 5"}
+    certification_artefact:
+      name: "Fail/pass test-case report against the checklist shared 2026-07-31"
+      exists: false
+      note: "WF-2026-08-10 — this is THE gate. Named, agreed, and not filled. Full-flow retest
+             of all WhatsApp and RCS templates required before certification; billed to
+             support hours because RCS is outside warranty and WhatsApp shipped Dec 2025."
+    capabilities:
+      - direction: "MoEngage WhatsApp → Onextel WhatsApp"
+        channel: [WHATSAPP]
+        version: V1
+        built_by: spritle
+        scope_note: Wrapper API Development
+        status: live
+        status_evidence: "Tracker all four env flags ticked; AURA-11893 'MoEngage Prod Deployment'
+          Closed 2026-02-02; epic AURA-8844 Done; docs published; repo HEAD 2026-07-23.
+          WF-2026-08-10: 'delivered last year, December' — inside warranty at delivery."
+        sow_url: https://docs.google.com/document/d/1Jczyvd14vAqYdN2YW59j80lX4XUGGg8C8wHJtCqcxwA
+        sow_state: signed
+        sow_date: 2025-11-14
+        jira_keys: [AURA-8844, AURA-11892, AURA-11893, AURA-12291, AURA-13991, AURA-15185, AURA-16461, AURA-16579]
+        env: {dev: true, test: true, uat: true, prod: true}
+        contracted_days: 25
+        first_seen: 2025-11-19
+        last_activity: 2026-07-23
+        legacy_project_id: P1
+      - direction: "MoEngage RCS → Onextel RCS (+ SMS fallback)"
+        channel: [RCS]
+        version: V2
+        built_by: spritle
+        scope_note: "RCS Carousel & SMS Fallback ID & wait_time Support & TTL"
+        status: vendor_tested
+        status_evidence: "Tracker 'Testing'. WF-2026-08-10: delivered ~March/April 2026;
+          everything tested EXCEPT carousel; fallback tested but the sheet was never filled.
+          Udayan: 'Now MoEngage is ready to be certified' — conditional on the retest.
+          No certification artefact exists. AURA-17955 (In Triage) covers the remaining delta."
+        sow_url: https://docs.google.com/document/d/17xcHIOlED15UfnZm807N2lcxTtAxTWCvawEHtROkQc4
+        sow_state: signed
+        jira_keys: [AURA-17955, AURA-14936, AURA-15740, AURA-16066, AURA-17042, AURA-17058, AURA-17969, AURA-18144, AURA-18670]
+        contracted_days: 6
+        first_seen: 2026-06-03
+        last_activity: 2026-07-23
+        target_date: 2026-08-15
+        blocked_on: "Carousel not yet enabled by MoEngage at their end (WF-2026-08-10).
+          Fallback runs only in MoEngage production — no staging toggle. Two dry runs of the
+          full template set owed by the vendor; Priyanshu owns the fallback sheet."
+        legacy_project_id: P1
+        conflicts: [C-02]
+      - direction: "MoEngage WhatsApp → Onextel WhatsApp (full template matrix)"
+        channel: [WHATSAPP]
+        version: V2-CR
+        built_by: spritle
+        scope_note: "Carousel, LTO, Rich Media, Location; Onextel→MoEngage template sync;
+          complete DLR with MoEngage error codes; SMS fallback; quick-reply click events"
+        status: proposed
+        status_evidence: "AURA-18628 (Open, 2026-08-10) only. NOT IN THE VENDOR TRACKER —
+          no SOW, no contracted days. WF-2026-08-10 confirms MoEngage error-code
+          standardisation is still not done ('since it was done before me, that is still not
+          done yet')."
+        sow_state: none
+        jira_keys: [AURA-18628]
+        first_seen: 2026-08-10
+        last_activity: 2026-08-11
+        blocked_on: "MoEngage drops manual template upload from September; needs Solution
+          Partner ID + tech-partner setup with Shreenath before then."
+        conflicts: [C-03]
+      - direction: "MoEngage → Onextel SMS, via the shared webqueue SMS gateway"
+        variant: sms-via-gateway
+        channel: [SMS]
+        version: "gateway 3.0.3"
+        built_by: conscotech
+        scope_note: "NOT a MoEngage-specific connector. MoEngage posts to the generic
+          apikey-bound SMS gateway (1xtel/rnd → webquque-gateway-rocksdbv2, POST /postsms),
+          which queues in RocksDB and forwards to the Onextel SMS API. A 'plugin' here is one
+          row of `apiKeys` in the gateway's config."
+        status: live
+        status_evidence: "AURA-13991 'Enable MoEngage Connector on OMNI/V2 Platform for SMS
+          Integration' Story, Closed 2026-04-22 — one of a matched set with AURA-11235
+          (CleverTap, Closed) and AURA-13992 (WebEngage, Closed). Gateway is at release 3.0.3
+          (2026-08-11) with HA primary/secondary, /health for Route53, and a Prometheus job
+          literally named `ct-sms-gateway` (port 8082). ABSENT FROM THE VENDOR TRACKER.
+          CAVEAT: the gateway is source-agnostic and its `config/config.json` bindings are
+          explicitly NOT tracked in git, so code alone cannot prove the MoEngage binding —
+          AURA-13991 is what carries it. See C-27."
+        sow_url: null
+        sow_state: none
+        jira_keys: [AURA-13991, AURA-10045]
+        first_seen: 2026-03-23
+        last_activity: 2026-08-11
+        conflicts: [C-21, C-23, C-27]
+      - direction: "MoEngage SMS channel → Onextel SMS (native, in-platform)"
+        variant: sms-native
+        channel: [SMS]
+        version: null
+        built_by: null
+        scope_note: "SMS as a sendable channel inside MoEngage itself, like WhatsApp and RCS —
+          not built. Distinct from the gateway path above."
+        status: proposed
+        status_evidence: "WF-2026-08-10, explicit: 'SMS needs to be added still — SMS in all
+          three: CleverTap, MoEngage, WebEngage.' No SOW, no tracker row, no Jira, no code in
+          1xtel/moengage (routes cover only wp and rcs controllers)."
+        sow_state: none
+        jira_keys: []
+        first_seen: 2026-08-10
+        conflicts: [C-21, C-27]
+
+  - slug: webengage
+    display_name: WebEngage
+    tier: 1
+    category: martech
+    integration_pattern: wrapper_api
+    repo_url: https://github.com/1xtel/WebEngage
+    docs_url: /plugins/webengage
+    jira_epic: AURA-9688
+    built_by: spritle
+    regions: [IN, INTL]
+    rollup: {shipped: live, weakest_open: proposed, live_count: "2 of 4"}
+    certification_artefact: {name: null, exists: false}
+    capabilities:
+      - direction: "WebEngage WhatsApp & RCS → Onextel WhatsApp & RCS"
+        channel: [WHATSAPP, RCS]
+        version: V1
+        built_by: spritle
+        scope_note: Wrapper API Development
+        status: live
+        status_evidence: "Tracker all four env flags ticked; AURA-12460 initial deployment
+          Closed; AURA-13992 'Enable WebEngage Connector on OMNI/V2' Closed 2026-05-19;
+          docs published. WF-2026-08-10: 'plugin delivered ~6 months ago'."
+        sow_url: https://docs.google.com/document/d/1v58QAim7WZE8Dru9yNN6eMSdlq94NYzTNyO0sIIsyuw
+        sow_state: signed
+        jira_keys: [AURA-11081, AURA-11334, AURA-11351, AURA-12024, AURA-12025, AURA-12460, AURA-12733, AURA-13992, AURA-14019, AURA-15640, AURA-15738, AURA-17986, AURA-18660]
+        env: {dev: true, test: true, uat: true, prod: true}
+        contracted_days: 25
+        first_seen: 2025-11-06
+        last_activity: 2026-04-10
+        legacy_project_id: P2
+      - direction: "WebEngage WhatsApp & RCS → Onextel (native-channel delta)"
+        channel: [WHATSAPP, RCS]
+        version: V2
+        built_by: spritle
+        scope_note: >
+          13-item delta to qualify as a WebEngage NATIVE channel: (1) LTO template,
+          (2) Location template, (3-7) template CRUD across all five template types,
+          (8-12) DLR callbacks for five message states with region-aware routing,
+          (13) quick-reply inbound tracking. Plus error-code mapping.
+        status: proposed
+        status_evidence: "Tracker still says 'Feasability'. WF-2026-08-10 supersedes it:
+          vendor delivered the 'WebEngage Onextel Connector — Integration Delta Report' that
+          morning; scope agreed at 13 items; effort agreed at ~1 week (2-3 days dev + 2-3 days
+          back-and-forth); and DECIDED to be a NEW SOW, explicitly NOT support hours.
+          `proposed` because the SOW is agreed in principle but not yet raised or signed."
+        sow_url: null
+        sow_state: none
+        sow_note: "New SOW agreed in principle 2026-08-10, named 'WebEngage native'. Not raised."
+        jira_keys: []
+        first_seen: 2026-08-10
+        estimated_days: 5
+        blocked_on: "Call with WebEngage 2026-08-11 to confirm whether quick-reply tracking and
+          template creation are REQUIRED for native status. If not required, the app ships as
+          native first and the features follow. WebEngage's own template-creation and
+          quick-reply features are in beta and undocumented — docs requested."
+        design_note: "Region-aware DLR: Onextel must push the region (US / KSA / IN) in the DLR
+          callback header. WebEngage supplies one STATIC token per region — region-specific,
+          not customer-specific — held in the connector's ENV. This adds a mandatory step to
+          the WebEngage customer-onboarding script."
+        conflicts: [C-04]
+      - direction: "WebEngage → Onextel SMS, via the shared webqueue SMS gateway"
+        variant: sms-via-gateway
+        channel: [SMS]
+        version: "gateway 3.0.3"
+        built_by: conscotech
+        scope_note: "Generic apikey-bound SMS gateway (rnd → webquque-gateway-rocksdbv2,
+          POST /postsms). WebEngage is a binding, not a bespoke connector."
+        status: live
+        status_evidence: "AURA-13992 'Enable WebEngage Connector on OMNI/V2 Platform for SMS
+          Integration' Closed 2026-05-19. Corroborating SMS-specific work: AURA-11809
+          'SMS | Webengage | Accept TMD in api request' Closed; AURA-14394 'Issue while testing
+          payload for WebEngage Integration for SMS' Closed; AURA-18660 'WebEngage callback
+          format for SMS' OPEN 2026-08-11 — an open bug against a path that supposedly does not
+          exist. ABSENT FROM THE VENDOR TRACKER. See C-27."
+        sow_state: none
+        jira_keys: [AURA-13992, AURA-11809, AURA-14394, AURA-18660]
+        first_seen: 2026-03-23
+        last_activity: 2026-08-11
+        conflicts: [C-21, C-23, C-27]
+      - direction: "WebEngage SMS channel → Onextel SMS (native, in-platform)"
+        variant: sms-native
+        channel: [SMS]
+        version: null
+        built_by: null
+        scope_note: "SMS as a sendable channel inside WebEngage — not built."
+        status: proposed
+        status_evidence: "WF-2026-08-10: 'SMS needs to be added still' for all three tier-1
+          plugins. No SOW, no tracker row, no code in 1xtel/WebEngage."
+        sow_state: none
+        jira_keys: []
+        first_seen: 2026-08-10
+        conflicts: [C-21, C-27]
+
+  - slug: clevertap
+    display_name: CleverTap
+    tier: 1
+    category: martech
+    integration_pattern: wrapper_api
+    # NOTE: rev 1 modelled Pine Labs as a separate plugin. It is not — it is one DIRECTION
+    # of CleverTap, and CleverTap has FIVE, built by TWO different vendors.
+    repo_url: "https://github.com/1xtel/rnd → ct-rcs-gateway, ca-wt-gateway (Consco Tech)"
+    repo_note: "There is NO top-level CleverTap repo. The 2026 Spritle middleware has no
+      repository anywhere in the org (C-14); the Consco Tech gateways live inside 1xtel/rnd."
+    docs_url: /plugins/clevertap
+    jira_epic: null
+    built_by: "conscotech (2025 gateways) + spritle (2026 middleware) — SPLIT OWNERSHIP"
+    regions: [IN, INTL]
+    rollup: {shipped: live, weakest_open: proposed, live_count: "2 of 7"}
+    certification_artefact:
+      name: "Agreed test cases — a named deliverable of the 2026-08-11 CleverTap workshop"
+      exists: false
+      note: "WF-2026-08-10, Udayan: 'as part of the deliverables of the workshop, I also want
+             us to agree on test cases.'"
+    capabilities:
+      - direction: "CleverTap Generic RCS Provider → Onextel RCS  (RCS → RCS)"
+        variant: rcs-to-rcs-gateway
+        channel: [RCS]
+        version: "gateway 1.0.0 → 2.0.0"
+        built_by: conscotech
+        scope_note: "CT-RCS Gateway — CleverTap RCS payload transformed to the internal Onextel
+          RCS API. Admin console (JWT + RBAC), per-key RocksDB queue, batch forwarder, audit
+          log, Prometheus metrics. Endpoint POST /ct/rcs-messages."
+        status: live
+        status_evidence: "1xtel/rnd → ct-rcs-gateway, 22 commits by conscotech@gmail.com from
+          2025-10-27, releases 1.0.0 → 2.0.0 (last 2026-05-27). AURA-11235 'Enable CleverTap
+          Connector on OMNI/V2 Platform' Closed 2026-04-22. Production incidents prove
+          production traffic: AURA-18114 'PROD-Changes in callback module of Clevertap' Closed
+          2026-07-29 and AURA-18568 'PROD-958 - Clevertap Callback' Open 2026-08-06.
+          ABSENT FROM THE VENDOR TRACKER AND UNDOCUMENTED."
+        sow_url: null
+        sow_state: none
+        jira_keys: [AURA-11235, AURA-11681, AURA-18114, AURA-18568]
+        env: {dev: true, test: true, uat: true, prod: true}
+        first_seen: 2025-10-27
+        last_activity: 2026-05-27
+        conflicts: [C-22, C-23]
+      - direction: "CleverTap Generic SMS Plugin → Onextel RCS (proxy)  (SMS → RCS)"
+        variant: sms-to-rcs-proxy
+        channel: [SMS, RCS]
+        version: "gateway 1.0.2"
+        built_by: conscotech
+        scope_note: "Same CT-RCS Gateway. Release note 1.0.2: 'Support for Generic SMS Plugin
+          for proxy RCS' — CleverTap's SMS plugin is used as the transport and the traffic is
+          proxied out as Onextel RCS."
+        status: vendor_tested
+        status_evidence: "Release 1.0.2 committed 2026-01-22. AURA-11681 'Run load with CT SMS
+          gen connector with CT RCS Gateway' Closed 2026-02-18 — load-tested. No separate
+          production-deployment artefact distinguishes this path from the RCS→RCS one, so it is
+          held one step below `live` pending confirmation."
+        sow_url: null
+        sow_state: none
+        jira_keys: [AURA-11681, AURA-11235]
+        first_seen: 2026-01-22
+        last_activity: 2026-05-27
+        conflicts: [C-22, C-23]
+      - direction: "CleverTap Generic RCS Provider + Pine Labs markers → Onextel RCS  (RCS → RCS)"
+        variant: rcs-to-rcs-pinelabs
+        channel: [RCS]
+        version: V1
+        built_by: spritle
+        scope_note: "Marker routing via reserved strings (`pinelabs_onextel_rcs`,
+          `pinelabs_onextel_sms`) placed in the Sender ID field; real values read from CleverTap
+          campaign custom params at send time. Error codes mapped in RCS format."
+        status: vendor_tested
+        status_evidence: "AURA-18001 (Backlog): 'delivered under a 7 person-day SOW dated
+          31 July 2026, on a compressed timeline. It is built and deployed, but four things are
+          missing' — no test coverage, ambiguous callback contract, undocumented marker routing.
+          Tracker 'Testing'. WF-2026-08-10: error-code mapping document exists for this
+          direction. No repository."
+        sow_url: https://docs.google.com/document/d/1tjZ5yYUsum8NQpJcxO76IJopqxJqbwJr
+        sow_state: signed
+        sow_date: 2026-07-31
+        jira_keys: [AURA-18001]
+        contracted_days: 7
+        first_seen: 2026-07-31
+        last_activity: 2026-08-11
+        target_date: 2026-08-18
+        blocked_on: "SMS fallback is a PENDING ITEM FROM ONEXTEL, not the vendor — vendor
+          mailed that it lands Tuesday 2026-08-11, after which testing resumes (WF-2026-08-10).
+          Pine Labs test access (sender ID, whitelisted numbers, API key, approved templates)
+          still not supplied by Pine Labs."
+        conflicts: [C-14, C-15, C-22]
+      - direction: "CleverTap WhatsApp channel → Onextel RCS  (WhatsApp → RCS)"
+        variant: whatsapp-to-rcs
+        channel: [WHATSAPP, RCS]
+        version: V1
+        built_by: spritle
+        scope_note: "Onextel RCS templates carried over CleverTap's WhatsApp channel, WITH
+          template sync (the RCS→RCS direction has no sync). `Fallback_`-prefixed fallback
+          params, TTL, DLR & inbound bridging. Error codes mapped in WhatsApp format."
+        status: vendor_tested
+        status_evidence: "AURA-18633 (Open, 2026-08-10): 'delivered, but it is unproven' — no
+          test coverage on sync/send/DLR/click/inbound; template sync is partial (positional
+          {{1}} vs named [custom_param]); needs three separate CleverTap channel configs
+          (Promotional / Transactional / Utility) and Onboarding has not been told.
+          Tracker still says 'In Development'. No repository."
+        sow_url: https://docs.google.com/document/d/1Nl6H34RaOvQJ9dKpFE28Z31Zj2aPAyuZRkR4mTOJ2iI
+        sow_state: signed
+        jira_keys: [AURA-18633, AURA-13477, AURA-14293, AURA-17199]
+        contracted_days: 16
+        first_seen: 2026-07-30
+        last_activity: 2026-08-11
+        target_date: 2026-08-15
+        blocked_on: "RCS template-creation endpoint not built on the Onextel side (CleverTap
+          calls it on template save). Error-code mapping for THIS direction was never discussed
+          — vendor confirmed at WF-2026-08-10 'for WhatsApp to RCS, we haven't spoken for this'.
+          Dynamic sender-ID variable support unconfirmed by CleverTap."
+        forward_compat_constraint: >
+          DECIDED WF-2026-08-10: this direction must be built so it stays compatible with the
+          future WhatsApp→WhatsApp direction. It ships first, so any incompatibility forces a
+          customer migration or downtime later. This is the primary agenda item of the
+          2026-08-11 workshop.
+        conflicts: [C-14, C-15, C-22]
+      - direction: "CleverTap WhatsApp → Onextel WhatsApp  (WhatsApp → WhatsApp)"
+        variant: whatsapp-to-whatsapp
+        channel: [WHATSAPP]
+        version: null
+        built_by: "conscotech (existing ca-wt-gateway) — CONTESTED, see C-24"
+        scope_note: "Stated at WF-2026-08-10 as a NEW requirement not yet handed to Spritle.
+          But 1xtel/rnd → ca-wt-gateway already exists: 'Gateway service for CT message
+          conversion and forwarding to Onex WhatsApp API', endpoint POST /ct/wa-messages,
+          same author and same release lineage as ct-rcs-gateway."
+        status: hold
+        status_evidence: "GENUINELY UNKNOWN — this status is a placeholder, not a finding.
+          Code exists and is dormant (ca-wt-gateway, conscotech, last commit 2026-05-27,
+          shares the CT-RCS release line). No tracker row, no SOW, no Jira, no deployment
+          evidence, no recorded decision to stop. Meanwhile the 2026-08-10 review treated this
+          direction as unbuilt and unscoped. Resolve C-24 before quoting any effort for it."
+        sow_state: none
+        jira_keys: []
+        first_seen: 2026-05-27
+        last_activity: 2026-05-27
+        conflicts: [C-24]
+      - direction: "CleverTap → Onextel SMS, via the shared webqueue SMS gateway"
+        variant: sms-via-gateway
+        channel: [SMS]
+        version: "gateway 3.0.3"
+        built_by: conscotech
+        scope_note: "Generic apikey-bound SMS gateway (rnd → webquque-gateway-rocksdbv2,
+          POST /postsms, RocksDB queue → Onextel SMS API). Monitored as `ct-sms-gateway`."
+        status: live
+        status_evidence: "AURA-11235 'Enable CleverTap Connector on OMNI/V2 Platform for SMS
+          Integration' Closed 2026-04-22. AURA-11681 'Run load with CT SMS gen connector with
+          CT RCS Gateway' Closed 2026-02-18. Gateway release 3.0.3 dated 2026-08-11 with HA.
+          ABSENT FROM THE VENDOR TRACKER. See C-27."
+        sow_state: none
+        jira_keys: [AURA-11235, AURA-11681]
+        first_seen: 2026-01-14
+        last_activity: 2026-08-11
+        conflicts: [C-21, C-23, C-27]
+      - direction: "CleverTap SMS channel → Onextel SMS (native, in-platform)"
+        variant: sms-native
+        channel: [SMS]
+        version: null
+        built_by: null
+        scope_note: "SMS as a sendable channel inside CleverTap — not built. Distinct both from
+          the SMS→RCS proxy (direction 2) and from the gateway path above."
+        status: proposed
+        status_evidence: "WF-2026-08-10: 'SMS needs to be added still.' Udayan: 'We will need
+          all three channels: WhatsApp, RCS, SMS.' No SOW, no code."
+        sow_state: none
+        jira_keys: []
+        first_seen: 2026-08-10
+        conflicts: [C-21, C-27]
+
+# ===========================================================================
+# TIER 2 — shipped and revenue-carrying, lower strategic priority
+# ===========================================================================
+
+  - slug: sfmc
+    display_name: Salesforce Marketing Cloud
+    tier: 2
+    category: martech
+    integration_pattern: custom_package
+    repo_url: https://github.com/1xtel/salesforce
+    docs_url: /plugins/salesforce-marketing-cloud
+    jira_epic: AURA-17234
+    built_by: spritle
+    regions: [IN, INTL]
+    rollup: {shipped: live, weakest_open: scoped, live_count: "3 of 4"}
+    capabilities:
+      - direction: "SFMC Journey Builder → Onextel SMS & WhatsApp"
+        channel: [SMS, WHATSAPP]
+        version: V1
+        built_by: spritle
+        scope_note: Custom Package Development
+        status: live
+        status_evidence: "Tracker all four env flags ticked; sfmc-client + sfmc controllers in
+          1xtel/salesforce; docs published. WF-2026-08-10: 'Marketing Cloud is done, completed
+          and live'; demo delivered to Harshan."
+        sow_url: https://docs.google.com/document/d/15BT9cawaaCgdGm35S_66nMd7-0Gy9NndTZXgZYo94hw
+        sow_state: signed
+        env: {dev: true, test: true, uat: true, prod: true}
+        contracted_days: 27
+        first_seen: 2025-12-10
+        last_activity: 2026-06-23
+        legacy_project_id: P4
+      - direction: "SFMC → Onextel WhatsApp (channel fallback)"
+        channel: [WHATSAPP]
+        version: V2-SH
+        built_by: spritle
+        scope_note: Fallback
+        status: live
+        status_evidence: "Tracker all four env flags ticked. Delivered against support hours,
+          not a SOW; only record is email 2026-06-18 13:22."
+        sow_state: support_hours
+        env: {dev: true, test: true, uat: true, prod: true}
+        contracted_days: 0.5
+        first_seen: 2026-06-18
+        conflicts: [C-08]
+      - direction: "SFMC → Onextel SMS & WhatsApp (reports & dashboard)"
+        channel: [SMS, WHATSAPP]
+        version: V3-CR
+        built_by: spritle
+        scope_note: Reports & Dashboard
+        status: live
+        status_evidence: "UPGRADED from vendor_tested in rev 1. WF-2026-08-10: demo delivered
+          and accepted; 'completed and live'. NOTE the tracker's env flags still show PROD
+          blank — the sheet is stale, not the delivery."
+        sow_url: https://docs.google.com/document/d/1nIXnkGk_3HazeN1Xt6mKkSpstdkX66ef2Sv-fn0ulTk
+        sow_state: signed
+        env: {dev: true, test: false, uat: false, prod: false}
+        contracted_days: 4
+        first_seen: 2026-06-26
+        commercial_note: "Billing 50/50 split (50% now, 50% post-delivery) — Pooja to confirm
+          with Dhanush. WF-2026-08-10."
+        conflicts: [C-09]
+      - direction: "SFMC → Onextel RCS"
+        channel: [RCS]
+        version: V4
+        built_by: null
+        scope_note: RCS Channel Enablement
+        status: scoped
+        status_evidence: "Tracker 'Awaiting Confirmation'; SOW document exists; no dev."
+        sow_url: https://docs.google.com/document/d/12LwkowjlTppVSChJYHrgnaZdoQTDcFocNsP0q9sROVg
+        sow_state: draft
+        contracted_days: 25
+        first_seen: 2026-04-24
+      - direction: "SFMC → Onextel (metrics, partner licence, debugging CR)"
+        channel: [SMS, WHATSAPP]
+        version: V5-CR
+        built_by: spritle
+        scope_note: "Small CR: additional metrics, partner licence, debugging"
+        status: scoped
+        status_evidence: "WF-2026-08-10: raised by the client, feasibility under review by
+          Joshi; Udayan approved it to proceed ('we are not doing any big things for that
+          client — reports and dashboard is okay, partner licence is okay, debug and get that
+          done'). Conversation-history request explicitly DECLINED. Not in the tracker."
+        sow_state: none
+        first_seen: 2026-08-10
+        conflicts: [C-25]
+
+  - slug: sfdc-sales-service
+    display_name: Salesforce Sales & Service Cloud
+    tier: 2
+    category: crm
+    integration_pattern: marketplace_app
+    repo_url: https://github.com/1xtel/salesforce
+    docs_url: /plugins/salesforce
+    jira_epic: AURA-17234
+    built_by: spritle
+    distribution_partner: dotsquares
+    regions: [IN, INTL]
+    rollup: {shipped: live, weakest_open: null, live_count: "3 of 4"}
+    capabilities:
+      - direction: "Salesforce records/Flows/Apex → Onextel SMS"
+        channel: [SMS]
+        version: V1
+        built_by: spritle
+        scope_note: Marketplace App Development
+        status: live
+        status_evidence: "Tracker all four env flags ticked; AURA-13961 deployment Closed;
+          AURA-14618 PROD re-deployment Closed 2026-04-17; docs published."
+        sow_url: https://docs.google.com/document/d/1woo7-PSNNEGVd2ypaCEv699HqR3pl63aivGiYTkajCk
+        sow_state: signed
+        jira_keys: [AURA-13961, AURA-14618, AURA-14921, AURA-16774, AURA-14386, AURA-16459]
+        env: {dev: true, test: true, uat: true, prod: true}
+        contracted_days: 25
+        first_seen: 2025-09-12
+        last_activity: 2026-06-23
+        legacy_project_id: P3
+        conflicts: [C-07]
+      - direction: "Salesforce records/Flows/Apex → Onextel WhatsApp"
+        channel: [WHATSAPP]
+        version: V2
+        built_by: spritle
+        scope_note: WhatsApp Channel Enablement
+        status: live
+        status_evidence: "Tracker all four env flags ticked; whatsapp/* routes and controllers
+          present in the repo; docs cover WhatsApp."
+        sow_url: https://docs.google.com/document/d/1FCkesjYe7tkzpWWdRGA0FTDgKOV5aopVUCdsVq0KDBA
+        sow_state: signed
+        env: {dev: true, test: true, uat: true, prod: true}
+        contracted_days: 12
+        first_seen: 2026-03-06
+        conflicts: [C-07]
+      - direction: "Salesforce object-level chat → Onextel WhatsApp"
+        channel: [WHATSAPP]
+        version: V3
+        built_by: spritle
+        scope_note: Object Level Chat
+        status: live
+        status_evidence: "Tracker all four env flags ticked; vendor setup guide published.
+          Weakest of the three — no independent Onextel artefact."
+        sow_url: https://docs.google.com/document/d/1S-4P7w2qzIlZRspDj8nUf7Jic8KFqj9jEhCQAY74TfQ
+        sow_state: signed
+        env: {dev: true, test: true, uat: true, prod: true}
+        contracted_days: 8.5
+        first_seen: 2026-05-28
+        conflicts: [C-07]
+      - direction: "Salesforce → Onextel RCS"
+        channel: [RCS]
+        version: V4
+        built_by: null
+        scope_note: RCS Channel Enablement
+        status: hold
+        status_evidence: "Tracker 'Hold' WITH reason: 'Onextel told to hold, since no active
+          customer.' SOW drafted, dev never started."
+        sow_url: https://docs.google.com/document/d/12LwkowjlTppVSChJYHrgnaZdoQTDcFocNsP0q9sROVg
+        sow_state: draft
+        contracted_days: 25
+        blocked_on: "No active customer."
+
+  - slug: shopify
+    display_name: Shopify
+    tier: 2
+    category: ecommerce
+    integration_pattern: marketplace_app
+    repo_url: https://github.com/1xtel/shopify-connector
+    docs_url: /plugins/shopify
+    jira_epic: AURA-8346
+    built_by: spritle
+    regions: [IN, INTL]
+    rollup: {shipped: live, weakest_open: in_dev, live_count: "2 of 3"}
+    capabilities:
+      - direction: "Shopify store events → Onextel SMS & WhatsApp"
+        channel: [SMS, WHATSAPP]
+        version: V1
+        built_by: spritle
+        scope_note: Marketplace App Development
+        status: live
+        status_evidence: "Tracker all four env flags ticked; AURA-14384 deployment Closed;
+          AURA-11416 Closed; sms.js and wa.js handlers present; docs published."
+        sow_url: https://docs.google.com/document/d/19DNw47nIhnUihyZ5q3aJ0Q91cxQw4JHPBEktH5L9TwI
+        sow_state: signed
+        jira_keys: [AURA-4156, AURA-10925, AURA-11416, AURA-14384, AURA-14385, AURA-15663, AURA-17233]
+        env: {dev: true, test: true, uat: true, prod: true}
+        contracted_days: 48
+        first_seen: 2026-05-27
+        last_activity: 2026-07-02
+        legacy_project_id: P5
+        conflicts: [C-11]
+      - direction: "Shopify store events → Onextel RCS"
+        channel: [RCS]
+        version: V2
+        built_by: spritle
+        scope_note: "RCS Channel Enablement & WhatsApp API changes"
+        status: live
+        status_evidence: "Tracker all four env flags ticked; AURA-14804 'Shopify RCS
+          deployment' Closed 2026-04-27; rcs.js handler and rcs-integration branch present."
+        sow_url: https://docs.google.com/document/d/1IyRJkGyk_M80mWsz9jhBQXMGdiMJEElwOLI2vDQSiu8
+        sow_state: signed
+        jira_keys: [AURA-14804]
+        env: {dev: true, test: true, uat: true, prod: true}
+        contracted_days: 34.25
+        first_seen: 2026-03-10
+      - direction: "Shopify → Onextel SMS/WhatsApp/RCS, multi-region"
+        channel: [SMS, WHATSAPP, RCS]
+        version: V3
+        built_by: spritle
+        scope_note: "TTL & Multi Region Base URL Support"
+        status: in_dev
+        status_evidence: "Tracker 'Testing' but its own Test cell reads 'In Progress'.
+          Repo HEAD 2026-07-02. WF-2026-08-10: certification still pending, Benny owns it and
+          is not currently on Onextel work; Bellarmine covers the global piece."
+        sow_url: https://docs.google.com/document/d/17xcHIOlED15UfnZm807N2lcxTtAxTWCvawEHtROkQc4
+        sow_state: signed
+        env: {dev: true, test: false, uat: false, prod: false}
+        contracted_days: 12
+        first_seen: 2026-06-03
+        last_activity: 2026-07-02
+        blocked_on: "Certification owner (Benny) is off Onextel work; app-store banners and
+          setup video outstanding."
+        conflicts: [C-12]
+
+  - slug: activecampaign
+    display_name: ActiveCampaign
+    tier: 2
+    category: martech
+    integration_pattern: marketplace_app
+    repo_url: https://github.com/1xtel/active_campaign_connector
+    docs_url: null
+    jira_epic: AURA-18443
+    built_by: spritle
+    regions: [INTL]
+    rollup: {shipped: vendor_tested, weakest_open: vendor_tested, live_count: "0 of 1"}
+    capabilities:
+      - direction: "ActiveCampaign automations → Onextel SMS"
+        channel: [SMS]
+        version: V1
+        built_by: spritle
+        scope_note: "Marketplace App Development. DLR surfaced via a Zoid SDK view embedded in
+          the Contacts page (ActiveCampaign has no DLR webhook), backed by a middleware DB."
+        status: vendor_tested
+        status_evidence: "UPGRADED from in_dev in rev 1. WF-2026-08-10: 'development is done';
+          app description finalised on a 5pm call the same day and submitted for publication.
+          Repo HEAD 2026-08-10. AURA-18428 deploy Closed 2026-08-04, AURA-18429 nginx Done.
+          Not live: awaiting marketplace publication and no docs page exists."
+        sow_url: https://docs.google.com/document/d/1gpCSjmxjH-jV83w_HekpbQGrWwJADIj2jDGR_GTVZWU
+        sow_state: signed
+        jira_keys: [AURA-18428, AURA-18429]
+        env: {dev: true, test: true, uat: false, prod: false}
+        contracted_days: 12.5
+        first_seen: 2026-01-02
+        last_activity: 2026-08-10
+        target_date: 2026-08-10
+        blocked_on: "Support ticket open with ActiveCampaign to confirm whether observed
+          instance variations replicate across all instances. Extra API key needed for the
+          test account (an I2I-platform SMS account, V1 — owner Shivangi)."
+        deployment_domain: activecampaign.onextel.com
+        credentials_held: true
+        credentials_pointer: "Vendor tracker Credentials column — ROTATE AND MOVE (C-01)"
+        legacy_project_id: P7
+        conflicts: [C-01, C-13]
+
+  - slug: zoho-crm
+    display_name: Zoho CRM
+    tier: 2
+    category: crm
+    integration_pattern: marketplace_app
+    repo_url: null
+    docs_url: /plugins/zoho-crm
+    jira_epic: null
+    built_by: spritle
+    regions: [IN]
+    rollup: {shipped: live, weakest_open: vendor_tested, live_count: "1 of 2"}
+    capabilities:
+      - direction: "Zoho CRM Leads/Contacts/Accounts → Onextel SMS"
+        channel: [SMS]
+        version: V1
+        built_by: spritle
+        scope_note: "Marketplace App Development"
+        status: live
+        status_evidence: "Tracker all four env flags ticked; vendor setup guide + docs page
+          published. Code is vendor-hosted on the Zoho marketplace — no 1xtel repo, expected
+          for this pattern."
+        sow_url: https://docs.google.com/document/d/1TVuivsvJRCE3lsyR6O61xbEgmNoPo0F_Ctv51ePR6Mk
+        sow_state: signed
+        env: {dev: true, test: true, uat: true, prod: true}
+        first_seen: 2025-05-01
+        legacy_project_id: P15
+        conflicts: [C-16]
+      - direction: "Zoho CRM → Onextel WhatsApp & RCS"
+        channel: [WHATSAPP, RCS]
+        version: V2
+        built_by: spritle
+        scope_note: "Marketplace App Development"
+        status: vendor_tested
+        status_evidence: "UPGRADED from in_dev in rev 1. WF-2026-08-10: 'we have completed the
+          development'; outstanding items are the setup guide and video, owed to Onextel.
+          Tracker still says 'In Development'. ZERO Jira issues mention Zoho."
+        sow_url: https://docs.google.com/document/d/1MVN_ickeAHKi-z0CcxRIO7EFpNuiLZeN
+        sow_state: signed
+        contracted_days: 27.5
+        first_seen: 2026-07-06
+        blocked_on: "Setup guide and demo video not yet delivered by the vendor."
+        credentials_held: true
+        credentials_pointer: "Vendor tracker Credentials column — ROTATE AND MOVE (C-01)"
+        conflicts: [C-01, C-16]
+
+  - slug: salla
+    display_name: Salla
+    tier: 2
+    category: ecommerce
+    integration_pattern: marketplace_app
+    repo_url: https://github.com/1xtel/salla
+    docs_url: null
+    jira_epic: AURA-18443
+    built_by: spritle
+    regions: [INTL]
+    rollup: {shipped: vendor_tested, weakest_open: vendor_tested, live_count: "0 of 1"}
+    capabilities:
+      - direction: "Salla store events → Onextel WhatsApp"
+        channel: [WHATSAPP]
+        version: V1
+        built_by: spritle
+        scope_note: "Marketplace App Development — embedded WhatsApp app, trigger-to-template
+          mapping, delayed sends, DLR module"
+        status: vendor_tested
+        status_evidence: "Tracker 'Review Process', Dev ticked. Repo created 2026-07-09,
+          HEAD 2026-07-14. AURA-18156 CD pipeline Closed 2026-08-10. AURA-18669 (Open,
+          2026-08-11) explicitly scopes certification — so NOT internally certified."
+        sow_url: https://docs.google.com/document/d/1ZHYwQB21TqNvi42V5nhxNnjjeirGI7RI9YkHM8GJw7Q
+        sow_state: signed
+        jira_keys: [AURA-18156, AURA-18669]
+        env: {dev: true, test: false, uat: false, prod: false}
+        contracted_days: 18.5
+        first_seen: 2026-06-03
+        last_activity: 2026-07-14
+        target_date: 2026-08-20
+        target_date_note: "App launch call with Salla scheduled 2026-08-20 (WF-2026-08-10).
+          Submitted for review; Salla launches the app from their side."
+        blocked_on: "Onextel to confirm the Image Upload feature; app-store banners and video."
+        legacy_project_id: P10
+
+  - slug: optimove
+    display_name: Optimove
+    tier: 2
+    category: cdp
+    integration_pattern: marketplace_app
+    repo_url: https://github.com/1xtel/optimov
+    docs_url: /plugins/optimove
+    jira_epic: AURA-17234
+    built_by: spritle
+    regions: [IN, INTL]
+    rollup: {shipped: live, weakest_open: scoped, live_count: "1 of 2"}
+    capabilities:
+      - direction: "Optimove Campaign Builder (OptiText) → Onextel SMS"
+        channel: [SMS]
+        version: V1
+        built_by: spritle
+        scope_note: "Marketplace App Development - using OptiText Feature"
+        status: live
+        status_evidence: "Tracker all four env flags ticked; AURA-16063 deploy Closed;
+          AURA-16186 nginx fix Closed 2026-06-05; docs published."
+        sow_url: https://docs.google.com/document/d/1t_X3O70K6olqI488CgwZ6Xzwm3enSFUUCPE3s7juZmY
+        sow_state: signed
+        jira_keys: [AURA-16063, AURA-16186, AURA-18155]
+        env: {dev: true, test: true, uat: true, prod: true}
+        contracted_days: 21.5
+        first_seen: 2026-03-11
+        last_activity: 2026-05-26
+        blocked_on: "Vendor chasing an unclear DLR requirement; Udayan is single point of
+          contact (Granola 2026-07-17)."
+        legacy_project_id: P9
+      - direction: "Optimove (manual job, no OptiText) → Onextel SMS"
+        channel: [SMS]
+        version: V2
+        built_by: null
+        scope_note: "Manual Job App without OptiText Feature"
+        status: scoped
+        status_evidence: "SOW exists, dev never started → `scoped`. Tracker says 'Hold' but
+          records NO REASON, so `hold` is not derivable."
+        sow_url: https://docs.google.com/document/d/1rg7gamCleKvjViiTEhcGqsfC3ztekWwA1ss1N4JGjUk
+        sow_state: draft
+        contracted_days: 17
+        conflicts: [C-10]
+
+  - slug: leadsquared
+    display_name: LeadSquared
+    tier: 2
+    category: crm
+    integration_pattern: wrapper_api
+    repo_url: https://github.com/1xtel/LSQ
+    docs_url: /plugins/leadsquared
+    jira_epic: null
+    built_by: spritle
+    regions: [IN, INTL]
+    rollup: {shipped: live, weakest_open: proposed, live_count: "1 of 2"}
+    capabilities:
+      - direction: "LeadSquared lead actions → Onextel WhatsApp"
+        channel: [WHATSAPP]
+        version: V1
+        built_by: spritle
+        scope_note: Wrapper API Development
+        status: live
+        status_evidence: "Tracker all four env flags ticked; AURA-15281 'LSQ deployment on
+          Production' Closed 2026-05-18; docs published. Repo has ONE commit
+          (karthikeyan.r@spritle.com, 2026-05-13) — delivered as a drop, no history."
+        sow_url: https://docs.google.com/document/d/1MmdsDwsqLgfFvHuZSQVnE5tdATb7QdwPG2E8ZUqqjQI
+        sow_state: signed
+        jira_keys: [AURA-15281, AURA-15664, AURA-511]
+        env: {dev: true, test: true, uat: true, prod: true}
+        contracted_days: 14.5
+        first_seen: 2026-03-11
+        last_activity: 2026-05-13
+        blocked_on: "Scope gap, not a delivery blocker: WhatsApp two-way conversation is NOT in
+          the plugin and the UAE/international sales team was unaware (Granola 2026-07-29)."
+        legacy_project_id: P8
+        conflicts: [C-05, C-06]
+      - direction: "LeadSquared → Onextel SMS (OMNI)"
+        channel: [SMS]
+        version: null
+        built_by: null
+        scope_note: "OMNI | SMS | LeadSquare integration"
+        status: proposed
+        status_evidence: "AURA-14330 (Open since 2026-04-06, untouched). Not in the tracker."
+        sow_state: none
+        jira_keys: [AURA-14330]
+        first_seen: 2026-04-06
+
+# ===========================================================================
+# TIER 3 — parked, dropped, or never started
+# ===========================================================================
+
+  - slug: hubspot-crm
+    display_name: HubSpot CRM
+    tier: 3
+    category: crm
+    integration_pattern: marketplace_app
+    repo_url: null
+    docs_url: null
+    built_by: spritle
+    regions: null
+    rollup: {shipped: in_dev, weakest_open: in_dev, live_count: "0 of 1"}
+    capabilities:
+      - direction: "HubSpot contacts/workflows → Onextel WhatsApp & SMS"
+        channel: [WHATSAPP, SMS]
+        version: V1
+        built_by: spritle
+        scope_note: "Marketplace App Development. DLR surfaced as Notes on the contact
+          timeline; moves to the Activities tab only after HubSpot Technology Partner status."
+        status: in_dev
+        status_evidence: "Tracker 'In Development', P1, 23 contracted days. WF-2026-08-10:
+          'development is going on process' — unchanged since Granola 2026-07-17.
+          ZERO Jira issues mention HubSpot."
+        sow_url: https://docs.google.com/document/d/1lqK_-H20IA5XpKpkvt0ho2bFqe7xtB-q
+        sow_state: signed
+        contracted_days: 23
+        first_seen: 2026-07-17
+        blocked_on: "Not yet a HubSpot Technology Partner, so Activities/Events is unavailable;
+          first three reference customers flagged as a challenge."
+        legacy_project_id: P17
+        conflicts: [C-16]
+
+  - slug: sfcc
+    display_name: Salesforce Commerce Cloud
+    tier: 3
+    category: ecommerce
+    integration_pattern: marketplace_app
+    repo_url: null
+    docs_url: null
+    built_by: null
+    regions: null
+    rollup: {shipped: null, weakest_open: hold, live_count: "0 of 1"}
+    capabilities:
+      - direction: "Salesforce Commerce → Onextel SMS"
+        channel: [SMS]
+        version: V1
+        built_by: null
+        scope_note: "To replicate the functionality in Salesforce Commerce"
+        status: hold
+        status_evidence: "Tracker 'Hold' with NO REASON RECORDED, no project ID, no SOW, no
+          timeline. Fails the evidence gate for `hold`."
+        sow_state: none
+        conflicts: [C-10]
+
+  - slug: smartico
+    display_name: Smartico
+    tier: 3
+    category: other
+    integration_pattern: custom_package
+    repo_url: https://github.com/1xtel/smartico-connector
+    docs_url: null
+    built_by: onextel_inhouse
+    regions: null
+    rollup: {shipped: null, weakest_open: hold, live_count: "0 of 1"}
+    capabilities:
+      - direction: "Smartico → Onextel SMS, WhatsApp, RCS"
+        channel: [SMS, WHATSAPP, RCS]
+        version: V1
+        built_by: onextel_inhouse
+        scope_note: "Custom App Development"
+        status: hold
+        status_evidence: "Tracker 'Hold' with NO REASON RECORDED, no SOW, no timeline.
+          A scaffold exists (1 commit, udayan.chowdhury@onextel.com, 2026-05-29, 21 KB, on
+          @onextel/connector-core) — in-house, not vendor. No Jira. No meeting evidence."
+        sow_state: none
+        last_activity: 2026-05-29
+        legacy_project_id: P11
+        conflicts: [C-10, C-17]
+
+  - slug: fasttrack-ai
+    display_name: Fasttrack.ai
+    tier: 3
+    category: other
+    integration_pattern: wrapper_api
+    repo_url: https://github.com/1xtel/fasttrack-connector
+    docs_url: null
+    built_by: onextel_inhouse
+    regions: null
+    rollup: {shipped: null, weakest_open: hold, live_count: "0 of 1"}
+    capabilities:
+      - direction: "Fasttrack.ai → Onextel WhatsApp & SMS"
+        channel: [WHATSAPP, SMS]
+        version: V1
+        built_by: onextel_inhouse
+        scope_note: "Wrapper API Development"
+        status: hold
+        status_evidence: "Tracker 'Hold' WITH reason: 'need a call with fasttrack.' Scaffold
+          exists (1 commit, udayan.chowdhury@onextel.com, 2026-05-29, on connector-core).
+          Vendor integration PDF exists locally. No Jira, no meeting evidence."
+        sow_state: none
+        last_activity: 2026-05-29
+        blocked_on: "Awaiting a call with Fasttrack."
+        legacy_project_id: P6
+        conflicts: [C-17]
+
+  - slug: oracle-eloqua
+    display_name: Oracle Marketplace — Eloqua & Responsys
+    tier: 3
+    category: martech
+    integration_pattern: marketplace_app
+    repo_url: null
+    docs_url: null
+    built_by: null
+    rollup: {shipped: null, weakest_open: null, live_count: "0 of 1"}
+    capabilities:
+      - direction: "Oracle Eloqua / Responsys → Onextel SMS, Email, WhatsApp"
+        channel: [SMS, EMAIL, WHATSAPP]
+        version: V1
+        built_by: null
+        scope_note: "Marketplace App Development"
+        status: dropped
+        status_evidence: "Tracker 'Dropped' WITH reason: 'Unable to get partner account.'"
+        sow_state: none
+        legacy_project_id: P13
+
+  - slug: unica
+    display_name: Unica
+    tier: 3
+    category: martech
+    integration_pattern: custom_package
+    repo_url: null
+    docs_url: null
+    built_by: null
+    rollup: {shipped: null, weakest_open: null, live_count: "0 of 1"}
+    capabilities:
+      - direction: "Unica → Onextel Email"
+        channel: [EMAIL]
+        version: V2
+        built_by: null
+        scope_note: null
+        status: dropped
+        status_evidence: "Tracker 'Dropped' with NO REASON RECORDED. Listed as V2 with no V1
+          anywhere. No SOW, no code, no Jira."
+        sow_state: none
+        legacy_project_id: P14
+        conflicts: [C-10, C-18]

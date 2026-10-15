@@ -1,0 +1,73 @@
+# Canonical slug -> alias map. Maintained BY HAND.
+# Automatic fuzzy matching silently under-joins (and, as of this run, over-joins badly:
+# see conflicts.md C-13 for the "Pinelabs" and "Active Campaign" false-positive families).
+# If a repo, Jira epic or doc page matches none of these, it goes to unmatched.md.
+
+aliases:
+  moengage:            [MoEngage, Moengage, moengage, "MoEngage RCS", ME]
+  webengage:           [WebEngage, Webengage, webengage, web_engage, "WE connector", webengaura]
+  # rev 2: "Pinelabs Clevertap" is NOT a separate plugin — it is one DIRECTION of clevertap.
+  # CleverTap has six directions built by two vendors (Consco Tech and Spritle). Splitting them
+  # into separate plugins hid the fact that two of them target the same CleverTap surface (C-22).
+  clevertap:           [CleverTap, Clevertap, clevertap, CT,
+                        "Pinelabs Clevertap", "Pine Labs CleverTap",
+                        ct-rcs-gateway, ca-wt-gateway, "CT RCS Gateway", "CT SMS gen connector"]
+  leadsquared:         [LeadSquared, Leadsquared, LSQ]
+  sfdc-sales-service:  ["Salesforce Sales & Service Cloud", SFDC, "Sales Cloud", "Service Cloud"]
+  sfmc:                ["Salesforce Marketing Cloud", SFMC, "Marketing Cloud"]
+  sfcc:                ["Salesforce Commerce", "Commerce Cloud", SFCC]
+  shopify:             [Shopify, shopify]
+  activecampaign:      [ActiveCampaign, "Active Campaign", AC, active_campaign_connector]
+  optimove:            [Optimove, optimove, optimov]
+  salla:               [Salla, salla]
+  smartico:            ["Smartico Integration", Smartico]
+  fasttrack-ai:        ["Fasttrack.ai", Fasttrack, FastTrack]
+  oracle-eloqua:       ["Oracle Marketplace - Eloqua & Responsys", Eloqua, Responsys]
+  unica:               ["Unica Implementation", Unica]
+  zoho-crm:            [ZohoCRM, "Zoho CRM", zoho]
+  hubspot-crm:         ["HubSpot CRM", Hubspot, HubSpot]
+
+# Terms that LOOK like aliases but are not. Never join on these.
+false_friends:
+  pinelabs-the-customer: >
+    39 of 40 AURA issues matching "Pinelabs" are Pine Labs as an SMS *customer*
+    (SFTP reports, callback formats, DLT, message capping). Only AURA-18001 concerns the
+    clevertap-pinelabs connector. Joining on the bare term inflates that capability's
+    history ~39x.
+  active-campaign-the-noun: >
+    8 of 10 AURA issues matching "Active Campaign" are the Voice campaign manager
+    ("no active campaigns", "delete template in active campaign - running"), not the
+    ActiveCampaign martech platform. Only AURA-18428/18429 are the connector.
+  connector-the-generic-noun: >
+    "connector" matches shared platform infrastructure (connector-core, CI/CD, nginx,
+    VM provisioning). Attach these to the platform, not to any one plugin.
+
+# Connector code that does NOT live in a repo of its own. A repo-name scan misses these
+# entirely — rev 1 of this inventory did exactly that and lost a whole vendor (C-23).
+nested_code:
+  clevertap:
+    - path: "1xtel/rnd → ct-rcs-gateway"
+      built_by: conscotech
+      directions: ["CleverTap Generic RCS Provider → Onextel RCS",
+                   "CleverTap Generic SMS Plugin → Onextel RCS (proxy, release 1.0.2)"]
+    - path: "1xtel/rnd → ca-wt-gateway"
+      built_by: conscotech
+      directions: ["CleverTap → Onextel WhatsApp (source channel unconfirmed — see C-24)"]
+  shared_sms_gateway:
+    - path: "1xtel/rnd → webquque-gateway-rocksdbv2"
+      built_by: conscotech
+      release: "3.0.3 (2026-08-11)"
+      endpoint: "POST /postsms"
+      prometheus_job: ct-sms-gateway
+      serves: [moengage, webengage, clevertap]
+      note: >
+        Source-agnostic. Bindings live in `config/config.json` (`apiKeys`), which is NOT tracked
+        in git — code cannot prove which platforms are bound. Attribution rests on the Jira
+        enablement set AURA-13991 / AURA-13992 / AURA-11235. Predecessors:
+        webqueue-gateway-sqlite, webquque-gateway-rocksdb. Monitoring: ct-gateway-monitoring,
+        webqueue-monitoring. See C-27.
+  platform:
+    - path: "~/AI Projects/core_connector (local, unpushed)"
+      built_by: onextel_inhouse
+      note: "Generic source/channel/region connector core, generalised from ct-rcs-gateway.
+             Not a plugin; the intended future home for several of them."

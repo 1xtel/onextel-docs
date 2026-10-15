@@ -7,10 +7,7 @@ The OneXtel platform sends callback notifications to your system for WhatsApp ev
 This section defines the callback payload format for each supported event type.
 
 <Note>
-The source documentation defines payload structures only. It does not specify the
-callback delivery mechanism (HTTP method, headers, retry behaviour, or expected
-response), nor how the callback URL is configured. Contact OneXtel support to
-configure your callback endpoint.
+Contact OneXtel support to configure your callback endpoint.
 </Note>
 
 ## Callback event types
@@ -59,18 +56,8 @@ internal identifiers (order IDs, campaign tags, user IDs, and so on).
   Custom reference field 5. Optional on the send request; returned as-is in callbacks.
 </ParamField>
 
-<Note>
-In the [URL Click](/api-reference/whatsapp/callback-url-click) payload the source shows
-the values of `custref1`–`custref5` as `cust_param_1`–`cust_param_5`, indicating they map
-to the custom parameters supplied with the original request (inferred from the field
-names shown).
-</Note>
-
 ## Reading the payload formats
 
-The payload examples on the following pages are structural skeletons taken directly
-from the source documentation: the value of each field shows the JSON path of that
-field (for example `"id": "entry.changes.value.messages.id"`), not sample data.
-The source does not specify data types or enumerated values, so all leaf fields are
-documented as strings and field descriptions are inferred from the field names and
-paths, marked as such.
+In the payload examples on the following pages, each field's value shows that field's
+JSON path rather than an example value, for example
+`"id": "entry.changes.value.messages.id"`. All leaf fields are typed as strings.
