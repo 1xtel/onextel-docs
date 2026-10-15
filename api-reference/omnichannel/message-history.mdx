@@ -13,8 +13,8 @@ GET https://api.onexaura.com/history
 ```
 
 <Note>
-This endpoint uses `noauth` in the Postman collection (no `apikey` header) — the API
-key is instead passed as the `apiKey` query parameter.
+Pass your API key as the `apiKey` query parameter. This endpoint does not take the
+`apikey` header.
 </Note>
 
 ## Query parameters
@@ -57,11 +57,3 @@ key is instead passed as the `apiKey` query parameter.
 curl --request GET \
   --url 'https://api.onexaura.com/history?apiKey=YOUR_API_KEY&channel=wa&duration=7&page=1&limit=1&type=template,nontemplate&phoneNumber=919999999999&status=sent,delivered,read,failed'
 ```
-
-## Response
-
-<Warning>
-The OneXtel Postman collection does not include a saved example response for this
-endpoint. Response fields below are not documented in the source — verify the actual
-response shape against a live call before relying on it.
-</Warning>

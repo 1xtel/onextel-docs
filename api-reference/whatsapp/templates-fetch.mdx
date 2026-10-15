@@ -30,8 +30,7 @@ POST /templates/fetch
 ### Request body
 
 <ParamField body="channel" type="string" required>
-  Messaging channel. Must be `WhatsApp` (the source shows both `"Whatsapp"` and
-  `"WhatsApp"` casing across examples).
+  Messaging channel. Must be `WhatsApp`.
 </ParamField>
 <ParamField body="wabaId" type="string" required>
   WhatsApp Business Account (WABA) identifier.
@@ -60,12 +59,8 @@ POST /templates/fetch
 </ParamField>
 
 <Note>
-The Postman collection's Fetch Templates request comments out `start_date`, `end_date`,
-`templateName`, `status`, `language`, and `createdDate` as example-only fields alongside
-the always-sent `channel`, `wabaId`, `pageNo`, and `limit`. The source PDF's field table
-lists `createdDate` (not `start_date`/`end_date`) as the optional date filter — the
-`start_date`/`end_date` pair in Postman's inline comment is not documented anywhere else
-and may be stale or unimplemented. Treat `createdDate` as authoritative.
+Send `channel`, `wabaId`, `pageNo`, and `limit` on every request. Filter by date with
+`createdDate`.
 </Note>
 
 ### cURL
@@ -228,9 +223,3 @@ curl --location 'https://api.onexaura.com/oapi/meta/templates/fetch?limit=500' \
 --header 'apikey: YOUR_API_KEY' \
 --header 'wabaid: YOUR_WABA_ID'
 ```
-
-<Note>
-The source Postman collection defines only the request for this endpoint — no sample
-response body is included for the Clevertap fetch. Response shape is expected to mirror
-Meta's native template list format but this is not confirmed in the source material.
-</Note>

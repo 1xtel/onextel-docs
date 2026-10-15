@@ -13,14 +13,6 @@ Templates must first be created and approved via the
 POST /send_sms
 ```
 
-<Note>
-The Postman collection's generic "Media, Variable, Button Payload" example posts to
-`{{domain}}/oapi/send_sms` instead of `/send_sms`. The source PDF's Authentication,
-Utility, and Marketing send examples all use `/send_sms`. Both paths appear in the source
-material — confirm which one is live for your account, or try `/send_sms` first since it
-is the path used consistently across the PDF guide.
-</Note>
-
 ## Headers
 
 <ParamField header="apikey" type="string" required>
@@ -140,9 +132,8 @@ curl --location 'https://api.onexaura.com/send_sms' \
 ```
 
 <Note>
-The response is an array with one entry per recipient. Which fields appear depends on
-the fields enabled for your TUC — the source shows two examples: one with `custref`,
-`recipient`, and `sender` enabled, and one with only `recipient` and `sender` enabled.
+The response is an array with one entry per recipient. Which fields appear depends on the
+fields enabled for your TUC.
 </Note>
 
 <ResponseField name="messageId" type="string">
@@ -286,7 +277,7 @@ share the same send-time payload shape — only the template's own button config
 }
 ```
 
-Endpoint for Authentication sends: `POST /send_sms` (per the source PDF).
+Endpoint for Authentication sends: `POST /send_sms`.
 </Tab>
 
 <Tab title="Limited Time Offer">
