@@ -33,9 +33,18 @@ guess what we meant.
 - **Unearned warnings.** A `<Warning>` means something costs money, loses data, or silently fails.
   A page where everything is a warning is a page where nothing is.
 - **Invented specifics.** Never guess a parameter name, enum value, error code, limit or URL. If
-  the source is unclear, document what is confirmed and note the gap in `REVIEW_NOTES` rather
-  than writing something plausible. Everything here is load-bearing: someone will paste it into
-  production code.
+  the source is unclear, document what is confirmed and note the gap in the internal tracker
+  rather than writing something plausible. Everything here is load-bearing: someone will paste it
+  into production code.
+- **Our own uncertainty.** "Not confirmed", "inferred from the field name", "presumably", "this
+  may be stale" — a reader cannot act on any of it, and it reads as though the product is a
+  mystery to us. State what is verified and leave the rest out. The gap goes in the internal
+  tracker, where someone can close it.
+- **How the page was written.** Readers never need to hear about a Postman collection, a source
+  PDF, a vendor guide or our reconciliation of the two. Document the product.
+
+Where uncertainty is real and the reader must handle it, turn it into their instruction, not our
+confession: "the source does not say which code the platform emits" becomes "handle both".
 - **Deployment names.** Customers see one platform. Do not write OnexAura, OneXGlobal, Aura V1/V2
   or Core 365 on a customer-facing page. Likewise, SMS is one product — domestic versus
   international is a compliance difference documented inside it, not a separate brand.
@@ -44,12 +53,12 @@ guess what we meant.
 
 | Write | Not |
 | --- | --- |
-| OneXtel | Onextel, ONEXTEL, OneXTel |
+| OneXtel | `Onextel`, `ONEXTEL`, `OneXTel` |
 | the OneXtel portal | the dashboard, the panel, the UI |
-| WhatsApp | Whatsapp, whats app |
+| WhatsApp | `Whatsapp`, `whats app` |
 | RCS, SMS, DLT, DLR, MSISDN | expanded on every mention |
-| CleverTap, MoEngage, WebEngage, LeadSquared | Clevertap, Moengage, Webengage |
-| email | e-mail |
+| CleverTap, MoEngage, WebEngage, LeadSquared | `Clevertap`, `Moengage`, `Webengage` |
+| email | `e-mail` |
 
 Channel names are WhatsApp, RCS and SMS. Partner product names are spelled the way the partner
 spells them.

@@ -1,0 +1,15 @@
+extends: existence
+message: "'%s' tells the reader how we wrote the page. Document the product, not our sources."
+level: error
+ignorecase: true
+tokens:
+  - postman
+  - source (pdf|docx|material|guide|page|list|collection)
+  - the source (does not|doesn't|says|lists|gives)
+  - per the (authoring|fidelity|style) (convention|rule|guide)
+  - fidelity rule
+  - see gaps
+  - reproduced as-is
+  - reproduced as given
+  - sources? (disagree|differ)
+  - our (source|sources)
