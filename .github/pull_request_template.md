@@ -16,5 +16,5 @@
 - [ ] Navigation in `docs.json` updated if pages were added, moved or renamed
 - [ ] No API keys, customer names, real recipient numbers or internal hostnames
 
-<!-- The house standard is STYLE_GUIDE.md. The Vale and Mintlify checks run automatically;
+<!-- The house standard is STYLE_GUIDE.md in the repo root. The Vale and Mintlify checks run automatically;
      the brand voice review comments on tone but does not block. -->

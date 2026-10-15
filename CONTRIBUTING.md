@@ -6,7 +6,7 @@ through a pull request, and `main` takes no direct commits.
 ## The flow
 
 1. **Branch.** `git checkout -b sms/dlr-codes` — name it after what you are changing.
-2. **Write.** Follow [STYLE_GUIDE.md](STYLE_GUIDE.md). It is the standard reviewers apply.
+2. **Write.** Follow `STYLE_GUIDE.md`. It is the standard reviewers apply.
 3. **Check it yourself**, before anyone reads it:
 
    ```bash

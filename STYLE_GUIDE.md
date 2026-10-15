@@ -85,8 +85,7 @@ npx -y mint@4.2.917 validate
 npx -y mint@4.2.917 broken-links
 ```
 
-The same three run on your pull request. See [CONTRIBUTING.md](CONTRIBUTING.md) for the review
-flow.
+The same three run on your pull request. `CONTRIBUTING.md` has the review flow.
 
 ## Writing with an agent
 
