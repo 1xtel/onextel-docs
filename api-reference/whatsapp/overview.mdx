@@ -3,9 +3,12 @@ title: "WhatsApp API Overview"
 description: "Introduction, base URL, authentication, and endpoint summary for the OneXtel WhatsApp API."
 ---
 
-The OneXtel WhatsApp Create Templates and Send Messages API provides a robust, secure, and flexible way to integrate with your system, enabling seamless communication capabilities within your applications. With this API, you can efficiently manage outbound campaigns and ensure reliable message delivery to users worldwide.
+The WhatsApp API creates templates, submits them to Meta for approval, sends messages against
+the approved ones, and reports delivery back. Every call is a JSON request over HTTPS,
+authenticated with your OneXtel API key.
 
-To get started, simply obtain an API key. Once you have the key, you can begin making requests to our endpoints and start using our messaging services right away.
+Start by copying your API key from the portal. Templates have to be approved before a campaign
+can use them, so create those first — the endpoints below cover both halves.
 
 ## Base URL
 

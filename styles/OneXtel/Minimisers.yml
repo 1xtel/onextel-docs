@@ -1,0 +1,14 @@
+extends: existence
+message: "'%s' tells the reader the task is easy. Drop it, or say what the step costs."
+level: warning
+ignorecase: true
+tokens:
+  - simply
+  - easily
+  - obviously
+  - of course
+  - clearly
+  - merely
+  - just (a few|click|run|add|enter|use|call|set)
+  - it is easy to
+  - all you (need|have) to do
