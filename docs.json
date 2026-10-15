@@ -270,6 +270,8 @@
     "options": [
       "copy",
       "view",
+      "download-pdf",
+      "download-spec",
       "chatgpt",
       "claude"
     ]
