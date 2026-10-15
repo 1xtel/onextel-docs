@@ -1,0 +1,270 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OneXtel SMS API (International)",
+    "version": "1.0.0",
+    "description": "Send SMS to destinations outside India.\n\nGenerated from the OneXtel API reference by scripts/build-openapi.py."
+  },
+  "servers": [
+    {
+      "url": "https://api.int.onexglobal.io",
+      "description": "Production"
+    }
+  ],
+  "paths": {
+    "/api/jsmslist": {
+      "post": {
+        "operationId": "send-sms-send-sms-international",
+        "summary": "Send SMS — International",
+        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/sms-international/send-sms",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "description": "An API key, assigned to the user for authentication."
+                  },
+                  "listsms": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "from": {
+                          "type": "string"
+                        },
+                        "to": {
+                          "type": "string"
+                        },
+                        "body": {
+                          "type": "string"
+                        },
+                        "clientsmsid": {
+                          "type": "string"
+                        },
+                        "custref1": {
+                          "type": "string"
+                        },
+                        "custref2": {
+                          "type": "string"
+                        },
+                        "custref3": {
+                          "type": "string"
+                        },
+                        "custref4": {
+                          "type": "string"
+                        },
+                        "custref5": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "description": "A list containing one or more SMS message objects to be sent. **Maximum 2,500 objects per request.**"
+                  },
+                  "from": {
+                    "type": "string",
+                    "description": "Sender ID or name that appears as the message originator. Accepts alphanumeric or numeric values — OneXtel applies no validation to this field. See Sender IDs before you choose one."
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "Recipient's mobile number including country code (e.g., `918872725225`)."
+                  },
+                  "body": {
+                    "type": "string",
+                    "description": "The text content of the SMS message."
+                  },
+                  "clientsmsid": {
+                    "type": "string",
+                    "description": "Client-side unique identifier for tracking the message. Echoed back as `CLIENTMSID` on the delivery receipt."
+                  },
+                  "custref1": {
+                    "type": "string",
+                    "description": "Custom reference value. Echoed back unchanged on both the submission response and the delivery receipt. See Reference IDs."
+                  },
+                  "custref2": {
+                    "type": "string",
+                    "description": "Second custom reference value."
+                  },
+                  "custref3": {
+                    "type": "string",
+                    "description": "Third custom reference value."
+                  },
+                  "custref4": {
+                    "type": "string",
+                    "description": "Fourth custom reference value."
+                  },
+                  "custref5": {
+                    "type": "string",
+                    "description": "Fifth custom reference value."
+                  }
+                },
+                "required": [
+                  "key",
+                  "from",
+                  "to",
+                  "body"
+                ]
+              },
+              "examples": {
+                "single-submission": {
+                  "summary": "Single submission",
+                  "value": {
+                    "key": "XXXXXX",
+                    "listsms": [
+                      {
+                        "from": "Verify",
+                        "to": "mobile number",
+                        "body": "Your verification code is 1234",
+                        "clientsmsid": "123456789"
+                      }
+                    ]
+                  }
+                },
+                "multiple-submission": {
+                  "summary": "Multiple submission",
+                  "value": {
+                    "key": "XXXXXX",
+                    "listsms": [
+                      {
+                        "from": "9599750774",
+                        "to": "9898989898",
+                        "body": "Your verification otp is 192031",
+                        "clientsmsid": "123456789"
+                      },
+                      {
+                        "from": "9599750774",
+                        "to": "9898989898",
+                        "body": "Your verification otp is 192031",
+                        "clientsmsid": "123456789"
+                      },
+                      {
+                        "from": "9599750774",
+                        "to": "9898989898",
+                        "body": "Your verification otp is 192031",
+                        "clientsmsid": "123456789"
+                      },
+                      {
+                        "from": "9599750774",
+                        "to": "9898989898",
+                        "body": "Your verification otp is 192031",
+                        "clientsmsid": "123456789"
+                      }
+                    ]
+                  }
+                },
+                "sending-custom-references": {
+                  "summary": "Sending custom references",
+                  "value": {
+                    "key": "XXXXXX",
+                    "listsms": [
+                      {
+                        "from": "XXXXX",
+                        "to": "XXXXX",
+                        "body": "Your verification code is XXXX. url",
+                        "custref1": "1111",
+                        "custref2": "111111",
+                        "custref3": "11111111",
+                        "custref4": "111111111",
+                        "custref5": "1111111111"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "smslist": {
+                      "type": "object",
+                      "properties": {
+                        "sms": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "reason": {
+                                "type": "string"
+                              },
+                              "code": {
+                                "type": "integer"
+                              },
+                              "messageid": {
+                                "type": "string"
+                              },
+                              "messagepartids": {
+                                "type": "array",
+                                "items": {}
+                              },
+                              "mobileno": {
+                                "type": "string"
+                              },
+                              "status": {
+                                "type": "string"
+                              },
+                              "clientsmsid": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "response-success": {
+                    "summary": "Response — Success",
+                    "value": {
+                      "smslist": {
+                        "sms": [
+                          {
+                            "reason": "success",
+                            "code": 0,
+                            "messageid": "36NHM9t0WzRM9VtK4n7iI7Yd2Da",
+                            "messagepartids": [],
+                            "mobileno": "971502829916",
+                            "status": "success"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "response-failed": {
+                    "summary": "Response — Failed",
+                    "value": {
+                      "smslist": {
+                        "sms": [
+                          {
+                            "reason": "invalid mobileno",
+                            "code": 700,
+                            "mobileno": "9715028",
+                            "clientsmsid": "123456789",
+                            "status": "fail"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Send Sms"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,1802 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OneXtel RCS API",
+    "version": "1.0.0",
+    "description": "Create and fetch RCS templates, send RCS template and standalone messages, upload media and manage opt-in / opt-out lists.\n\nGenerated from the OneXtel API reference by scripts/build-openapi.py."
+  },
+  "servers": [
+    {
+      "url": "https://api.onexaura.com",
+      "description": "Production"
+    }
+  ],
+  "paths": {
+    "/rcs/templates": {
+      "post": {
+        "operationId": "templates-create-template",
+        "summary": "Create Template",
+        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/templates",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "header",
+            "required": true,
+            "description": "Your OneXtel API key.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "string",
+                    "description": "JSON string (see below) describing the template — `name`, `type`, content fields, and optional `suggestions`."
+                  },
+                  "sender_profile_name": {
+                    "type": "string",
+                    "description": "The RCS sender profile the template belongs to."
+                  },
+                  "update_by": {
+                    "type": "string",
+                    "description": "Identifier of the user/system submitting the template."
+                  },
+                  "message_type": {
+                    "type": "string",
+                    "description": "RCS template category (e.g. Promotional, Transactional)."
+                  },
+                  "multimedia_files": {
+                    "type": "string",
+                    "description": "Media file to attach, for template types that include media (image, video, or document).",
+                    "format": "binary"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Template name, e.g. `\"richCardCarouselP\"`."
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Always `\"carousel\"`."
+                  },
+                  "suggestions": {
+                    "type": "string",
+                    "description": "Array of suggested actions. Can be empty (`[]`)."
+                  },
+                  "suggestionType": {
+                    "type": "string",
+                    "description": "Type of suggestion. Supported values: `reply`, `dialer_action`, `url_action`, `view_location_latlong`, `view_location_query`, `share_location`, `calendar_event`."
+                  },
+                  "displayText": {
+                    "type": "string",
+                    "description": "The button text shown to the user."
+                  },
+                  "postback": {
+                    "type": "string",
+                    "description": "Data sent back to the bot when the user interacts with the suggestion. Used for internal logic/tracking."
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "URL to open when the user taps the suggestion. Required when `suggestionType` is `url_action`."
+                  },
+                  "phoneNumber": {
+                    "type": "string",
+                    "description": "Phone number to call when the user taps the suggestion. Required when `suggestionType` is `dialer_action`."
+                  },
+                  "label": {
+                    "type": "string",
+                    "description": "Label for the map location (e.g. \"Our Store\"). Required when `suggestionType` is `view_location_latlong`."
+                  },
+                  "latitude": {
+                    "type": "string",
+                    "description": "Latitude coordinate for the map view. Required when `suggestionType` is `view_location_latlong`."
+                  },
+                  "longitude": {
+                    "type": "string",
+                    "description": "Longitude coordinate for the map view. Required when `suggestionType` is `view_location_latlong`."
+                  },
+                  "query": {
+                    "type": "string",
+                    "description": "The query string to search (e.g. \"nearest ATM\"). Required when `suggestionType` is `view_location_query`."
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the calendar event. Required when `suggestionType` is `calendar_event`."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description or notes for the calendar event. Required when `suggestionType` is `calendar_event`."
+                  },
+                  "startTime": {
+                    "type": "string",
+                    "description": "Event start time, ISO or `yyyy-MM-dd HH:mm:ss` format. Required when `suggestionType` is `calendar_event`."
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "description": "Event end time, ISO or `yyyy-MM-dd HH:mm:ss` format. Required when `suggestionType` is `calendar_event`."
+                  },
+                  "timeZone": {
+                    "type": "string",
+                    "description": "Time zone of the event (e.g. \"Asia/Kolkata\"). Required when `suggestionType` is `calendar_event`."
+                  },
+                  "textMessageContent": {
+                    "type": "string",
+                    "description": "Message body shown with the media. Supports placeholders like `[custom_param]`."
+                  },
+                  "documentUrl": {
+                    "type": "string",
+                    "description": "URL of the media file to attach. Supported formats usually include images (`.jpg`, `.png`), videos (`.mp4`), and documents (`.pdf`, `.docx`). The file should be publicly accessible or hosted via an approved CDN."
+                  },
+                  "messageOrder": {
+                    "type": "string",
+                    "description": "Determines display order of media and text. Accepted values: `media_at_top` (media displayed above text) or `text_message_at_top` (text displayed above media)."
+                  },
+                  "orientation": {
+                    "type": "string",
+                    "description": "Defines the layout of card components. Supported values: `VERTICAL` or `HORIZONTAL`."
+                  },
+                  "height": {
+                    "type": "string",
+                    "description": "Carousel card height. One of `SHORT_HEIGHT`, `MEDIUM_HEIGHT`, or `TALL_HEIGHT`."
+                  },
+                  "alignment": {
+                    "type": "string",
+                    "description": "Card alignment. Applies to `HORIZONTAL` orientation only. Supported values: `LEFT` or `RIGHT`."
+                  },
+                  "standAlone": {
+                    "type": "string",
+                    "description": "An object that defines media, text, and actions for this single rich card. See fields below."
+                  },
+                  "mediaUrl": {
+                    "type": "string",
+                    "description": "Image/video URL used in the card."
+                  },
+                  "fileName": {
+                    "type": "string",
+                    "description": "File name, e.g. `\"marketing.png\"`."
+                  },
+                  "cardTitle": {
+                    "type": "string",
+                    "description": "Title of the carousel card, e.g. `\"New York Store\"`."
+                  },
+                  "cardDescription": {
+                    "type": "string",
+                    "description": "Description shown below the title, e.g. `\"Visit us in NYC and grab exciting deals!\"`."
+                  },
+                  "width": {
+                    "type": "string",
+                    "description": "Carousel card width. One of `MEDIUM_WIDTH`, `SMALL_WIDTH`, or `SHORT_WIDTH`."
+                  },
+                  "carouselList": {
+                    "type": "string",
+                    "description": "Array of carousel card objects — see fields below."
+                  },
+                  "templateState": {
+                    "type": "string",
+                    "description": "Template state — `\"Create\"` or `\"Submit\"`."
+                  }
+                },
+                "required": [
+                  "data",
+                  "sender_profile_name",
+                  "update_by",
+                  "message_type",
+                  "name",
+                  "type",
+                  "suggestionType",
+                  "displayText",
+                  "postback",
+                  "name",
+                  "type",
+                  "textMessageContent",
+                  "type",
+                  "documentUrl",
+                  "messageOrder",
+                  "textMessageContent",
+                  "name",
+                  "type",
+                  "orientation",
+                  "height",
+                  "alignment",
+                  "standAlone",
+                  "mediaUrl",
+                  "cardTitle",
+                  "cardDescription",
+                  "name",
+                  "type",
+                  "width",
+                  "height",
+                  "carouselList",
+                  "mediaUrl",
+                  "cardTitle",
+                  "cardDescription"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "tags": [
+          "Templates"
+        ]
+      }
+    },
+    "/oapi/templates/fetch": {
+      "post": {
+        "operationId": "templates-fetch-template",
+        "summary": "Fetch Template",
+        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/templates",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "header",
+            "required": true,
+            "description": "Your OneXtel API key.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string",
+                    "description": "Messaging channel. Must be `\"RCS\"`."
+                  },
+                  "senderProfile": {
+                    "type": "string",
+                    "description": "RCS sender profile identifier from which templates are fetched."
+                  },
+                  "messageType": {
+                    "type": "string",
+                    "description": "RCS template category: `Promotional`, `Transactional`, or `OTP`."
+                  },
+                  "pageNo": {
+                    "type": "integer",
+                    "description": "Page number for pagination. Must be a non-negative integer."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "description": "Number of records to return per page."
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Filters templates based on approval status: `Approved`, `Pending`, or `Rejected`."
+                  },
+                  "createdDate": {
+                    "type": "string",
+                    "description": "Filters templates by creation timestamp, local datetime format `YYYY-MM-DDTHH:mm:ss`."
+                  },
+                  "templateName": {
+                    "type": "string",
+                    "description": "RCS template name to filter by."
+                  }
+                },
+                "required": [
+                  "channel",
+                  "senderProfile",
+                  "messageType",
+                  "pageNo",
+                  "limit"
+                ]
+              },
+              "examples": {
+                "curl": {
+                  "summary": "cURL",
+                  "value": {
+                    "channel": "RCS",
+                    "senderProfile": "<sender_profile>",
+                    "messageType": "Promotional",
+                    "pageNo": 1,
+                    "limit": 100
+                  }
+                },
+                "sample-request": {
+                  "summary": "Sample request",
+                  "value": {
+                    "channel": "rcs",
+                    "senderProfile": "Rcssenderprofile",
+                    "messageType": "Promotional",
+                    "status": "approved",
+                    "createdDate": "2025-06-23 12:02:28",
+                    "templateName": "jiocarouseltest01",
+                    "pageNo": 0,
+                    "limit": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "page_details": {
+                      "type": "object",
+                      "properties": {
+                        "pageNo": {
+                          "type": "integer"
+                        },
+                        "limit": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "width": {
+                            "type": "string"
+                          },
+                          "height": {
+                            "type": "string"
+                          },
+                          "carouselList": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "fileName": {
+                                  "type": "string"
+                                },
+                                "mediaUrl": {
+                                  "type": "string"
+                                },
+                                "cardTitle": {
+                                  "type": "string"
+                                },
+                                "suggestions": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "postback": {
+                                        "type": "string"
+                                      },
+                                      "displayText": {
+                                        "type": "string"
+                                      },
+                                      "suggestionType": {
+                                        "type": "string"
+                                      },
+                                      "url": {
+                                        "type": "string"
+                                      },
+                                      "application": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                },
+                                "thumbnailUrl": {
+                                  "type": "string"
+                                },
+                                "cardDescription": {
+                                  "type": "string"
+                                },
+                                "thumbnailFileName": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "templateState": {
+                            "type": "string"
+                          },
+                          "created_on": {
+                            "type": "string"
+                          },
+                          "updated_on": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "response": {
+                    "summary": "Response",
+                    "value": {
+                      "page_details": {
+                        "pageNo": 0,
+                        "limit": 1
+                      },
+                      "data": [
+                        {
+                          "name": "jiocarouseltest01",
+                          "type": "carousel",
+                          "width": "MEDIUM_WIDTH",
+                          "height": "SHORT_HEIGHT",
+                          "carouselList": [
+                            {
+                              "fileName": "temp.png",
+                              "mediaUrl": "https://example.com/media/laptop.jpeg",
+                              "cardTitle": "title - [c1-var1]",
+                              "suggestions": [
+                                {
+                                  "postback": "postback - [c1-pd1]",
+                                  "displayText": "text - [c1-s1]",
+                                  "suggestionType": "reply"
+                                },
+                                {
+                                  "url": "https://www.onextel.com/",
+                                  "postback": "postback - [c1-pd2]",
+                                  "application": "Webview-Tall",
+                                  "displayText": "url - [c1-s2]",
+                                  "suggestionType": "url_action"
+                                }
+                              ],
+                              "thumbnailUrl": "",
+                              "cardDescription": "desc - [c1-var2]",
+                              "thumbnailFileName": ""
+                            },
+                            {
+                              "fileName": "temp.png",
+                              "mediaUrl": "https://example.com/media/offer.jpeg",
+                              "cardTitle": "titile - [c2-t2]",
+                              "suggestions": [
+                                {
+                                  "postback": "postback - [c2-pd2]",
+                                  "displayText": "suggestion - [c2-s1]",
+                                  "suggestionType": "reply"
+                                }
+                              ],
+                              "thumbnailUrl": "",
+                              "cardDescription": "desc - [c2-d2]",
+                              "thumbnailFileName": ""
+                            }
+                          ],
+                          "templateState": "Create",
+                          "created_on": "2025-08-26T12:27:21.684",
+                          "updated_on": "2025-08-26T12:31:22.536",
+                          "status": "Approved",
+                          "category": "Carousel"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Templates"
+        ]
+      }
+    },
+    "/oapi/send_sms": {
+      "post": {
+        "operationId": "send-template-message-send-an-rcs-template-message",
+        "summary": "Send an RCS Template Message / Send Non-Template Messages",
+        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/send-template-message, https://onextel-09023014.mintlify.app/api-reference/rcs/send-messages",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "header",
+            "required": true,
+            "description": "Your OneXtel API key.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "rcs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "sender": {
+                          "type": "string"
+                        },
+                        "recipient": {
+                          "type": "string"
+                        },
+                        "messageType": {
+                          "type": "string"
+                        },
+                        "contentMessage": {
+                          "type": "object",
+                          "properties": {
+                            "templateMessage": {
+                              "type": "object",
+                              "properties": {
+                                "templateCode": {
+                                  "type": "string"
+                                },
+                                "customParams": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "ttl": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "custref1": {
+                          "type": "string"
+                        },
+                        "custref2": {
+                          "type": "string"
+                        },
+                        "custref3": {
+                          "type": "string"
+                        },
+                        "custref4": {
+                          "type": "string"
+                        },
+                        "custref5": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "description": "Wrapper array of one or more message objects. Supports up to 500 objects per request (many-to-many use case)."
+                  },
+                  "prefix": {
+                    "type": "string",
+                    "description": "Country code prefix applied to recipient numbers (e.g. `+91`). Optional per the Postman collection; documented as mandatory in the PDF's common parameters table — see Gaps."
+                  },
+                  "urlShortener": {
+                    "type": "object",
+                    "properties": {
+                      "flag": {
+                        "type": "integer",
+                        "description": "`1` to enable URL shortening, `0` to disable."
+                      },
+                      "urlDetails": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "longUrl": {
+                              "type": "string",
+                              "description": "The original full URL to shorten."
+                            },
+                            "senderId": {
+                              "type": "string",
+                              "description": "Sender ID or bot ID associated with the message (matches your RCS sender)."
+                            },
+                            "domain": {
+                              "type": "string",
+                              "description": "Custom domain to use for the shortened link."
+                            },
+                            "track_user": {
+                              "type": "integer",
+                              "description": "Whether to enable user-level click tracking. Default: disabled."
+                            }
+                          },
+                          "required": [
+                            "longUrl"
+                          ]
+                        },
+                        "description": "Array of URLs to shorten."
+                      }
+                    },
+                    "description": "Optional object used only if links in the message body need shortening/tracking. See fields below."
+                  },
+                  "campaignName": {
+                    "type": "string",
+                    "description": "Optional campaign identifier for reporting/tracking."
+                  },
+                  "messageType": {
+                    "type": "string",
+                    "description": "Type of message: `Promotional`, `Transactional`, or `OTP`."
+                  },
+                  "recipient": {
+                    "type": "string",
+                    "description": "Recipient phone number, without prefix. Can also be an array to support a one-to-many use case, containing up to 500 numbers in a single request."
+                  },
+                  "sender": {
+                    "type": "string",
+                    "description": "Sender bot ID or sender phone number."
+                  },
+                  "contentMessage": {
+                    "type": "object",
+                    "description": "Holds the message payload. For a template message, this contains a `templateMessage` object (documented below). `contentMessage` can alternatively hold `text` or `richCard` for non-template messages."
+                  },
+                  "ttl": {
+                    "type": "string",
+                    "description": "Time-to-live for the message (e.g. `\"1200s\"`). Only applicable in some transactional messages."
+                  },
+                  "expireTime": {
+                    "type": "string",
+                    "description": "Optional absolute expiry timestamp for the message, ISO 8601 (e.g. `\"2024-10-02T15:01:23Z\"`)."
+                  },
+                  "custref1": {
+                    "type": "string",
+                    "description": "Optional custom reference field."
+                  },
+                  "custref2": {
+                    "type": "string",
+                    "description": "Optional custom reference field."
+                  },
+                  "custref3": {
+                    "type": "string",
+                    "description": "Optional custom reference field."
+                  },
+                  "custref4": {
+                    "type": "string",
+                    "description": "Optional custom reference field."
+                  },
+                  "custref5": {
+                    "type": "string",
+                    "description": "Optional custom reference field."
+                  },
+                  "custref6": {
+                    "type": "string",
+                    "description": "Optional custom reference field. Appears in plain-text message examples; not shown in every template example — see Gaps."
+                  },
+                  "templateCode": {
+                    "type": "string",
+                    "description": "Template identifier, matching the `name` used when the template was created (e.g. `\"my_template_otp\"`)."
+                  },
+                  "customParams": {
+                    "type": "string",
+                    "description": "A JSON string of key-value pairs replacing the template's placeholder variables (e.g. `[custom_param]`). Not required for templates with no placeholders."
+                  },
+                  "flag": {
+                    "type": "integer",
+                    "description": "`1` = enable URL shortening, `0` = disable. Mandatory if URL shortening is required in the message body."
+                  },
+                  "urlDetails": {
+                    "type": "array",
+                    "description": "Array of URL-shortening definitions. Each entry defines `longUrl`, `senderId`/`domain`, and `track_user`."
+                  },
+                  "longUrl": {
+                    "type": "string",
+                    "description": "The original (full) URL you want to shortened. Mandatory if `urlShortener.flag` is set to `1`."
+                  },
+                  "senderId": {
+                    "type": "string",
+                    "description": "The sender ID or bot ID associated with the message (matches your RCS sender). Named `senderId` in the Send Message examples and `domain` in the parameter reference table for the same field — see Gaps."
+                  },
+                  "domain": {
+                    "type": "string",
+                    "description": "The domain used for the shortened URL."
+                  },
+                  "track_user": {
+                    "type": "boolean",
+                    "description": "Whether to enable user-level click tracking (e.g. `true` or `1`). Default: disabled."
+                  },
+                  "expiry": {
+                    "type": "string",
+                    "description": "Optional expiry for the shortened URL."
+                  }
+                },
+                "required": [
+                  "rcs",
+                  "messageType",
+                  "recipient",
+                  "sender",
+                  "contentMessage",
+                  "templateCode",
+                  "longUrl"
+                ]
+              },
+              "examples": {
+                "curl": {
+                  "summary": "cURL",
+                  "value": {
+                    "rcs": [
+                      {
+                        "sender": "<sender_bot_id>",
+                        "recipient": "<recipient_phone_number>",
+                        "messageType": "Transactional",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "SP_testing_demo",
+                            "customParams": "{\"custom_param1\":\"Namaste\",\"custom_param2\":\"Name\"}"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "basic-template-reference": {
+                  "summary": "Basic template reference",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Transactional/OTP/Promotional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "update_related_temp"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "template-with-custom-parameters": {
+                  "summary": "Template with custom parameters",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Promotional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "My_template_demo",
+                            "customParams": "{\"custom_param\":\"John\"}"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91",
+                    "urlShortener": {
+                      "flag": 0,
+                      "urlDetails": [
+                        {
+                          "longUrl": "",
+                          "senderId": "<sender_id>",
+                          "domain": " ",
+                          "track_user": 1
+                        }
+                      ]
+                    }
+                  }
+                },
+                "template-with-custom-parameters-reply-action": {
+                  "summary": "Template with custom parameters — Reply Action",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Promotional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "text_with_reply_temp",
+                            "customParams": "{\"custom_param\":\"Name\"}"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "template-with-custom-parameters-dialer-action": {
+                  "summary": "Template with custom parameters — Dialer Action",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Promotional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "text_with_dialertemp",
+                            "customParams": "{\"custom_param\":\"Name\"}"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "template-with-custom-parameters-url-action": {
+                  "summary": "Template with custom parameters — URL Action",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Transactional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "template_customPa",
+                            "customParams": "{\"custom_param\":\"Name\"}"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "template-with-custom-parameters-location-query": {
+                  "summary": "Template with custom parameters — Location Query",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Transactional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "template_query",
+                            "customParams": "{\"custom_param\":\"Name\"}"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "template-with-custom-parameters-share-location": {
+                  "summary": "Template with custom parameters — Share Location",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Promotional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "text_shareLoc_temp",
+                            "customParams": "{\"custom_param\":\"Name\"}"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "template-with-custom-parameters-calendar-event": {
+                  "summary": "Template with custom parameters — Calendar Event",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Promotional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "calendar_event",
+                            "customParams": "{\"custom_param\":\"Name\"},{\"custom_param2\":\"Thursday\"}"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "media-template-with-custom-params-or-actions-reply-action": {
+                  "summary": "Media template (with custom params or actions) — Reply Action",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Transactional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "media_with_reply"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "media-template-with-custom-params-or-actions-dialer-action": {
+                  "summary": "Media template (with custom params or actions) — Dialer Action",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Transactional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "template_dialeractio"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "media-template-with-custom-params-or-actions-url-action": {
+                  "summary": "Media template (with custom params or actions) — URL Action",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Transactional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "template_URL_ACTION"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "media-template-with-custom-params-or-actions-location-lat-long": {
+                  "summary": "Media template (with custom params or actions) — Location (lat/long)",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Transactional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "template_LATLONG"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "media-template-with-custom-params-or-actions-location-query": {
+                  "summary": "Media template (with custom params or actions) — Location Query",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Transactional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "template_EWLOC"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "media-template-with-custom-params-or-actions-share-location": {
+                  "summary": "Media template (with custom params or actions) — Share Location",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Transactional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "template_SHARELOC"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "rich-card-standalone-template-promotional": {
+                  "summary": "Rich card standalone template — Promotional",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Transactional/OTP/Promotional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "rich_card_promo",
+                            "customParams": "{\"custom_param\":\"Name\"}"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "rich-card-carousel-template": {
+                  "summary": "Rich card carousel template",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Transactional/OTP/Promotional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "richCardCarouselP"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "only-custom-parameters": {
+                  "summary": "Only custom parameters",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Transactional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "SP_carousel_temp",
+                            "customParams": "{\"custom_param\":\"Hi\",\"custom_param1\":\"Name\",\"custom_param2\":\"5000\",\"custom_param3\":\"Aug 30\"}"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "with-parameters-in-suggestions": {
+                  "summary": "With parameters in suggestions",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Transactional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "SP_testing_demo",
+                            "customParams": "{\"custom_param1\":\"Namaste\",\"custom_param2\":\"Name\"}"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "calendar-event-in-a-carousel": {
+                  "summary": "Calendar event in a carousel",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Promotional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_bot_Id>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "CarouselCalendarEve",
+                            "customParams": "{\"name\":\"Name\"}"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "prefix": "+91"
+                  }
+                },
+                "dynamic-query-with-tracking-url-shortener-ttl": {
+                  "summary": "Dynamic query with tracking (URL shortener + TTL)",
+                  "value": {
+                    "rcs": [
+                      {
+                        "messageType": "Promotional",
+                        "recipient": "<recipient_phone_number>",
+                        "sender": "<sender_phone_number>",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "<template_name>",
+                            "customParams": "{\"url\":\"<url>\"}"
+                          },
+                          "ttl": "10s"
+                        }
+                      }
+                    ],
+                    "prefix": "+91",
+                    "urlShortener": {
+                      "flag": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "messageId": {
+                        "type": "string"
+                      },
+                      "code": {
+                        "type": "integer"
+                      },
+                      "status": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "response": {
+                    "summary": "Response",
+                    "value": [
+                      {
+                        "messageId": "33mXmXf0myfFe7lA1QpPcDJcVaH",
+                        "code": 200,
+                        "status": "success"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Send Template Message"
+        ]
+      }
+    },
+    "/rcs/mediaupload": {
+      "post": {
+        "operationId": "media-media-upload",
+        "summary": "Media Upload",
+        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/media",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "header",
+            "required": true,
+            "description": "Your OneXtel API key.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "senderProfileName": {
+                    "type": "string",
+                    "description": "Registered RCS sender profile name (your RCS bot/sender ID)."
+                  },
+                  "message_type": {
+                    "type": "string",
+                    "description": "Type of RCS message the media will be used with, e.g. `transactional` or `promotional`."
+                  },
+                  "file": {
+                    "type": "string",
+                    "description": "The media file to upload (multipart), e.g. an image, GIF, or video. Required unless you supply `url` instead.",
+                    "format": "binary"
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "A public URL to fetch the media from, instead of uploading a file."
+                  }
+                },
+                "required": [
+                  "senderProfileName",
+                  "message_type"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "http_status": {
+                      "type": "integer"
+                    },
+                    "onextel_media_url": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "response-response": {
+                    "summary": "Response — Response",
+                    "value": {
+                      "id": "DL6+bVHuwLm7N3kstC270cfrehEzZOn3pa84pyewspE=",
+                      "status": "success",
+                      "http_status": 200,
+                      "onextel_media_url": "https://warcssm.1xtel.co/media/media/6dc9571d-3805-4ac2-9e92-0eb1c35b1b6e/e04a2aac-83f5-45a8-9429-58669e8dd207.jpeg"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Media"
+        ]
+      }
+    },
+    "/opt/out/rcs": {
+      "get": {
+        "operationId": "opt-in-opt-out-opt-out-list",
+        "summary": "Get opt out list",
+        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/opt-in-opt-out",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "header",
+            "required": true,
+            "description": "Your OneXtel API key.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "tucid": {
+                            "type": "string"
+                          },
+                          "sender": {
+                            "type": "string"
+                          },
+                          "number": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "message_type": {
+                            "type": "string"
+                          },
+                          "channel": {
+                            "type": "string"
+                          },
+                          "category_id": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "response": {
+                    "summary": "Response",
+                    "value": {
+                      "status": "success",
+                      "description": "success",
+                      "data": [
+                        {
+                          "tucid": "YOUR_TUC_ID",
+                          "sender": "your_rcs_sender",
+                          "number": "919999999999",
+                          "name": "Customer name",
+                          "message_type": "promotional",
+                          "channel": "rcs",
+                          "category_id": "1234"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Opt In Opt Out"
+        ]
+      },
+      "post": {
+        "operationId": "opt-in-opt-out-opt-out-list-2",
+        "summary": "Add to opt out list",
+        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/opt-in-opt-out",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "header",
+            "required": true,
+            "description": "Your OneXtel API key.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "numbers": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of recipient phone numbers to opt out."
+                  },
+                  "sender": {
+                    "type": "string",
+                    "description": "RCS sender/bot ID the opt-out applies to."
+                  },
+                  "message_types": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Message types to opt the numbers out of, e.g. `[\"promotional\", \"transactional\"]`."
+                  }
+                },
+                "required": [
+                  "numbers",
+                  "sender",
+                  "message_types"
+                ]
+              },
+              "examples": {
+                "add-to-opt-out-list-request": {
+                  "summary": "Add to opt-out list — Request",
+                  "value": {
+                    "numbers": [
+                      "919999999999",
+                      "919888888888"
+                    ],
+                    "sender": "your_rcs_sender",
+                    "message_types": [
+                      "promotional",
+                      "transactional"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "tags": [
+          "Opt In Opt Out"
+        ]
+      },
+      "delete": {
+        "operationId": "opt-in-opt-out-opt-out-list-2-2",
+        "summary": "Remove from opt out list",
+        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/opt-in-opt-out",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "header",
+            "required": true,
+            "description": "Your OneXtel API key.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "number",
+            "in": "query",
+            "required": true,
+            "description": "Recipient phone number to remove from the opt-out list.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "919999999999"
+          },
+          {
+            "name": "sender",
+            "in": "query",
+            "required": true,
+            "description": "RCS sender/bot ID the opt-out applies to.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "your_rcs_sender"
+          },
+          {
+            "name": "message_type",
+            "in": "query",
+            "required": true,
+            "description": "Message type to remove the opt-out for. One of `promotional`, `transactional`.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "promotional"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "tags": [
+          "Opt In Opt Out"
+        ]
+      }
+    },
+    "/opt/in/rcs": {
+      "get": {
+        "operationId": "opt-in-opt-out-opt-in-list",
+        "summary": "Get opt in list",
+        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/opt-in-opt-out",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "header",
+            "required": true,
+            "description": "Your OneXtel API key.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "tucid": {
+                            "type": "string"
+                          },
+                          "sender": {
+                            "type": "string"
+                          },
+                          "number": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "message_type": {
+                            "type": "string"
+                          },
+                          "channel": {
+                            "type": "string"
+                          },
+                          "category_id": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "response": {
+                    "summary": "Response",
+                    "value": {
+                      "status": "success",
+                      "description": "success",
+                      "data": [
+                        {
+                          "tucid": "YOUR_TUC_ID",
+                          "sender": "your_rcs_sender",
+                          "number": "919999999999",
+                          "name": "Customer name",
+                          "message_type": "promotional",
+                          "channel": "rcs",
+                          "category_id": "1234"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Opt In Opt Out"
+        ]
+      },
+      "post": {
+        "operationId": "opt-in-opt-out-opt-in-list-2",
+        "summary": "Add to opt in list",
+        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/opt-in-opt-out",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "header",
+            "required": true,
+            "description": "Your OneXtel API key.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "numbers": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of recipient phone numbers to opt in."
+                  },
+                  "sender": {
+                    "type": "string",
+                    "description": "RCS sender/bot ID the opt-in applies to."
+                  },
+                  "message_types": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Message types to opt the numbers into, e.g. `[\"promotional\", \"transactional\"]`."
+                  }
+                },
+                "required": [
+                  "numbers",
+                  "sender",
+                  "message_types"
+                ]
+              },
+              "examples": {
+                "add-to-opt-in-list-request": {
+                  "summary": "Add to opt-in list — Request",
+                  "value": {
+                    "numbers": [
+                      "919999999999",
+                      "919888888888"
+                    ],
+                    "sender": "your_rcs_sender",
+                    "message_types": [
+                      "promotional",
+                      "transactional"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "tags": [
+          "Opt In Opt Out"
+        ]
+      },
+      "delete": {
+        "operationId": "opt-in-opt-out-opt-in-list-2-2",
+        "summary": "Remove from opt in list",
+        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/opt-in-opt-out",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "header",
+            "required": true,
+            "description": "Your OneXtel API key.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "number",
+            "in": "query",
+            "required": true,
+            "description": "Recipient phone number to remove from the opt-in list.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "919999999999"
+          },
+          {
+            "name": "sender",
+            "in": "query",
+            "required": true,
+            "description": "RCS sender/bot ID the opt-in applies to.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "your_rcs_sender"
+          },
+          {
+            "name": "message_type",
+            "in": "query",
+            "required": true,
+            "description": "Message type to remove the opt-in for. One of `promotional`, `transactional`.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "promotional"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "tags": [
+          "Opt In Opt Out"
+        ]
+      }
+    }
+  }
+}

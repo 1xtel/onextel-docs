@@ -4,6 +4,10 @@ description: "Generate a PIN and send it to one or more channels in parallel."
 openapi: "POST /v1/pins"
 ---
 
+import ImportVerify from '/snippets/import-verify.mdx';
+
+<ImportVerify />
+
 This is the call that starts a verification. OneXtel generates the PIN, substitutes it into the
 template's content for each channel you asked for, and dispatches to all of them **in parallel** —
 then returns a `pinId` and what each channel did.

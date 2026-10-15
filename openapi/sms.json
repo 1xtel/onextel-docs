@@ -1,0 +1,233 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OneXtel SMS API (India)",
+    "version": "1.0.0",
+    "description": "Send DLT-compliant SMS to Indian numbers.\n\nGenerated from the OneXtel API reference by scripts/build-openapi.py."
+  },
+  "servers": [
+    {
+      "url": "https://api.onexaura.com",
+      "description": "Production"
+    }
+  ],
+  "paths": {
+    "/send_sms": {
+      "post": {
+        "operationId": "send-sms-omni-send-sms-india",
+        "summary": "Send SMS — India",
+        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/sms/send-sms-omni",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "header",
+            "required": true,
+            "description": "API key issued by OneXtel.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sms": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "sender": {
+                          "type": "string",
+                          "description": "Sender ID. Must be DLT-approved — see DLT registration."
+                        },
+                        "recipient": {
+                          "type": "string",
+                          "description": "Recipient mobile number."
+                        },
+                        "templateId": {
+                          "type": "string",
+                          "description": "DLT-approved template ID."
+                        },
+                        "entityId": {
+                          "type": "string",
+                          "description": "DLT entity ID."
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Message type: `SI`, `OTP`, or `SE`. Case-sensitive."
+                        },
+                        "custRef1": {
+                          "type": "string"
+                        },
+                        "custRef2": {
+                          "type": "string"
+                        },
+                        "custRef3": {
+                          "type": "string"
+                        },
+                        "custRef4": {
+                          "type": "string"
+                        },
+                        "custRef5": {
+                          "type": "string"
+                        },
+                        "messageBody": {
+                          "type": "string",
+                          "description": "Content of the SMS."
+                        },
+                        "unicode": {
+                          "type": "integer",
+                          "description": "`1` for a Unicode message, `0` for normal text. **Required when sending Unicode.**"
+                        }
+                      },
+                      "required": [
+                        "sender",
+                        "recipient",
+                        "messageBody",
+                        "type"
+                      ]
+                    }
+                  },
+                  "validation": {
+                    "type": "boolean",
+                    "description": "`true` rejects invalid requests outright; `false` processes them anyway."
+                  },
+                  "campaignName": {
+                    "type": "string",
+                    "description": "Identifier used to group and track messages as a campaign. Set it if you want the send to be filterable in reports."
+                  },
+                  "prefix": {
+                    "type": "string",
+                    "description": "Country code applied to recipient numbers — for example `+91`."
+                  },
+                  "urlShortener": {
+                    "type": "object",
+                    "properties": {
+                      "flag": {
+                        "type": "integer",
+                        "description": "`1` enables shortening, `0` disables it. Required if short-URL conversion is needed."
+                      },
+                      "urlDetails": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "longUrl": {
+                              "type": "string",
+                              "description": "The original URL to shorten. Required when `flag` is `1`."
+                            },
+                            "senderId": {
+                              "type": "string",
+                              "description": "Sender ID associated with the shortened URL. Required when `flag` is `1`."
+                            },
+                            "domain": {
+                              "type": "string",
+                              "description": "Custom domain, if one is configured for your account. Required when `flag` is `1`."
+                            },
+                            "track_user": {
+                              "type": "integer",
+                              "description": "`1` enables click tracking, `0` disables it. Required if location tracking is needed."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "examples": {
+                "example-request": {
+                  "summary": "Example request",
+                  "value": {
+                    "sms": [
+                      {
+                        "sender": "ONEXTL",
+                        "recipient": "919999999999",
+                        "templateId": "YOUR_DLT_TEMPLATE_ID",
+                        "entityId": "YOUR_DLT_ENTITY_ID",
+                        "type": "SI",
+                        "custRef1": "order-4821",
+                        "custRef2": "",
+                        "custRef3": "",
+                        "custRef4": "",
+                        "custRef5": "",
+                        "messageBody": "Hi {#var#}, your secure code is {#var#}. Click here {#var#}",
+                        "unicode": 0
+                      }
+                    ],
+                    "validation": false,
+                    "campaignName": "SpringPromo2026",
+                    "prefix": "+91",
+                    "urlShortener": {
+                      "flag": 1,
+                      "urlDetails": [
+                        {
+                          "longUrl": "https://example.com/offers/spring",
+                          "senderId": "ONEXTL",
+                          "domain": "links.example.com",
+                          "track_user": 1
+                        }
+                      ]
+                    }
+                  }
+                },
+                "example-request-request-body": {
+                  "summary": "Example request — Request body",
+                  "value": {
+                    "sms": [
+                      {
+                        "sender": "ONEXTL",
+                        "recipient": "919999999999",
+                        "type": "SI",
+                        "messageBody": "This is a test sms.",
+                        "templateId": "YOUR_DLT_TEMPLATE_ID",
+                        "entityId": "YOUR_DLT_ENTITY_ID",
+                        "unicode": 0,
+                        "custRef1": {
+                          "CustomReference1": "testSMS",
+                          "CustomReference2": "123"
+                        }
+                      }
+                    ],
+                    "campaignName": "SMS2026",
+                    "prefix": "+91",
+                    "validation": false,
+                    "urlShortener": {
+                      "flag": 0,
+                      "urlDetails": [
+                        {
+                          "longUrl": "",
+                          "senderId": "",
+                          "domain": "",
+                          "track_user": 1
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {}
+              }
+            }
+          }
+        },
+        "tags": [
+          "Send Sms Omni"
+        ]
+      }
+    }
+  }
+}

@@ -4,6 +4,10 @@ description: "The provider accounts each channel dispatches through."
 openapi: "GET /v1/channel-accounts"
 ---
 
+import ImportVerify from '/snippets/import-verify.mdx';
+
+<ImportVerify />
+
 A channel account is the provider connection a channel actually sends through — the WhatsApp
 number, the SMS route, the email sender. Templates reference them by `channelAccountId`, so this
 endpoint is how you resolve that id into something readable, and how you check whether a channel
