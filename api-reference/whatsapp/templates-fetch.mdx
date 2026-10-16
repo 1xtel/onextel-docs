@@ -1,10 +1,10 @@
 ---
 title: "Fetch WhatsApp Templates"
-description: "Retrieve WhatsApp message templates and their approval status from OneXtel or directly from Meta via the Clevertap fetch endpoint."
+description: "Retrieve WhatsApp message templates and their approval status from OneXtel or directly from Meta via the CleverTap fetch endpoint."
 ---
 
 Two endpoints return your WhatsApp templates: the primary OneXtel `/templates/fetch`
-endpoint (filterable, paginated), and a Meta-passthrough endpoint used for Clevertap
+endpoint (filterable, paginated), and a Meta-passthrough endpoint used for CleverTap
 integrations.
 
 ## OneXtel Fetch Templates
@@ -70,7 +70,7 @@ curl --location 'https://api.onexaura.com/templates/fetch' \
 --header 'apikey: YOUR_API_KEY' \
 --header 'Content-Type: application/json' \
 --data '{
-    "channel": "Whatsapp",
+    "channel": "WhatsApp",
     "wabaId": "YOUR_WABA_ID",
     "category": "Marketing",
     "createdDate": "2025-10-22T12:02:28",
@@ -190,10 +190,10 @@ curl --location 'https://api.onexaura.com/templates/fetch' \
   </Expandable>
 </ResponseField>
 
-## Clevertap Fetch Templates
+## CleverTap Fetch Templates
 
 A separate GET endpoint returns templates directly in Meta's native format, intended for
-Clevertap integrations.
+CleverTap integrations.
 
 ### Endpoint
 

@@ -12,7 +12,7 @@ delivery reports for WhatsApp and RCS to different endpoints, or route two produ
 two different systems.
 
 <Note>
-An API key with no callback registered still sends messages perfectly well — it simply reports
+An API key with no callback registered still sends messages perfectly well — it reports
 nothing back. If messages are arriving but your system never hears about them, an unregistered
 callback is the first thing to check.
 </Note>
@@ -87,9 +87,10 @@ requires. Two common cases:
 
 - **Authentication.** If your endpoint expects a token or API key, add it as a header rather
   than putting it in the URL.
-- **Onward routing.** Some connectors need the destination URL passed as a header so they can
-  forward the callback to a third-party platform. The [MoEngage plugin](/plugins/moengage), for
-  example, requires `callback_url` on WhatsApp and `cbUrl` on RCS.
+- **Onward routing.** Some connectors need the destination URL passed so they can forward the
+  callback to a third-party platform. The [MoEngage plugin](/plugins/moengage), for example, takes
+  it in a header named `callback` on RCS and SMS. Its WhatsApp inbound callback is the exception:
+  there the URL goes on the Callback URL itself as a `callback_url` query parameter, not a header.
 
 <Warning>
 Never put credentials in the Callback URL itself. URLs are logged along the request path;

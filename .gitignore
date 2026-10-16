@@ -1,3 +1,9 @@
 node_modules/
 .mintlify/
 .DS_Store
+
+# Internal working notes live outside this public repo
+# (see ~/AI Projects/onextel-docs-internal)
+REVIEW_NOTES.md
+COVERAGE.md
+inventory/

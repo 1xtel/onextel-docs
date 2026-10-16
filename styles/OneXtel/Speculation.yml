@@ -1,0 +1,20 @@
+extends: existence
+message: "'%s' publishes our uncertainty. State what is verified, or leave it out and record the gap internally."
+level: error
+ignorecase: true
+tokens:
+  - presumably
+  - probably
+  - apparently
+  - we (believe|think|assume|are not sure)
+  - (our|my) (reading|best guess|guess)
+  - best guess
+  - looks like (a|an|the)
+  - may be (stale|unimplemented)
+  - not confirmed
+  - unconfirmed
+  - cannot be confirmed
+  - inferred from (the )?(field|parameter) name
+  - it is unclear
+  - unclear (whether|if)
+  - to be safe
