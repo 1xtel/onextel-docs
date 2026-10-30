@@ -1,0 +1,23 @@
+---
+title: "Create a campaign"
+description: "Send an approved template to a contact list, now, later or as a draft."
+openapi: "POST /v1/campaigns"
+---
+
+The quickest path is one call with `launch: true`:
+
+```json
+{
+  "name": "Diwali sale, wave 1",
+  "template_id": "TEMPLATE_ID",
+  "list_id": "LIST_ID",
+  "launch": true,
+  "scheduled_at": "2026-11-02T10:00:00+05:30"
+}
+```
+
+Leave out `scheduled_at` to start now, or leave out `launch` to keep a draft.
+
+While it runs, OneXtel skips opted-out numbers and applies Truecaller's promotional limits:
+at most 3 promotional messages per person per day, 4 per person from one sender in 28 days, and
+the sender's daily limit. Skipped contacts show as `blocked` with the reason.

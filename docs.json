@@ -211,6 +211,68 @@
               "api-reference/verify/list-channel-accounts",
               "api-reference/verify/error-codes"
             ]
+          },
+          {
+            "group": "Truecaller",
+            "openapi": "api-reference/truecaller/openapi.yaml",
+            "pages": [
+              "api-reference/truecaller/overview",
+              "api-reference/truecaller/rich-messages",
+              "api-reference/truecaller/webhooks",
+              "api-reference/truecaller/errors",
+              {
+                "group": "Messages",
+                "pages": [
+                  "api-reference/truecaller/send-message",
+                  "api-reference/truecaller/get-message"
+                ]
+              },
+              {
+                "group": "Templates",
+                "pages": [
+                  "api-reference/truecaller/list-templates",
+                  "api-reference/truecaller/create-template",
+                  "api-reference/truecaller/get-template",
+                  "api-reference/truecaller/update-template",
+                  "api-reference/truecaller/submit-template",
+                  "api-reference/truecaller/preview-template",
+                  "api-reference/truecaller/delete-template",
+                  "api-reference/truecaller/upload-media"
+                ]
+              },
+              {
+                "group": "Contact lists",
+                "pages": [
+                  "api-reference/truecaller/list-contact-lists",
+                  "api-reference/truecaller/create-contact-list",
+                  "api-reference/truecaller/add-contacts",
+                  "api-reference/truecaller/validate-audience",
+                  "api-reference/truecaller/get-contact-list",
+                  "api-reference/truecaller/delete-contact-list",
+                  "api-reference/truecaller/opt-out",
+                  "api-reference/truecaller/remove-opt-out"
+                ]
+              },
+              {
+                "group": "Campaigns",
+                "pages": [
+                  "api-reference/truecaller/list-campaigns",
+                  "api-reference/truecaller/create-campaign",
+                  "api-reference/truecaller/get-campaign",
+                  "api-reference/truecaller/launch-campaign",
+                  "api-reference/truecaller/cancel-campaign",
+                  "api-reference/truecaller/delete-campaign",
+                  "api-reference/truecaller/campaign-report",
+                  "api-reference/truecaller/export-campaign-messages"
+                ]
+              },
+              {
+                "group": "Senders",
+                "pages": [
+                  "api-reference/truecaller/list-senders"
+                ]
+              }
+            ]
           }
         ]
       },

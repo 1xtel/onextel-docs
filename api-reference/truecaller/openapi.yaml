@@ -1,0 +1,876 @@
+openapi: 3.1.0
+info:
+  title: OneXtel Truecaller Business Messaging API
+  version: "1.0.0"
+  description: |
+    Send verified business messages to Truecaller users: single messages, templates with
+    personalisation, images, files and buttons, and campaigns to contact lists.
+
+    Every request carries a workspace API key in the `x-api-key` header. Create one in the
+    Truecaller campaigns portal under **Developers → API keys**.
+
+    Errors are JSON with a single `error` string (and `details` for validation errors):
+
+    ```json
+    { "error": "invalid phone number" }
+    ```
+
+servers:
+  - url: https://truecaller.udchowdhury.me
+    description: Production
+
+security:
+  - apiKey: []
+
+tags:
+  - name: Messages
+    description: Send one message and read its status.
+  - name: Templates
+    description: Reusable messages with variables, media and buttons.
+  - name: Media
+    description: Upload files to attach to templates.
+  - name: Contact lists
+    description: Audiences for campaigns.
+  - name: Campaigns
+    description: Send a template to a whole contact list, now or later.
+  - name: Senders
+    description: The verified business profiles your workspace sends from.
+
+paths:
+  /v1/messages:
+    post:
+      tags: [Messages]
+      summary: Send a message
+      operationId: sendMessage
+      description: |
+        Sends one message now. Give either `body` (free text, optionally with `media` and
+        `buttons`) or `template_id` with its `variables`. A template brings its own media and
+        buttons. Returns `202` once Truecaller has accepted the message; delivery and read
+        arrive later through webhooks.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SendMessageRequest" }
+            examples:
+              template:
+                summary: Approved template with variables
+                value:
+                  to: "919999999999"
+                  template_id: "7f3c2a9e-1b2d-4c5e-8f90-123456789abc"
+                  variables: { name: "Asha", order_id: "OX1002" }
+              text:
+                summary: Free text
+                value:
+                  to: "919999999999"
+                  body: "Hi Asha, your order *OX1002* has shipped."
+                  category: transactional
+              rich:
+                summary: Free text with an image and buttons
+                value:
+                  to: "919999999999"
+                  body: "Your festive offer is here."
+                  category: promotional
+                  media: { url: "https://example.com/offer.jpg", mime_type: "image/jpeg" }
+                  buttons:
+                    - { type: link, text: "Shop now", url: "https://example.com/sale" }
+                    - { type: reply, text: "Not interested" }
+      responses:
+        "202":
+          description: Accepted by Truecaller.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /v1/messages/{id}:
+    get:
+      tags: [Messages]
+      summary: Get a message
+      operationId: getMessage
+      description: The message, its current status and every status change with its time.
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: The message.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/templates:
+    get:
+      tags: [Templates]
+      summary: List templates
+      operationId: listTemplates
+      responses:
+        "200":
+          description: Templates in this workspace, most recently updated first.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: "#/components/schemas/Template" } }
+    post:
+      tags: [Templates]
+      summary: Create a template
+      operationId: createTemplate
+      description: |
+        Creates a template as a draft. Use `{{variable}}` placeholders in the body, button
+        labels and button URLs; they are filled from contact list columns of the same name, or
+        from `variables` on a single send. Submit it before sending.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TemplateInput" }
+            example:
+              name: "Order shipped"
+              category: transactional
+              body: "Hi {{name}}, your order *{{order_id}}* has shipped."
+              variable_defaults: { name: "there" }
+              media: { url: "https://example.com/box.jpg", mime_type: "image/jpeg" }
+              buttons:
+                - { type: link, text: "Track order", url: "https://example.com/t/{{order_id}}" }
+      responses:
+        "201":
+          description: Created, as a draft.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Template" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "409":
+          description: A template with this name exists.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/templates/{id}:
+    get:
+      tags: [Templates]
+      summary: Get a template
+      operationId: getTemplate
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: The template.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Template" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    put:
+      tags: [Templates]
+      summary: Update a template
+      operationId: updateTemplate
+      description: Replaces the template. Any change moves it back to `draft`, so submit it again.
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TemplateInput" }
+      responses:
+        "200":
+          description: The updated template.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Template" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      tags: [Templates]
+      summary: Delete a template
+      operationId: deleteTemplate
+      description: Templates that have been used to send messages cannot be deleted.
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "204": { description: Deleted. }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: The template has been used to send messages.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/templates/{id}/submit:
+    post:
+      tags: [Templates]
+      summary: Submit a template
+      operationId: submitTemplate
+      description: |
+        Submits a draft or rejected template. Truecaller Business Chat has no separate template
+        review, so the template is approved straight away and can be sent.
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: The template, now `approved`.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Template" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: The template is already submitted or approved.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/templates/{id}/preview:
+    post:
+      tags: [Templates]
+      summary: Preview a template
+      operationId: previewTemplate
+      description: Fills the template body with the values you give, using the template's defaults for any you leave out.
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                values:
+                  type: object
+                  additionalProperties: { type: string }
+                  example: { name: "Asha", order_id: "OX1002" }
+      responses:
+        "200":
+          description: The filled text.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  text: { type: string, example: "Hi Asha, your order *OX1002* has shipped." }
+        "400":
+          description: A variable has no value and no default.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/media:
+    post:
+      tags: [Media]
+      summary: Upload media
+      operationId: uploadMedia
+      description: |
+        Uploads one file to attach to templates. Send the raw file as the request body with its
+        `Content-Type`, and its name in `x-file-name` (URL-encoded). Up to 20 MB. The returned
+        `url`, `mime_type` and `file_name` go straight into a template's `media`.
+      parameters:
+        - in: header
+          name: x-file-name
+          schema: { type: string }
+          description: File name, URL-encoded, e.g. `invoice.pdf`.
+          example: invoice.pdf
+      requestBody:
+        required: true
+        content:
+          image/jpeg: { schema: { type: string, format: binary } }
+          image/png: { schema: { type: string, format: binary } }
+          image/gif: { schema: { type: string, format: binary } }
+          video/mp4: { schema: { type: string, format: binary } }
+          video/quicktime: { schema: { type: string, format: binary } }
+          application/pdf: { schema: { type: string, format: binary } }
+          text/plain: { schema: { type: string, format: binary } }
+      responses:
+        "201":
+          description: Stored. Use these fields as a template's `media`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: string, format: uuid }
+                  url: { type: string, example: "https://truecaller.udchowdhury.me/m/1c9e…/invoice.pdf" }
+                  mime_type: { type: string, example: application/pdf }
+                  file_name: { type: string, example: invoice.pdf }
+                  size: { type: integer, example: 48213 }
+        "415":
+          description: Unsupported file type.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/lists:
+    get:
+      tags: [Contact lists]
+      summary: List contact lists
+      operationId: listLists
+      responses:
+        "200":
+          description: Lists with their contact counts.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: "#/components/schemas/ContactList" } }
+    post:
+      tags: [Contact lists]
+      summary: Create a contact list
+      operationId: createList
+      description: Creates an empty list. Load contacts into it with [Add contacts](/api-reference/truecaller/add-contacts).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, maxLength: 100, example: "Diwali customers, Pune" }
+      responses:
+        "201":
+          description: Created.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContactList" }
+        "409":
+          description: A list with this name exists.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/lists/{id}:
+    get:
+      tags: [Contact lists]
+      summary: Get a contact list
+      operationId: getList
+      description: The list, its columns and up to 50 sample contacts.
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: The list.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ContactList"
+                  - type: object
+                    properties:
+                      sample:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            phone: { type: string, example: "+919999999999" }
+                            attributes: { type: object, additionalProperties: { type: string }, example: { name: "Asha" } }
+                            opted_out: { type: boolean }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      tags: [Contact lists]
+      summary: Delete a contact list
+      operationId: deleteList
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "204": { description: Deleted. }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: A campaign uses this list.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/lists/{id}/contacts:
+    post:
+      tags: [Contact lists]
+      summary: Add contacts
+      operationId: addContacts
+      description: |
+        Adds or updates contacts from a CSV body (`text/csv`), an Excel body
+        (`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`), or JSON pointing
+        at a public Google Sheet or CSV link. The file needs a phone column (`phone`, `mobile`,
+        `msisdn`, `number`, `phone_number`, `mobile_number`); every other column becomes a
+        template variable, in lower case with spaces turned into underscores. Contacts already
+        in the list are updated by phone number.
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content:
+          text/csv:
+            schema: { type: string }
+            example: |
+              phone,name,city
+              +919999999999,Asha Sharma,Mumbai
+              919888888888,Rahul Verma,Delhi
+          application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+            schema: { type: string, format: binary }
+          application/json:
+            schema:
+              type: object
+              required: [source, url]
+              properties:
+                source: { type: string, enum: [sheet, url] }
+                url: { type: string, example: "https://docs.google.com/spreadsheets/d/…/edit" }
+      responses:
+        "200":
+          description: What was loaded.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UploadResult" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+  /v1/lists/validate:
+    post:
+      tags: [Contact lists]
+      summary: Check an audience
+      operationId: validateAudience
+      description: Checks a file or link without saving it. Takes the same bodies as Add contacts and returns counts, invalid numbers, columns and a short preview.
+      requestBody:
+        required: true
+        content:
+          text/csv: { schema: { type: string } }
+          application/json:
+            schema:
+              type: object
+              properties:
+                source: { type: string, enum: [sheet, url] }
+                url: { type: string }
+      responses:
+        "200":
+          description: The check.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UploadResult" }
+
+  /v1/opt-outs:
+    post:
+      tags: [Contact lists]
+      summary: Opt a number out
+      operationId: addOptOut
+      description: Numbers on the opt-out list are skipped by every campaign in the workspace.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              properties:
+                phone: { type: string, example: "919999999999" }
+      responses:
+        "201":
+          description: Opted out.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  phone: { type: string, example: "+919999999999" }
+                  opted_out: { type: boolean, example: true }
+
+  /v1/opt-outs/{phone}:
+    delete:
+      tags: [Contact lists]
+      summary: Remove an opt-out
+      operationId: removeOptOut
+      parameters:
+        - in: path
+          name: phone
+          required: true
+          schema: { type: string }
+          example: "919999999999"
+      responses:
+        "204": { description: Removed. }
+
+  /v1/campaigns:
+    get:
+      tags: [Campaigns]
+      summary: List campaigns
+      operationId: listCampaigns
+      responses:
+        "200":
+          description: Campaigns with live counts, newest first.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: "#/components/schemas/Campaign" } }
+    post:
+      tags: [Campaigns]
+      summary: Create a campaign
+      operationId: createCampaign
+      description: |
+        Creates a campaign from an approved template and a contact list. With `launch: true` it
+        starts sending straight away (or at `scheduled_at`); otherwise it stays a draft for
+        [Launch a campaign](/api-reference/truecaller/launch-campaign).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, template_id, list_id]
+              properties:
+                name: { type: string, maxLength: 100, example: "Diwali sale, wave 1" }
+                template_id: { type: string, format: uuid }
+                list_id: { type: string, format: uuid }
+                sender_id:
+                  type: string
+                  description: One of the workspace's active senders. Defaults to the first active sender.
+                launch: { type: boolean, default: false, description: Start sending now (or at `scheduled_at`). }
+                scheduled_at: { type: string, format: date-time, description: "ISO 8601 with offset, e.g. 2026-11-02T10:00:00+05:30." }
+                variable_defaults:
+                  type: object
+                  additionalProperties: { type: string }
+                  description: Fallbacks for empty contact columns, on top of the template's own defaults.
+                track_links: { type: boolean, default: true, description: Rewrite links and link buttons through a short redirect so clicks are counted. }
+      responses:
+        "201":
+          description: Created (and launched, if asked).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Campaign" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+  /v1/campaigns/{id}:
+    get:
+      tags: [Campaigns]
+      summary: Get a campaign
+      operationId: getCampaign
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: The campaign with live counts.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Campaign" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      tags: [Campaigns]
+      summary: Delete a draft campaign
+      operationId: deleteCampaign
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "204": { description: Deleted. }
+        "409":
+          description: Only draft campaigns can be deleted.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/campaigns/{id}/launch:
+    post:
+      tags: [Campaigns]
+      summary: Launch a campaign
+      operationId: launchCampaign
+      description: Starts a draft campaign now, or schedules it for `scheduled_at`. The template must be approved and the list must have contacts.
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scheduled_at: { type: string, format: date-time, example: "2026-11-02T10:00:00+05:30" }
+      responses:
+        "200":
+          description: The campaign, now `running` or `scheduled`.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Campaign" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "409":
+          description: The campaign is not a draft.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/campaigns/{id}/cancel:
+    post:
+      tags: [Campaigns]
+      summary: Cancel a campaign
+      operationId: cancelCampaign
+      description: Stops a scheduled or running campaign. Messages already sent are not recalled.
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: The campaign, now `cancelled`.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Campaign" }
+        "409":
+          description: Only scheduled or running campaigns can be cancelled.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/campaigns/{id}/report:
+    get:
+      tags: [Campaigns]
+      summary: Campaign report
+      operationId: campaignReport
+      description: Funnel, rates, timings, clicks per button and failure reasons grouped by category.
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: The report.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Report" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/campaigns/{id}/messages.csv:
+    get:
+      tags: [Campaigns]
+      summary: Export campaign messages
+      operationId: exportCampaignMessages
+      description: "Every message in the campaign as CSV: phone, status, error, error_category, message, created_at, updated_at."
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: CSV file.
+          content:
+            text/csv:
+              schema: { type: string }
+
+  /v1/senders:
+    get:
+      tags: [Senders]
+      summary: List senders
+      operationId: listSenders
+      description: The workspace's senders with 7-day health, its sender requests, and the platform default sender used when the workspace has none.
+      responses:
+        "200":
+          description: Senders and requests.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: "#/components/schemas/Sender" } }
+                  requests: { type: array, items: { type: object } }
+                  default_sender: { type: string }
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Workspace API key from **Developers → API keys**. It starts with `tc_live_`.
+
+  parameters:
+    Id:
+      in: path
+      name: id
+      required: true
+      schema: { type: string, format: uuid }
+
+  responses:
+    BadRequest:
+      description: The request is invalid. `details` lists each problem for validation errors.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example: { error: "invalid body", details: [{ path: ["to"], message: "Required" }] }
+    Unauthorized:
+      description: Missing or invalid `x-api-key`.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example: { error: "invalid x-api-key" }
+    NotFound:
+      description: Not found in this workspace.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example: { error: "not found" }
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+        details: { type: array, items: { type: object } }
+
+    Media:
+      type: object
+      required: [url, mime_type]
+      description: One attachment. Upload with [Upload media](/api-reference/truecaller/upload-media), or give any public https URL.
+      properties:
+        url: { type: string, description: Public https URL Truecaller downloads the file from at send time. }
+        mime_type:
+          type: string
+          enum: [image/jpeg, image/png, image/gif, video/mp4, video/quicktime, application/pdf, text/plain]
+        file_name: { type: string, maxLength: 100, description: Shown to the recipient for PDFs and text files. }
+
+    Button:
+      description: Up to 3 per message. Labels and URLs can use `{{variables}}`.
+      oneOf:
+        - type: object
+          title: Link button
+          required: [type, text, url]
+          properties:
+            type: { type: string, const: link }
+            text: { type: string, maxLength: 40, example: "Track order" }
+            url: { type: string, maxLength: 1000, description: An https URL or an app deep link. Plain http is rejected., example: "https://example.com/t/{{order_id}}" }
+        - type: object
+          title: Quick reply
+          required: [type, text]
+          properties:
+            type: { type: string, const: reply }
+            text: { type: string, maxLength: 100, description: Sent back as the person's reply when tapped., example: "Call me back" }
+
+    SendMessageRequest:
+      type: object
+      required: [to]
+      properties:
+        to: { type: string, description: "Recipient number with country code (+919999999999 or 919999999999). Bare 10-digit numbers are treated as Indian.", example: "919999999999" }
+        sender_id: { type: string, description: One of the workspace's active senders. Defaults to the first active sender. }
+        body: { type: string, maxLength: 1000, description: "Free text. Supports *bold*, _italic_, ~strikethrough~, `monospace` and [label](https://…) links. Give this or template_id." }
+        category: { type: string, enum: [promotional, transactional, service], default: transactional, description: For free-text sends. A template uses its own category. }
+        template_id: { type: string, format: uuid, description: An approved template. Give this or body. }
+        variables: { type: object, additionalProperties: { type: string }, description: Values for the template's variables. Empty ones fall back to the template's defaults. }
+        media: { $ref: "#/components/schemas/Media" }
+        buttons: { type: array, maxItems: 3, items: { $ref: "#/components/schemas/Button" } }
+
+    Message:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        to: { type: string, example: "+919999999999" }
+        sender_id: { type: string }
+        category: { type: string, enum: [promotional, transactional, service] }
+        template_id: { type: [string, "null"], format: uuid }
+        campaign_id: { type: [string, "null"], format: uuid }
+        body: { type: string }
+        extras: { type: [object, "null"], description: Media and buttons sent with the message. }
+        status: { $ref: "#/components/schemas/MessageStatus" }
+        error: { type: [string, "null"], example: null }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        events:
+          type: array
+          items:
+            type: object
+            properties:
+              status: { type: string }
+              created_at: { type: string, format: date-time }
+
+    MessageStatus:
+      type: string
+      enum: [queued, sent, delivered, read, failed, blocked]
+      description: "`sent` means Truecaller accepted it, `blocked` means a limit or opt-out skipped it."
+
+    TemplateInput:
+      type: object
+      required: [name, category, body]
+      properties:
+        name: { type: string, maxLength: 100 }
+        category: { type: string, enum: [promotional, transactional, service] }
+        body: { type: string, maxLength: 1000, description: "Message text with {{variable}} placeholders and Truecaller text styling." }
+        variable_defaults: { type: object, additionalProperties: { type: string, maxLength: 200 }, description: Used when a contact's value is empty. }
+        media: { oneOf: [{ $ref: "#/components/schemas/Media" }, { type: "null" }] }
+        buttons: { type: array, maxItems: 3, items: { $ref: "#/components/schemas/Button" } }
+
+    Template:
+      allOf:
+        - $ref: "#/components/schemas/TemplateInput"
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            variables: { type: array, items: { type: string }, example: [name, order_id] }
+            status: { type: string, enum: [draft, submitted, approved, rejected] }
+            reject_reason: { type: [string, "null"] }
+            created_at: { type: string, format: date-time }
+            updated_at: { type: string, format: date-time }
+
+    ContactList:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        columns: { type: array, items: { type: string }, example: [name, city] }
+        contact_count: { type: integer }
+        created_at: { type: string, format: date-time }
+
+    UploadResult:
+      type: object
+      properties:
+        rows: { type: integer }
+        added: { type: integer }
+        updated: { type: integer }
+        invalid: { type: integer }
+        duplicates_in_file: { type: integer }
+        invalid_samples: { type: array, items: { type: object, properties: { row: { type: integer }, value: { type: string } } } }
+        phone_column: { type: string, example: phone }
+        attribute_columns: { type: array, items: { type: string }, example: [name, city] }
+
+    Campaign:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        status: { type: string, enum: [draft, scheduled, running, completed, cancelled] }
+        template_id: { type: string, format: uuid }
+        template_name: { type: string }
+        list_id: { type: string, format: uuid }
+        list_name: { type: string }
+        sender_id: { type: string }
+        scheduled_at: { type: [string, "null"], format: date-time }
+        started_at: { type: [string, "null"], format: date-time }
+        completed_at: { type: [string, "null"], format: date-time }
+        note: { type: [string, "null"], description: Why a running campaign is waiting, e.g. a daily sender limit. }
+        recipients: { type: integer }
+        processed: { type: integer }
+        sent: { type: integer }
+        delivered: { type: integer }
+        read: { type: integer }
+        failed: { type: integer }
+        blocked: { type: integer }
+        queued: { type: integer }
+
+    Report:
+      type: object
+      properties:
+        campaign: { $ref: "#/components/schemas/Campaign" }
+        funnel: { type: array, items: { type: object, properties: { stage: { type: string }, count: { type: integer }, bad: { type: boolean } } } }
+        rates:
+          type: object
+          properties:
+            delivery_rate: { type: number }
+            read_rate: { type: number }
+            click_rate: { type: [number, "null"] }
+            failure_rate: { type: number }
+            blocked_rate: { type: number }
+        timing:
+          type: object
+          description: Seconds from Truecaller accepting each message.
+          properties:
+            avg_deliver_s: { type: [number, "null"] }
+            median_deliver_s: { type: [number, "null"] }
+            avg_read_s: { type: [number, "null"] }
+            median_read_s: { type: [number, "null"] }
+            avg_click_s: { type: [number, "null"] }
+            median_click_s: { type: [number, "null"] }
+        clicks:
+          type: object
+          properties:
+            tracked: { type: boolean }
+            unique: { type: integer }
+            total: { type: integer }
+            by_button: { type: array, items: { type: object, properties: { label: { type: string }, type: { type: string, enum: [link, reply, text] }, people: { type: integer }, taps: { type: integer } } } }
+        categories:
+          type: array
+          description: Failed and skipped messages grouped by reason.
+          items:
+            type: object
+            properties:
+              key: { type: string, example: not_on_truecaller }
+              label: { type: string, example: Not on Truecaller }
+              count: { type: integer }
+
+    Sender:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        sender_id: { type: string }
+        display_name: { type: string }
+        category: { type: string, enum: [promotional, transactional, service] }
+        status: { type: string, enum: [active, paused] }
+        tier: { type: integer }
+        effective_daily_limit: { type: integer, description: Promotional messages per day before campaigns pause. }

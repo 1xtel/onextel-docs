@@ -1,0 +1,18 @@
+---
+title: "Upload media"
+description: "Upload an image, video or file to attach to templates."
+openapi: "POST /v1/media"
+---
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://truecaller.udchowdhury.me/v1/media \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/pdf" \
+  -H "x-file-name: invoice.pdf" \
+  --data-binary @invoice.pdf
+```
+</CodeGroup>
+
+Put the response's `url`, `mime_type` and `file_name` into a template's `media`. You can also use
+any public https link instead of uploading.

@@ -1,0 +1,15 @@
+---
+title: "Create a template"
+description: "Create a reusable message with variables, an optional attachment and up to 3 buttons."
+openapi: "POST /v1/templates"
+---
+
+A template is saved as a `draft`. [Submit it](/api-reference/truecaller/submit-template) before
+you send it.
+
+- **Variables:** write `{{name}}` anywhere in the body, in button labels or in button URLs. In a
+  campaign each one is filled from the contact list column with the same name. Set
+  `variable_defaults` for contacts whose cell is empty, e.g. `{ "name": "there" }`.
+- **Styling:** Truecaller renders `*bold*`, `_italic_`, `~strikethrough~`, `` `monospace` `` and
+  `[label](https://…)` links.
+- **Media and buttons:** see [Rich messages](/api-reference/truecaller/rich-messages).

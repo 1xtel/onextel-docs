@@ -1,0 +1,32 @@
+---
+title: "Add contacts"
+description: "Load contacts from a CSV or Excel file, or a public Google Sheet or CSV link."
+openapi: "POST /v1/lists/{id}/contacts"
+---
+
+<CodeGroup>
+```bash CSV file
+curl -X POST https://truecaller.udchowdhury.me/v1/lists/LIST_ID/contacts \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: text/csv" \
+  --data-binary @contacts.csv
+```
+
+```bash Google Sheet
+curl -X POST https://truecaller.udchowdhury.me/v1/lists/LIST_ID/contacts \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "source": "sheet", "url": "https://docs.google.com/spreadsheets/d/SHEET_ID/edit" }'
+```
+</CodeGroup>
+
+A file that works as is:
+
+```csv contacts.csv
+phone,name,city,customer_id
++919999999999,Asha Sharma,Mumbai,CUST-10241
++919888888888,Rahul Verma,Delhi,CUST-10278
+```
+
+`phone` is the only required column. `name`, `city` and `customer_id` become the variables
+`{{name}}`, `{{city}}` and `{{customer_id}}`. Google Sheets must be shared as "Anyone with the link".
