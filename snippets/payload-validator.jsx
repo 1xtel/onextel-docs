@@ -557,7 +557,8 @@ const pvValidate = (raw, hint) => {
   const checks = { sms: pvSms, intl: pvIntlList, "wa-template": pvWaTemplate, "wa-session": pvWaSession,
     "rcs-template": (rr, bb) => pvRcs(rr, bb, "template"), "rcs-message": (rr, bb) => pvRcs(rr, bb, "message") };
   const primaries = ["sms", "wa", "rcs"].filter((k) => Array.isArray(body[k]));
-  if (primaries.length > 1) r.warn("body", `This body has ${primaries.map((k) => "`" + k + "`").join(", ").replace(/, ([^,]*)$/, " and $1")} arrays. Send only the one channel you want as the primary; this check covers \`${primaries[0]}\`.`, null, PV_DOC.fb);
+  const checked = channel === "sms" ? "sms" : channel.startsWith("wa") ? "wa" : channel.startsWith("rcs") ? "rcs" : primaries[0];
+  if (primaries.length > 1) r.warn("body", `This body has ${primaries.map((k) => "`" + k + "`").join(", ").replace(/, ([^,]*)$/, " and $1")} arrays. Send only the one channel you want as the primary; this check covers \`${checked}\`.`, null, PV_DOC.fb);
   checks[channel](r, body);
   if ("fallback" in body) pvFallback(r, body, channel);
   pvFallbackPlacement(r, body);
