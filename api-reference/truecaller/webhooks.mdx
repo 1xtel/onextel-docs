@@ -1,0 +1,77 @@
+---
+title: "Webhooks"
+description: "Receive message and campaign events at your own endpoint, signed so you can verify them."
+---
+
+Instead of polling, add an endpoint in the Truecaller campaigns portal under
+**Developers → Webhooks** and pick the events you want. OneXtel POSTs each event to your URL as
+JSON.
+
+## Events
+
+| Event | When |
+| --- | --- |
+| `message.sent` | Truecaller accepted the message |
+| `message.delivered` | It reached the person's phone |
+| `message.read` | The person opened it |
+| `message.failed` | It could not be sent; `data.error` says why |
+| `campaign.started` | A campaign began sending |
+| `campaign.completed` | A campaign finished |
+
+## Payload
+
+<CodeGroup>
+```json message.delivered
+{
+  "id": "evt_5d0c2f8e-7a41-4c1e-9d3b-1f6a2b7c8e90",
+  "type": "message.delivered",
+  "created_at": "2026-10-30T10:42:04.913Z",
+  "data": {
+    "message_id": "0d6f5a7e-3c1b-4f0a-9a52-6b8f1e2d4c11",
+    "to": "+919999999999",
+    "sender_id": "YOUR_SENDER_ID",
+    "campaign_id": null,
+    "template_id": "TEMPLATE_ID",
+    "status": "delivered"
+  }
+}
+```
+
+```json campaign.completed
+{
+  "id": "evt_a3e1c9b2-0f7d-4e55-8c21-9b4d6f0e1a37",
+  "type": "campaign.completed",
+  "created_at": "2026-10-30T11:05:12.004Z",
+  "data": {
+    "campaign_id": "CAMPAIGN_ID",
+    "name": "Diwali sale, wave 1",
+    "status": "completed",
+    "started_at": "2026-10-30T10:59:31.000Z",
+    "completed_at": "2026-10-30T11:05:11.870Z",
+    "processed": 985
+  }
+}
+```
+</CodeGroup>
+
+## Verify the signature
+
+Every request carries `x-onextel-signature: t=TIMESTAMP,v1=SIGNATURE`. `SIGNATURE` is the
+HMAC-SHA256 (hex) of `TIMESTAMP.RAW_BODY` with the endpoint's signing secret, shown when you add
+the endpoint. Reject requests whose timestamp is more than 5 minutes old.
+
+```js Node.js
+import crypto from 'node:crypto';
+
+function verify(rawBody, header, secret) {
+  const { t, v1 } = Object.fromEntries(header.split(',').map((p) => p.split('=')));
+  const expected = crypto.createHmac('sha256', secret).update(`${t}.${rawBody}`).digest('hex');
+  const fresh = Math.abs(Date.now() / 1000 - Number(t)) < 300;
+  return fresh && crypto.timingSafeEqual(Buffer.from(v1), Buffer.from(expected));
+}
+```
+
+## Retries
+
+Reply with any `2xx` within 10 seconds. Anything else is retried up to 6 times over about 8
+hours. The portal shows each delivery with its response, and lets you retry or send a test event.

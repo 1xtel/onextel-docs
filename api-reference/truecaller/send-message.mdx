@@ -1,0 +1,23 @@
+---
+title: "Send a message"
+description: "Send one Truecaller message now: free text, an approved template, or either with an image, file and buttons."
+openapi: "/api-reference/truecaller/openapi.yaml POST /v1/messages"
+---
+
+Use this for one-off messages such as OTP follow-ups, order updates or a test of a template. For
+many people at once, use a [campaign](/api-reference/truecaller/create-campaign) instead: it
+applies opt-outs and promotional limits for you.
+
+Give **either** `body` **or** `template_id`:
+
+- **`template_id`** sends an approved template. Its media and buttons come with it. Fill its
+  `{{variables}}` with `variables`; any you leave empty use the template's defaults.
+- **`body`** sends free text. Add `media` and up to 3 `buttons` if you need them.
+
+A `202` means Truecaller accepted the message (`status: "sent"`). Delivery and read come later:
+subscribe to [webhooks](/api-reference/truecaller/webhooks) or [get the message](/api-reference/truecaller/get-message).
+
+<Note>
+If the number is not on Truecaller, the send fails with `Truecaller NOT_FOUND`. That is the most
+common failure and is not worth retrying.
+</Note>
