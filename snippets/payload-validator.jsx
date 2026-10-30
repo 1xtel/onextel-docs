@@ -448,7 +448,7 @@ const pvFallback = (r, b, channel) => {
       const t = pvIsObj(m) ? pvTtlSeconds(m.ttl) : null;
       if (t === null) return;
       if (t > wait) r.info(`rcs[${i}].ttl`, `\`ttl\` (${t}s) is longer than \`wait_time\` (${wait}s). The wait time overrides it: the RCS attempt ends when fallback fires, so the recipient does not get both messages.`, null, d);
-      else if (t < wait) r.info(`rcs[${i}].ttl`, `The RCS attempt stops at ${t}s, but fallback still waits the full ${wait}s before it sends.`, null, d);
+      else if (t < wait) r.info(`rcs[${i}].ttl`, `\`ttl\` (${t}s) is shorter than \`wait_time\` (${wait}s), so the RCS message expires before the wait ends.`, null, d);
     });
   }
 
