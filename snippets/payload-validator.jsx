@@ -9,6 +9,7 @@ const PV_DOC = {
   waS: "/api-reference/whatsapp/send-session-messages",
   rcsT: "/api-reference/rcs/send-template-message",
   rcsM: "/api-reference/rcs/send-messages",
+  fb: "/api-reference/omnichannel/fallback",
 };
 
 const PV_LABEL = {
@@ -23,6 +24,7 @@ const PV_SAMPLES = {
   "wa-template": { wa: [{ messaging_product: "whatsapp", recipient_type: "individual", recipient: ["9999999999"], sender: "919217090193", type: "template", template: { name: "order_update", language: { code: "en_US" }, components: [{ type: "body", parameters: [{ type: "text", text: "Arjun" }, { type: "text", text: "1042" }] }] }, custref1: "order-1042" }], prefix: "+91", campaignName: "orders" },
   "wa-session": { wa: [{ messaging_product: "whatsapp", recipient_type: "individual", recipient: "919999999999", sender: "919217090193", type: "interactive", interactive: { type: "button", body: { text: "Did your order arrive?" }, action: { buttons: [{ type: "reply", reply: { id: "yes", title: "Yes" } }, { type: "reply", reply: { id: "no", title: "No" } }] } } }] },
   "rcs-template": { rcs: [{ messageType: "Transactional", recipient: "9999999999", sender: "Acme_trans", ttl: "1200s", contentMessage: { templateMessage: { templateCode: "payment_success_onex", customParams: "{\"custom_param1\":\"Arjun\"}" } }, custref1: "pay-1042" }], prefix: "+91", campaignName: "payments" },
+  "rcs-fallback": { rcs: [{ messageType: "Transactional", recipient: "9999999999", sender: "Acme_trans", ttl: "60s", contentMessage: { templateMessage: { templateCode: "payment_success_onex", customParams: "{\"custom_param1\":\"Arjun\"}" } }, custref1: "pay-1042" }], prefix: "+91", fallback: { fallback_id: "0004d861-8a30-47c3-90d4-c06eb391ec3a", fallback: true, wait_time: 90, sms: { sender: "ONEXTL", type: "SI", messageBody: "Payment of Rs 1499 received. Ref 1042.", templateId: "1007206634501788500", entityId: "1001921385183460200", unicode: 0, custRef1: { CustomReference1: "pay-1042" } } } },
   "rcs-message": { rcs: [{ messageType: "Promotional", recipient: "9999999999", sender: "Acme_promo", contentMessage: { richCard: { standaloneCard: { cardOrientation: "VERTICAL", cardContent: { title: "Festive offer", description: "Up to 40% off this week.", media: { height: "MEDIUM", contentInfo: { fileUrl: "https://example.com/banner.jpg" } }, suggestions: [{ action: { displayText: "Shop now", openUrlAction: { url: "https://example.com/sale" } } }] } } } } }], prefix: "+91" },
 };
 
@@ -165,7 +167,7 @@ const pvSms = (r, b) => {
   if (b.validation === false) r.info("validation", "With `validation` false, malformed entries are processed instead of rejected.", null, d);
   if (b.prefix !== undefined && !pvIsStr(b.prefix)) r.warn("prefix", "`prefix` should be a string, such as `\"+91\"` or `\"\"`.", null, d);
   if (b.urlShortener !== undefined) pvUrlShortener(r, b.urlShortener, "urlShortener", d, { allowFlag2: true, domainRequired: true, bodies });
-  pvUnknown(r, b, ["sms", "campaignName", "prefix", "validation", "urlShortener", "apikey", "apiKey"], "body", d);
+  pvUnknown(r, b, ["sms", "wa", "rcs", "campaignName", "prefix", "validation", "urlShortener", "apikey", "apiKey", "fallback"], "body", d);
 };
 
 const pvIntlList = (r, b) => {
@@ -404,6 +406,115 @@ const pvRcs = (r, b, kind) => {
   if (b.urlShortener !== undefined) pvUrlShortener(r, b.urlShortener, "urlShortener", d, {});
 };
 
+
+const pvTtlSeconds = (ttl) => { const m = /^(\d+)s$/.exec(String(ttl)); return m ? Number(m[1]) : null; };
+
+const pvMessageType = (r, v, p, d) => {
+  if (!v) { r.err(p, "`messageType` is required: `Promotional` or `Transactional`.", null, d); return; }
+  if (String(v).toUpperCase() === "OTP") { r.err(p, "OTP is not an RCS message type. Send one-time codes as `Transactional`.", null, d); return; }
+  if (["Promotional", "Transactional"].includes(v)) return;
+  const fix = ["Promotional", "Transactional"].find((x) => x.toLowerCase() === String(v).toLowerCase());
+  r.err(p, fix ? `Use \`${fix}\`, with that capitalisation.` : `\`${v}\` is not a message type. Use \`Promotional\` or \`Transactional\`.`, null, d);
+};
+
+const pvFallback = (r, b, channel) => {
+  const d = PV_DOC.fb;
+  const fb = b.fallback;
+  if (!pvIsObj(fb)) { r.err("fallback", "`fallback` must be an object.", null, d); return; }
+  if (channel === "intl") { r.warn("fallback", "The international List API does not take a `fallback` block. Fallback is set up on the OneXtel send API.", null, d); return; }
+  r.info("fallback", "Requests that carry a `fallback` block go to `/oapi/send_sms`.", null, d);
+
+  if (fb.fallback === undefined) r.err("fallback.fallback", "`fallback.fallback` is required: set it to `true`.", "Rejected with 400: `API_Missing_fallback`.", d);
+  else if (typeof fb.fallback !== "boolean") r.warn("fallback.fallback", "`fallback.fallback` should be `true` or `false`.", null, d);
+  else if (fb.fallback === false) r.info("fallback.fallback", "`fallback.fallback` is false, so this request makes no fallback attempt.", null, d);
+
+  if (!fb.fallback_id) r.err("fallback.fallback_id", "`fallback_id` is required: the ID of a fallback configuration in your OneXtel account.", "Rejected with 400: `API_Missing_fallback_id`.", d);
+  else if (!pvIsStr(fb.fallback_id)) r.warn("fallback.fallback_id", "`fallback_id` should be a string.", null, d);
+
+  let wait = null;
+  if (fb.wait_time === undefined) {
+    const wrong = ["waittime", "waitTime", "wait_Time", "waitime"].find((k) => k in fb);
+    if (wrong) r.err(`fallback.${wrong}`, `The key is \`wait_time\`, with an underscore. \`${wrong}\` is not read.`, "Rejected with 400: `API_Missing_wait_time`.", d);
+    else r.err("fallback.wait_time", "`wait_time` is required: the seconds to wait for a delivery or failure report before falling back.", "Rejected with 400: `API_Missing_wait_time`.", d);
+  } else if (!/^\d+$/.test(String(fb.wait_time).trim())) {
+    r.err("fallback.wait_time", "`wait_time` must be a whole number of seconds, such as `30`.", "Rejected with `API_Invalid_Payload`, inside an HTTP 200.", d);
+  } else {
+    wait = Number(fb.wait_time);
+    if (wait === 0) r.warn("fallback.wait_time", "A `wait_time` of 0 falls back at once, without giving the primary channel time to deliver.", null, d);
+  }
+
+  if (wait !== null && pvIsObj(b) && Array.isArray(b.rcs)) {
+    b.rcs.forEach((m, i) => {
+      const t = pvIsObj(m) ? pvTtlSeconds(m.ttl) : null;
+      if (t === null) return;
+      if (t > wait) r.info(`rcs[${i}].ttl`, `\`ttl\` (${t}s) is longer than \`wait_time\` (${wait}s). The wait time overrides it: the RCS attempt ends when fallback fires, so the recipient does not get both messages.`, null, d);
+      else if (t < wait) r.info(`rcs[${i}].ttl`, `The RCS attempt stops at ${t}s, but fallback still waits the full ${wait}s before it sends.`, null, d);
+    });
+  }
+
+  const known = ["fallback", "fallback_id", "wait_time", "waittime", "waitTime", "wait_Time", "waitime", "fallback_priority", "sms", "wa", "rcs"];
+  Object.keys(fb).filter((k) => !known.includes(k)).forEach((k) => r.info(`fallback.${k}`, `\`${k}\` is not a documented fallback key. A third-party fallback channel can use its own key; anything else is ignored.`, null, d));
+  const blocks = ["sms", "wa", "rcs"].filter((k) => k in fb);
+  if (!blocks.length) r.info("fallback", "No `sms`, `wa` or `rcs` block. The fallback content then comes from the fallback configuration in your account.", null, d);
+  const primary = channel === "sms" ? "sms" : String(channel).startsWith("wa") ? "wa" : String(channel).startsWith("rcs") ? "rcs" : null;
+  if (primary && blocks.includes(primary)) r.warn(`fallback.${primary}`, "The fallback channel is the same as the primary channel.", null, d);
+
+  if ("sms" in fb) {
+    const s = fb.sms, p = "fallback.sms";
+    if (!pvIsObj(s)) r.err(p, "`fallback.sms` must be an object.", null, d);
+    else {
+      const late = "Rejected at the fallback stage, after the primary send has already returned 200, so the only symptom is a missing SMS.";
+      pvRequireStr(r, s, "sender", `${p}.sender`, late, d);
+      if (pvRequireStr(r, s, "messageBody", `${p}.messageBody`, late, d)) {
+        const odd = pvNonGsm(s.messageBody);
+        if (odd.length && s.unicode !== 1) r.warn(`${p}.unicode`, `The fallback body contains characters outside the GSM alphabet (${[...new Set(odd)].slice(0, 6).join(" ")}). Set \`unicode\` to 1.`, "Without it, those characters arrive garbled.", d);
+      }
+      if (s.type === undefined || s.type === null) r.err(`${p}.type`, "`type` is required: `SI`, `OTP` or `SE`.", late, d);
+      else if (!["SI", "OTP", "SE"].includes(s.type)) {
+        const up = String(s.type).toUpperCase();
+        r.err(`${p}.type`, ["SI", "OTP", "SE"].includes(up) ? `\`type\` is case-sensitive: use \`${up}\`.` : `\`${s.type}\` is not a valid type. Use \`SI\`, \`OTP\` or \`SE\`, matching the DLT category of the template.`, late, d);
+      }
+      if (s.templateId === undefined && s.entityId === undefined) r.info(p, "No `templateId` or `entityId` on the fallback SMS. Delivery then depends on template auto-match being enabled on your API key, or DLT rejects it.", null, d);
+      else if ((s.templateId === undefined) !== (s.entityId === undefined)) r.warn(p, `\`${s.templateId === undefined ? "templateId" : "entityId"}\` is missing from the fallback SMS. DLT needs both, unless template auto-match is on.`, null, d);
+      if (s.unicode !== undefined && ![0, 1].includes(s.unicode)) r.warn(`${p}.unicode`, "`unicode` should be the number 0 or 1.", null, d);
+      if ("recipient" in s) r.info(`${p}.recipient`, "The fallback SMS goes to the primary message's recipient, so `recipient` here is not needed.", null, d);
+      pvCustRefs(r, s, p, d, 5, { allowObject: true, camel: true });
+    }
+  }
+  if ("wa" in fb) {
+    const w = fb.wa, p = "fallback.wa";
+    if (!pvIsObj(w)) r.err(p, "`fallback.wa` must be an object.", null, d);
+    else {
+      pvRequireStr(r, w, "sender", `${p}.sender`, null, d);
+      if (pvIsObj(w.template)) r.err(`${p}.template`, "In a fallback block, `template` is the template name as a string. The language goes in `languageCode` and the parameters in `templateComponents`.", null, d);
+      else pvRequireStr(r, w, "template", `${p}.template`, null, d);
+      pvRequireStr(r, w, "languageCode", `${p}.languageCode`, null, d);
+      if (w.templateComponents !== undefined && !Array.isArray(w.templateComponents)) r.err(`${p}.templateComponents`, "`templateComponents` must be an array.", null, d);
+      pvCustRefs(r, w, p, d, 5, {});
+    }
+  }
+  if ("rcs" in fb) {
+    const c = fb.rcs, p = "fallback.rcs";
+    if (!pvIsObj(c)) r.err(p, "`fallback.rcs` must be an object.", null, d);
+    else {
+      pvRequireStr(r, c, "sender", `${p}.sender`, null, d);
+      pvMessageType(r, c.messageType, `${p}.messageType`, d);
+      pvRcsTemplate(r, { templateCode: c.templateCode, customParams: c.customParams }, p, d);
+      pvCustRefs(r, c, p, d, 5, {});
+    }
+  }
+};
+
+// The API reads fallback from the top level of the body, beside the channel array.
+const pvFallbackPlacement = (r, b) => {
+  ["sms", "wa", "rcs"].forEach((k) => {
+    if (!Array.isArray(b[k])) return;
+    b[k].forEach((m, i) => {
+      if (pvIsObj(m) && "fallback" in m) r.warn(`${k}[${i}].fallback`, `Put \`fallback\` at the top level of the body, beside \`${k}\`, not inside each message.`, null, PV_DOC.fb);
+    });
+  });
+};
+
 const pvDetect = (b) => {
   if (!pvIsObj(b)) return null;
   if ("listsms" in b) return "intl";
@@ -445,10 +556,14 @@ const pvValidate = (raw, hint) => {
   if (!pvIsObj(body)) { r.err("body", "The body must be a JSON object.", null, doc); return { channel, f: r.f }; }
   const checks = { sms: pvSms, intl: pvIntlList, "wa-template": pvWaTemplate, "wa-session": pvWaSession,
     "rcs-template": (rr, bb) => pvRcs(rr, bb, "template"), "rcs-message": (rr, bb) => pvRcs(rr, bb, "message") };
+  const primaries = ["sms", "wa", "rcs"].filter((k) => Array.isArray(body[k]));
+  if (primaries.length > 1) r.warn("body", `This body has ${primaries.map((k) => "`" + k + "`").join(", ").replace(/, ([^,]*)$/, " and $1")} arrays. Send only the one channel you want as the primary; this check covers \`${primaries[0]}\`.`, null, PV_DOC.fb);
   checks[channel](r, body);
+  if ("fallback" in body) pvFallback(r, body, channel);
+  pvFallbackPlacement(r, body);
   const order = { error: 0, warning: 1, info: 2 };
   r.f.sort((a, b) => order[a.sev] - order[b.sev]);
-  return { channel, f: r.f };
+  return { channel, f: r.f, withFallback: "fallback" in body };
 };
 
 // Renders `code` spans inside finding text.
@@ -497,9 +612,9 @@ export const PayloadValidator = () => {
         <button type="button" onClick={format}
           className="text-sm rounded-md border border-gray-300 dark:border-white/15 px-3 py-1 text-gray-800 dark:text-gray-100 hover:border-gray-500">Format</button>
         <span className="ml-auto text-xs text-gray-500 dark:text-gray-400">Samples:</span>
-        {["sms", "intl", "wa-template", "wa-session", "rcs-template", "rcs-message"].map((k) => (
+        {["sms", "intl", "wa-template", "wa-session", "rcs-template", "rcs-message", "rcs-fallback"].map((k) => (
           <button key={k} type="button" onClick={() => load(k)}
-            className="text-xs rounded-md border border-gray-300 dark:border-white/15 px-2 py-1 text-gray-700 dark:text-gray-200 hover:border-gray-500">{PV_LABEL[k]}</button>
+            className="text-xs rounded-md border border-gray-300 dark:border-white/15 px-2 py-1 text-gray-700 dark:text-gray-200 hover:border-gray-500">{k === "rcs-fallback" ? "RCS with SMS fallback" : PV_LABEL[k]}</button>
         ))}
       </div>
       {example && (
@@ -517,7 +632,7 @@ export const PayloadValidator = () => {
             {counts.error > 0 && <span className={`text-xs font-semibold rounded-full px-2 py-0.5 ${PV_SEV.error}`}>{counts.error} error{counts.error > 1 ? "s" : ""}</span>}
             {counts.warning > 0 && <span className={`text-xs font-semibold rounded-full px-2 py-0.5 ${PV_SEV.warning}`}>{counts.warning} warning{counts.warning > 1 ? "s" : ""}</span>}
             {counts.info > 0 && <span className={`text-xs font-semibold rounded-full px-2 py-0.5 ${PV_SEV.info}`}>{counts.info} note{counts.info > 1 ? "s" : ""}</span>}
-            {res.channel && <span className="ml-auto text-xs text-gray-500 dark:text-gray-400">Checked as {PV_LABEL[res.channel]}</span>}
+            {res.channel && <span className="ml-auto text-xs text-gray-500 dark:text-gray-400">Checked as {PV_LABEL[res.channel]}{res.withFallback ? ", with fallback" : ""}</span>}
           </div>
           {res.empty && <p className="m-0 px-4 py-6 text-sm text-gray-500 dark:text-gray-400">Paste a request body, or load a sample.</p>}
           {!res.empty && res.f.length === 0 && (

@@ -56,12 +56,6 @@ API response and no SMS. Use `SI` or `SE` for service messages — see
 [DLT template types](/guides/sms/dlt#template-types).
 </Warning>
 
-<Note>
-The accepted set was verified on the send API, not on the fallback object specifically. If a
-fallback SMS is still not arriving with a valid `type`, confirm the fallback validator uses the
-same set.
-</Note>
-
 <ParamField body="sms[].messageBody" type="string" required>
   Message content.
 </ParamField>
@@ -157,11 +151,17 @@ Defines fallback behavior when the primary channel fails to deliver.
   Set to `true` to enable fallback.
 </ParamField>
 
-<ParamField body="fallback.waittime" type="string" required>
-  Maximum time (in seconds) to wait for Delivery / Failure before triggering fallback. If the
-  primary message carries a `ttl` longer than this wait time, the wait time overrides the TTL, so
-  the primary attempt ends when fallback fires and the recipient does not get both messages.
+<ParamField body="fallback.wait_time" type="number" required>
+  Seconds to wait for a delivery or failure report on the primary channel before falling back,
+  for example `30`. A numeric string such as `"30"` is accepted too. If the primary message carries
+  a `ttl` longer than this wait time, the wait time overrides the TTL, so the primary attempt ends
+  when fallback fires and the recipient does not get both messages.
 </ParamField>
+
+<Warning>
+**The key is `wait_time`, with an underscore.** A request that sends `waittime` instead is
+rejected with `API_Missing_wait_time`.
+</Warning>
 
 <ParamField body="fallback.sms" type="object">
   SMS fallback object: `sender`, `type`, `messageBody` plus optional `unicode`,
@@ -187,6 +187,21 @@ Fallback Channel 1 and Fallback Channel 2 details can be added as per your fallb
 configuration. If a third-party fallback is used, dynamic keys can be added with the
 specific channel name.
 </Note>
+
+### When the fallback block is rejected
+
+The fallback block is checked before the primary message, so these come back straight away:
+
+| Problem | Response |
+| --- | --- |
+| No `fallback_id` | `API_Missing_fallback_id`, HTTP 400 |
+| No `fallback` flag | `API_Missing_fallback`, HTTP 400 |
+| No `wait_time`, or the key spelled `waittime` | `API_Missing_wait_time`, HTTP 400 |
+| `wait_time` that is not a number | `API_Invalid_Payload`, inside an HTTP 200 |
+
+A mistake inside the fallback message itself, such as an invalid SMS `type`, is not caught here.
+It surfaces only when fallback fires, after the primary send has returned `200`. Check a request
+with the [payload validator](/api-reference/payload-validator) before you send it.
 
 ### Optional top-level fields
 
@@ -239,7 +254,7 @@ curl --request POST \
   "fallback": {
     "fallback_id": "YOUR_FALLBACK_ID",
     "fallback": true,
-    "waittime": "30",
+    "wait_time": 30,
     "sms": {
       "sender": "YOUR_SMS_SENDER",
       "type": "SI",
@@ -290,7 +305,7 @@ curl --request POST \
   "rcs": [
     {
       "sender": "YOUR_RCS_SENDER",
-      "messageType": "template",
+      "messageType": "Transactional",
       "recipient": "919999999999",
       "contentMessage": {
         "templateMessage": {
@@ -308,7 +323,7 @@ curl --request POST \
   "fallback": {
     "fallback_id": "YOUR_FALLBACK_ID",
     "fallback": true,
-    "waittime": "30",
+    "wait_time": 30,
     "sms": {
       "sender": "YOUR_SMS_SENDER",
       "type": "SI",
@@ -325,7 +340,7 @@ curl --request POST \
     },
     "rcs": {
       "sender": "YOUR_RCS_SENDER",
-      "messageType": "template",
+      "messageType": "Transactional",
       "templateCode": "YOUR_TEMPLATE_CODE",
       "customParams": "{}"
     }
