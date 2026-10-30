@@ -19,6 +19,7 @@ check runs in your browser: nothing is sent, and your payload and API key never 
 | [WhatsApp template](/api-reference/whatsapp/send-template-message) | Envelope fields, business number, template name and language, components, buttons, carousels |
 | [WhatsApp session message](/api-reference/whatsapp/send-session-messages) | Message type and its required fields, interactive buttons, lists and carousels |
 | [RCS](/api-reference/rcs/send-template-message) | `messageType`, recipients, `ttl` format, `customParams` as a JSON string, rich card and carousel limits |
+| [Fallback](/api-reference/omnichannel/fallback) | `fallback_id`, the `fallback` flag and `wait_time`, how `wait_time` interacts with an RCS `ttl`, and the SMS, WhatsApp or RCS fallback message, on any primary channel |
 
 Every finding names the field, says what is wrong, and where the API rejects it, gives the response
 you would get back — for example `invalid type` with status 700.
