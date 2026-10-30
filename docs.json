@@ -214,7 +214,6 @@
           },
           {
             "group": "Truecaller",
-            "openapi": "api-reference/truecaller/openapi.yaml",
             "pages": [
               "api-reference/truecaller/overview",
               "api-reference/truecaller/rich-messages",
