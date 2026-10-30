@@ -137,6 +137,12 @@
         "tab": "API Reference",
         "groups": [
           {
+            "group": "Tools",
+            "pages": [
+              "api-reference/payload-validator"
+            ]
+          },
+          {
             "group": "WhatsApp",
             "pages": [
               "api-reference/whatsapp/overview",

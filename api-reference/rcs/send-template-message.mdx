@@ -70,7 +70,8 @@ curl --location 'https://api.onexaura.com/oapi/send_sms' \
 ### Inside each `rcs` message object
 
 <ParamField body="messageType" type="string" required>
-  Type of message: `Promotional`, `Transactional`, or `OTP`.
+  Type of message: `Promotional` or `Transactional`. OTP is not an RCS message type: send one-time
+  codes as `Transactional`.
 </ParamField>
 
 <ParamField body="recipient" type="string" required>
@@ -175,7 +176,7 @@ The minimal payload references an approved template by `templateCode` with no pe
 {
   "rcs": [
     {
-      "messageType": "Transactional/OTP/Promotional",
+      "messageType": "Transactional/Promotional",
       "recipient": "<recipient_phone_number>",
       "sender": "<sender_bot_Id>",
       "contentMessage": {
@@ -543,7 +544,7 @@ optional `customParams`) differ per action type:
 {
   "rcs": [
     {
-      "messageType": "Transactional/OTP/Promotional",
+      "messageType": "Transactional/Promotional",
       "recipient": "<recipient_phone_number>",
       "sender": "<sender_bot_Id>",
       "contentMessage": {
@@ -575,7 +576,7 @@ Additional rich-card-standalone action variants follow the same shape with a dif
 {
   "rcs": [
     {
-      "messageType": "Transactional/OTP/Promotional",
+      "messageType": "Transactional/Promotional",
       "recipient": "<recipient_phone_number>",
       "sender": "<sender_bot_Id>",
       "contentMessage": {
