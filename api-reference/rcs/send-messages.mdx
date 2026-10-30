@@ -48,7 +48,8 @@ Every request wraps one or more message objects in an `rcs` array:
 ### Message object (`rcs[]`)
 
 <ParamField body="messageType" type="string" required>
-  Message category: `Promotional`, `Transactional`, or `OTP`.
+  Message category: `Promotional` or `Transactional`. OTP is not an RCS message type: send
+  one-time codes as `Transactional`.
 </ParamField>
 
 <ParamField body="recipient" type="string" required>

@@ -1,0 +1,53 @@
+---
+title: "Validate a payload"
+description: "Check a send request for SMS, WhatsApp or RCS against the API before you send it."
+---
+
+import { PayloadValidator } from "/snippets/payload-validator.jsx";
+
+Paste a request body below to see what the API would reject, before you spend a send on it. The
+check runs in your browser: nothing is sent, and your payload and API key never leave the page.
+
+<PayloadValidator />
+
+## What it checks
+
+| API | Checks |
+| --- | --- |
+| [SMS, India](/api-reference/sms/send-sms-omni) | Required fields, `type` (`SI`, `OTP` or `SE`, case-sensitive), recipient format, DLT IDs, Unicode, custom references, URL shortening |
+| [SMS, international](/api-reference/sms-international/send-sms) | `key`, the 2,500-message limit, numbers with country codes, Unicode |
+| [WhatsApp template](/api-reference/whatsapp/send-template-message) | Envelope fields, business number, template name and language, components, buttons, carousels |
+| [WhatsApp session message](/api-reference/whatsapp/send-session-messages) | Message type and its required fields, interactive buttons, lists and carousels |
+| [RCS](/api-reference/rcs/send-template-message) | `messageType`, recipients, `ttl` format, `customParams` as a JSON string, rich card and carousel limits |
+
+Every finding names the field, says what is wrong, and where the API rejects it, gives the response
+you would get back — for example `invalid type` with status 700.
+
+It also catches two mistakes that look valid:
+
+- **Long IDs sent as numbers.** A 19-digit DLT template ID written without quotes is rounded by any
+  JavaScript that parses the JSON on its way to OneXtel, such as a browser, a Node service or a
+  no-code tool. Quote every ID.
+- **Numbers that cannot receive.** `/send_sms` accepts and bills a recipient that is not a real
+  mobile number. The validator flags anything outside the 6–9 mobile series.
+
+## What it cannot check
+
+Some rejections depend on your account, so only a real send reveals them:
+
+- whether the template is approved, and approved for this sender
+- whether the message body matches the registered DLT template word for word
+- whether the sender ID, entity ID and template belong to your API key
+- your balance and sending limits
+
+For what each delivery failure means, see the error codes for
+[India SMS](/api-reference/sms/error-codes),
+[WhatsApp](/api-reference/whatsapp/error-codes) and [RCS](/api-reference/rcs/error-codes).
+
+## Reading the results
+
+| Level | Means |
+| --- | --- |
+| **Error** | The API rejects this, or the message cannot be delivered as written |
+| **Warning** | The API accepts it, but the message may not arrive as intended, or may cost credit for nothing |
+| **Note** | Correct, with a consequence worth knowing before you send |
