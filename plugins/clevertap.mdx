@@ -3,7 +3,7 @@ title: "CleverTap"
 description: "Send RCS and SMS from CleverTap campaigns through OneXtel — providers, campaigns, callbacks, SMS fallback, and how each OneXtel error code reaches CleverTap."
 ---
 
-The CleverTap connector adds RCS and SMS as sendable channels inside CleverTap. Campaigns are built
+The CleverTap connector adds RCS, SMS and WhatsApp as sendable channels inside CleverTap. Campaigns are built
 and triggered in CleverTap; a stateless middleware service translates each send into OneXtel's
 format and relays delivery reports, replies, and click events back.
 
@@ -11,8 +11,7 @@ Because the connector holds no database of its own — every routing decision co
 incoming request — OneXtel can run it as multiple parallel instances. You deploy nothing.
 
 <Tip>
-**Pick your channel once.** The sections below have an **RCS** and an **SMS** tab. Choosing a tab
-in any section switches every section on the page to that channel.
+**Pick your channel once.** The sections below have an **RCS**, an **SMS** and a **WhatsApp** tab. Choosing a tab in any section switches every section on the page to that channel.
 </Tip>
 
 ## What it handles
@@ -35,6 +34,12 @@ in any section switches every section on the page to that channel.
   <Card title="Inbound replies" icon="reply">
     Free-form RCS replies — text, media, location, contact — routed back to CleverTap.
   </Card>
+  <Card title="Outbound WhatsApp" icon="whatsapp">
+    Native WhatsApp template messages through your OneXtel WABA, with your approved templates imported into CleverTap.
+  </Card>
+  <Card title="WhatsApp fallback" icon="shuffle">
+    A WhatsApp message that cannot be delivered is retried over RCS or SMS, in the order your OneXtel Fallback ID sets.
+  </Card>
 </CardGroup>
 
 ## Before you start
@@ -46,6 +51,7 @@ Have these ready:
 - **OneXtel access** to [callback configuration](/guides/platform/callback-configuration).
 - **For SMS:** a DLT-registered sender ID, DLT entity ID, and DLT templates in OneXtel. See
   [DLT registration](/guides/sms/dlt).
+- **For WhatsApp:** a WABA registered with OneXtel, its business phone number, and at least one approved template. A fallback also needs a OneXtel Fallback ID.
 
 ### Connector endpoints
 
@@ -59,6 +65,11 @@ Every URL in this guide sits on one host. Copy them from here as you go.
 | RCS | URL clicks | `https://ct.onex-aura.com/click` |
 | SMS | SMS send | `https://ct.onex-aura.com/sms/send` |
 | SMS | SMS delivery reports — standalone SMS and RCS fallback alike | `https://ct.onex-aura.com/delivery` |
+| WhatsApp | WhatsApp send | `https://ct.onex-aura.com/whatsapp/send` |
+| WhatsApp | Template import — CleverTap calls this at channel setup | `https://ct.onex-aura.com/whatsapp/templates` |
+| WhatsApp | Delivery reports | `https://ct.onex-aura.com/whatsapp/dlr` |
+| WhatsApp | Inbound replies | `https://ct.onex-aura.com/whatsapp/inbound` |
+| WhatsApp | URL clicks | `https://ct.onex-aura.com/whatsapp/click` |
 | — | Health check | `https://ct.onex-aura.com/health` |
 
 <Warning>
