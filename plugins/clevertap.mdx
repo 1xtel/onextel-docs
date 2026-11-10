@@ -1,9 +1,9 @@
 ---
 title: "CleverTap"
-description: "Send RCS, SMS and WhatsApp from CleverTap campaigns through OneXtel — providers, campaigns, callbacks, fallback, and how each OneXtel error code reaches CleverTap."
+description: "Send RCS and SMS from CleverTap campaigns through OneXtel — providers, campaigns, callbacks, SMS fallback, and how each OneXtel error code reaches CleverTap."
 ---
 
-The CleverTap connector adds RCS, SMS and WhatsApp as sendable channels inside CleverTap. Campaigns are built
+The CleverTap connector adds RCS and SMS as sendable channels inside CleverTap. Campaigns are built
 and triggered in CleverTap; a stateless middleware service translates each send into OneXtel's
 format and relays delivery reports, replies, and click events back.
 
@@ -11,7 +11,8 @@ Because the connector holds no database of its own — every routing decision co
 incoming request — OneXtel can run it as multiple parallel instances. You deploy nothing.
 
 <Tip>
-**Pick your channel once.** The sections below have an **RCS**, an **SMS** and a **WhatsApp** tab. Choosing a tab in any section switches every section on the page to that channel.
+**Pick your channel once.** The sections below have an **RCS** and an **SMS** tab. Choosing a tab
+in any section switches every section on the page to that channel.
 </Tip>
 
 ## What it handles
@@ -34,12 +35,6 @@ incoming request — OneXtel can run it as multiple parallel instances. You depl
   <Card title="Inbound replies" icon="reply">
     Free-form RCS replies — text, media, location, contact — routed back to CleverTap.
   </Card>
-  <Card title="Outbound WhatsApp" icon="whatsapp">
-    Native WhatsApp template messages through your OneXtel WABA, with your approved templates imported into CleverTap.
-  </Card>
-  <Card title="WhatsApp fallback" icon="shuffle">
-    A WhatsApp message that cannot be delivered is retried over RCS or SMS, in the order your OneXtel Fallback ID sets.
-  </Card>
 </CardGroup>
 
 ## Before you start
@@ -51,7 +46,6 @@ Have these ready:
 - **OneXtel access** to [callback configuration](/guides/platform/callback-configuration).
 - **For SMS:** a DLT-registered sender ID, DLT entity ID, and DLT templates in OneXtel. See
   [DLT registration](/guides/sms/dlt).
-- **For WhatsApp:** a WABA registered with OneXtel, its business phone number, and at least one approved template. A fallback also needs a OneXtel Fallback ID.
 
 ### Connector endpoints
 
@@ -65,11 +59,6 @@ Every URL in this guide sits on one host. Copy them from here as you go.
 | RCS | URL clicks | `https://ct.onex-aura.com/click` |
 | SMS | SMS send | `https://ct.onex-aura.com/sms/send` |
 | SMS | SMS delivery reports — standalone SMS and RCS fallback alike | `https://ct.onex-aura.com/delivery` |
-| WhatsApp | WhatsApp send | `https://ct.onex-aura.com/whatsapp/send` |
-| WhatsApp | Template import — CleverTap calls this at channel setup | `https://ct.onex-aura.com/whatsapp/templates` |
-| WhatsApp | Delivery reports | `https://ct.onex-aura.com/whatsapp/dlr` |
-| WhatsApp | Inbound replies | `https://ct.onex-aura.com/whatsapp/inbound` |
-| WhatsApp | URL clicks | `https://ct.onex-aura.com/whatsapp/click` |
 | — | Health check | `https://ct.onex-aura.com/health` |
 
 <Warning>
@@ -613,166 +602,6 @@ reports cannot be matched one-to-one. Judge delivery tracking from a real test c
 </Note>
 
 </Tab>
-<Tab title="WhatsApp">
-  WhatsApp uses a **Generic WhatsApp** provider, on CleverTap's WhatsApp channel rather than its SMS channel. The recipient receives a real WhatsApp template message from your WABA.
-
-  | Part | What you do | Where |
-  | --- | --- | --- |
-  | [A](#part-a--create-the-whatsapp-provider) | Create the provider and import your templates | CleverTap |
-  | [B](#part-b--configure-the-whatsapp-callbacks) | Configure the callbacks | OneXtel |
-  | [C](#part-c--build-the-whatsapp-campaign) | Build the campaign | CleverTap |
-  | [D](#part-d--add-a-fallback-optional) | Add an RCS or SMS fallback — **optional** | CleverTap |
-  | [E](#part-e--send-a-test-whatsapp-message-and-go-live) | Send to a test audience, then go live | Both |
-
-  ### Part A — Create the WhatsApp provider
-
-  <Steps>
-    <Step title="Create the provider">
-      In CleverTap, go to **Settings → Channels → WhatsApp**, add a provider, and set **Provider** to **Generic WhatsApp**. There is no OneXtel-specific WhatsApp vendor entry, just as RCS uses the Generic RCS Provider.
-    </Step>
-    <Step title="Set the messaging endpoint">
-      | Field | Value |
-      | --- | --- |
-      | Request Type | `POST` |
-      | HTTPS Endpoint | `https://ct.onex-aura.com/whatsapp/send` |
-      | Authentication | No Authentication |
-      | Headers | Key `apikey` → your OneXtel API key |
-
-      As with the other channels, the API key travels as a header rather than an auth scheme CleverTap manages.
-    </Step>
-    <Step title="Set the sender">
-      Set the sender to your registered WhatsApp **business phone number**, with country code — for example `919217090193`.
-
-      <Warning>
-        **Use the phone number, not the WABA ID.** This is the single most common WhatsApp setup error. OneXtel looks the sender up in its registered-numbers cache, misses, and returns `API_Invalid_Sender` **inside an HTTP 200** — which looks like success to anything that only checks the transport. The connector reports it to CleverTap as code `2004`.
-      </Warning>
-    </Step>
-    <Step title="Import your templates">
-      Point CleverTap's template import at `https://ct.onex-aura.com/whatsapp/templates`, with the same `apikey` header. CleverTap calls it at channel setup and lists your approved templates in the campaign composer, paging through them automatically.
-
-      The endpoint returns only templates approved on the WABA the sending number belongs to. A template still in review does not appear.
-    </Step>
-    <Step title="Save, then copy both callback URLs">
-      Save the provider, then **reopen it** and copy the **Delivery Report Callback URL** and the **Inbound Message Callback URL** under **Callback Config**. You paste them into OneXtel in [Part B](#part-b--configure-the-whatsapp-callbacks).
-    </Step>
-  </Steps>
-
-  ### Part B — Configure the WhatsApp callbacks
-
-  In OneXtel, create three callbacks against the **same API key** you put on the provider, each with a custom header named `callback`:
-
-  | Webhook | Channel | Type | Callback URL | `callback` header |
-  | --- | --- | --- | --- | --- |
-  | WhatsApp DLR | WhatsApp | Delivery Notification | `https://ct.onex-aura.com/whatsapp/dlr` | Delivery Report URL |
-  | Inbound | WhatsApp | Incoming | `https://ct.onex-aura.com/whatsapp/inbound` | **Inbound Message URL** |
-  | URL Click | WhatsApp | URL Click | `https://ct.onex-aura.com/whatsapp/click` | Delivery Report URL |
-
-  All three use **HTTP Method `POST`**.
-
-  <Note>
-    **A fallback leg needs no callback of its own.** OneXtel dispatches that leg, so its report arrives on the RCS or SMS delivery webhook. The connector marks each fallback leg at send time and recognises the report when it comes back, translating it onto the WhatsApp contract so the outcome lands inside the original message's lifecycle instead of appearing as stray RCS or SMS traffic.
-
-    There is nothing extra to configure — but the RCS and SMS delivery callbacks must be registered **on the same API key as the WhatsApp sender**, or the fallback's outcome never arrives.
-  </Note>
-
-  ### Part C — Build the WhatsApp campaign
-
-  <Steps>
-    <Step title="Create the campaign">
-      Create a WhatsApp campaign, select the provider from Part A under **From**, and choose your audience under **Who**.
-    </Step>
-    <Step title="Pick a template and map its variables">
-      Under **What**, pick one of the templates imported in Part A and fill its variables. WhatsApp template parameters are **positional** — CleverTap fills them in order — so the order you see in the composer is the order the recipient sees.
-    </Step>
-    <Step title="Set a media header's URL, if the template has one">
-      A template with an image, video or document header needs a URL that **Meta can fetch itself at send time**: reachable from the public internet, with no authentication.
-
-      <Warning>
-        **Do not reuse the template's own example media.** A template's stored example is a signed, expiring link — it fetches for a short window after you retrieve it and then stops. Reused later, Meta answers `131053 Downloading media from weblink failed`, which names nothing and is slow to diagnose. Host the asset yourself.
-      </Warning>
-
-      Meta's size ceilings: image 5 MB, video 16 MB, document 100 MB.
-    </Step>
-    <Step title="Save the campaign as a draft">
-      Save it, but do not publish until the Part B callbacks are in place — otherwise the delivery reports from the first send never reach CleverTap.
-    </Step>
-  </Steps>
-
-  ### Part D — Add a fallback (optional)
-
-  Omit everything in this part for a plain WhatsApp campaign: the message then goes out with no fallback fields at all.
-
-  **The presence of `fallback_id` is the switch.** There is no setting to turn fallback on, and no connector-side default. The Fallback ID is created in the OneXtel portal and holds the channel order; the campaign supplies the content for each leg.
-
-  Add these as campaign key-value pairs:
-
-  | Key | Required when | Value |
-  | --- | --- | --- |
-  | `fallback_id` | any fallback | The OneXtel Fallback ID |
-  | `fallback_waittime` | optional | Seconds to wait before the fallback fires. Defaults to `30` |
-  | `fallback_rcs_sender` | RCS leg | RCS sender profile name — not a phone number |
-  | `fallback_rcs_template` | RCS leg | RCS template code |
-  | `fallback_rcs_message_type` | optional | `Promotional` or `Transactional`. Defaults to `Promotional` |
-  | `fallback_sms_sender` | SMS leg | DLT sender ID, for example `ONEXTL` |
-  | `fallback_sms_body` | SMS leg | The SMS text, matching the registered DLT wording |
-  | `fallback_sms_type` | optional | Must match the DLT template's category. Defaults to `SI` |
-  | `fallback_sms_templateId` | SMS leg, for DLT sends | DLT template ID |
-  | `fallback_sms_entityId` | SMS leg, for DLT sends | DLT entity ID |
-  | `ttl` | optional | Message validity, passed through to OneXtel. Accepts the suffixed form, such as `60s` |
-
-  Configure the RCS keys, the SMS keys, or both — with both, the Fallback ID's own channel order decides which leg fires first.
-
-  <Warning>
-    **An unrecognised `fallback_id` is accepted silently.** OneXtel does not reject a Fallback ID that does not exist: the message sends, no fallback is attached, and nothing reports an error. A typo produces a WhatsApp-only campaign that looks perfectly healthy. Check the ID character for character.
-  </Warning>
-
-  <Note>
-    A `fallback_id` with neither an RCS nor an SMS leg configured **is** refused, with code `2001` naming what is missing — rather than sent with a fallback that cannot fire. The same applies to an SMS leg that carries only one half of the DLT pair.
-  </Note>
-
-  #### The RCS fallback template's variable names are a contract
-
-  WhatsApp parameters are positional; RCS variables are named. The connector maps one onto the other by this convention, and **the RCS fallback template must use exactly these names**:
-
-  | RCS variable | Filled from |
-  | --- | --- |
-  | `var1`, `var2`, … `varN` | Body parameters, in the order CleverTap sent them |
-  | `header_var1` | A text header parameter |
-  | `media_url` | A media header's URL |
-  | `button1_url`, `button2_url`, … | Dynamic URL button parameters, by button index |
-
-  A template with different variable names sends successfully and renders wrong — the most likely cause of "the fallback fired but the message was broken".
-
-  ### Part E — Send a test WhatsApp message and go live
-
-  <Steps>
-    <Step title="Publish to a test audience">
-      Send to test devices you control. For the fallback check, include a number that is **not** on WhatsApp, so the fallback fires on demand.
-    </Step>
-    <Step title="Confirm delivery">
-      The message arrives, and `sent`, `delivered` and `read` appear in CleverTap's campaign stats.
-    </Step>
-    <Step title="Confirm inbound replies">
-      A reply from a test device appears in CleverTap under **People**, in that profile's event timeline.
-    </Step>
-    <Step title="Confirm the fallback">
-      A send to the non-WhatsApp number produces an RCS or SMS message instead, and its outcome appears against the original WhatsApp message rather than as separate RCS or SMS traffic.
-    </Step>
-    <Step title="Go live">
-      Once these check out, send to your full audience.
-    </Step>
-  </Steps>
-
-  ### Freeform messages
-
-  Besides templates, the connector sends **freeform** (session) messages — plain text, image, video, document or audio with no template involved. CleverTap marks these `isTemplate: false`; you do not configure anything extra.
-
-  <Warning>
-    **A freeform message only reaches the handset inside an open 24-hour window.** WhatsApp opens that window when the customer messages your business number, and it closes 24 hours after their last message. Outside it, OneXtel still accepts the message and Meta then fails it with `131047` or `131051`. That is WhatsApp policy, not a connector fault — use a template to start a conversation.
-  </Warning>
-
-  Interactive lists, reply buttons, product catalogs, contacts and locations cannot be sent this way; CleverTap's platform does not originate them, and the connector refuses them by name rather than sending an empty message.
-</Tab>
 </Tabs>
 
 ## Error code mapping
@@ -866,43 +695,6 @@ arrives with the status `EXPIRED`, so it maps to `916`.
 The same mapping applies to the SMS leg of an RCS fallback — both report through `/delivery`.
 
 </Tab>
-<Tab title="WhatsApp">
-  **Three separate code vocabularies.** WhatsApp uses CleverTap's own WhatsApp envelope, which does not share numbering with the other channels. Expect different numbers for the same cause depending on where it surfaces:
-
-  | Where | Range |
-  | --- | --- |
-  | The reply to a send | `2000`–`2004` |
-  | A delivery report | `1000`–`1010` |
-  | An RCS or SMS fallback leg's report | `1009`, with OneXtel's own wording — see below |
-
-  **Delivery events**
-
-  | WhatsApp status | CleverTap event |
-  | --- | --- |
-  | `sent` | `sent` |
-  | `delivered` | `delivered` |
-  | `read` | `read` |
-  | `failed` | `failed`, with a code in the `1000`–`1010` range |
-  | URL click | `clicked`, carrying the URL, the short URL and the user agent |
-
-  **Send response codes**
-
-  | Code | Meaning |
-  | --- | --- |
-  | `2000` | Missing `apikey` header, or OneXtel rejected the API key |
-  | `2001` | The connector could not build the message — an unmapped component type, a media header with no fetchable URL, a carousel over ten cards, a `fallback_id` with no leg configured, or half a DLT pair. The message names what is wrong |
-  | `2004` | OneXtel refused the message — most often `API_Invalid_Sender`, meaning a WABA ID was used where the business phone number belongs. Also returned when a callback arrives without its `callback` header |
-
-  <Note>
-    **A failed fallback leg reports `1009`, the catch-all, not a specific cause.** CleverTap's WhatsApp codes describe failures at Meta, and a fallback leg fails at an RCS or SMS operator instead — so putting an operator code through the Meta table would give a confident wrong answer. The real reason travels in the failure title, in OneXtel's own words.
-
-    A fallback leg's own "sent" is not relayed: CleverTap already recorded `sent` for the WhatsApp leg, and a second one against the same message would double-count it.
-  </Note>
-
-  <Warning>
-    **A nonexistent template name is accepted as a success.** OneXtel validates the sender at submission but not the template name: a typo comes back `code 200`, `status "success"`, with a real message id, and then fails at Meta — or silently never arrives. A send being accepted is not evidence that it will be delivered.
-  </Warning>
-</Tab>
 </Tabs>
 
 ## Parameter reference
@@ -947,36 +739,12 @@ The same mapping applies to the SMS leg of an RCS fallback — both report throu
 | `unicode` | No | `1` for non-ASCII bodies, `0` otherwise |
 
 </Tab>
-<Tab title="WhatsApp">
-  **Provider fields**
-
-  | Field | Required | Notes |
-  | --- | --- | --- |
-  | HTTPS Endpoint | Yes | `https://ct.onex-aura.com/whatsapp/send` |
-  | `apikey` header | Yes | Your OneXtel API key |
-  | Sender | Yes | The registered business **phone number** with country code — never the WABA ID |
-  | Template import URL | For templates | `https://ct.onex-aura.com/whatsapp/templates`, same `apikey` header |
-
-  **Fallback key-value pairs**
-
-  | Key | Required | Notes |
-  | --- | --- | --- |
-  | `fallback_id` | For any fallback | OneXtel Fallback ID. Its presence is what turns the fallback on |
-  | `fallback_waittime` | No | Seconds before the fallback fires. Defaults to `30` |
-  | `fallback_rcs_sender` | For an RCS leg | RCS sender profile name |
-  | `fallback_rcs_template` | For an RCS leg | RCS template code, using the variable names in [Part D](#part-d--add-a-fallback-optional) |
-  | `fallback_rcs_message_type` | No | Defaults to `Promotional` |
-  | `fallback_sms_sender` | For an SMS leg | DLT sender ID |
-  | `fallback_sms_body` | For an SMS leg | SMS text matching the registered DLT wording |
-  | `fallback_sms_type` | No | DLT category. Defaults to `SI` |
-  | `fallback_sms_templateId` | For DLT sends | DLT template ID. Required together with `fallback_sms_entityId` |
-  | `fallback_sms_entityId` | For DLT sends | DLT entity ID. Required together with `fallback_sms_templateId` |
-  | `ttl` | No | Message validity, passed through. Accepts the suffixed form, such as `60s` |
-</Tab>
 </Tabs>
 
 <Note>
-Behind the scenes the connector calls OneXtel's send API — `/oapi/send_sms` for RCS and WhatsApp, `/send_sms` for SMS, both on `https://api.onexaura.com`. The channel is chosen by the body, not the path. You never configure these directly; they are here for troubleshooting.
+Behind the scenes the connector calls OneXtel's send API — `/oapi/send_sms` for RCS and
+`/send_sms` for SMS, both on `https://api.onexaura.com`. You never configure these directly;
+they are here for troubleshooting.
 </Note>
 
 ## Limitations
@@ -1008,15 +776,6 @@ Behind the scenes the connector calls OneXtel's send API — `/oapi/send_sms` fo
   non-ASCII characters.
 
 </Tab>
-<Tab title="WhatsApp">
-  - **The fallback SMS body is static.** It is taken verbatim from the campaign's `fallback_sms_body`, so a personalised WhatsApp message falls back to identical text for every recipient — unusable for an OTP or an order update. The **RCS** leg does personalise, through the variable-name convention in [Part D](#part-d--add-a-fallback-optional).
-  - **A carousel cannot fall back to RCS.** The cards have no faithful RCS equivalent, so a carousel campaign with a `fallback_id` is refused at send rather than delivered with its cards dropped. Send carousels without a fallback.
-  - **An unrecognised `fallback_id` fails silently.** The message sends with no fallback and reports no error.
-  - **URL clicks depend on OneXtel link shortening.** Meta publishes no click webhook for WhatsApp template buttons, so clicks exist only where OneXtel shortens and tracks the redirect.
-  - **Freeform messages need an open 24-hour window.** Outside it, Meta fails the message — see [Freeform messages](#freeform-messages).
-  - **A send being accepted does not mean it will be delivered.** The template name is not validated at submission, and a media header Meta cannot fetch fails only after acceptance.
-  - **One deployment serves one country code.** The recipient prefix is a deployment-level setting, defaulting to `+91`.
-</Tab>
 </Tabs>
 
 ## Get support
@@ -1046,14 +805,13 @@ OneXtel answered:
   </Step>
 </Steps>
 
-Switch the endpoint back to the normal connector URL — `https://ct.onex-aura.com/rcs/send`, `https://ct.onex-aura.com/sms/send` or `https://ct.onex-aura.com/whatsapp/send` — once the issue is closed.
+Switch the endpoint back to the normal connector URL — `https://ct.onex-aura.com/rcs/send` or
+`https://ct.onex-aura.com/sms/send` — once the issue is closed.
 
 ## Related
 
 - [RCS API overview](/api-reference/rcs/overview)
 - [RCS template guidelines](/guides/rcs-platform/template-guidelines)
-- [Send WhatsApp template messages](/api-reference/whatsapp/send-template-message)
-- [Send WhatsApp session messages](/api-reference/whatsapp/send-session-messages)
 - [Configure fallback](/guides/omnichannel/configure-fallback)
 - [India SMS error codes](/api-reference/sms/error-codes)
 - [DLT registration](/guides/sms/dlt)
