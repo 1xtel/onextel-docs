@@ -1,0 +1,3 @@
+# Not documentation: the PDF builder and its output.
+scripts/
+.pdf-build/

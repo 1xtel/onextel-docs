@@ -24,7 +24,23 @@ through a pull request, and `main` takes no direct commits.
    - **Build and links (Mintlify)** — a broken link or bad frontmatter blocks the merge.
    - **Brand voice review** — reads the diff and comments on tone, structure and unearned
      warnings. Advisory: it comments, it does not block.
+   - **Docs PDF** — builds the whole site into one PDF and attaches it to the run, so you can
+     see how your pages print. Advisory. After a merge to `main`, the same build replaces the
+     file behind the site's **Download PDF** link.
 6. **Get one approval**, then merge. Delete the branch.
+
+## The PDF
+
+`scripts/pdf/build.mjs` prints every page in the navigation, in order, except the archived
+APIs. Tabs, steps and expandable fields print in full, and API pages built from an OpenAPI spec
+print their parameters and responses. To build it yourself:
+
+```bash
+cd scripts/pdf && npm ci && npx playwright install chromium && cd ../..
+node scripts/pdf/build.mjs        # writes .pdf-build/OneXtel-Docs.pdf
+```
+
+A component the builder has no mapping for prints its content and a warning in the build log.
 
 ## What reviewers check
 
