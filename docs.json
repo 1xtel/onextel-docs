@@ -295,6 +295,7 @@
             "pages": [
               "plugins/moengage",
               "plugins/clevertap",
+              "plugins/clevertap-whatsapp",
               "plugins/webengage",
               "plugins/salesforce",
               "plugins/salesforce-marketing-cloud",
