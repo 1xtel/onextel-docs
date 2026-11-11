@@ -21,10 +21,9 @@
         "tab": "Guides",
         "groups": [
           {
-            "group": "Channels",
+            "group": "Get started",
             "pages": [
-              "guides/channels/about-rcs",
-              "guides/channels/about-whatsapp"
+              "guides/about-onextel"
             ]
           },
           {
@@ -44,6 +43,13 @@
               "guides/platform/notifications",
               "guides/platform/telco-reports",
               "guides/platform/all-schedule"
+            ]
+          },
+          {
+            "group": "Channels",
+            "pages": [
+              "guides/channels/about-rcs",
+              "guides/channels/about-whatsapp"
             ]
           },
           {
