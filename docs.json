@@ -295,7 +295,6 @@
             "pages": [
               "plugins/moengage",
               "plugins/clevertap",
-              "plugins/clevertap-whatsapp",
               "plugins/webengage",
               "plugins/salesforce",
               "plugins/salesforce-marketing-cloud",
@@ -352,6 +351,11 @@
     }
   },
   "redirects": [
+    {
+      "source": "/plugins/clevertap-whatsapp",
+      "destination": "/plugins/clevertap#setup-whatsapp",
+      "permanent": true
+    },
     {
       "source": "/guides/sms/phonebook",
       "destination": "/guides/platform/phonebook",
