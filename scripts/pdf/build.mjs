@@ -176,7 +176,11 @@ const built = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "l
 function safe(fn) { try { return fn(); } catch { return ""; } }
 
 const css = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "style.css"), "utf8");
-const fonts = '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=block" rel="stylesheet">';
+// Fonts come from npm as fixed weights. Google Fonts serves Linux Chromium a variable Montserrat,
+// which prints with uneven letter spacing.
+const fonts = ["montserrat/400", "montserrat/500", "montserrat/600", "montserrat/700", "jetbrains-mono/400", "jetbrains-mono/600"]
+  .map((f) => `<link rel="stylesheet" href="${pathToFileURL(join(dirname(fileURLToPath(import.meta.url)), "node_modules/@fontsource", `${f}.css`)).href}">`)
+  .join("");
 const hasMermaid = toHtml(doc).includes('class="mermaid"');
 // Mermaid loads from node_modules as a classic script: module scripts do not load over file://.
 const mermaidJs = pathToFileURL(join(dirname(fileURLToPath(import.meta.url)), "node_modules/mermaid/dist/mermaid.min.js")).href;
