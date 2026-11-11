@@ -17,7 +17,7 @@ Choosing a tab in any section switches every section on the page to that channel
 ## Scope
 
 <Tabs>
-  <Tab title="WhatsApp">
+  <Tab title="WhatsApp" id="scope-whatsapp">
     **Outbound**
 
     | Type | Supported |
@@ -41,7 +41,7 @@ Choosing a tab in any section switches every section on the page to that channel
 
     Not supported — see [Limitations](#limitations).
   </Tab>
-  <Tab title="RCS">
+  <Tab title="RCS" id="scope-rcs">
     **Outbound**
 
     | Type | Supported |
@@ -61,7 +61,7 @@ Choosing a tab in any section switches every section on the page to that channel
 
     Not supported — see [Limitations](#limitations).
   </Tab>
-  <Tab title="SMS">
+  <Tab title="SMS" id="scope-sms">
     **Outbound**
 
     | Type | Supported |
@@ -130,7 +130,7 @@ a header, add one named `callback` with the callback URL as its value — the co
 ## Set up
 
 <Tabs>
-<Tab title="WhatsApp">
+<Tab title="WhatsApp" id="setup-whatsapp">
 
 <Steps>
   <Step title="Get your OneXtel API key">
@@ -216,7 +216,7 @@ to the connector's, as above, to get mapped codes.
 </Note>
 
 </Tab>
-<Tab title="RCS">
+<Tab title="RCS" id="setup-rcs">
 
 <Steps>
   <Step title="Get your OneXtel API key">
@@ -287,7 +287,7 @@ to the connector's, as above, to get mapped codes.
 </Steps>
 
 </Tab>
-<Tab title="SMS">
+<Tab title="SMS" id="setup-sms">
 
 SMS sends go to the connector, which checks the payload and forwards it to OneXtel's own WebEngage
 endpoint — WebEngage's payload as it is, India DLT fields included. On the return leg the connector
@@ -407,7 +407,7 @@ Every report the connector forwards carries a WebEngage `statusCode`. Failures a
 example `[onextel=131026]` — so the raw value is never lost.
 
 <Tabs>
-<Tab title="WhatsApp">
+<Tab title="WhatsApp" id="errors-whatsapp">
 
 **Delivery reports**
 
@@ -454,7 +454,7 @@ The send route answers WebEngage straight away, with a code and the matching HTT
 | Any other rejection | `9988` | 200 |
 
 </Tab>
-<Tab title="RCS">
+<Tab title="RCS" id="errors-rcs">
 
 **Delivery reports**
 
@@ -506,7 +506,7 @@ unauthorised → `2005`; anything else → `9988`. For what each operator code m
 | Any other rejection | `9988` | 400 |
 
 </Tab>
-<Tab title="SMS">
+<Tab title="SMS" id="errors-sms">
 
 **Send replies**
 
@@ -578,7 +578,7 @@ expiry, throttling or invalid number — and failing that by the report's delive
   redelivery.
 
 <Tabs>
-<Tab title="WhatsApp">
+<Tab title="WhatsApp" id="limits-whatsapp">
 
 - **Templates are duplicated, not synced.** A template created in WebEngage must manually
   replicate one approved in OneXtel. If either copy is edited, they drift apart.
@@ -591,7 +591,7 @@ expiry, throttling or invalid number — and failing that by the report's delive
   back.
 
 </Tab>
-<Tab title="RCS">
+<Tab title="RCS" id="limits-rcs">
 
 - **Templates are duplicated, not synced.** A template created in WebEngage must manually
   replicate one approved in OneXtel.
@@ -600,7 +600,7 @@ expiry, throttling or invalid number — and failing that by the report's delive
 - **One Private RSP per message type**, because `campaigntype` is set on the configuration.
 
 </Tab>
-<Tab title="SMS">
+<Tab title="SMS" id="limits-sms">
 
 - **India DLT traffic.** The Private SSP sends to OneXtel's India platform. For other countries,
   confirm with your OneXtel account team before you set up.
