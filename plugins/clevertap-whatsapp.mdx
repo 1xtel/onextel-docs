@@ -293,21 +293,102 @@ fallback is missing — confirm it with a test send to a number that is not on W
 | `fallback_sms_entityId` | Your DLT entity ID |
 | `fallback_sms_type` | `SI` |
 
-### Name the RCS fallback template's variables
+### Create the RCS fallback template
 
-WhatsApp variables are numbered by position; OneXtel RCS templates fill `[placeholder]` names. The
-connector bridges the two with fixed names, so **the RCS fallback template must use exactly these
-placeholders**:
+The RCS leg sends a template from your OneXtel RCS account, filled with the WhatsApp message's
+own values. WhatsApp numbers its variables by position (`{{1}}`, `{{2}}`); RCS templates fill
+named `[placeholders]`. The connector bridges the two with fixed names, so build one RCS template
+per WhatsApp template, using exactly the placeholders below.
 
-| RCS placeholder | Filled from |
-| --- | --- |
-| `[var1]`, `[var2]`, … | WhatsApp body variables `{{1}}`, `{{2}}`, …, in order |
-| `[header_var1]` | The WhatsApp text header's variable |
-| `[media_url]` | The WhatsApp media header's URL |
-| `[button0_url]`, `[button1_url]`, … | A dynamic URL button's value, by the button's zero-based position in the template |
+<Warning>
+**If the placeholders don't match, the RCS leg fails.** An RCS template that expects a placeholder
+the connector doesn't send is rejected by OneXtel with `4018` "Platform_Invalid Payload or
+Template". The WhatsApp message has already failed by then, so the recipient gets nothing.
+</Warning>
 
-A placeholder with any other name is left unfilled on the handset, and the send still succeeds —
-so the fallback fires but the message reads wrong.
+<Steps>
+  <Step title="Choose the RCS template type">
+    Match the WhatsApp template's header:
+
+    | WhatsApp template | RCS template type |
+    | --- | --- |
+    | Text only, or a text header | **Text message.** Put the header text in front of the body. |
+    | Image or video header | **Rich card**, with the media URL set to `[media_url]` |
+    | Document header | Not supported. OneXtel can't send a document from a variable link. |
+    | Carousel | Not supported. The send is refused with `2001`. |
+  </Step>
+
+  <Step title="Copy the text and swap each variable for its placeholder">
+    | WhatsApp | RCS placeholder |
+    | --- | --- |
+    | Body `{{1}}`, `{{2}}`, … | `[var1]`, `[var2]`, … in the same order |
+    | Text header `{{1}}` | `[header_var1]` |
+    | Image or video header | `[media_url]` |
+    | 1st button's dynamic URL | `[button1_url]` |
+    | 2nd button's dynamic URL | `[button2_url]` |
+    | 3rd button's dynamic URL | `[button3_url]` |
+
+    Buttons are counted from **1**, by their position in the WhatsApp template, including
+    buttons that have no variable. If the URL button is the second button, its placeholder is
+    `[button2_url]`.
+
+    Use every placeholder the WhatsApp template produces, and no others. Drop the footer — RCS
+    has none.
+  </Step>
+
+  <Step title="Recreate the buttons as suggestions">
+    | WhatsApp button | RCS suggestion |
+    | --- | --- |
+    | URL | **Open URL**. Keep the static part of the link and replace the variable with its `[buttonN_url]` placeholder. |
+    | Phone number | **Dial** |
+    | Quick reply | **Reply** |
+
+    Copy, OTP, catalog, flow and voice-call buttons have no RCS equivalent; a WhatsApp template
+    with any of them can't have an RCS fallback.
+  </Step>
+
+  <Step title="Create it on the fallback sender and wait for approval">
+    In the RCS platform, go to **Channels > RCS > Templates**, add the template on the sender
+    profile you'll use as `fallback_rcs_sender`, and submit it. See
+    [RCS templates](/guides/rcs-platform/templates).
+
+    Use the template's **Template Name/Code** as `fallback_rcs_template`. Send the campaign only after the
+    template shows **Approved**: a fallback to a pending or rejected template fails.
+  </Step>
+</Steps>
+
+**Example.** A WhatsApp template with a body, a URL button and a quick reply:
+
+```text WhatsApp template
+Body:     Hi {{1}}, your order {{2}} ships {{3}}.
+Button 1: URL "Track order" → https://acme.com/track/{{1}}
+Button 2: Quick reply "Thanks"
+```
+
+becomes this RCS **text message**:
+
+```text RCS fallback template
+Text:         Hi [var1], your order [var2] ships [var3].
+Suggestion 1: Open URL "Track order" → https://acme.com/track/[button1_url]
+Suggestion 2: Reply "Thanks"
+```
+
+When CleverTap sends `Asha`, `OX-1042`, `today` and `OX-1042` for the button, the RCS message reads
+"Hi Asha, your order OX-1042 ships today." and the button opens `https://acme.com/track/OX-1042`.
+
+**Carrier rules that also apply.** Your template is checked against the
+[RCS template guidelines](/guides/rcs-platform/template-guidelines). The ones that most often trip
+up a converted WhatsApp template:
+
+- Two placeholders can't sit next to each other. `[var1][var2]` is rejected; `[var1] [var2]` is fine.
+- A rich card takes at most 4 suggestions; a text message at most 11.
+- A suggestion label is at most 25 characters.
+
+<Tip>
+Test the fallback before going live: send the campaign to one number that isn't on WhatsApp, then
+check that the RCS message arrives with every placeholder filled. The fallback leg also appears in
+the OneXtel portal's fallback report.
+</Tip>
 
 ### The SMS leg carries its own text
 
