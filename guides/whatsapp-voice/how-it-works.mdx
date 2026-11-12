@@ -44,15 +44,18 @@ sequenceDiagram
   </Step>
   <Step title="The gateway finds your trunk">
     Each WhatsApp number is linked to one or more SIP trunks that you provided. The gateway tries them
-    in priority order, and moves to the next if one does not answer in time.
+    in priority order, and moves to the next if one does not answer in time. A trunk that is at its channel
+    limit is skipped.
   </Step>
   <Step title="Your platform answers">
     Your voice platform receives a normal SIP INVITE and answers it. The caller's WhatsApp number is
-    carried in the SIP **From** header, and your WhatsApp Business number in the request address.
+    carried in the SIP **From** header, and your WhatsApp Business number in the request address. A trunk can
+    instead be shown your business number or a fixed number as the caller, in the format it expects. The real
+    caller is always in the `X-WA-Caller` header.
   </Step>
   <Step title="Audio flows both ways">
     The gateway carries the audio between Meta and your platform. WhatsApp uses encrypted audio with
-    the Opus codec. If your platform prefers G.711, the gateway converts between the two.
+    the Opus codec. If your platform uses G.711, G.729 or GSM, the gateway converts between that and Opus.
   </Step>
   <Step title="The call ends">
     Either side hangs up, and the gateway closes the call on both legs and records the result.
@@ -84,7 +87,10 @@ Calls to a number that is not configured are refused.
 | Your trunk does not answer within the failover time (3 seconds by default), or replies with a 5xx or timeout | It tries the next trunk in priority order. |
 | Your trunk rings but does not answer within its ring limit | It cancels that trunk and tries the next one. |
 | Your trunk replies with a busy, unavailable or decline | If the trunk is set to try the next trunk, it moves on. Otherwise the result is passed back to the caller as it is. |
-| Every trunk is unavailable or at its call limit | The call is refused. |
+| A trunk is at its channel limit or its calls-per-second limit | It skips that trunk and tries the next one. |
+| Every remaining trunk is at a limit | The caller hears busy (`486`). |
+| Every trunk fails or is unavailable | The call is refused. |
+| A trunk's health check shows it as down | Nothing changes. The trunk is still tried, and the rules above apply. |
 | The number is not configured, or the call does not come from Meta | The call is refused. |
 
 ## Related

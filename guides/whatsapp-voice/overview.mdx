@@ -22,13 +22,16 @@ customers from your business over WhatsApp is not part of this release.
   voice AI agent exactly as it does for calls from the phone network.
 - **Automatic fallback.** If your platform does not answer or rejects the call, the gateway tries your next
   trunk, such as a backup agent or a human queue.
+- **Limits and caller ID per trunk.** Each trunk can have a channel limit and a calls-per-second limit, and can
+  show the caller ID and number format your telephony partner expects.
+- **Private connection.** A trunk can be reached through a site-to-site IPsec tunnel instead of the internet.
 - **Keypad input.** Customers can press keys during the call, and your platform receives them as standard
   RFC 4733 events.
 - **No WhatsApp integration work on your side.** OneXtel handles the connection with Meta,
   the encryption, and the audio format conversion between WhatsApp and your platform.
 - **Call records and monitoring.** Each call is recorded with its start, answer and end times,
   duration, result, and whether audio flowed in both directions. A timeline of the SIP messages for each
-  call helps OneXtel troubleshoot quickly.
+  call, and a health check on every trunk, help OneXtel troubleshoot quickly.
 
 ## How it fits together
 

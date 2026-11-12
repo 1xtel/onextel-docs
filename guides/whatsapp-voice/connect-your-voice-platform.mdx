@@ -1,24 +1,34 @@
 ---
 title: "Connect your voice platform"
-description: "The SIP trunk your voice platform needs to provide to receive WhatsApp calls: transport, authentication, call details, audio and failover."
+description: "The SIP trunk your voice platform needs to provide to receive WhatsApp calls: transport, authentication, call details, audio, limits and failover."
 ---
 
 Your voice platform receives WhatsApp calls as ordinary SIP calls on a trunk you provide. Any
 standards-compliant SIP platform works: an IVR, a contact-centre platform, a SIP server or a voice bot.
+
+<Note>
+OneXtel sets up each trunk for you in the WhatsApp Voice console. The setting names on this page match the
+console, so tell your account team the values you need.
+</Note>
 
 ## What your platform provides
 
 | Setting | Options | Notes |
 | --- | --- | --- |
 | Address | Hostname or IP, and a port | Port 5060 for UDP and TCP, 5061 for TLS, unless you choose another. |
-| Transport | UDP, TCP or TLS | |
+| Reach the host | Over the internet (default), or through an IPsec tunnel | See [Connect over an IPsec tunnel](/guides/whatsapp-voice/ipsec-tunnels). |
+| Transport | UDP, TCP or TLS | A trunk reached through a tunnel uses UDP or TCP. |
 | Authentication | By source IP address | Your platform accepts calls from the OneXtel gateway's addresses. Username and password trunk authentication is not available yet. |
 | Audio security | Plain RTP, or SRTP with SDES keys | |
-| Codecs | G.711 µ-law (PCMU), G.711 A-law (PCMA), G.729, Opus | List the ones your platform accepts. The gateway converts from WhatsApp's Opus when needed, including to G.729. |
-| Maximum calls | A number, or no limit | When a trunk is at its limit, the gateway uses the next trunk, or refuses the call if there is none. |
+| Codecs | G.711 µ-law (PCMU), G.711 A-law (PCMA), G.729, GSM, Opus | List the ones your platform accepts. The gateway converts from WhatsApp's Opus when needed, including to G.729 and GSM. |
+| Caller ID the trunk sees | The WhatsApp user who called (default), the business number, or a fixed number | See [Caller ID and number format](#caller-id-and-number-format). |
+| Caller number format and dialled number format | As sent, `+919800000001`, `919800000001`, `09800000001` or `9800000001` | See [Caller ID and number format](#caller-id-and-number-format). |
+| Channels (max calls at once) | A number, or no limit | Ringing calls count. See [Channel limits](#channel-limits). |
+| Max new calls per second | 1 to 1000, or no limit | See [Channel limits](#channel-limits). |
 | Failover time | 500 ms to 60 s, default 3 s | How long the gateway waits for any response before trying the next trunk. See [Failover and fallback](#failover-and-fallback). |
 | Ring limit | 3 to 60 seconds, or none | How long the trunk may ring without answering before the gateway tries the next trunk. Without a limit it waits up to 60 seconds. |
 | If your platform rejects the call | Pass the rejection back (default), or try the next trunk | Applies to busy, unavailable and declined answers. |
+| Health check | On (default) or off | The gateway pings the trunk every 30 seconds. See [Trunk health](#trunk-health). |
 
 <Warning>
 Allow the OneXtel gateway to reach your platform for both signalling and audio. OneXtel gives you the
@@ -36,6 +46,7 @@ To: <sip:+919999999999@platform.example.com>
 X-WA-Tenant: <OneXtel identifier>
 X-WA-Number: <OneXtel identifier>
 X-WA-Channel: whatsapp
+X-WA-Caller: +918888888888
 Content-Type: application/sdp
 ```
 
@@ -43,7 +54,8 @@ Content-Type: application/sdp
 | --- | --- |
 | Request address user part | Your WhatsApp Business number in international format with a plus sign, by default. See [Routing options](#routing-options). |
 | `To` | The same address as the request line: the same user and your platform's host. Platforms that route on the `To` header (many voice AI agent platforms do) match exactly what you configured. With a fixed SIP user, `To` carries that user too. |
-| `From` | The caller's WhatsApp number in international format, as supplied by WhatsApp. |
+| `From` | The caller's WhatsApp number in international format, as supplied by WhatsApp, by default. The trunk can be set to see the business number or a fixed number instead, in the format it expects. See [Caller ID and number format](#caller-id-and-number-format). |
+| `X-WA-Caller` | The WhatsApp user who called, always in international format with a plus sign, whatever the trunk's caller ID setting. |
 | `X-WA-Tenant` and `X-WA-Number` | OneXtel identifiers for your account and number. Quote them when you contact support. |
 | `X-WA-Channel` | Always `whatsapp`. If your platform serves both the phone network and WhatsApp on the same number, use it to tell WhatsApp calls apart. |
 | `X-WA-Route` | Only when you choose header routing. See below. |
@@ -73,7 +85,7 @@ Choose how the gateway addresses your trunk. This is set per trunk.
 
 | Option | Behaviour |
 | --- | --- |
-| Dialled number (default) | The request address user part is your WhatsApp number in international format. |
+| Dialled number (default) | The request address user part is your WhatsApp number, in international format with a plus sign unless you choose another [dialled number format](#caller-id-and-number-format). |
 | Fixed user | The request address user part is a fixed value you choose, for example an IVR extension. |
 | Header | The user part stays your number, and the gateway adds an `X-WA-Route` header with the value you choose. |
 
@@ -96,7 +108,7 @@ queue. The gateway tries them in priority order and moves to the next trunk when
   *try the next trunk* for that trunk.
 
 Without that last setting, a busy or decline is passed back to the caller as it is. A trunk that has reached
-its call limit is skipped. If there is no further trunk, the call fails and the caller hears it.
+one of its [channel limits](#channel-limits) is skipped. If there is no further trunk, the call fails and the caller hears it.
 
 <Info>
 The ring limit starts when your platform replies Ringing. Until then, the failover time applies. When the limit
@@ -110,6 +122,85 @@ AI agent that is at its concurrency limit. The caller then reaches a working des
 the call to fail. Keep the ring limit short. Ask your account team to attach the backup trunk and set the limits.
 </Tip>
 
+## Channel limits
+
+Most telephony partners sell a trunk with a fixed number of channels and a cap on how fast new calls may arrive.
+Set the same limits on the trunk, so the gateway never sends more than the partner accepts.
+
+| Setting | What it limits |
+| --- | --- |
+| Channels (max calls at once) | Calls on the trunk at the same time. Ringing calls count as well as answered ones, and calls to every number that uses the trunk count together. |
+| Max new calls per second | New calls sent to the trunk in any one second. |
+
+Leave either empty for no limit.
+
+When a new call arrives and a trunk is at either limit, the gateway skips that trunk without sending it anything:
+
+- the call goes to the number's next trunk, as in [Failover and fallback](#failover-and-fallback), or
+- if no trunk is left, the caller hears busy, and the call record shows `486 all channels in use`.
+
+The call's SIP log shows each trunk that was skipped and why, for example `all 30 channels in use` or
+`over 5 new calls per second`.
+
+<Tip>
+A partner that offers, say, 100 channels at 5 calls per second needs both limits set. With only the channel limit,
+a burst of calls can exceed the partner's rate and be rejected by the partner instead.
+</Tip>
+
+## Caller ID and number format
+
+Telephony partners often accept calls only from calling numbers they have whitelisted (UCC whitelisting in India),
+and expect numbers written their own way. Three trunk settings control what the trunk sees.
+
+**Caller ID the trunk sees** sets whose number goes in the `From` header:
+
+| Option | The trunk sees |
+| --- | --- |
+| The WhatsApp user who called (default) | The customer's WhatsApp number. |
+| The business WhatsApp number that was called | Your WhatsApp Business number. |
+| A fixed number | A number you choose, in international format with a plus sign, for example `+911244000000`. Use this for a number the partner assigned or whitelisted. |
+
+**Caller number format** sets how that number is written, and **Dialled number format** sets how your WhatsApp
+Business number is written in the request address and `To` header when the call is addressed by number:
+
+| Format | Example |
+| --- | --- |
+| International with plus | `+919800000001` |
+| International, no plus | `919800000001` |
+| National with 0 | `09800000001` |
+| National, 10 digits | `9800000001` |
+
+The caller number format defaults to the number exactly as WhatsApp sends it. The dialled number format defaults to
+international with plus.
+
+<Info>
+The national formats apply only to numbers from the same country as your WhatsApp Business number. A caller from
+any other country is always sent in international format with a plus sign, so the number stays diallable.
+</Info>
+
+Whatever the trunk sees in `From`, the gateway always adds the real WhatsApp caller in the `X-WA-Caller` header,
+in international format with a plus sign. Your IVR can read it to look up the customer even when the trunk is shown
+a fixed or business number.
+
+## Trunk health
+
+The gateway sends a SIP `OPTIONS` request to every trunk every 30 seconds:
+
+- **Any reply means up**, including error replies such as `404` or `405`. The trunk answered, so it is reachable.
+- **Two missed pings in a row mean down.** A single lost packet does not mark a trunk down.
+
+OneXtel sees each trunk's state in the Health column of the console, with the response time of the last reply and
+the time a down trunk stopped replying.
+
+<Note>
+Health does not change routing. A trunk that looks down is still tried for every call, and the normal
+[failover](#failover-and-fallback) rules apply.
+</Note>
+
+If your platform or firewall drops `OPTIONS` requests, the trunk shows as down even though calls work. Either allow
+`OPTIONS` from the gateway's addresses on your signalling port, or ask your account team to turn off the trunk's
+**Health check**.
+
 ## During the call
 
 - **Re-INVITE** (for example hold and resume) is passed through.
@@ -118,5 +209,6 @@ the call to fail. Keep the ring limit short. Ask your account team to attach the
 
 ## Related
 
+- [Connect over an IPsec tunnel](/guides/whatsapp-voice/ipsec-tunnels)
 - [Protocols and media](/guides/whatsapp-voice/protocols-and-media)
 - [Troubleshooting](/guides/whatsapp-voice/troubleshooting)
