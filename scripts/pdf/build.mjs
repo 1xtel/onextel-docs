@@ -80,10 +80,12 @@ function resolveLink(url, pageId) {
 }
 
 // Images are downscaled and re-encoded as JPEG so the PDF stays a reasonable size. SVGs are
-// copied with Open Sans embedded: an SVG shown as an image cannot use the page's fonts.
+// copied with Open Sans and its Noto Sans Math fallback embedded: an SVG shown as an image cannot
+// use the page's fonts, and would otherwise fall back to a system font for arrows such as ⇄.
 const FONT_FILES = join(dirname(fileURLToPath(import.meta.url)), "node_modules/@fontsource");
 const b64 = (f) => readFileSync(f).toString("base64");
-const svgFonts = [400, 600, 700].map((w) => `@font-face{font-family:"Open Sans";font-weight:${w};src:url(data:font/woff2;base64,${b64(join(FONT_FILES, `open-sans/files/open-sans-latin-${w}-normal.woff2`))}) format("woff2")}`).join("");
+const svgFonts = [400, 600, 700].map((w) => `@font-face{font-family:"Open Sans";font-weight:${w};src:url(data:font/woff2;base64,${b64(join(FONT_FILES, `open-sans/files/open-sans-latin-${w}-normal.woff2`))}) format("woff2")}`).join("")
+  + `@font-face{font-family:"Noto Sans Math";src:url(data:font/woff2;base64,${b64(join(FONT_FILES, "noto-sans-math/files/noto-sans-math-latin-400-normal.woff2"))}) format("woff2")}`;
 const imageJobs = new Map();
 function resolveImage(src) {
   if (!src || /^(https?:|data:)/i.test(src)) return src;
@@ -92,8 +94,8 @@ function resolveImage(src) {
   if (/\.svg$/i.test(file)) {
     const out = join(WORK, "img", src.replace(/^\//, "").replace(/[^A-Za-z0-9.-]+/g, "_"));
     const svg = readFileSync(file, "utf8")
-      .replace(/font-family="[^"]*"/g, 'font-family="Open Sans"')
-      .replace(/font-family:[^;"]*/g, "font-family:'Open Sans'")
+      .replace(/font-family="[^"]*"/g, "font-family=\"'Open Sans', 'Noto Sans Math'\"")
+      .replace(/font-family:[^;"]*/g, "font-family:'Open Sans','Noto Sans Math'")
       .replace(/(<svg\b[^>]*>)/, `$1<style>${svgFonts}</style>`);
     writeFileSync(out, svg);
     return pathToFileURL(out).href;
