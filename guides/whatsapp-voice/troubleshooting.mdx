@@ -1,6 +1,6 @@
 ---
 title: "WhatsApp Voice troubleshooting"
-description: "Fixes for the most common WhatsApp Voice problems: no call button, calls that fail, silent calls and one-way audio."
+description: "Fixes for the most common WhatsApp Voice problems: no call button, calls that fail or sound busy, silent calls, one-way audio and tunnels that do not come up."
 ---
 
 Start with the symptom you see, then follow the checks in order.
@@ -20,9 +20,24 @@ Start with the symptom you see, then follow the checks in order.
 | --- | --- |
 | The number is not configured. | Confirm onboarding is complete and that a trunk is attached. |
 | Your platform is not reachable from the gateway. | Check the firewall allows the OneXtel gateway addresses on your signalling port. |
-| Your trunk is at its call limit. | Raise the maximum calls on the trunk, or attach a second trunk. |
+| Every trunk is at its channel limit. | The caller hears busy. See [The caller hears busy](#the-caller-hears-busy). |
 | Your platform rejected the call. | Look in your platform's logs for the incoming INVITE and the response it gave. Busy and decline responses are passed back to the caller. |
 | Every trunk failed. | The gateway tries each trunk in priority order. If all fail, the call is refused. Check each one. |
+
+## The caller hears busy
+
+The call fails at once with a busy tone, and your platform never sees an INVITE. The call record shows
+`486 all channels in use`.
+
+Every trunk on the number was at one of its [channel limits](/guides/whatsapp-voice/connect-your-voice-platform#channel-limits),
+so the gateway sent the call to none of them. The call's SIP log names each trunk that was skipped and the limit it hit:
+
+| Reason in the SIP log | What to do |
+| --- | --- |
+| `all N channels in use` | Calls at once reached the trunk's **Channels** setting. Ringing calls count. Raise the limit if your partner allows more channels, or attach a backup trunk. |
+| `over N new calls per second` | Calls arrived faster than the trunk's **Max new calls per second**. Raise it if your partner allows a higher rate, or attach a backup trunk to take the overflow. |
+
+If your platform itself answers `486`, the call reached it: see [Your platform answers with an error](#your-platform-answers-with-an-error).
 
 ## Your platform answers with an error
 
@@ -33,9 +48,27 @@ server that sent it. Use the code to find the cause.
 | --- | --- | --- |
 | `404`, for example "Does not match any SIP Trunks" | Your platform found no trunk, number or agent matching the address it was sent. | Check the identifier. Use a fixed SIP user, exactly as imported on your platform, including capital letters and any leading plus. The request line and the `To` header both carry it. |
 | `401` or `407` | Your platform wants a username and password. | Username and password authentication of your trunk is not available yet. Allow the gateway's addresses by IP instead. |
-| `403` | Your platform refused the source or the caller. | Check that the gateway's addresses are allowed, and any list of permitted callers. |
+| `403` | Your platform refused the source or the caller. | Check that the gateway's addresses are allowed, and any list of permitted callers. If your partner only accepts whitelisted calling numbers, see [Your partner rejects the caller ID](#your-partner-rejects-the-caller-id). |
 | `480`, `486`, `600` or `603` | Unavailable, busy or declined. For example a voice AI agent that is at its limit. | Passed back to the caller as it is, unless the trunk is set to try the next trunk. Check your platform's availability, and consider a backup trunk (see below). |
 | `5xx`, or no answer | Your platform failed or did not respond in time. | The gateway tries the next trunk, if there is one. Check your platform's health. |
+
+## Your partner rejects the caller ID
+
+Telephony partners often accept calls only from calling numbers they have whitelisted, and in their own number
+format. The partner rejects a call with any other caller ID.
+
+1. Ask your partner which calling numbers they accept, and in which format.
+2. Set the trunk's **Caller ID the trunk sees** to match: your business number, or a fixed number the partner
+   assigned (entered in international format, for example `+911244000000`).
+3. Set the **Caller number format** the partner expects, for example `09800000001` or `9800000001`.
+4. If the partner also routes on the dialled number, set the **Dialled number format** the same way.
+
+National formats apply only to numbers from your business number's country. A caller from abroad is still sent in
+international format with a plus sign. If your partner accepts only national numbers, use a fixed or business
+caller ID so that calls from abroad are accepted too.
+
+Your IVR still gets the real caller in the `X-WA-Caller` header. See
+[Caller ID and number format](/guides/whatsapp-voice/connect-your-voice-platform#caller-id-and-number-format).
 
 ## The call rings for a long time and then fails
 
@@ -89,6 +122,30 @@ telephone-events. If your platform does not react to them, check that:
 
 See [Protocols and media](/guides/whatsapp-voice/protocols-and-media#keypad-tones-dtmf).
 
+## A trunk shows as down
+
+The gateway pings each trunk with SIP `OPTIONS` every 30 seconds. A trunk shows as down after two pings in a row
+get no reply at all. Any reply, even an error, counts as up.
+
+| Calls to the trunk | Likely cause | What to do |
+| --- | --- | --- |
+| Also fail | Your platform is unreachable from the gateway, or down. | Check your platform, and that your firewall allows the gateway's addresses on your signalling port. For a tunnel trunk, check the tunnel first. |
+| Work | Your platform or firewall drops `OPTIONS` requests. | Allow `OPTIONS` from the gateway, or ask your account team to turn off the trunk's **Health check**. |
+
+A trunk that shows as down is still tried for every call, so health alone never stops calls. See
+[Trunk health](/guides/whatsapp-voice/connect-your-voice-platform#trunk-health).
+
+## An IPsec tunnel stays down or connecting
+
+| State | Check |
+| --- | --- |
+| Down | Your gateway does not answer IKE. Check that its public IP is the one OneXtel has, that OneXtel has opened its firewall for that IP, that your gateway accepts UDP 500 and 4500 from the OneXtel peer, and that it accepts the phase 1 proposal. |
+| Connecting, IKE not established | Phase 1 does not complete. Compare the pre-shared key, the IKE version, both IKE identities and the phase 1 proposal on both sides. |
+| Connecting, no IPsec SA | Phase 1 works but phase 2 does not. Check that your side uses the OneXtel `/32` as the remote subnet and the same subnets OneXtel has for you, and that the phase 2 proposals match, including PFS. |
+| Up, but calls fail | Check the trunk's host is your SIP platform's private address inside your subnets, and that your firewall inside the tunnel allows SIP on 5060 and RTP on UDP 30000 to 30999 from the OneXtel encryption domain. |
+
+See [Connect over an IPsec tunnel](/guides/whatsapp-voice/ipsec-tunnels#tunnel-states).
+
 ## The call drops after a while
 
 Check that your platform answers every re-INVITE and does not use a session timer that the call fails to
@@ -120,4 +177,5 @@ OneXtel support contact to look up a call by number and time.
 ## Related
 
 - [Connect your voice platform](/guides/whatsapp-voice/connect-your-voice-platform)
+- [Connect over an IPsec tunnel](/guides/whatsapp-voice/ipsec-tunnels)
 - [Protocols and media](/guides/whatsapp-voice/protocols-and-media)

@@ -1,0 +1,121 @@
+---
+title: "Connect over an IPsec tunnel"
+sidebarTitle: "IPsec tunnels"
+description: "Deliver WhatsApp calls to a voice platform or telephony partner over a private IPsec tunnel instead of the internet."
+keywords: ["IPsec", "VPN", "tunnel", "private trunk", "IKEv2", "strongSwan", "encryption domain"]
+---
+
+Some telephony partners and contact centres accept SIP only over a private connection. For them, the OneXtel
+gateway can reach your trunk through a site-to-site IPsec tunnel. The call signalling and the audio for that trunk
+then travel only inside the tunnel. Calls between Meta and the gateway are not affected.
+
+<Info>
+Only OneXtel administrators create and change tunnels. You agree the settings with your account team and configure
+your own gateway to match.
+</Info>
+
+## How tunnels and trunks fit together
+
+- **One tunnel per partner gateway.** A tunnel connects the OneXtel gateway to one IPsec gateway on your side.
+  Several trunks can use the same tunnel.
+- **A trunk opts in.** Each trunk is set to reach its host either over the internet (the default) or through a
+  named tunnel. Trunks that do not use a tunnel are unchanged.
+- **The trunk host is a private address.** A trunk that goes through a tunnel must point at an IP address inside
+  your tunnel subnets, and use UDP or TCP. TLS is for trunks reached over the internet.
+- **Fallback still works.** A number can have a tunnel trunk first and an internet trunk as its backup, or the
+  other way round.
+
+## What you give OneXtel
+
+| Item | Notes |
+| --- | --- |
+| Your gateway's public IP address | The address your IPsec gateway uses for IKE. |
+| Your subnets (your encryption domain) | One or more ranges, for example `10.20.30.0/24` or `10.20.31.5/32`, up to 16. They must not overlap `172.31.0.0/16`, which OneXtel uses internally. |
+| Your IKE identity | Only if it is not your gateway's public IP. Most gateways use the IP. |
+| IKE version | IKEv2 (the default) or IKEv1 in main mode. |
+| Phase 1 (IKE) proposal | Encryption, integrity and Diffie-Hellman group, written as `aes256-sha256-modp2048`. The default is `aes256-sha256-modp2048`. Separate alternatives with commas. |
+| Phase 2 (IPsec, ESP) proposal | Same format. Include a Diffie-Hellman group for perfect forward secrecy (`aes256-sha256-modp2048`), or leave it out for none (`aes256-sha256`). |
+| Phase 1 lifetime | 600 to 86,400 seconds. The default is 28,800 (8 hours). |
+| Phase 2 lifetime | 300 to 86,400 seconds. The default is 3,600 (1 hour). |
+| Pre-shared key | 16 to 128 printable characters, without spaces, quotes or backslashes. |
+| The trunk's private address | The IP address and port of your SIP platform inside your subnets, and UDP or TCP. |
+
+<Warning>
+Share the pre-shared key by phone or through a password manager, never by email or chat. OneXtel stores it
+encrypted and never shows it again, so keep your own copy. To change it, agree a new key and OneXtel replaces the
+old one.
+</Warning>
+
+## What OneXtel gives you
+
+OneXtel gives you these details for your side of the tunnel:
+
+| Item | Value |
+| --- | --- |
+| OneXtel IPsec peer | The gateway's public IP address. |
+| OneXtel IKE identity | The same public IP address. |
+| OneXtel encryption domain | That IP address as a single host (`/32`). |
+| Traffic inside the tunnel | SIP on UDP and TCP port 5060, and RTP audio on UDP ports 30000 to 30999. |
+
+Allow SIP and RTP from the OneXtel encryption domain to your SIP platform inside the tunnel. Calls and audio come
+from that address, not from the gateway addresses used for internet trunks.
+
+<Note>
+The OneXtel side of the tunnel is behind NAT, so the tunnel uses NAT traversal: IKE on UDP 500 and 4500, and the
+encrypted traffic inside UDP 4500. Your gateway must accept NAT-T from the OneXtel peer.
+</Note>
+
+## Set up a tunnel
+
+<Steps>
+  <Step title="Agree the settings">
+    Send your account team the details in [What you give OneXtel](#what-you-give-onextel), and take the details in
+    [What OneXtel gives you](#what-onextel-gives-you). Share the pre-shared key out of band.
+  </Step>
+  <Step title="OneXtel opens its firewall for your gateway">
+    OneXtel allows IKE and NAT-T from your gateway's public IP. Until this is done, your gateway's IKE messages do
+    not reach the OneXtel gateway.
+  </Step>
+  <Step title="OneXtel creates the tunnel">
+    OneXtel enters your settings and the pre-shared key. The OneXtel gateway starts the tunnel itself and keeps
+    retrying until your side answers.
+  </Step>
+  <Step title="Configure your gateway">
+    Set up the matching tunnel on your IPsec gateway: the same IKE version, proposals, lifetimes and key, with the
+    OneXtel encryption domain as the remote side and your subnets as the local side.
+  </Step>
+  <Step title="Check that the tunnel is up">
+    OneXtel confirms the tunnel shows as up. It usually comes up within a few seconds of both sides being ready.
+  </Step>
+  <Step title="Point the trunk at the tunnel">
+    OneXtel sets the trunk's **Reach the host** to **Through tunnel** with your tunnel's name, and its host to your
+    SIP platform's private address.
+  </Step>
+  <Step title="Place a test call">
+    Call the WhatsApp number and confirm audio flows both ways, as in
+    [Test your first call](/guides/whatsapp-voice/getting-started#test-your-first-call).
+  </Step>
+</Steps>
+
+The gateway also sends its 30-second [health check](/guides/whatsapp-voice/connect-your-voice-platform#trunk-health)
+to a tunnel trunk through the tunnel, so the trunk's health shows whether SIP gets through end to end.
+
+## Tunnel states
+
+OneXtel sees each tunnel's state in the console. The gateway checks it every few seconds.
+
+| State | Meaning | What to check |
+| --- | --- | --- |
+| Up | Both phases are established. OneXtel also sees the traffic in each direction. | Nothing. If calls still fail, check the trunk's private address and your firewall inside the tunnel. |
+| Connecting, IKE up but no IPsec SA | Phase 1 succeeded, phase 2 did not. | The subnets on both sides (your subnets, and the OneXtel `/32`) and the phase 2 proposal, including whether both sides use PFS with the same group. |
+| Connecting, IKE not established | An IKE session has started but phase 1 is not complete. | The peer address, the IKE identities, the pre-shared key and the phase 1 proposal. |
+| Down | No IKE session: your gateway is not answering on UDP 500 or 4500, or rejects the proposal. | That your gateway is reachable from the OneXtel peer, that NAT-T is allowed, that OneXtel has opened its firewall for your gateway's IP, and that the IP is correct. |
+| No report | The gateway has not reported the tunnel's state for over a minute. | Nothing on your side. OneXtel checks its own gateway. |
+
+A tunnel with no pre-shared key, or one that OneXtel has disabled, is not started.
+
+## Related
+
+- [Connect your voice platform](/guides/whatsapp-voice/connect-your-voice-platform)
+- [Protocols and media](/guides/whatsapp-voice/protocols-and-media)
+- [Troubleshooting](/guides/whatsapp-voice/troubleshooting#an-ipsec-tunnel-stays-down-or-connecting)
