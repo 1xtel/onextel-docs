@@ -50,13 +50,13 @@ function codeTitle(meta) {
     .replace(/\b(wrap|lines|expandable|twoslash)\b/g, "").trim();
 }
 
-export function createRenderer({ highlighter, resolveLink, resolveImage, liveUrl, anchorFor, warn }) {
+export function createRenderer({ highlighter, theme, resolveLink, resolveImage, liveUrl, anchorFor, warn }) {
   const langs = new Set(highlighter.getLoadedLanguages());
 
   function code(value, lang, title) {
     if (lang === "mermaid") return h("figure.code.diagram", [title && h("figcaption", title), h("pre.mermaid", value)]);
     const l = lang && langs.has(lang) ? lang : "text";
-    const root = highlighter.codeToHast(value.replace(/\n$/, ""), { lang: l, theme: "github-light" });
+    const root = highlighter.codeToHast(value.replace(/\n$/, ""), { lang: l, theme });
     return h("figure.code", [title && h("figcaption", title), ...root.children]);
   }
 

@@ -1,22 +1,27 @@
-/* Print styles for the docs PDF. OneXtel brand: navy #252e6a, red #D72327, sky #dae6f1, grey #e6e7e8. */
+/* Print styles for the docs PDF, following the OneXtel Brand Guidelines (v9).
+   Type: Open Sans, the brand typeface for training material. Colours: the brand palette only. */
 :root {
-  --navy: #252e6a;
-  --red: #d72327;
-  --sky: #dae6f1;
-  --grey: #e6e7e8;
-  --ink: #1f2433;
-  --muted: #5d6475;
+  --red: #d72327;   /* highlights, key headlines, warnings. Never long text or large areas */
+  --navy: #252e6a;  /* headings, structure, secondary backgrounds */
+  --sky: #dae6f1;   /* panels, table headers, separation between blocks */
+  --grey: #e6e7e8;  /* dividers, borders, neutral backgrounds */
+  --gold: #f7e7ce;  /* sparing accents: tips and badges */
+  --ink: #231f20;   /* body text: brand black */
+  --muted: #666666; /* secondary text, as in the brand email footer */
 }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-body { font-family: "Montserrat", Arial, sans-serif; font-size: 9.2pt; line-height: 1.55; color: var(--ink); margin: 0; }
+/* Open Sans has no arrows or geometric shapes (→ ○ ⇄); Noto Sans Math supplies them, not the system. */
+body { font-family: "Open Sans", "Noto Sans Math", sans-serif; font-size: 9.4pt; line-height: 1.55; color: var(--ink); margin: 0; }
 a { color: var(--navy); text-decoration: underline; text-decoration-color: rgba(37, 46, 106, 0.35); }
 p { margin: 0 0 0.6em; }
 ul, ol { margin: 0 0 0.7em; padding-left: 1.4em; }
 li { margin: 0.15em 0; }
 li > p { margin: 0.1em 0; }
+.contains-task-list { list-style: none; padding-left: 0.2em; }
+.task-list-item input { margin: 0 1.6mm 0 0; vertical-align: -0.1em; }
 /* No ligatures in code: they turn -- and // into single glyphs, which breaks copy and paste. */
 code, pre { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
-code { font-family: "JetBrains Mono", Menlo, Consolas, monospace; font-size: 0.86em; background: #f3f4f7; padding: 0.05em 0.3em; border-radius: 3px; overflow-wrap: anywhere; }
+code { font-family: "JetBrains Mono", "Noto Sans Math", monospace; font-size: 0.84em; background: var(--grey); padding: 0.05em 0.3em; border-radius: 3px; overflow-wrap: anywhere; }
 img { max-width: 100%; max-height: 165mm; object-fit: contain; }
 hr { border: 0; border-top: 1px solid var(--grey); margin: 1.2em 0; }
 strong { font-weight: 600; }
@@ -25,51 +30,53 @@ strong { font-weight: 600; }
 h1, h2, h3, h4, h5, h6 { color: var(--navy); line-height: 1.25; break-after: avoid; font-weight: 700; }
 h3 { font-size: 12.5pt; margin: 1.5em 0 0.5em; padding-bottom: 0.2em; border-bottom: 1px solid var(--grey); }
 h4 { font-size: 10.8pt; margin: 1.3em 0 0.4em; }
-h5, h6 { font-size: 9.6pt; margin: 1.1em 0 0.3em; }
+h5, h6 { font-size: 9.8pt; margin: 1.1em 0 0.3em; }
 h3 + *, h4 + *, h5 + * { break-before: avoid; }
 
-.part { break-before: page; padding-top: 70mm; }
-.part h1 { font-size: 30pt; margin: 0 0 6mm; border-bottom: 3px solid var(--red); padding-bottom: 4mm; display: inline-block; }
-.part p { color: var(--muted); font-size: 10.5pt; max-width: 130mm; }
+/* Section dividers are full-bleed navy pages with the brand curve on the right. */
+@page part { margin: 0; }
+.part { page: part; break-before: page; position: relative; width: 210mm; height: 296mm; background: var(--navy); overflow: hidden; }
+.part h1 { position: absolute; left: 22mm; top: 96mm; margin: 0; font-size: 34pt; color: #fff; }
+.part .part-logo { position: absolute; top: 20mm; right: 20mm; width: 46mm; }
+.part .part-curve { position: absolute; right: 0; bottom: 26mm; width: 180mm; }
 .page { break-before: page; }
-.eyebrow { color: var(--red); font-size: 7.6pt; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1.5mm; }
+.eyebrow { color: var(--red); font-size: 7.6pt; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1.5mm; }
 .page-title { font-size: 19pt; margin: 0 0 2mm; }
-.lead { color: var(--muted); font-size: 10.2pt; margin-bottom: 5mm; }
+.lead { color: var(--muted); font-size: 10.4pt; margin-bottom: 5mm; }
 
 /* Contents */
 .toc { break-before: page; }
 .toc h1 { font-size: 22pt; margin: 0 0 6mm; }
 .toc-tab { display: flex; font-weight: 700; color: var(--navy); font-size: 11pt; margin: 5mm 0 1.5mm; break-after: avoid; }
-.toc-group { color: var(--red); font-size: 7.4pt; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin: 2.6mm 0 0.6mm; break-after: avoid; }
-.toc-page { display: flex; font-size: 8.8pt; margin: 0.4mm 0 0.4mm 3mm; }
+.toc-group { color: var(--red); font-size: 7.4pt; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin: 2.6mm 0 0.6mm; break-after: avoid; }
+.toc-page { display: flex; font-size: 9pt; margin: 0.4mm 0 0.4mm 3mm; }
 .toc a { color: inherit; text-decoration: none; }
-.toc .leader { flex: 1; border-bottom: 1px dotted #b8bcc6; margin: 0 2mm 1.2mm; }
+.toc .leader { flex: 1; border-bottom: 1px dotted var(--muted); margin: 0 2mm 1.3mm; opacity: 0.5; }
 .toc .pn { width: 9mm; text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
 
 /* Code */
 figure.code { margin: 0 0 0.9em; border: 1px solid var(--grey); border-radius: 5px; overflow: hidden; break-inside: auto; }
-figure.code figcaption { background: #f6f7f9; border-bottom: 1px solid var(--grey); font-size: 7.6pt; font-weight: 600; color: var(--muted); padding: 1.2mm 3mm; }
-figure.code pre { margin: 0; padding: 2.4mm 3mm; font-size: 7.6pt; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; background: #fbfbfc !important; }
+figure.code figcaption { background: var(--sky); font-size: 7.6pt; font-weight: 600; color: var(--navy); padding: 1.2mm 3mm; }
+figure.code pre { margin: 0; padding: 2.4mm 3mm; font-size: 7.6pt; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; background: #fff !important; }
 figure.code pre code { background: none; padding: 0; font-size: inherit; }
 pre.mermaid { background: #fff !important; text-align: center; }
 .code-group, .example { margin-bottom: 0.9em; }
 .example-label { font-size: 7.6pt; font-weight: 600; color: var(--muted); margin-bottom: 1mm; }
 
 /* Tables */
-table { width: 100%; border-collapse: collapse; margin: 0 0 1em; font-size: 8.2pt; line-height: 1.45; }
+table { width: 100%; border-collapse: collapse; margin: 0 0 1em; font-size: 8.4pt; line-height: 1.45; }
 th, td { border: 1px solid var(--grey); padding: 1.3mm 2mm; text-align: left; vertical-align: top; overflow-wrap: break-word; }
 td code { overflow-wrap: break-word; word-break: break-word; }
 th { background: var(--sky); color: var(--navy); font-weight: 600; }
 tr { break-inside: avoid; }
 
-/* Callouts */
-.callout { border-left: 3px solid var(--navy); background: #f4f7fb; padding: 2.2mm 3.5mm; margin: 0 0 0.9em; border-radius: 0 4px 4px 0; break-inside: avoid; }
+/* Callouts: notes on Sky Mist, tips on Champagne Gold, warnings outlined in red. */
+.callout { background: var(--sky); padding: 2.4mm 3.5mm; margin: 0 0 0.9em; border-radius: 4px; break-inside: avoid; }
 .callout > :last-child { margin-bottom: 0; }
 .callout-label { font-size: 7.4pt; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy); margin-bottom: 0.8mm; }
-.callout.warning, .callout.danger { border-color: var(--red); background: #fdf1f1; }
+.callout.tip, .callout.check { background: var(--gold); }
+.callout.warning, .callout.danger { background: #fff; border: 1px solid var(--red); }
 .callout.warning .callout-label, .callout.danger .callout-label { color: var(--red); }
-.callout.tip, .callout.check { border-color: #2f7d55; background: #f0f7f3; }
-.callout.tip .callout-label, .callout.check .callout-label { color: #2f7d55; }
 
 /* Steps */
 ol.steps { list-style: none; padding: 0; counter-reset: step; margin: 0 0 1em; }
@@ -88,16 +95,16 @@ li.step::before { content: counter(step); position: absolute; left: -3.2mm; top:
 .field-name { font-weight: 600; color: var(--navy); background: none; padding: 0; font-size: 8.6pt; }
 .field-type, .field-in, .field-default { font-size: 7.6pt; color: var(--muted); }
 .field-in { font-style: italic; }
-.field-body { font-size: 8.8pt; }
+.field-body { font-size: 9pt; }
 .field-body > :last-child { margin-bottom: 0; }
-.badge { font-size: 6.8pt; font-weight: 600; padding: 0.2mm 1.4mm; border-radius: 3px; background: var(--grey); color: var(--muted); }
-.badge.required { background: #fbe4e4; color: var(--red); }
+.badge { font-size: 6.8pt; font-weight: 600; padding: 0.2mm 1.4mm; border-radius: 3px; background: var(--gold); color: var(--navy); }
+.badge.required { background: #fff; color: var(--red); border: 1px solid var(--red); }
 .expandable { border: 1px solid var(--grey); border-radius: 4px; padding: 1mm 3mm; margin: 1.5mm 0; }
 .expandable-title { font-size: 7.6pt; font-weight: 600; color: var(--muted); padding: 0.6mm 0; }
 
 /* Cards and accordions */
 .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5mm; margin: 0 0 1em; }
-.card { border: 1px solid var(--grey); border-radius: 5px; padding: 2.4mm 3mm; break-inside: avoid; font-size: 8.6pt; }
+.card { border: 1px solid var(--grey); border-radius: 5px; padding: 2.4mm 3mm; break-inside: avoid; font-size: 8.8pt; }
 .card > :last-child { margin-bottom: 0; }
 .card-title { display: block; font-weight: 700; color: var(--navy); margin-bottom: 0.8mm; text-decoration: none; }
 .accordion { border: 1px solid var(--grey); border-radius: 4px; padding: 2mm 3mm; margin-bottom: 2mm; }
@@ -109,10 +116,11 @@ figure.frame img { border: 1px solid var(--grey); border-radius: 4px; }
 /* Generated API reference */
 .api-endpoint { display: flex; align-items: center; gap: 2mm; border: 1px solid var(--grey); border-radius: 5px; padding: 1.8mm 2.5mm; margin: 0 0 4mm; }
 .method { font-size: 7.6pt; font-weight: 700; color: #fff; padding: 0.6mm 2mm; border-radius: 3px; background: var(--navy); }
-.method.post { background: #2f7d55; } .method.delete { background: var(--red); } .method.patch, .method.put { background: #a3640c; }
+.method.delete { background: var(--red); }
 .api-path { background: none; padding: 0; font-size: 8.4pt; }
 .api-ctype { font-size: 8pt; color: var(--muted); }
 .api-response { display: flex; gap: 2mm; align-items: baseline; margin: 2.5mm 0 1mm; }
-.status { font-family: "JetBrains Mono", monospace; font-size: 8pt; font-weight: 700; padding: 0.2mm 1.6mm; border-radius: 3px; background: var(--grey); }
-.status.s2 { background: #e2f1e8; color: #2f7d55; } .status.s4, .status.s5 { background: #fbe4e4; color: var(--red); }
-.api-response-desc { font-size: 8.8pt; }
+.status { font-family: "JetBrains Mono", monospace; font-size: 8pt; font-weight: 700; padding: 0.2mm 1.6mm; border-radius: 3px; background: var(--grey); color: var(--ink); }
+.status.s2 { background: var(--sky); color: var(--navy); }
+.status.s4, .status.s5 { background: #fff; color: var(--red); border: 1px solid var(--red); }
+.api-response-desc { font-size: 9pt; }

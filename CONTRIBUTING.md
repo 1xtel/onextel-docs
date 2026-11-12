@@ -42,6 +42,10 @@ node scripts/pdf/build.mjs        # writes .pdf-build/OneXtel-Docs.pdf
 
 A component the builder has no mapping for prints its content and a warning in the build log.
 
+The PDF follows the OneXtel brand guidelines: Open Sans, the brand palette only, the wordmark at no less
+than 25 mm, and the brand curve on the cover and section pages. The palette lives in `scripts/pdf/style.css`
+and in `BRAND` in `build.mjs`; change both together.
+
 ## What reviewers check
 
 - **Is it true?** Endpoints, parameters, codes and limits match the live API or a named source.

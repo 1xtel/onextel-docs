@@ -79,24 +79,69 @@ function resolveLink(url, pageId) {
   return `${SITE}/${path === "index" ? "" : path}${hash ? `#${hash}` : ""}`;
 }
 
-// Images are downscaled and re-encoded as JPEG so the PDF stays a reasonable size.
+// Images are downscaled and re-encoded as JPEG so the PDF stays a reasonable size. SVGs are
+// copied with Open Sans embedded: an SVG shown as an image cannot use the page's fonts.
+const FONT_FILES = join(dirname(fileURLToPath(import.meta.url)), "node_modules/@fontsource");
+const b64 = (f) => readFileSync(f).toString("base64");
+const svgFonts = [400, 600, 700].map((w) => `@font-face{font-family:"Open Sans";font-weight:${w};src:url(data:font/woff2;base64,${b64(join(FONT_FILES, `open-sans/files/open-sans-latin-${w}-normal.woff2`))}) format("woff2")}`).join("");
 const imageJobs = new Map();
 function resolveImage(src) {
   if (!src || /^(https?:|data:)/i.test(src)) return src;
   const file = join(ROOT, decodeURI(src.replace(/^\//, "")));
   if (!existsSync(file)) { warn(`missing image ${src}`); return src; }
-  if (/\.svg$/i.test(file)) return pathToFileURL(file).href;
+  if (/\.svg$/i.test(file)) {
+    const out = join(WORK, "img", src.replace(/^\//, "").replace(/[^A-Za-z0-9.-]+/g, "_"));
+    const svg = readFileSync(file, "utf8")
+      .replace(/font-family="[^"]*"/g, 'font-family="Open Sans"')
+      .replace(/font-family:[^;"]*/g, "font-family:'Open Sans'")
+      .replace(/(<svg\b[^>]*>)/, `$1<style>${svgFonts}</style>`);
+    writeFileSync(out, svg);
+    return pathToFileURL(out).href;
+  }
   const out = join(WORK, "img", src.replace(/^\//, "").replace(/[^A-Za-z0-9.-]+/g, "_").replace(/\.\w+$/, "") + ".jpg");
   imageJobs.set(out, file);
   return pathToFileURL(out).href;
 }
 
+// ---------- brand assets ----------
+// Colours and marks follow the OneXtel Brand Guidelines (v9); style.css carries the palette.
+const HERE = dirname(fileURLToPath(import.meta.url));
+const BRAND = { red: "#d72327", navy: "#252e6a", sky: "#dae6f1", grey: "#e6e7e8", gold: "#f7e7ce", ink: "#231f20", muted: "#666666" };
+const fileUrl = (...p) => pathToFileURL(join(...p)).href;
+const curve = fileUrl(HERE, "assets", "curve.svg");
+
+// The red wordmark goes on white; on navy the guidelines call for the white wordmark. Both keep
+// their transparency: JPEG would leave a visible box around them.
+const redLogo = join(WORK, "img", "logo-red.png");
+const whiteLogo = join(WORK, "img", "logo-white.png");
+if (!existsSync(redLogo) || !existsSync(whiteLogo)) {
+  const base = sharp(join(ROOT, "images/logo.png")).trim().resize({ width: 1400 }).ensureAlpha();
+  await base.clone().png().toFile(redLogo);
+  const { data, info } = await base.clone().raw().toBuffer({ resolveWithObject: true });
+  for (let i = 0; i < data.length; i += 4) data[i] = data[i + 1] = data[i + 2] = 255;
+  await sharp(data, { raw: info }).png().toFile(whiteLogo);
+}
+
+// Code is highlighted in brand colours: keys navy, literals and commands red, comments grey.
+const CODE_THEME = {
+  name: "onextel", type: "light",
+  colors: { "editor.background": "#ffffff", "editor.foreground": BRAND.ink },
+  tokenColors: [
+    { settings: { foreground: BRAND.ink } },
+    { scope: ["comment", "punctuation.definition.comment"], settings: { foreground: BRAND.muted, fontStyle: "italic" } },
+    { scope: ["support.type.property-name", "meta.object-literal.key", "variable.other.property", "entity.name.tag", "constant.other.option", "variable.parameter"], settings: { foreground: BRAND.navy } },
+    { scope: ["string", "string.quoted"], settings: { foreground: BRAND.ink } },
+    { scope: ["constant.numeric", "constant.language", "keyword", "storage", "entity.name.function", "support.function", "entity.name.command"], settings: { foreground: BRAND.red } },
+    { scope: ["punctuation", "meta.brace", "keyword.operator"], settings: { foreground: BRAND.muted } },
+  ],
+};
+
 // ---------- render pages ----------
-const highlighter = await createHighlighter({ themes: ["github-light"], langs: ["bash", "json", "javascript", "csv", "text"] });
+const highlighter = await createHighlighter({ themes: [CODE_THEME], langs: ["bash", "json", "javascript", "csv", "text"] });
 const LANG_ALIASES = { js: "javascript", sh: "bash", shell: "bash", curl: "bash" };
-const render = createRenderer({ highlighter, resolveLink, resolveImage, liveUrl, anchorFor, warn });
+const render = createRenderer({ highlighter, theme: CODE_THEME.name, resolveLink, resolveImage, liveUrl, anchorFor, warn });
 const codeBlock = (value, lang, title) => {
-  const root = highlighter.codeToHast(value, { lang: LANG_ALIASES[lang] || lang, theme: "github-light" });
+  const root = highlighter.codeToHast(value, { lang: LANG_ALIASES[lang] || lang, theme: CODE_THEME.name });
   return h("figure.code", [title && h("figcaption", title), ...root.children]);
 };
 let currentPage = "openapi";
@@ -105,7 +150,11 @@ const renderOperation = createOpenapiRenderer({ md, code: codeBlock });
 
 const articles = [];
 for (const tab of tabs) {
-  articles.push(h("section.part", { id: anchorFor(`tab-${tab.title}`) }, [h("h1", tab.title)]));
+  articles.push(h("section.part", { id: anchorFor(`tab-${tab.title}`) }, [
+    h("img.part-logo", { src: pathToFileURL(whiteLogo).href, alt: "OneXtel" }),
+    h("h1", tab.title),
+    h("img.part-curve", { src: curve, alt: "" }),
+  ]));
   for (const page of tab.pages) {
     const file = [`${page.id}.mdx`, `${page.id}.md`].map((f) => join(ROOT, f)).find(existsSync);
     if (!file) { warn(`${page.id}: in docs.json but no file`); continue; }
@@ -175,51 +224,70 @@ const sha = (process.env.GITHUB_SHA || safe(() => execSync("git rev-parse HEAD",
 const built = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
 function safe(fn) { try { return fn(); } catch { return ""; } }
 
-const css = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "style.css"), "utf8");
-// Fonts come from npm as fixed weights. Google Fonts serves Linux Chromium a variable Montserrat,
-// which prints with uneven letter spacing.
-const fonts = ["montserrat/400", "montserrat/500", "montserrat/600", "montserrat/700", "jetbrains-mono/400", "jetbrains-mono/600"]
-  .map((f) => `<link rel="stylesheet" href="${pathToFileURL(join(dirname(fileURLToPath(import.meta.url)), "node_modules/@fontsource", `${f}.css`)).href}">`)
-  .join("");
+const css = readFileSync(join(HERE, "style.css"), "utf8");
+// Open Sans is the brand typeface for training material. Fonts come from npm as fixed weights, so
+// every machine prints the same; the brand does not specify a monospace face.
+// Noto Sans Math fills the arrows and shapes Open Sans lacks. Its package declares only the Latin
+// range, so it is declared here without one.
+const fonts = ["open-sans/400", "open-sans/400-italic", "open-sans/600", "open-sans/700", "jetbrains-mono/400", "jetbrains-mono/600"]
+  .map((f) => `<link rel="stylesheet" href="${fileUrl(HERE, "node_modules/@fontsource", `${f}.css`)}">`)
+  .join("") + `<style>@font-face { font-family: "Noto Sans Math"; src: url("${fileUrl(FONT_FILES, "noto-sans-math/files/noto-sans-math-latin-400-normal.woff2")}") format("woff2"); }</style>`;
 const hasMermaid = toHtml(doc).includes('class="mermaid"');
 // Mermaid loads from node_modules as a classic script: module scripts do not load over file://.
-const mermaidJs = pathToFileURL(join(dirname(fileURLToPath(import.meta.url)), "node_modules/mermaid/dist/mermaid.min.js")).href;
+const mermaidJs = fileUrl(HERE, "node_modules/mermaid/dist/mermaid.min.js");
+const mermaidTheme = { primaryColor: BRAND.sky, primaryTextColor: BRAND.ink, primaryBorderColor: BRAND.navy, lineColor: BRAND.navy,
+  actorBkg: BRAND.sky, actorBorder: BRAND.navy, actorTextColor: BRAND.ink, signalColor: BRAND.navy, signalTextColor: BRAND.ink,
+  noteBkgColor: BRAND.gold, noteBorderColor: BRAND.gold, fontFamily: "Open Sans" };
 const mermaid = hasMermaid
   ? `<script src="${mermaidJs}"></script><script>
-     mermaid.initialize({ startOnLoad: false, theme: "neutral", fontFamily: "Montserrat" });
+     mermaid.initialize({ startOnLoad: false, theme: "base", fontFamily: "Open Sans", themeVariables: ${JSON.stringify(mermaidTheme)},
+       sequence: { actorFontFamily: "Open Sans", messageFontFamily: "Open Sans", noteFontFamily: "Open Sans" } });
      mermaid.run({ querySelector: ".mermaid" }).catch((e) => { window.__mermaidError = String(e); }).finally(() => { window.__mermaidDone = true; });</script>`
   : "<script>window.__mermaidDone = true</script>";
-const page = (body) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${TITLE}</title>${fonts}<style>${css}</style></head><body>${body}${mermaid}</body></html>`;
+const page = (body, extra = "") => `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${TITLE}</title>${fonts}<style>${css}</style>${extra}</head><body>${body}${mermaid}</body></html>`;
 
-// The cover logo keeps its transparency: JPEG leaves a visible box around it.
-const logoFile = join(WORK, "img", "cover-logo.png");
-if (!existsSync(logoFile)) await sharp(join(ROOT, "images/logo.png")).trim().resize({ width: 1400 }).png().toFile(logoFile);
-const logo = pathToFileURL(logoFile).href;
-const coverHtml = page(`<section style="height:250mm;display:flex;flex-direction:column;justify-content:center;padding:0 22mm">
-  <img src="${logo}" alt="OneXtel" style="width:80mm;margin:0 0 14mm">
-  <div style="font-size:30pt;font-weight:700;color:#252e6a;line-height:1.15">Documentation</div>
-  <div style="font-size:12pt;color:#5d6475;margin-top:4mm">Guides, API reference and plugins for WhatsApp, RCS and SMS</div>
-  <div style="height:3px;width:40mm;background:#d72327;margin:12mm 0 8mm"></div>
-  <div style="font-size:9pt;color:#5d6475;line-height:1.7">Generated ${built}${sha ? ` from revision ${sha}` : ""}<br>
-  The latest version is always at <a href="${SITE}" style="color:#252e6a">${SITE.replace(/^https:\/\//, "")}</a></div></section>`);
+// The cover follows the brand's navy stationery: white wordmark top right, the red curve on the
+// right-hand side, copy on the left.
+const coverHtml = page(`<section style="position:relative;width:210mm;height:296mm;background:${BRAND.navy};overflow:hidden">
+  <img src="${pathToFileURL(whiteLogo).href}" alt="OneXtel" style="position:absolute;top:20mm;right:20mm;width:62mm">
+  <div style="position:absolute;left:22mm;top:88mm;width:150mm">
+    <div style="font-size:36pt;font-weight:700;color:#fff;line-height:1.1">Documentation</div>
+    <div style="font-size:12.5pt;color:${BRAND.sky};margin-top:5mm;line-height:1.45">Guides, API reference and plugins<br>for WhatsApp, RCS and SMS</div>
+  </div>
+  <img src="${curve}" alt="" style="position:absolute;right:0;bottom:34mm;width:182mm">
+  <div style="position:absolute;left:22mm;bottom:16mm;font-size:8.6pt;color:${BRAND.sky};line-height:1.7">Generated ${built}${sha ? ` from revision ${sha}` : ""}<br>
+  The latest version is always at <a href="${SITE}" style="color:#fff">${SITE.replace(/^https:\/\//, "")}</a></div></section>`);
 
 // ---------- print ----------
-const footer = `<div style="width:100%;font-family:Arial,sans-serif;font-size:7pt;color:#8a90a0;padding:0 16mm;display:flex;justify-content:space-between">
-  <span>${TITLE}</span><span><span class="pageNumber"></span> / <span class="totalPages"></span></span></div>`;
+// Running header and footer are CSS page-margin boxes, so they use the document's fonts. The
+// wordmark sits top right at 25 mm, the guidelines' minimum print width. Divider pages have none.
+const headerLogo = join(WORK, "img", "logo-header.png");
+if (!existsSync(headerLogo)) await sharp(redLogo).resize({ width: 600 }).png().toFile(headerLogo);
+const running = `font: 7pt "Open Sans", sans-serif; color: ${BRAND.muted};`;
+const pageCss = `<style>
+  @page { size: A4; margin: 20mm 16mm 17mm;
+    @top-right { content: ""; width: 25mm; background: url("${pathToFileURL(headerLogo).href}") no-repeat right 8mm / 25mm auto; }
+    @bottom-left { content: "${TITLE}"; ${running} }
+    @bottom-right { content: counter(page) " / " counter(pages); ${running} } }
+  @page part { margin: 0; @top-right { content: none; } @bottom-left { content: none; } @bottom-right { content: none; } }
+</style>`;
 const browser = await chromium.launch();
 async function print(html, { withFooter }) {
   const file = join(WORK, withFooter ? "docs.html" : "cover.html");
   writeFileSync(file, html);
   const tab = await browser.newPage();
   await tab.goto(pathToFileURL(file).href, { waitUntil: "networkidle", timeout: 120_000 });
+  // Fonts load per character range on demand; load the ones the docs use before printing.
+  await tab.evaluate(() => Promise.all([...["400", "600", "700", "italic 400"].map((w) => document.fonts.load(`${w} 12px "Open Sans"`, "…–—·×")),
+    document.fonts.load('12px "Noto Sans Math"', "→←⇄○−")]));
   await tab.evaluate(() => document.fonts.ready);
   await tab.waitForFunction(() => window.__mermaidDone === true, null, { timeout: 30_000 }).catch(() => warn("mermaid diagrams timed out"));
   const mermaidError = await tab.evaluate(() => window.__mermaidError);
   if (mermaidError) warn(`mermaid: ${mermaidError}`);
   const pdf = await tab.pdf({
     format: "A4", printBackground: true, outline: withFooter, tagged: true,
-    margin: withFooter ? { top: "15mm", bottom: "17mm", left: "16mm", right: "16mm" } : { top: "0", bottom: "0", left: "0", right: "0" },
-    displayHeaderFooter: withFooter, headerTemplate: "<span></span>", footerTemplate: footer,
+    preferCSSPageSize: withFooter,
+    margin: withFooter ? undefined : { top: "0", bottom: "0", left: "0", right: "0" },
   });
   await tab.close();
   return pdf;
@@ -255,7 +323,7 @@ for (let pass = 1; pass <= 3; pass++) {
   visit(toc, "element", (n) => {
     if (n.properties?.dataTarget) n.children = [{ type: "text", value: String(numbers.get(n.properties.dataTarget) ?? "000") }];
   });
-  bodyPdf = await print(page(toHtml(h("div", [toc, doc]))), { withFooter: true });
+  bodyPdf = await print(page(toHtml(h("div", [toc, doc])), pageCss), { withFooter: true });
   const next = await destinationPages(bodyPdf);
   const stable = [...next].every(([k, v]) => numbers.get(k) === v);
   numbers = next;
