@@ -14,7 +14,7 @@
     "hast-util-to-html": "^9.0.6",
     "hastscript": "^9.0.3",
     "mdast-util-to-string": "^4.0.0",
-    "mermaid": "^11.17.2",
+    "mermaid": "^12.3.0",
     "pdf-lib": "^1.17.1",
     "playwright": "^1.65.0",
     "remark-gfm": "^4.0.1",
