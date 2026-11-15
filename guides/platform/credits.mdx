@@ -9,6 +9,12 @@ distributes them to each TUC, and every message sent draws down that TUC's balan
 Your available balance is shown in the portal header, split by **Web** and **API** — traffic
 sent from the portal and traffic sent programmatically are metered separately.
 
+<Warning>
+When a TUC runs out of credit, messages fail with `4010` (`Not enough available credit`) and a
+running campaign stops sending. Switch on the **Low Credit Alert** in
+[Account settings](/guides/platform/account-settings#alerts) so you top up in time.
+</Warning>
+
 ## View allocation by account
 
 <Steps>
@@ -16,8 +22,8 @@ sent from the portal and traffic sent programmatically are metered separately.
     In the left pane, click **Credits**. The **Userwise Allocation** tab opens by default.
   </Step>
   <Step title="Search">
-    Enter the **TUC Name** in the search box, set the credit limit, and click **Search**. The
-    account's credit information is displayed.
+    Enter the **TUC Name** in the search box and click **Search**. The credits allocated to that
+    account are displayed.
 
   </Step>
 </Steps>
@@ -48,8 +54,8 @@ when a balance is lower than expected.
     Click **Credits**, and on the **Userwise Allocation** tab click **+ Update Credit**.
   </Step>
   <Step title="Select the account">
-    Choose the **TUC** from the dropdown. The Update button stays disabled until a TUC is
-    selected.
+    Choose the **TUC** from the dropdown. Its **Available Credits** show, and your own available
+    credits show at the top of the form. The Update button stays disabled until a TUC is selected.
   </Step>
   <Step title="Choose the credit type">
     Select the **Credit Type** for this movement.
