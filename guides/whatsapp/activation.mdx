@@ -41,6 +41,12 @@ Have all three of these ready before the session starts, or it cannot be complet
 The number you verify becomes your WhatsApp Business number. Choose it deliberately — moving to
 a different number later means repeating verification.
 
+You run Embedded Signup from the portal: **Channels → WhatsApp → Asset Management → Phone
+Numbers → Add WABA**. Two other routes exist — your account team can create and link the account
+for you (on behalf of, or OBO), and a number already on the WhatsApp Business app can be connected
+without leaving the app (Coexistence). See
+[Phone numbers and pools](/guides/whatsapp/phone-numbers#how-your-number-gets-connected).
+
 <Note>
 If signup fails, the error usually comes from Meta rather than OneXtel. Meta documents the
 common causes for
@@ -73,7 +79,7 @@ activation. Two decisions are yours.
 Decide this deliberately — it determines whether a customer who opts out still receives
 service messages such as order confirmations, or nothing at all.
 
-**Which keywords customers can use.** Keywords are case-insensitive.
+**Which keywords customers can use.** Keywords must match exactly, but are case-insensitive.
 
 | Purpose | Standard keywords |
 | --- | --- |
@@ -84,8 +90,9 @@ Keep the standards unless you have a reason not to — customers try them by hab
 nobody guesses is the same as no opt-out at all.
 
 Opt-in can also be scoped to specific message types, or left unscoped so it applies to
-everything. You can manage opt-in and opt-out programmatically once live — see
-[Opt-in / opt-out API](/api-reference/whatsapp/opt-in-opt-out).
+everything. Once live, you change these yourself under **Configurations → Settings → Opt-In /
+Opt-Out** — see [WhatsApp settings](/guides/whatsapp/settings) — or
+programmatically through the [Opt-in / opt-out API](/api-reference/whatsapp/opt-in-opt-out).
 
 ## Acceptance testing
 
