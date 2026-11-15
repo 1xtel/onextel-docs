@@ -1,44 +1,40 @@
 ---
 title: "Additional Settings"
-description: "Enable URL shortening and message expiry for an RCS campaign on the OneXtel portal."
+description: "Track links, set message expiry, and add fallback to an RCS campaign on the OneXtel portal."
 ---
 
-The **Additional Settings** section of the campaign creation form contains two
-optional features: **URL Shortener in Body** and **Message Expiry**. Click
-**Additional Settings** in the campaign form to expand it.
+The **Additional Settings** section of the campaign creation form has three
+optional features: **Short and Track URLs in Body Variables**, **Message
+Expiry** and **Fallback**. Click **Additional Settings** in the campaign
+form to expand it.
 
-## URL Shortener in Body
+## Short and Track URLs in Body Variables
 
-Shortens URLs contained in the message body, optionally capturing the
-recipient's location when the short link is clicked.
+Shortens the links in the body variables and tracks every click, so clicks
+appear in the URL views of the
+[Summary Report](/guides/rcs-platform/reports-summary#url).
 
 <Steps>
-  <Step title="Enable the shortener">
-    Select the **URL Shortener in Body** checkbox. The **Short URL** dialog
-    opens.
+  <Step title="Switch it on">
+    Turn on **Short and Track URLs in Body Variables**.
   </Step>
-  <Step title="Configure the short URL">
-    Enter the following fields:
-
-    | Field | Description |
-    | --- | --- |
-    | **URL** | Select the long URL to be shortened from the dropdown list. |
-    | **Get Location** | Select the checkbox to capture the recipient's location when the short link is clicked. |
-    | **Shorten all URLs in the message** | Select the radio button to shorten every URL present in the message body. |
-    | **Shorten URLs in specific variables only** | Use this option to shorten only the URLs placed in selected variable fields. |
-
-    The dialog also shows the **Selected Template** and the variables
-    available in it (e.g., `link`).
+  <Step title="Pick the domain">
+    Pick the **Domain** the short links use.
   </Step>
-  <Step title="Apply">
-    Click **Short** to apply, or **Cancel** to close without shortening.
+  <Step title="Choose which links">
+    Choose **Short and Track all Urls**, or pick the specific body variables
+    whose links should be shortened.
+  </Step>
+  <Step title="Capture location (optional)">
+    Tick **Get Location** to record the location of each click.
   </Step>
 </Steps>
 
 ## Message Expiry
 
 Sets when your RCS message should expire. Once expired, the message is revoked
-and cannot be delivered.
+and cannot be delivered. Expiry works on every operator, and overrides the
+TTL saved on the template.
 
 <Steps>
   <Step title="Enable message expiry">
@@ -61,6 +57,32 @@ and cannot be delivered.
     **Cancel** to close the dialog without saving changes.
   </Step>
 </Steps>
+
+## Fallback
+
+Fallback re-sends the message on another channel — WhatsApp or SMS — when
+RCS fails or doesn't confirm delivery in time, for example on a handset
+that can't receive RCS. Add recipients first, then:
+
+<Steps>
+  <Step title="Turn on Fallback">
+    Turn on **Fallback**, choose a **Fallback Configuration**, and click
+    **Apply Fallback**.
+  </Step>
+  <Step title="Set the wait time">
+    Enter the wait time, in seconds, before the first fallback starts.
+  </Step>
+  <Step title="Fill in the fallback message">
+    Fill in the fields for each fallback channel. Values can be fixed text,
+    file columns such as `@name`, or a mix — for example
+    `Dear @name, your order has shipped`.
+  </Step>
+</Steps>
+
+With fallback, the RCS message is given a TTL of 95% of the wait time, so it
+expires before the fallback goes out and the customer doesn't get both.
+Fallback configurations are created under **Channels > Fallback** — see
+[Configure fallback](/guides/omnichannel/configure-fallback).
 
 ## Next step
 
