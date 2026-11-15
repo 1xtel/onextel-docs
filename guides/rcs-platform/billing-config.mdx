@@ -1,10 +1,16 @@
 ---
 title: "Billing Configuration"
-description: "View, search, and manage RCS billing rates in the OneXtel platform Config section."
+description: "See your RCS rates and, if you have sub-accounts, set the rates they pay."
 ---
 
-**Config** in the OneXtel RCS platform allows you to view, search, and
-download billing configurations for efficient rate management.
+**Channels > RCS > Configurations > Billing** shows the rates you pay for
+RCS and, if you have sub-accounts, lets you set the rates they pay.
+
+<Note>
+  Billing appears only after your tenant administrator switches on Billing
+  for your account. Your reports then also show a billing column for each
+  message.
+</Note>
 
 ## Billing message types
 
@@ -13,21 +19,21 @@ different types of RCS messages. There are three types of RCS messages:
 
 | Type | Description |
 |---|---|
-| **Basic** | Includes only text messages, with only 160 characters. |
-| **Single** | Includes messages with URLs, videos/images with 160 or more characters. |
-| **Other** | Besides Basic and Single messages. |
+| **Basic** | A plain text message of up to 160 characters. |
+| **Single** | One rich message: a rich card, media, or text over 160 characters. |
+| **Other** | A conversation or session charge. |
 
 ### Rates per region
 
-The billing table lists rates for each region (like India, the UK) and
-each message type.
+The billing table has one row per market — **India** and **Other** (the
+rest of the world) — and one column per message type.
 
 ### Billing type tabs
 
-- **Assigned**: Rates set for the current user (non-editable).
-- **Default**: Base rates inherited from the parent, i.e. Super Admin or
-  Tenant (editable).
-- **Custom**: Custom rates for a selected child entity (editable).
+- **Assigned**: The rates you pay (view only).
+- **Default**: The rates all your sub-accounts pay, unless they have custom
+  rates (editable).
+- **Custom**: Rates for one sub-account (editable).
 
 ## Setting rates: Assigned
 
@@ -36,8 +42,8 @@ each message type.
     In the left pane of the RCS platform, click **Channels**, then select
     **RCS**.
   </Step>
-  <Step title="Open Config > Billing">
-    Click the **Config** tab, then click the **Billing** subtab.
+  <Step title="Open Configurations > Billing">
+    Click the **Configurations** tab, then click the **Billing** subtab.
 
     The RCS Billing details appear. By default, the **Assigned** Billing
     Type tab appears.
@@ -50,9 +56,9 @@ each message type.
 ## Setting rates: Default
 
 <Steps>
-  <Step title="Open Config > Billing">
+  <Step title="Open Configurations > Billing">
     In the left pane of the RCS platform, click **Channels**, select
-    **RCS**, click the **Config** tab, then click the **Billing** subtab.
+    **RCS**, click the **Configurations** tab, then click the **Billing** subtab.
 
     The RCS Billing details appear.
   </Step>
@@ -70,9 +76,9 @@ each message type.
     Double-click any value to edit the rate.
   </Step>
   <Step title="Apply or discard changes">
-    Click **Reset to Default**, **Reset**, or **Save** to restore default
-    values, discard unsaved changes, or save the updated billing
-    configurations, respectively.
+    Click **Save** to save your changes. **Reset** discards unsaved edits,
+    and **Reset to Assigned** copies your own Assigned rates into the
+    Default tab.
   </Step>
   <Step title="Export (optional)">
     Click **Download** to export the report.
@@ -82,9 +88,9 @@ each message type.
 ## Setting rates: Custom
 
 <Steps>
-  <Step title="Open Config > Billing">
+  <Step title="Open Configurations > Billing">
     In the left pane of the RCS platform, click **Channels**, select
-    **RCS**, click the **Config** tab, then click the **Billing** subtab.
+    **RCS**, click the **Configurations** tab, then click the **Billing** subtab.
 
     The RCS Billing details appear.
   </Step>
@@ -96,7 +102,8 @@ each message type.
     supported; column-based searches are not allowed.
   </Step>
   <Step title="Select the profile">
-    Select **Profile Name** (child TUC) from the dropdown list.
+    Select the **Currency** and the **Profile Name** (the sub-account) from
+    the dropdown lists.
   </Step>
   <Step title="Upload rates">
     Click **+Upload** to add billing rates files.
@@ -105,9 +112,8 @@ each message type.
     Double-click any value to edit the rate.
   </Step>
   <Step title="Apply or discard changes">
-    Click **Reset to Default**, **Reset**, or **Save** to restore default
-    values, discard unsaved changes, or save the updated billing
-    configurations, respectively.
+    Click **Save** to save your changes. **Reset** discards unsaved edits,
+    and **Reset to Default** returns the sub-account to your Default rates.
   </Step>
   <Step title="Export (optional)">
     Click **Download** to export the report.
@@ -118,9 +124,10 @@ each message type.
 
 Rates cascade through the account hierarchy:
 
-1. **Super Admin** sets base rates for Tenants.
-2. **Tenant** can modify these rates for their TUCs.
-3. **TUC** can further modify rates for its child TUCs.
+1. OneXtel sets the rates for your tenant administrator.
+2. Your tenant administrator sets the rates you pay — your **Assigned** tab.
+3. You set the rates your sub-accounts pay, on the **Default** and
+   **Custom** tabs.
 
 Any overridden rates become independent of parent changes.
 
