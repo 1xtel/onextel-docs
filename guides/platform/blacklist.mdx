@@ -30,7 +30,7 @@ is driven by the recipient sending a keyword — see
   <Step title="Enter the details">
     | Field | Description |
     | --- | --- |
-    | Channel | The channel this blacklist applies to |
+    | Channel | The channel this blacklist applies to: `sms`, `rcs` or `whatsapp` |
     | Category Name | A name for the group |
     | Category Status | Whether the category is active and in use |
     | Category Description | A short description of what the category is for |
@@ -129,6 +129,25 @@ results.
 **Delete All** clears every number matching the current filter, not just the rows on screen.
 Check the filter before using it — and export the category first if you might need it back.
 </Warning>
+
+## What a blacklisted number sees
+
+Messages to a number on an active blacklist category are blocked before sending and fail with
+`900122` (`Platform_Blacklisted`) on WhatsApp and RCS.
+
+## Opt-out lists
+
+When you switch on Opt-In / Opt-Out in your WhatsApp or RCS settings, the portal creates the
+opt-out lists for you as blacklist categories, and keyword replies keep them up to date:
+
+| Channel | Category name |
+| --- | --- |
+| WhatsApp | `wa_optout_<WABA number>_<marketing \| utility>` |
+| RCS | `rcs_optout_<sender profile>_<promotional \| transactional>` |
+
+You can view, download and edit these like any other category. Messages to a number on an opt-out
+list fail with `4013` (`User_Opt_Out`). See [WhatsApp settings](/guides/whatsapp/settings) and
+[RCS settings](/guides/rcs-platform/settings).
 
 ## Related
 
