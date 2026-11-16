@@ -1,0 +1,124 @@
+---
+title: "Additional settings"
+description: "Track links, set message expiry, and add fallback to a WhatsApp or RCS campaign."
+---
+
+**Additional Settings** holds optional features: link tracking, message expiry (RCS only) and
+fallback. Click **Additional Settings** in the campaign builder to expand it.
+
+## Short and Track URLs in Body Variables
+
+Shortens the links in the body variables and tracks every click.
+
+<Steps>
+  <Step title="Switch it on">
+    Turn on **Short and Track URLs in Body Variables**.
+  </Step>
+  <Step title="Pick the domain">
+    Pick the **Domain** the short links use.
+  </Step>
+  <Step title="Choose which links">
+    Choose **Short and Track all Urls**, or pick the body variables whose links should be
+    shortened.
+  </Step>
+  <Step title="Capture location (optional)">
+    Tick **Get Location** to record the location of each click.
+  </Step>
+</Steps>
+
+Clicks appear in the URL views of the channel's reports:
+
+<Tabs>
+  <Tab title="WhatsApp">
+    [WhatsApp reports](/guides/whatsapp/reports).
+  </Tab>
+  <Tab title="RCS">
+    [Summary Reports](/guides/rcs-platform/reports-summary#url).
+  </Tab>
+</Tabs>
+
+## Message expiry
+
+<Tabs>
+  <Tab title="WhatsApp">
+    Message expiry is an RCS campaign setting. For WhatsApp, set a message validity period on
+    the template. See [Create WhatsApp templates](/guides/whatsapp/templates).
+  </Tab>
+  <Tab title="RCS">
+    Sets when the RCS message expires. Once expired, it's revoked and can't be delivered. Expiry
+    works on every operator and overrides the TTL saved on the template.
+
+    <Steps>
+      <Step title="Enable message expiry">
+        Select the **Message Expiry** checkbox. The **Message Expiry Settings** dialog opens.
+      </Step>
+      <Step title="Choose the expiry type">
+        | Expiry type | Behaviour |
+        | --- | --- |
+        | **Duration from send time (TTL)** | The message expires a set time after it's sent. |
+        | **Absolute expiry time** | The message expires at a specific date and time. |
+      </Step>
+      <Step title="Set the duration (TTL)">
+        For TTL expiry, enter the duration in **Duration (TTL)**, for example `3.5s`, `30m`,
+        `2h` or `1d`, and choose the **Time Unit**: Seconds, Minutes, Hours or Days.
+      </Step>
+      <Step title="Save">
+        Click **Save Expiry Settings**, or **Cancel** to close without saving.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+## Fallback
+
+Fallback re-sends the message on another channel when the first channel fails or doesn't confirm
+delivery in time.
+
+<Tabs>
+  <Tab title="WhatsApp">
+    A WhatsApp campaign falls back to RCS or SMS.
+  </Tab>
+  <Tab title="RCS">
+    An RCS campaign falls back to WhatsApp or SMS, for example on a handset that can't receive
+    RCS.
+  </Tab>
+</Tabs>
+
+Add recipients first, then:
+
+<Steps>
+  <Step title="Turn on Fallback">
+    Turn on **Fallback**, choose a **Fallback Configuration**, and click **Apply Fallback**.
+  </Step>
+  <Step title="Set the wait time">
+    Enter the wait time, in seconds, before the first fallback starts.
+  </Step>
+  <Step title="Fill in the fallback message">
+    Fill in the fields for each fallback channel. Values can be fixed text, file columns such as
+    `@name`, or a mix, for example `Dear @name, your order has shipped`.
+  </Step>
+</Steps>
+
+Make sure the customer doesn't get both the late message and the fallback:
+
+<Tabs>
+  <Tab title="WhatsApp">
+    <Warning>
+    Set a message validity period on the WhatsApp template before you use it with fallback.
+    Without one, the customer can receive the late WhatsApp message *and* the fallback. See
+    [Create WhatsApp templates](/guides/whatsapp/templates).
+    </Warning>
+  </Tab>
+  <Tab title="RCS">
+    With fallback, the RCS message gets a TTL of 95% of the wait time, so it expires before the
+    fallback goes out.
+  </Tab>
+</Tabs>
+
+Fallback configurations are created under **Channels → Fallback**. See
+[Configure fallback](/guides/omnichannel/configure-fallback).
+
+## Next step
+
+Continue to [schedule and launch](/guides/campaigns/schedule-and-launch) to set batching, timing
+and launch.

@@ -1,0 +1,74 @@
+---
+title: "Manage campaigns"
+description: "Find, filter, copy and control WhatsApp and RCS campaigns from the campaigns dashboard."
+---
+
+The campaigns dashboard lists every WhatsApp and RCS campaign on your account. Use it to find a
+campaign, check its status, and pause, stop or copy it.
+
+## Open the campaigns dashboard
+
+<Steps>
+  <Step title="Open Channels">
+    In the left pane of the OneXtel portal, click **Channels**.
+  </Step>
+  <Step title="Select a channel">
+    Select **WhatsApp** or **RCS**.
+  </Step>
+  <Step title="Open Campaigns">
+    Click **Campaigns**. The campaigns dashboard (**View Campaign** page) appears.
+  </Step>
+</Steps>
+
+## What the dashboard shows
+
+Campaigns appear as cards. Each card shows the created date, channel, status, campaign name,
+template, uploaded file, number of records, creator and scheduled time. A `Stopped` campaign also
+shows its **Failure Reason**.
+
+## Find a campaign
+
+- **Search** by campaign name or campaign ID.
+- **Filter** by Channel, Template, Username, Status and Date. **Clear all** resets the filters.
+- **Refresh** reloads the list with the latest statuses.
+
+The list is paginated. Use **Prev** and **Next** at the bottom of the page to move between pages.
+
+## Campaign statuses and actions
+
+The buttons on each card depend on the campaign's status.
+
+| Status | Actions |
+| --- | --- |
+| `Created` / `Draft` (not launched) | Edit, Clone, Delete |
+| `Scheduled` | View, Clone, Reschedule, Cancel |
+| `Running` | View, Clone, Pause, Stop |
+| `Paused` | View, Clone, Resume, Stop |
+| `Completed` / `Stopped` | View, Clone |
+| `Cancelled` / `Failed` | View, Clone |
+| `Pending` / `Rejected` (maker-checker) | Edit, View, Clone |
+| `Approved` (maker-checker) | Edit, View, Clone, Launch (checker only) |
+
+**View** opens a read-only copy of the campaign set-up: recipients, sender, variable mapping,
+settings, batching and schedule. It doesn't show results. Those are in the channel's reports:
+
+<Tabs>
+  <Tab title="WhatsApp">
+    [WhatsApp reports](/guides/whatsapp/reports).
+  </Tab>
+  <Tab title="RCS">
+    [Summary Reports](/guides/rcs-platform/reports-summary#report-on-one-campaign).
+  </Tab>
+</Tabs>
+
+<Note>
+The `Pending`, `Rejected` and `Approved` statuses appear only when maker-checker is switched on for
+your account. A maker's campaign goes to `Pending`; a checker approves or rejects it, and launches
+it once approved. See [Roles](/guides/platform/roles#campaign-maker-checker).
+</Note>
+
+## Start or copy a campaign
+
+- **Clone Campaign** duplicates an existing campaign instead of rebuilding it.
+- **+ New Campaign**, in the top right, starts a new one. See
+  [Create a campaign](/guides/campaigns/create-a-campaign).

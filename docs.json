@@ -46,80 +46,112 @@
             ]
           },
           {
-            "group": "Channels",
+            "group": "WhatsApp",
+            "pages": [
+              "guides/channels/about-whatsapp",
+              {
+                "group": "Onboarding",
+                "pages": [
+                  "guides/whatsapp/activation",
+                  "guides/whatsapp/business-verification"
+                ]
+              },
+              {
+                "group": "Asset management",
+                "pages": [
+                  "guides/whatsapp/phone-numbers",
+                  "guides/whatsapp/templates",
+                  "guides/whatsapp/bulk-template-upload",
+                  {
+                    "group": "Template categories",
+                    "pages": [
+                      "guides/whatsapp/template-categories",
+                      "guides/whatsapp/template-categories-marketing",
+                      "guides/whatsapp/template-categories-utility",
+                      "guides/whatsapp/template-categories-authentication"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Configurations",
+                "pages": [
+                  "guides/whatsapp/settings",
+                  "guides/whatsapp/direct-send"
+                ]
+              },
+              {
+                "group": "Reports",
+                "pages": [
+                  "guides/whatsapp/reports"
+                ]
+              },
+              {
+                "group": "WhatsApp Voice",
+                "pages": [
+                  "guides/whatsapp-voice/overview",
+                  "guides/whatsapp-voice/how-it-works",
+                  "guides/whatsapp-voice/getting-started",
+                  "guides/whatsapp-voice/connect-your-voice-platform",
+                  "guides/whatsapp-voice/ipsec-tunnels",
+                  "guides/whatsapp-voice/protocols-and-media",
+                  "guides/whatsapp-voice/troubleshooting"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "RCS",
             "pages": [
               "guides/channels/about-rcs",
-              "guides/channels/about-whatsapp"
+              {
+                "group": "Onboarding",
+                "pages": [
+                  "guides/rcs-platform/overview",
+                  "guides/rcs-platform/getting-started"
+                ]
+              },
+              {
+                "group": "Asset management",
+                "pages": [
+                  "guides/rcs-platform/sender-profiles",
+                  "guides/rcs-platform/templates",
+                  "guides/rcs-platform/template-guidelines"
+                ]
+              },
+              {
+                "group": "Configurations",
+                "pages": [
+                  "guides/rcs-platform/billing-config",
+                  "guides/rcs-platform/settings"
+                ]
+              },
+              {
+                "group": "Reports",
+                "pages": [
+                  "guides/rcs-platform/reports-summary",
+                  "guides/rcs-platform/reports-detail"
+                ]
+              }
             ]
           },
           {
-            "group": "WhatsApp Setup",
+            "group": "Campaigns",
             "pages": [
-              "guides/whatsapp/activation",
-              "guides/whatsapp/phone-numbers",
-              "guides/whatsapp/templates",
-              "guides/whatsapp/bulk-template-upload",
-              "guides/whatsapp/direct-send",
-              "guides/whatsapp/business-verification",
-              "guides/whatsapp/settings",
-              "guides/whatsapp/reports"
+              "guides/campaigns/overview",
+              "guides/campaigns/create-a-campaign",
+              "guides/campaigns/variable-mapping",
+              "guides/campaigns/additional-settings",
+              "guides/campaigns/schedule-and-launch",
+              "guides/campaigns/manage-campaigns"
             ]
           },
           {
-            "group": "WhatsApp Campaigns",
+            "group": "Fallback",
             "pages": [
-              "guides/whatsapp/quickstart",
-              "guides/whatsapp/campaign-dashboard",
-              "guides/whatsapp/campaign-create",
-              "guides/whatsapp/campaign-variable-mapping",
-              "guides/whatsapp/campaign-launch"
-            ]
-          },
-          {
-            "group": "WhatsApp Template Categories",
-            "pages": [
-              "guides/whatsapp/template-categories",
-              "guides/whatsapp/template-categories-marketing",
-              "guides/whatsapp/template-categories-utility",
-              "guides/whatsapp/template-categories-authentication"
-            ]
-          },
-          {
-            "group": "WhatsApp Voice",
-            "pages": [
-              "guides/whatsapp-voice/overview",
-              "guides/whatsapp-voice/how-it-works",
-              "guides/whatsapp-voice/getting-started",
-              "guides/whatsapp-voice/connect-your-voice-platform",
-              "guides/whatsapp-voice/ipsec-tunnels",
-              "guides/whatsapp-voice/protocols-and-media",
-              "guides/whatsapp-voice/troubleshooting"
-            ]
-          },
-          {
-            "group": "RCS Campaigns",
-            "pages": [
-              "guides/rcs-campaigns/overview",
-              "guides/rcs-campaigns/getting-started",
-              "guides/rcs-campaigns/create-a-campaign",
-              "guides/rcs-campaigns/variable-mapping",
-              "guides/rcs-campaigns/additional-settings",
-              "guides/rcs-campaigns/schedule-and-launch",
-              "guides/rcs-campaigns/manage-campaigns"
-            ]
-          },
-          {
-            "group": "RCS Platform",
-            "pages": [
-              "guides/rcs-platform/overview",
-              "guides/rcs-platform/getting-started",
-              "guides/rcs-platform/sender-profiles",
-              "guides/rcs-platform/templates",
-              "guides/rcs-platform/template-guidelines",
-              "guides/rcs-platform/billing-config",
-              "guides/rcs-platform/settings",
-              "guides/rcs-platform/reports-summary",
-              "guides/rcs-platform/reports-detail"
+              "guides/omnichannel/fallback-overview",
+              "guides/omnichannel/configure-fallback",
+              "guides/omnichannel/dynamic-field-variables"
             ]
           },
           {
@@ -132,14 +164,6 @@
               "guides/sms/templates",
               "guides/sms/sender-id",
               "guides/sms/reports"
-            ]
-          },
-          {
-            "group": "Omnichannel Fallback",
-            "pages": [
-              "guides/omnichannel/fallback-overview",
-              "guides/omnichannel/configure-fallback",
-              "guides/omnichannel/dynamic-field-variables"
             ]
           },
           {
@@ -402,6 +426,66 @@
     {
       "source": "/api-reference/sms/send-sms",
       "destination": "/api-reference/sms-international/send-sms",
+      "permanent": true
+    },
+    {
+      "source": "/guides/whatsapp/quickstart",
+      "destination": "/guides/campaigns/overview",
+      "permanent": true
+    },
+    {
+      "source": "/guides/whatsapp/campaign-dashboard",
+      "destination": "/guides/campaigns/manage-campaigns",
+      "permanent": true
+    },
+    {
+      "source": "/guides/whatsapp/campaign-create",
+      "destination": "/guides/campaigns/create-a-campaign",
+      "permanent": true
+    },
+    {
+      "source": "/guides/whatsapp/campaign-variable-mapping",
+      "destination": "/guides/campaigns/variable-mapping",
+      "permanent": true
+    },
+    {
+      "source": "/guides/whatsapp/campaign-launch",
+      "destination": "/guides/campaigns/schedule-and-launch",
+      "permanent": true
+    },
+    {
+      "source": "/guides/rcs-campaigns/overview",
+      "destination": "/guides/campaigns/overview",
+      "permanent": true
+    },
+    {
+      "source": "/guides/rcs-campaigns/getting-started",
+      "destination": "/guides/campaigns/overview",
+      "permanent": true
+    },
+    {
+      "source": "/guides/rcs-campaigns/manage-campaigns",
+      "destination": "/guides/campaigns/manage-campaigns",
+      "permanent": true
+    },
+    {
+      "source": "/guides/rcs-campaigns/create-a-campaign",
+      "destination": "/guides/campaigns/create-a-campaign",
+      "permanent": true
+    },
+    {
+      "source": "/guides/rcs-campaigns/variable-mapping",
+      "destination": "/guides/campaigns/variable-mapping",
+      "permanent": true
+    },
+    {
+      "source": "/guides/rcs-campaigns/additional-settings",
+      "destination": "/guides/campaigns/additional-settings",
+      "permanent": true
+    },
+    {
+      "source": "/guides/rcs-campaigns/schedule-and-launch",
+      "destination": "/guides/campaigns/schedule-and-launch",
       "permanent": true
     }
   ],
