@@ -278,7 +278,7 @@ def build_operation(ops):
         "operationId": slug(first["page"].split("/")[-1] + " " + first["summary"]),
         "summary": " / ".join(summaries),
         "description": "Full reference: "
-        + ", ".join(f"https://onextel-09023014.mintlify.app/api-reference/{p}" for p in pages),
+        + ", ".join(f"https://onextel-09023014.mintlify.site/api-reference/{p}" for p in pages),
     }
     if parameters:
         out["parameters"] = parameters

@@ -16,7 +16,7 @@
       "post": {
         "operationId": "send-sms-send-sms-international",
         "summary": "Send SMS — International",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/sms-international/send-sms",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/sms-international/send-sms",
         "requestBody": {
           "required": true,
           "content": {

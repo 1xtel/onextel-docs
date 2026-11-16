@@ -16,7 +16,7 @@
       "post": {
         "operationId": "send-sms-omni-send-sms-india",
         "summary": "Send SMS — India",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/sms/send-sms-omni",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/sms/send-sms-omni",
         "parameters": [
           {
             "name": "apikey",

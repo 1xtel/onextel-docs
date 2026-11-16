@@ -16,7 +16,7 @@
       "post": {
         "operationId": "fallback-fallback-api",
         "summary": "Fallback API",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/omnichannel/fallback",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/omnichannel/fallback",
         "parameters": [
           {
             "name": "apikey",
@@ -106,9 +106,9 @@
                         "type": "boolean",
                         "description": "Set to `true` to enable fallback."
                       },
-                      "waittime": {
-                        "type": "string",
-                        "description": "Maximum time (in seconds) to wait for Delivery / Failure before triggering fallback. If the primary message carries a `ttl` longer than this wait time, the wait time overrides the TTL, so the primary attempt ends when fallback fires and the recipient does not get both messages."
+                      "wait_time": {
+                        "type": "integer",
+                        "description": "Seconds to wait for a delivery or failure report on the primary channel before falling back, for example `30`. A numeric string such as `\"30\"` is accepted too. If the primary message carries a `ttl` longer than this wait time, the wait time overrides the TTL, so the primary attempt ends when fallback fires and the recipient does not get both messages."
                       },
                       "sms": {
                         "type": "object",
@@ -175,7 +175,7 @@
                     "required": [
                       "fallback_id",
                       "fallback",
-                      "waittime"
+                      "wait_time"
                     ]
                   },
                   "sms": {
@@ -331,7 +331,7 @@
                     "fallback": {
                       "fallback_id": "YOUR_FALLBACK_ID",
                       "fallback": true,
-                      "waittime": "30",
+                      "wait_time": 30,
                       "sms": {
                         "sender": "YOUR_SMS_SENDER",
                         "type": "SI",
@@ -382,7 +382,7 @@
                     "rcs": [
                       {
                         "sender": "YOUR_RCS_SENDER",
-                        "messageType": "template",
+                        "messageType": "Transactional",
                         "recipient": "919999999999",
                         "contentMessage": {
                           "templateMessage": {
@@ -400,7 +400,7 @@
                     "fallback": {
                       "fallback_id": "YOUR_FALLBACK_ID",
                       "fallback": true,
-                      "waittime": "30",
+                      "wait_time": 30,
                       "sms": {
                         "sender": "YOUR_SMS_SENDER",
                         "type": "SI",
@@ -417,7 +417,7 @@
                       },
                       "rcs": {
                         "sender": "YOUR_RCS_SENDER",
-                        "messageType": "template",
+                        "messageType": "Transactional",
                         "templateCode": "YOUR_TEMPLATE_CODE",
                         "customParams": "{}"
                       }
@@ -442,7 +442,7 @@
       "post": {
         "operationId": "message-status-message-status",
         "summary": "Message Status",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/omnichannel/message-status",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/omnichannel/message-status",
         "parameters": [
           {
             "name": "apikey",
@@ -648,7 +648,7 @@
       "get": {
         "operationId": "message-history-message-history",
         "summary": "Message History",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/omnichannel/message-history",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/omnichannel/message-history",
         "parameters": [
           {
             "name": "apiKey",

@@ -16,7 +16,7 @@
       "post": {
         "operationId": "templates-create-create-whatsapp-template",
         "summary": "Create WhatsApp Template",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/whatsapp/templates-create",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/templates-create",
         "parameters": [
           {
             "name": "apikey",
@@ -205,7 +205,7 @@
                   },
                   "update_by": {
                     "type": "string",
-                    "description": "Free-text string. Shown in the source's reconstructed cURL as an additional form field; purpose is not documented further."
+                    "description": "Free-text string."
                   },
                   "cards": {
                     "type": "array",
@@ -746,7 +746,7 @@
       "post": {
         "operationId": "templates-fetch-onextel-fetch-templates",
         "summary": "OneXtel Fetch Templates",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/whatsapp/templates-fetch",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/templates-fetch",
         "parameters": [
           {
             "name": "apikey",
@@ -767,7 +767,7 @@
                 "properties": {
                   "channel": {
                     "type": "string",
-                    "description": "Messaging channel. Must be `WhatsApp` (the source shows both `\"Whatsapp\"` and `\"WhatsApp\"` casing across examples)."
+                    "description": "Messaging channel. Must be `WhatsApp`."
                   },
                   "wabaId": {
                     "type": "string",
@@ -813,7 +813,7 @@
                 "curl": {
                   "summary": "cURL",
                   "value": {
-                    "channel": "Whatsapp",
+                    "channel": "WhatsApp",
                     "wabaId": "YOUR_WABA_ID",
                     "category": "Marketing",
                     "createdDate": "2025-10-22T12:02:28",
@@ -1027,8 +1027,8 @@
     "/oapi/meta/templates/fetch": {
       "get": {
         "operationId": "templates-fetch-clevertap-fetch-templates",
-        "summary": "Clevertap Fetch Templates",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/whatsapp/templates-fetch",
+        "summary": "CleverTap Fetch Templates",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/templates-fetch",
         "parameters": [
           {
             "name": "apikey",
@@ -1073,7 +1073,7 @@
       "post": {
         "operationId": "send-template-message-send-whatsapp-template-message",
         "summary": "Send WhatsApp Template Message / Send Session Messages",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/whatsapp/send-template-message, https://onextel-09023014.mintlify.app/api-reference/whatsapp/send-session-messages",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/send-template-message, https://onextel-09023014.mintlify.site/api-reference/whatsapp/send-session-messages",
         "parameters": [
           {
             "name": "apikey",
@@ -2271,7 +2271,7 @@
       "post": {
         "operationId": "media-media-upload",
         "summary": "Media Upload",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/whatsapp/media",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/media",
         "parameters": [
           {
             "name": "apikey",
@@ -2354,7 +2354,7 @@
       "get": {
         "operationId": "media-fetch-media-url",
         "summary": "Fetch Media URL",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/whatsapp/media",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/media",
         "parameters": [
           {
             "name": "apiKey",
@@ -2400,7 +2400,7 @@
       "get": {
         "operationId": "media-download-media",
         "summary": "Download Media",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/whatsapp/media",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/media",
         "parameters": [
           {
             "name": "apiKey",
@@ -2446,7 +2446,7 @@
       "get": {
         "operationId": "opt-in-opt-out-get-opt-out",
         "summary": "Get Opt Out",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/whatsapp/opt-in-opt-out",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/opt-in-opt-out",
         "parameters": [
           {
             "name": "apikey",
@@ -2470,7 +2470,7 @@
       "post": {
         "operationId": "opt-in-opt-out-add-opt-out",
         "summary": "Add Opt Out",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/whatsapp/opt-in-opt-out",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/opt-in-opt-out",
         "parameters": [
           {
             "name": "apikey",
@@ -2545,7 +2545,7 @@
       "delete": {
         "operationId": "opt-in-opt-out-remove-opt-out",
         "summary": "Remove Opt Out",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/whatsapp/opt-in-opt-out",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/opt-in-opt-out",
         "parameters": [
           {
             "name": "apikey",
@@ -2601,7 +2601,7 @@
       "get": {
         "operationId": "opt-in-opt-out-get-opt-in",
         "summary": "Get Opt In",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/whatsapp/opt-in-opt-out",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/opt-in-opt-out",
         "parameters": [
           {
             "name": "apikey",
@@ -2625,7 +2625,7 @@
       "post": {
         "operationId": "opt-in-opt-out-add-opt-in",
         "summary": "Add Opt In",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/whatsapp/opt-in-opt-out",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/opt-in-opt-out",
         "parameters": [
           {
             "name": "apikey",
@@ -2700,7 +2700,7 @@
       "delete": {
         "operationId": "opt-in-opt-out-remove-opt-in",
         "summary": "Remove Opt In",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/whatsapp/opt-in-opt-out",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/opt-in-opt-out",
         "parameters": [
           {
             "name": "apikey",

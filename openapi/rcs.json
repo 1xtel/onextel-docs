@@ -16,7 +16,7 @@
       "post": {
         "operationId": "templates-create-template",
         "summary": "Create Template",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/templates",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/rcs/templates",
         "parameters": [
           {
             "name": "apikey",
@@ -234,7 +234,7 @@
       "post": {
         "operationId": "templates-fetch-template",
         "summary": "Fetch Template",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/templates",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/rcs/templates",
         "parameters": [
           {
             "name": "apikey",
@@ -503,7 +503,7 @@
       "post": {
         "operationId": "send-template-message-send-an-rcs-template-message",
         "summary": "Send an RCS Template Message / Send Non-Template Messages",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/send-template-message, https://onextel-09023014.mintlify.app/api-reference/rcs/send-messages",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/rcs/send-template-message, https://onextel-09023014.mintlify.site/api-reference/rcs/send-messages",
         "parameters": [
           {
             "name": "apikey",
@@ -576,7 +576,7 @@
                   },
                   "prefix": {
                     "type": "string",
-                    "description": "Country code prefix applied to recipient numbers (e.g. `+91`). Optional per the Postman collection; documented as mandatory in the PDF's common parameters table — see Gaps."
+                    "description": "Country code prefix applied to recipient numbers (e.g. `+91`). Optional."
                   },
                   "urlShortener": {
                     "type": "object",
@@ -622,7 +622,7 @@
                   },
                   "messageType": {
                     "type": "string",
-                    "description": "Type of message: `Promotional`, `Transactional`, or `OTP`."
+                    "description": "Type of message: `Promotional` or `Transactional`. OTP is not an RCS message type: send one-time codes as `Transactional`."
                   },
                   "recipient": {
                     "type": "string",
@@ -666,7 +666,7 @@
                   },
                   "custref6": {
                     "type": "string",
-                    "description": "Optional custom reference field. Appears in plain-text message examples; not shown in every template example — see Gaps."
+                    "description": "Optional custom reference field."
                   },
                   "templateCode": {
                     "type": "string",
@@ -690,7 +690,7 @@
                   },
                   "senderId": {
                     "type": "string",
-                    "description": "The sender ID or bot ID associated with the message (matches your RCS sender). Named `senderId` in the Send Message examples and `domain` in the parameter reference table for the same field — see Gaps."
+                    "description": "The sender ID or bot ID associated with the message (matches your RCS sender). Send this field with the key `senderId`."
                   },
                   "domain": {
                     "type": "string",
@@ -745,7 +745,7 @@
                   "value": {
                     "rcs": [
                       {
-                        "messageType": "Transactional/OTP/Promotional",
+                        "messageType": "Transactional/Promotional",
                         "recipient": "<recipient_phone_number>",
                         "sender": "<sender_bot_Id>",
                         "contentMessage": {
@@ -1085,7 +1085,7 @@
                   "value": {
                     "rcs": [
                       {
-                        "messageType": "Transactional/OTP/Promotional",
+                        "messageType": "Transactional/Promotional",
                         "recipient": "<recipient_phone_number>",
                         "sender": "<sender_bot_Id>",
                         "contentMessage": {
@@ -1109,7 +1109,7 @@
                   "value": {
                     "rcs": [
                       {
-                        "messageType": "Transactional/OTP/Promotional",
+                        "messageType": "Transactional/Promotional",
                         "recipient": "<recipient_phone_number>",
                         "sender": "<sender_bot_Id>",
                         "contentMessage": {
@@ -1273,7 +1273,7 @@
       "post": {
         "operationId": "media-media-upload",
         "summary": "Media Upload",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/media",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/rcs/media",
         "parameters": [
           {
             "name": "apikey",
@@ -1364,7 +1364,7 @@
       "get": {
         "operationId": "opt-in-opt-out-opt-out-list",
         "summary": "Get opt out list",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/opt-in-opt-out",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/rcs/opt-in-opt-out",
         "parameters": [
           {
             "name": "apikey",
@@ -1452,7 +1452,7 @@
       "post": {
         "operationId": "opt-in-opt-out-opt-out-list-2",
         "summary": "Add to opt out list",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/opt-in-opt-out",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/rcs/opt-in-opt-out",
         "parameters": [
           {
             "name": "apikey",
@@ -1527,7 +1527,7 @@
       "delete": {
         "operationId": "opt-in-opt-out-opt-out-list-2-2",
         "summary": "Remove from opt out list",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/opt-in-opt-out",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/rcs/opt-in-opt-out",
         "parameters": [
           {
             "name": "apikey",
@@ -1583,7 +1583,7 @@
       "get": {
         "operationId": "opt-in-opt-out-opt-in-list",
         "summary": "Get opt in list",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/opt-in-opt-out",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/rcs/opt-in-opt-out",
         "parameters": [
           {
             "name": "apikey",
@@ -1671,7 +1671,7 @@
       "post": {
         "operationId": "opt-in-opt-out-opt-in-list-2",
         "summary": "Add to opt in list",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/opt-in-opt-out",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/rcs/opt-in-opt-out",
         "parameters": [
           {
             "name": "apikey",
@@ -1746,7 +1746,7 @@
       "delete": {
         "operationId": "opt-in-opt-out-opt-in-list-2-2",
         "summary": "Remove from opt in list",
-        "description": "Full reference: https://onextel-09023014.mintlify.app/api-reference/rcs/opt-in-opt-out",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/rcs/opt-in-opt-out",
         "parameters": [
           {
             "name": "apikey",
