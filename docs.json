@@ -53,13 +53,15 @@
                 "group": "Onboarding",
                 "pages": [
                   "guides/whatsapp/activation",
-                  "guides/whatsapp/business-verification"
+                  "guides/whatsapp/business-verification",
+                  "guides/whatsapp/coexistence"
                 ]
               },
               {
                 "group": "Asset management",
                 "pages": [
                   "guides/whatsapp/phone-numbers",
+                  "guides/whatsapp/usernames-and-bsuid",
                   "guides/whatsapp/templates",
                   "guides/whatsapp/bulk-template-upload",
                   {
@@ -342,7 +344,8 @@
               "plugins/leadsquared",
               "plugins/zoho-crm",
               "plugins/shopify",
-              "plugins/optimove"
+              "plugins/optimove",
+              "plugins/fyno"
             ]
           },
           "zoho-crm-wa-and-rcs"

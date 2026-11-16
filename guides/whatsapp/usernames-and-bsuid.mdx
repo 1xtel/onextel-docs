@@ -1,0 +1,63 @@
+---
+title: "Usernames and BSUID"
+description: "WhatsApp business and customer usernames, how to reserve your business username, and when Meta sends a BSUID instead of a phone number."
+---
+
+Meta is adding usernames to WhatsApp, for businesses and for customers. Both are optional, and
+phone numbers keep working as before.
+
+| | Business username | Customer username |
+| --- | --- | --- |
+| Claimed by | A business | A WhatsApp user |
+| Linked to | The business phone number | The user's personal account |
+| Example | `@onextel` | `@john123` |
+| What it's for | Branding, and helping customers find the business | Privacy: the customer can chat without showing their number |
+
+## Reserve your business username
+
+Business usernames are globally unique and first come, first served. Your WhatsApp Business phone
+number stays the same.
+
+<Steps>
+  <Step title="Open your phone numbers">
+    In Meta Business Manager, open **WhatsApp Manager** and go to the **Phone numbers** tab.
+  </Step>
+  <Step title="Open the profile">
+    Click the settings icon for the number and open the **Profile** section.
+  </Step>
+  <Step title="Create the username">
+    Under **Username**, click **Create**. Enter a username or pick a suggested one, and click
+    **Save**. You can edit it later.
+  </Step>
+</Steps>
+
+For help reserving a username, email [support@onextel.com](mailto:support@onextel.com).
+
+## BSUID
+
+The BSUID (business-scoped user ID) is a customer ID that Meta generates for each business
+portfolio. It isn't visible to customers and appears only in APIs and webhooks. Use it to
+identify a customer who chats with you by username instead of phone number. If you manage
+several business portfolios, use the **Parent BSUID** across them.
+
+### When Meta sends a BSUID instead of a phone number
+
+Meta sends the customer's username and BSUID, without a phone number, only when **all** of these
+are true:
+
+- The customer has adopted a WhatsApp username.
+- The customer is contacting your business for the first time.
+- The customer hasn't shared their phone number.
+- The customer isn't in your business contacts.
+- There's been no interaction in the last 30 days.
+
+In every other case you get the phone number as usual.
+
+### Where BSUIDs appear
+
+- **Campaigns**: choose **BSUID** as the recipient type to send to customers by BSUID. See
+  [Create a campaign](/guides/campaigns/create-a-campaign#add-recipients).
+- **Reports**: WhatsApp reports have BSUID, Parent BSUID and Customer Username columns. See
+  [WhatsApp reports](/guides/whatsapp/reports).
+- **Callbacks**: WhatsApp callbacks carry the BSUID, Parent BSUID and username when Meta sends
+  them. See [Callback configuration](/guides/platform/callback-configuration).

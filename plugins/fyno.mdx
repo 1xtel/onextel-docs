@@ -1,0 +1,110 @@
+---
+title: "Fyno"
+description: "Connect a Fyno account to OneXtel to send SMS, WhatsApp and RCS, and route delivery reports back to Fyno."
+---
+
+The Fyno connector adds OneXtel as a provider for SMS, WhatsApp and RCS inside Fyno. You set up
+one integration per channel in Fyno, then point each channel's OneXtel callback at Fyno so
+delivery reports flow back.
+
+## Before you start
+
+Generate an [API key](/guides/platform/api-keys) for each channel in the OneXtel portal. All three
+channels use the same default domain; only the endpoint differs, and Fyno fills it in for you.
+
+| Channel | API key | Default domain | Endpoint |
+| --- | --- | --- | --- |
+| SMS | Required | `api.onexaura.com` | `/send_sms` |
+| WhatsApp | Required | `api.onexaura.com` | `/oapi/send_sms` |
+| RCS | Required | `api.onexaura.com` | `/oapi/send_sms` |
+
+## Open the integration in Fyno
+
+<Steps>
+  <Step title="Sign in to Fyno">
+    Sign in to your Fyno account.
+  </Step>
+  <Step title="Open Integrations">
+    Open **Integrations** from the top-left menu.
+  </Step>
+  <Step title="Pick the channel">
+    Choose **SMS**, **RCS** or **WhatsApp**, click **OneXtel**, and fill in the fields below.
+  </Step>
+</Steps>
+
+## Configure the channel
+
+Each channel ends with a callback: copy the callback URL Fyno shows, then add it to your OneXtel
+account with the payload below, so delivery reports reach Fyno. See
+[Callback configuration](/guides/platform/callback-configuration).
+
+<Tabs>
+  <Tab title="SMS">
+    | Field | What to enter |
+    | --- | --- |
+    | **Integration name** | A name for this integration. |
+    | **API type** | **Omnichannel (V2)**. |
+    | **Domain** | The OneXtel domain. The default is `api.onexaura.com`. |
+    | **Endpoint** | Filled in as `/send_sms`. Don't change it. |
+    | **Category** | **Service Implicit**, **Promotional** or **Transactional**. |
+    | **API key** | Your OneXtel SMS API key. |
+    | **Sender ID** | Your sender ID (header). |
+    | **Entity ID** | Your entity ID. |
+
+    Callback payload:
+
+    ```json
+    {
+      "uuid": "uuid",
+      "status": "status",
+      "errorCode": "errorCode",
+      "errorDesc": "errorDesc",
+      "custref1": "custref1"
+    }
+    ```
+  </Tab>
+  <Tab title="RCS">
+    | Field | What to enter |
+    | --- | --- |
+    | **Integration name** | A name for this integration. |
+    | **Domain** | The OneXtel domain. The default is `api.onexaura.com`. |
+    | **API key** | Your OneXtel RCS API key. |
+    | **Sender** | Your RCS sender profile. |
+    | **Category** | **Transactional**, **Promotional** or **Notification**. This sets the message type in OneXtel. |
+
+    Callback payload:
+
+    ```json
+    {
+      "uuid": "entity.messageId",
+      "status": "entity.eventType",
+      "errorCode": "entity.error.code",
+      "errorDesc": "entity.error.message",
+      "custref1": "custref1",
+      "user_params": "custref2"
+    }
+    ```
+  </Tab>
+  <Tab title="WhatsApp">
+    | Field | What to enter |
+    | --- | --- |
+    | **Integration name** | A name for this integration. |
+    | **Domain** | The OneXtel domain. The default is `api.onexaura.com`. |
+    | **Sender** | Your WhatsApp sender number. |
+    | **API key** | Your OneXtel WhatsApp API key. |
+    | **WABA ID** | Your WhatsApp Business Account ID. |
+
+    Callback payload:
+
+    ```json
+    {
+      "uuid": "entry.id",
+      "status": "entry.changes.value.statuses.status",
+      "errorCode": "entry.changes.value.statuses.errors.code",
+      "errorDesc": "entry.changes.value.statuses.errors.message",
+      "custref1": "custref1",
+      "user_params": "custref2"
+    }
+    ```
+  </Tab>
+</Tabs>

@@ -1,0 +1,63 @@
+---
+title: "WhatsApp Coexistence"
+description: "Run one WhatsApp number on the WhatsApp Business app and on OneXtel at the same time, and what Meta allows on a Coexistence number."
+---
+
+Coexistence is a Meta capability that runs one WhatsApp number on the WhatsApp Business app and
+on the WhatsApp Business Platform (Cloud API) at the same time. You keep using the app for
+one-to-one conversations, and connect the same number to OneXtel for campaigns and automation.
+
+The number is connected through Meta's Embedded Signup flow for Business app users. During
+sign-up you verify the number, approve data sharing, and can sync your existing contacts and
+recent chat history. To connect a number, see
+[Keep using the WhatsApp Business app](/guides/whatsapp/phone-numbers#keep-using-the-whatsapp-business-app-coexistence).
+
+## What you can do on a Coexistence number
+
+<Tabs>
+  <Tab title="Enterprise customers">
+    OneXtel connects a number that's already in use on the WhatsApp Business app. The app keeps
+    working alongside the OneXtel portal, and on the number you can:
+
+    - run outbound campaigns and broadcasts,
+    - automate conversations with the chatbot module,
+    - hand conversations to human agents with the live agent tools.
+
+    The WhatsApp Business app and the OneXtel portal run as two separate systems on the same
+    number. They don't share one inbox, so each is managed on its own.
+  </Tab>
+  <Tab title="Technology partners">
+    Technology partners connect their own end customers through Embedded Signup and use Meta's
+    WhatsApp Business Platform APIs directly through OneXtel:
+
+    - self-serve onboarding with Embedded Signup,
+    - full conversation and messaging API access,
+    - every Coexistence feature Meta supports.
+  </Tab>
+</Tabs>
+
+## What Meta allows
+
+These limits come from Meta's Coexistence framework and apply to every Coexistence number,
+whichever provider it's connected through. Meta lists them under
+[limitations](https://developers.facebook.com/documentation/business-messaging/whatsapp/embedded-signup/onboarding-business-app-users#limitations).
+
+| Capability | Available | Details |
+| --- | --- | --- |
+| One-to-one messaging in the Business app | Yes | Send and receive individual messages in the app as before. |
+| Campaigns and broadcasts through the API | Yes | Run outbound campaigns on the number from the OneXtel portal. |
+| Chatbot | Yes | Automated conversation flows run on the number. |
+| Live agent | Yes | Agents manage conversations with the OneXtel live agent tools. |
+| Contact and history sync | Once | Contacts and up to about 6 months of chat history sync once, within 24 hours of onboarding. |
+| Throughput | Limited | Capped at a low messages-per-second rate, well below an API-only number. |
+| Re-syncing history or contacts | No | Sync happens once per onboarding. Miss the 24-hour window and the number has to be offboarded and onboarded again. |
+| Group chats, voice and video calls | No | Not synced or supported through the API. |
+| Native broadcast lists | No | Existing lists become read-only, and new ones can't be created. |
+| Catalogues, orders and status updates | App only | Available in the Business app, not through the API. |
+| Business profile edits (name, address, website) | App only | Edit them in the Business app. |
+| Disappearing messages, view once and live location | No | Switched off for one-to-one chats once Coexistence is active. |
+
+<Warning>
+Contact and history sync happens once, within 24 hours of onboarding. If you miss it, the only
+way to sync is to offboard the number and onboard it again.
+</Warning>
