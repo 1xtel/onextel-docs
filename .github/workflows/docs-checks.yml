@@ -1,0 +1,39 @@
+name: Docs checks
+
+# Every pull request into main runs these, whoever opened it.
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  prose:
+    name: House style (Vale)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check prose against the OneXtel style
+        uses: errata-ai/vale-action@v3.0.0
+        with:
+          files: '["api-reference", "guides", "plugins", "legacy", "index.mdx"]'
+          fail_on_error: true
+          filter_mode: nofilter
+          reporter: github-pr-check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    name: Build and links (Mintlify)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate the build
+        run: npx -y mint@4.2.917 validate
+      - name: Check for broken links
+        run: npx -y mint@4.2.917 broken-links

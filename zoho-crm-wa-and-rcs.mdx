@@ -2,9 +2,9 @@
 title: "Zoho CRM- WA and RCS"
 ---
 
-This guide walks you through installing the Onextel app in Zoho CRM and configuring it so your agents can send and receive RCS and WhatsApp messages directly from CRM records and workflows.<br />**Step 1: Install the Onextel Application**
+This guide walks you through installing the OneXtel app in Zoho CRM and configuring it so your agents can send and receive RCS and WhatsApp messages directly from CRM records and workflows.<br />**Step 1: Install the OneXtel Application**
 
-Install the Onextel application from the Zoho CRM Marketplace.
+Install the OneXtel application from the Zoho CRM Marketplace.
 
 ![Image](/images/image.png "Image")
 
@@ -13,7 +13,7 @@ Install the Onextel application from the Zoho CRM Marketplace.
 ### **WhatsApp Callback Configuration**
 
 1. Copy the callback URLs generated for **WhatsApp Inbound Callback** and **WhatsApp DLR Callback**.
-2. Add these URLs in the Onextel portal, under the API key you are using.
+2. Add these URLs in the OneXtel portal, under the API key you are using.
 3. Configure the **WhatsApp DLR URL** as the callback for all three notification types:
 
 ○      Delivery Notification
@@ -22,7 +22,7 @@ Install the Onextel application from the Zoho CRM Marketplace.
 
 ○      Button Click
 
-4. Add the **WhatsApp Inbound URL** under the "Incoming" type in the Onextel portal.
+4. Add the **WhatsApp Inbound URL** under the "Incoming" type in the OneXtel portal.
 
 **Note:** Incoming callbacks cannot be configured per API key — this is an account-level configuration. All callback formats must be set to **Meta**.
 
@@ -31,7 +31,7 @@ Install the Onextel application from the Zoho CRM Marketplace.
 ### **RCS Callback Configuration**
 
 1. Copy the callback URLs generated for **RCS Inbound Callback** and **RCS DLR Callback**.
-2. Add these URLs in the Onextel portal, under the API key you are using.
+2. Add these URLs in the OneXtel portal, under the API key you are using.
 3. Configure the **RCS DLR URL** as the callback for all three notification types:
 
 ○      Delivery Notification
@@ -40,7 +40,7 @@ Install the Onextel application from the Zoho CRM Marketplace.
 
 ○      Button Click
 
-4. Add the **RCS Inbound URL** under the "Incoming" type in the Onextel portal.
+4. Add the **RCS Inbound URL** under the "Incoming" type in the OneXtel portal.
 
 **Note:** Incoming callbacks cannot be configured per API key — this is an account-level configuration. All callback formats must be set to **RCS**.
 
@@ -50,10 +50,10 @@ Install the Onextel application from the Zoho CRM Marketplace.
 
 ### **WhatsApp Account Setup**
 
-1. Go to the **Onextel WhatsApp Account** custom module and click **Create Onextel WhatsApp Account**.
+1. Go to the **OneXtel WhatsApp Account** custom module and click **Create OneXtel WhatsApp Account**.
 2. Provide the following account details:
 
-○      Onextel WhatsApp Account Name
+○      OneXtel WhatsApp Account Name
 
 ○      WhatsApp Sender ID
 
@@ -69,11 +69,11 @@ Make sure the API key you add here has its callback URLs already configured as d
 
 ** RCS Account Setup**
 
-1. Go to the CRM dashboard and open the **Onextel** module.
-2. Locate the custom module named **Onextel RCS Account** and click **Create Onextel RCS Account**.
+1. Go to the CRM dashboard and open the **OneXtel** module.
+2. Locate the custom module named **OneXtel RCS Account** and click **Create OneXtel RCS Account**.
 3. Provide the following account details:
 
-○      Onextel RCS Account Name
+○      OneXtel RCS Account Name
 
 ○      RCS Sender Profile
 
@@ -96,7 +96,7 @@ Messages can be sent from the following supported modules: **Contacts**, **Accou
 **Send WhatsApp Message (Record Basis)**
 
 1. Open any record in a supported module (Leads/Contacts/Accounts).
-2. Click **Send Onextel WhatsApp** at the top right of the record.
+2. Click **Send OneXtel WhatsApp** at the top right of the record.
 3. In the panel that opens:
 
 ○      Select the phone number field from the module data.
@@ -133,7 +133,7 @@ Messages can be sent from the following supported modules: **Contacts**, **Accou
 <br />**Send RCS Message (Record Basis)**
 
 1. Open any record in a supported module (Leads/Contacts/Accounts).
-2. Click **Send Onextel RCS** at the top right of the record.
+2. Click **Send OneXtel RCS** at the top right of the record.
 3. In the panel that opens:
 
 ○      Select the phone number field from the module data.
@@ -167,7 +167,7 @@ The message will be sent automatically according to the workflow configuration.
 
  **Step 5: DLR Reports**
 
-All messages sent via RCS and WhatsApp — whether triggered on a record basis or through a workflow — are logged in the **Onextel RCS Report** and **Onextel WhatsApp Report** modules, along with their status (Sent, Failed, Delivered, or Read).
+All messages sent via RCS and WhatsApp — whether triggered on a record basis or through a workflow — are logged in the **OneXtel RCS Report** and **OneXtel WhatsApp Report** modules, along with their status (Sent, Failed, Delivered, or Read).
 
 Each entry can be previewed using the **Preview Message** button at the top right of the report.
 
@@ -181,7 +181,7 @@ Each entry can be previewed using the **Preview Message** button at the top righ
 
 ## **Step 6: Inbound Message Reports**
 
-Inbound messages received via RCS and WhatsApp are also logged in the **Onextel RCS Report** and **Onextel WhatsApp Report** modules, with a preview option available for each message.<br />
+Inbound messages received via RCS and WhatsApp are also logged in the **OneXtel RCS Report** and **OneXtel WhatsApp Report** modules, with a preview option available for each message.<br />
 
 ![Image](/images/image-23.png "Image")
 

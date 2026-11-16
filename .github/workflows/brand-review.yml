@@ -1,0 +1,50 @@
+name: Brand voice review
+
+# Reads the diff of each pull request and comments where it departs from
+# STYLE_GUIDE.md. Vale catches the mechanical rules; this catches tone.
+# Inert until the ANTHROPIC_API_KEY secret exists on the repository.
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  review:
+    name: Voice and tone
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: Check the key is configured
+        id: guard
+        run: echo "configured=${{ secrets.ANTHROPIC_API_KEY != '' }}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        if: steps.guard.outputs.configured == 'true'
+        with:
+          fetch-depth: 0
+
+      - name: Review the changed pages
+        if: steps.guard.outputs.configured == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Review only the documentation changes in this pull request against
+            STYLE_GUIDE.md in this repository, which is the house standard.
+
+            Judge voice and tone, which the Vale linter cannot:
+            - Marketing or sales register where plain description belongs.
+            - Claims the page cannot support, or certainty the source does not justify.
+            - Warnings and notes that are not earned, which train readers to skip them.
+            - Second person and present tense; steps that say what the reader does.
+            - Consequences stated plainly: what breaks, what it costs, what to check.
+            - Headings and tables that match how the rest of the docs read.
+
+            Leave review comments on the specific lines. Be concrete: quote the
+            phrase and offer a replacement. If a page reads well, say so briefly
+            rather than inventing problems. Do not comment on code samples,
+            payload field names, error codes or endpoint paths — those are
+            verified facts, not style.
+          claude_args: "--max-turns 15"

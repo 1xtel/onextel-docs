@@ -16,8 +16,10 @@ The panel is split into:
 - **Data Sources** (left): lists the **File Columns** extracted from your
   uploaded recipient file (e.g., `phone_number`, `name`, `OTP`, `url`) and a
   **Static Values** input for fixed values.
-- **Suggestion Variables** (right): one slot per variable in the selected
-  template (e.g., `link`). Drag a data source into each slot.
+- **Variables** (right): one drop zone per variable in the selected
+  template, grouped by where it sits — the message or card text, the
+  suggestion (button) variables, and each card of a carousel. Drag a data
+  source onto each drop zone.
 - **Progress indicators** (bottom): Total Variables, Mapped, and Progress
   percentage. When every variable is mapped, the panel shows
   **All variables mapped successfully** and progress reads 100%.
@@ -40,7 +42,7 @@ Ideal for fixed URLs, brand names, or common text.
     Click **+**. The value appears in the Static Values list.
   </Step>
   <Step title="Map the variable">
-    Drag the static value to the **Suggestion Variables** field.
+    Drag the static value onto the variable's drop zone.
   </Step>
 </Steps>
 
@@ -56,8 +58,8 @@ per-recipient values.
     file.
   </Step>
   <Step title="Map the column">
-    Drag the required column (e.g., `name`, `otp`, `url`) into the variable
-    field under **Suggestion Variables**.
+    Drag the required column (e.g., `name`, `otp`, `url`) onto the
+    variable's drop zone.
   </Step>
   <Step title="Values populate at send time">
     Each row auto-populates during execution — every recipient receives the
@@ -70,7 +72,14 @@ per-recipient values.
   values and others to file columns.
 </Tip>
 
+## Custom reference parameters
+
+Under **Custom Reference Parameters** you can set **Cust Ref 1** to **Cust
+Ref 5** — your own values, such as a campaign code. They are returned in
+reports and callbacks, so your systems can match each delivery report to its
+source. All five are optional.
+
 ## Next step
 
 Continue to [Additional settings](/guides/rcs-campaigns/additional-settings)
-to configure URL shortening and message expiry.
+to configure link tracking, message expiry and fallback.

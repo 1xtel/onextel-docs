@@ -1,0 +1,130 @@
+---
+title: "Create WhatsApp templates"
+description: "Build a WhatsApp template in the OneXtel portal, submit it to Meta for approval, and manage it once it is live."
+---
+
+WhatsApp needs an approved template for every message you start: offers, alerts, reminders and
+one-time passcodes. You build the template in the portal, the portal submits it to Meta, and Meta
+approves or rejects it. Replies inside the 24-hour customer service window don't need a template.
+
+<Note>
+Pick the category before you write. Meta prices by category and rejects a template whose content
+doesn't match it — see [Template categories](/guides/whatsapp/template-categories).
+</Note>
+
+## Create a template
+
+Go to **Channels → WhatsApp → Asset Management → Templates** and click **Create Template**. The
+builder has three steps: **Set up template**, **Edit template** and **Submit for review**.
+
+<Steps>
+  <Step title="Choose the approval scope">
+    - **Individual** submits the template to one WhatsApp Business Account (WABA). Pick the
+      **WABA ID**.
+    - **Pool** submits the same template to every WABA in one of your
+      [number pools](/guides/whatsapp/phone-numbers#number-pools) in one go, so it is approved
+      for all of them.
+  </Step>
+  <Step title="Pick the category and type">
+    | Category | Types | Use it for |
+    | --- | --- | --- |
+    | Marketing | Custom, Catalog, Flows, Order Details, Limited-Time Offer, Carousel (up to 10 cards) | Offers, launches, newsletters, re-engagement |
+    | Utility | Custom, Flows, Order Status, Order Details | Order updates, bills, reminders, account alerts |
+    | Authentication | One-time Passcode | OTPs for login or transactions |
+
+    Click **Next**.
+  </Step>
+  <Step title="Name the template and pick the language">
+    The **Template name** takes lowercase letters, numbers and underscores only — for example
+    `order_shipped` — up to 512 characters.
+  </Step>
+  <Step title="Choose the variable type">
+    **Number** gives `{{1}}`, `{{2}}` and so on. **Name** gives named variables such as
+    `{{first_name}}`.
+  </Step>
+  <Step title="Build the content">
+    | Part | Rules |
+    | --- | --- |
+    | Header (optional) | None, Text, Image, Video, GIF, Document or Location |
+    | Body (required) | Up to 1,024 characters. Click **Add variable** for the personal parts, and give a sample value for each variable — Meta reviews the samples |
+    | Footer (optional) | Up to 60 characters |
+    | Buttons (optional) | Up to 10. More than 3 show to the customer as a list |
+
+    Button types:
+
+    | Group | Button | Limit |
+    | --- | --- | --- |
+    | Quick reply | Custom | — |
+    | Call to action | Visit website | 2 |
+    | Call to action | Call phone number | 1 |
+    | Call to action | Complete Flow | 1 |
+    | Call to action | Copy offer code | 1 |
+    | Call to action | Share Contact Info | 1 |
+
+    Tick **Link tracking** to opt the template out of Meta's URL click tracking.
+  </Step>
+  <Step title="Set the message validity period">
+    Tick **Set custom validity period** to choose how long WhatsApp keeps trying to deliver. A
+    message that isn't delivered in that time expires and isn't charged.
+
+    | Category | Allowed range |
+    | --- | --- |
+    | Authentication | 30 seconds to 15 minutes |
+    | Utility | 30 seconds to 12 hours |
+    | Marketing | 12 hours to 30 days |
+
+    Without a custom value, WhatsApp's standard validity applies, and the builder shows it.
+
+    <Warning>
+    Set a validity period on every template you use with
+    [fallback](/guides/omnichannel/fallback-overview). WhatsApp can't take a time-to-live on
+    each message, so without one the customer can get the WhatsApp message late *and* the
+    fallback message.
+    </Warning>
+  </Step>
+  <Step title="Check the preview and submit">
+    Check the **Template Preview** on the right, then click **Submit for Review**. The status
+    moves from `Pending` to `Approved` or `Rejected`. Meta usually decides within minutes,
+    sometimes a few hours.
+  </Step>
+</Steps>
+
+### Get approved first time
+
+- Pick the category that matches the content. A promotion submitted as Utility is rejected.
+- Don't start or end the body with a variable, and keep variables to the minimum.
+- Give realistic sample values.
+
+Meta's full rules are in its
+[template guidelines](https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/overview).
+
+## Manage templates
+
+The template list shows **Template Name**, **Language**, **Category**, **Quality Rating** and
+**Status**. Use **Filter** to search by name, language, category, quality rating or status, and
+**Sync** to pull the latest statuses from Meta.
+
+Each template's **⋮** menu has:
+
+| Action | What it does |
+| --- | --- |
+| Edit | Change an approved or rejected template. It goes back to Meta for review |
+| Clone | Copy it as a starting point for a new template |
+| Preview | See how it looks on a phone |
+| Generate cURL | Show a ready-made API request for this template, for your developers to copy |
+| Delete | Remove the template |
+
+<Note>
+Meta can change an approved template's category after reviewing how it is used — most often from
+Utility to Marketing. If your tenant administrator has switched on **Category Blocking**, sending
+stops for a template whose category changed, so you aren't charged the higher rate without
+knowing. Review the template and create a new one in the right category. See
+[WhatsApp settings](/guides/whatsapp/settings).
+</Note>
+
+## Related
+
+- [Bulk template upload](/guides/whatsapp/bulk-template-upload) — create many templates from one CSV
+- [Meta Direct Send](/guides/whatsapp/direct-send) — utility messages without a template
+- [Create templates via API](/api-reference/whatsapp/templates-create)
+- [Fetch templates](/api-reference/whatsapp/templates-fetch)

@@ -61,6 +61,11 @@ Three batching methods are available:
     </Steps>
 
     Example: Batch 1 – 19,999 recipients scheduled for Nov 7, 2025, 02:18 PM.
+
+    <Note>
+    Manual batching locks **Repeat Campaign** and **Schedule**, because each batch already has
+    its own time.
+    </Note>
   </Tab>
 </Tabs>
 
@@ -129,12 +134,26 @@ Sets a specific date, time, and time zone for the campaign to start automaticall
 
 At the bottom of the Schedule section, three buttons are available:
 
-- **Test** — visible alongside the launch controls for trial sends.
-- **Draft** — saves the campaign without sending; it appears on the campaigns dashboard with the `Draft` status.
-- **Launch** — starts the campaign per the selected execution type.
+| Button | What it does |
+| --- | --- |
+| **Test** | Sends the campaign to a few test numbers first. Always do this before a real send |
+| **Draft** | Saves the campaign without sending. It appears on the campaigns dashboard as `Draft` |
+| **Launch** | Starts the campaign, or schedules it, per the selected execution type |
 
-<Note>
-The source manual documents the **Launch** action explicitly; the Test and Draft buttons appear in the UI but are not described further in the manual.
-</Note>
+If maker-checker is switched on for your account, **Launch** sends the campaign to a checker for
+approval instead — see [Roles](/guides/platform/roles#campaign-maker-checker).
 
-After launch, track the campaign from the [campaigns dashboard](/guides/whatsapp/campaign-dashboard), where its status moves through `Created` to `Completed`.
+## Before you launch
+
+- The template is `Approved`, and its category is the one you expect.
+- Every variable is mapped, and the preview looks right.
+- Numbers include the country code, or **Default Country Code** is on.
+- There is enough credit for the volume. Messages fail with `4010` when credit runs out.
+- Marketing campaigns fall inside the time window set for your account.
+- Fallback is set if delivery is critical, and the WhatsApp template has a validity period.
+
+## After launch
+
+Track the campaign from the [campaigns dashboard](/guides/whatsapp/campaign-dashboard), where you
+can pause, resume or stop it while it runs. Delivery, read, failure and click results are in
+[WhatsApp reports](/guides/whatsapp/reports).

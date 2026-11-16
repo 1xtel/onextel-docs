@@ -3,28 +3,17 @@ title: "RCS Platform Overview"
 description: "What RCS is on the OneXtel platform, its capabilities, and how the RCS user manual is organized."
 ---
 
-<Note>
-  This RCS platform guide is based on a **draft** OneXtel RCS User Manual
-  (Release 1.0) and may change as the manual is finalized.
-</Note>
+OneXtel RCS (Rich Communication Services) sends branded, verified messages
+into the phone's own messaging app, with images, videos, rich cards,
+carousels and buttons. Businesses use it for promotions, transactional
+updates and one-time passcodes.
 
-OneXtel RCS (Rich Communication Services) is an advanced messaging platform
-that enhances traditional SMS with rich features, including images, videos,
-carousels, quick reply buttons, and file sharing. It works over mobile
-networks or Wi-Fi, offering secure, interactive, and real-time communication.
-Businesses use RCS to deliver engaging promotions, transactional updates,
-and customer support.
-
-OneXtel's RCS serves as a leading platform for business communication
-solutions, enabling brands to create connected user experiences with a
-strong focus on integrated telecommunications. It helps businesses establish
-their identities and manage engagement activities across multiple verticals.
-
-Messaging services are offered through RCS mediums. For each medium, a
-channel can be created to establish a communication line with a defined set
-of end users. Since RCS is managed by Google, signing up on these platforms
-is required, followed by providing account details on RCS. An Embedded
-Sign-up option is available to configure RCS accounts.
+In India, OneXtel sends RCS through the operators Vi and Jio. Before you can
+send, OneXtel registers your brand's agent (also called a bot) with each
+operator: you supply your brand name, logo, banner image, description,
+contact phone number, email, website, terms and privacy URLs, and the message
+types you need. The operator tests and approves the agent, and it then
+appears in the portal as a [sender profile](/guides/rcs-platform/sender-profiles).
 
 ## Capabilities
 
@@ -32,9 +21,11 @@ Sign-up option is available to configure RCS accounts.
   description, and buttons — the **Rich Card Stand Alone** template type.
 - **Carousels**: Multiple rich cards displayed in a scrollable, swipe-able
   format — the **Rich Card Carousel** template type.
+- **Text messages**: Up to 2,500 characters, with variables — the **Text
+  Message** template type.
 - **Suggested actions / reply buttons**: Quick reply, dialer action (call),
-  URL action (open a webpage), and dynamic link tracking for monitoring
-  button and link engagement.
+  URL action (open a webpage), dynamic link tracking, view or share a
+  location, and add a calendar event.
 - **Branded, app-like experience**: Read receipts, media sharing, and
   branded messages delivered directly within the recipient's native
   messaging app.
@@ -61,6 +52,10 @@ efficiency. Each sender profile is assigned a **Message Type**:
 - **Transactional**: Used to share essential information like updates or
   alerts.
 - **OTP**: Used to send one-time passwords for user verification and login.
+
+The message type decides which templates the profile can use and how the
+messages are priced. Several profiles of one message type can be grouped
+into a [sender pool](/guides/rcs-platform/sender-profiles#sender-pools).
 
 RCS **Templates** are pre-approved message formats built under a sender
 profile and used for customer communication. See
@@ -96,7 +91,7 @@ messages, access reports and analytics, and perform basic configurations.
     View, search, and manage RCS billing rates.
   </Card>
   <Card title="Settings" href="/guides/rcs-platform/settings">
-    Configure time windows and frequency capping.
+    Time windows, frequency capping, opt-outs and country code.
   </Card>
   <Card title="Reports" href="/guides/rcs-platform/reports-summary">
     Summary reports for overall, failure, and URL performance.
@@ -108,6 +103,5 @@ messages, access reports and analytics, and perform basic configurations.
 
 ## Getting help
 
-Along with this guide, you can refer to the **Admin Manual** and
-**Release Notes**. For further assistance, email the OneXtel support team
-at [support@onextel.com](mailto:support@onextel.com).
+For further assistance, email the OneXtel support team at
+[support@onextel.com](mailto:support@onextel.com).

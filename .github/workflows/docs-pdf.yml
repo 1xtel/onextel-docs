@@ -1,0 +1,70 @@
+name: Docs PDF
+
+# Builds the whole docs site into one PDF. On main it replaces the file behind the site's
+# "Download PDF" link; on a pull request the PDF is attached to the run so you can check it.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: docs-pdf-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build the PDF
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: scripts/pdf/package-lock.json
+
+      - name: Install
+        working-directory: scripts/pdf
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Build
+        run: node scripts/pdf/build.mjs --out OneXtel-Docs.pdf
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OneXtel-Docs
+          path: OneXtel-Docs.pdf
+          retention-days: 14
+
+  publish:
+    name: Publish the PDF
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: OneXtel-Docs
+
+      # The link on the site points at this release asset, so the tag and file name must not change.
+      - name: Upload to the docs-pdf release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          notes="The whole OneXtel docs site as one PDF, rebuilt on every change to main. This copy is from ${GITHUB_SHA::7}, built $(date -u '+%d %b %Y %H:%M') UTC."
+          if gh release view docs-pdf >/dev/null 2>&1; then
+            gh release upload docs-pdf OneXtel-Docs.pdf --clobber
+            gh release edit docs-pdf --notes "$notes"
+          else
+            gh release create docs-pdf OneXtel-Docs.pdf --target "$GITHUB_SHA" --title "OneXtel docs (PDF)" --notes "$notes"
+          fi

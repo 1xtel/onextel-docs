@@ -21,10 +21,9 @@
         "tab": "Guides",
         "groups": [
           {
-            "group": "Channels",
+            "group": "Get started",
             "pages": [
-              "guides/channels/about-rcs",
-              "guides/channels/about-whatsapp"
+              "guides/about-onextel"
             ]
           },
           {
@@ -47,16 +46,33 @@
             ]
           },
           {
-            "group": "WhatsApp Campaigns",
+            "group": "Channels",
+            "pages": [
+              "guides/channels/about-rcs",
+              "guides/channels/about-whatsapp"
+            ]
+          },
+          {
+            "group": "WhatsApp Setup",
             "pages": [
               "guides/whatsapp/activation",
+              "guides/whatsapp/phone-numbers",
+              "guides/whatsapp/templates",
+              "guides/whatsapp/bulk-template-upload",
+              "guides/whatsapp/direct-send",
+              "guides/whatsapp/business-verification",
+              "guides/whatsapp/settings",
+              "guides/whatsapp/reports"
+            ]
+          },
+          {
+            "group": "WhatsApp Campaigns",
+            "pages": [
               "guides/whatsapp/quickstart",
               "guides/whatsapp/campaign-dashboard",
               "guides/whatsapp/campaign-create",
               "guides/whatsapp/campaign-variable-mapping",
-              "guides/whatsapp/campaign-launch",
-              "guides/whatsapp/direct-send",
-              "guides/whatsapp/bulk-template-upload"
+              "guides/whatsapp/campaign-launch"
             ]
           },
           {
@@ -137,6 +153,12 @@
         "tab": "API Reference",
         "groups": [
           {
+            "group": "Tools",
+            "pages": [
+              "api-reference/payload-validator"
+            ]
+          },
+          {
             "group": "WhatsApp",
             "pages": [
               "api-reference/whatsapp/overview",
@@ -211,6 +233,67 @@
               "api-reference/verify/list-channel-accounts",
               "api-reference/verify/error-codes"
             ]
+          },
+          {
+            "group": "Truecaller",
+            "pages": [
+              "api-reference/truecaller/overview",
+              "api-reference/truecaller/rich-messages",
+              "api-reference/truecaller/webhooks",
+              "api-reference/truecaller/errors",
+              {
+                "group": "Messages",
+                "pages": [
+                  "api-reference/truecaller/send-message",
+                  "api-reference/truecaller/get-message"
+                ]
+              },
+              {
+                "group": "Templates",
+                "pages": [
+                  "api-reference/truecaller/list-templates",
+                  "api-reference/truecaller/create-template",
+                  "api-reference/truecaller/get-template",
+                  "api-reference/truecaller/update-template",
+                  "api-reference/truecaller/submit-template",
+                  "api-reference/truecaller/preview-template",
+                  "api-reference/truecaller/delete-template",
+                  "api-reference/truecaller/upload-media"
+                ]
+              },
+              {
+                "group": "Contact lists",
+                "pages": [
+                  "api-reference/truecaller/list-contact-lists",
+                  "api-reference/truecaller/create-contact-list",
+                  "api-reference/truecaller/add-contacts",
+                  "api-reference/truecaller/validate-audience",
+                  "api-reference/truecaller/get-contact-list",
+                  "api-reference/truecaller/delete-contact-list",
+                  "api-reference/truecaller/opt-out",
+                  "api-reference/truecaller/remove-opt-out"
+                ]
+              },
+              {
+                "group": "Campaigns",
+                "pages": [
+                  "api-reference/truecaller/list-campaigns",
+                  "api-reference/truecaller/create-campaign",
+                  "api-reference/truecaller/get-campaign",
+                  "api-reference/truecaller/launch-campaign",
+                  "api-reference/truecaller/cancel-campaign",
+                  "api-reference/truecaller/delete-campaign",
+                  "api-reference/truecaller/campaign-report",
+                  "api-reference/truecaller/export-campaign-messages"
+                ]
+              },
+              {
+                "group": "Senders",
+                "pages": [
+                  "api-reference/truecaller/list-senders"
+                ]
+              }
+            ]
           }
         ]
       },
@@ -228,6 +311,7 @@
             "pages": [
               "plugins/moengage",
               "plugins/clevertap",
+              "plugins/clevertap-whatsapp",
               "plugins/webengage",
               "plugins/salesforce",
               "plugins/salesforce-marketing-cloud",
@@ -264,13 +348,24 @@
       "label": "OneXtel",
       "href": "https://www.onextel.com"
     },
-    "links": []
+    "links": [
+      {
+        "label": "Download PDF",
+        "href": "https://github.com/1xtel/onextel-docs/releases/download/docs-pdf/OneXtel-Docs.pdf"
+      }
+    ]
   },
   "contextual": {
     "options": [
       "copy",
       "view",
       "download-pdf",
+      {
+        "title": "Download all docs",
+        "description": "Every guide, API reference and plugin page in one PDF",
+        "icon": "file-pdf",
+        "href": "https://github.com/1xtel/onextel-docs/releases/download/docs-pdf/OneXtel-Docs.pdf"
+      },
       "download-spec",
       "chatgpt",
       "claude"

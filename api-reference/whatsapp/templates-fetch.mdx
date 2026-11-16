@@ -1,6 +1,6 @@
 ---
 title: "Fetch WhatsApp Templates"
-description: "Retrieve WhatsApp message templates and their approval status from OneXtel or directly from Meta via the Clevertap fetch endpoint."
+description: "Retrieve WhatsApp message templates and their approval status from OneXtel or directly from Meta via the CleverTap fetch endpoint."
 ---
 
 import ImportWhatsapp from '/snippets/import-whatsapp.mdx';
@@ -8,7 +8,7 @@ import ImportWhatsapp from '/snippets/import-whatsapp.mdx';
 <ImportWhatsapp />
 
 Two endpoints return your WhatsApp templates: the primary OneXtel `/templates/fetch`
-endpoint (filterable, paginated), and a Meta-passthrough endpoint used for Clevertap
+endpoint (filterable, paginated), and a Meta-passthrough endpoint used for CleverTap
 integrations.
 
 ## OneXtel Fetch Templates
@@ -34,8 +34,7 @@ POST /templates/fetch
 ### Request body
 
 <ParamField body="channel" type="string" required>
-  Messaging channel. Must be `WhatsApp` (the source shows both `"Whatsapp"` and
-  `"WhatsApp"` casing across examples).
+  Messaging channel. Must be `WhatsApp`.
 </ParamField>
 <ParamField body="wabaId" type="string" required>
   WhatsApp Business Account (WABA) identifier.
@@ -64,12 +63,8 @@ POST /templates/fetch
 </ParamField>
 
 <Note>
-The Postman collection's Fetch Templates request comments out `start_date`, `end_date`,
-`templateName`, `status`, `language`, and `createdDate` as example-only fields alongside
-the always-sent `channel`, `wabaId`, `pageNo`, and `limit`. The source PDF's field table
-lists `createdDate` (not `start_date`/`end_date`) as the optional date filter — the
-`start_date`/`end_date` pair in Postman's inline comment is not documented anywhere else
-and may be stale or unimplemented. Treat `createdDate` as authoritative.
+Send `channel`, `wabaId`, `pageNo`, and `limit` on every request. Filter by date with
+`createdDate`.
 </Note>
 
 ### cURL
@@ -79,7 +74,7 @@ curl --location 'https://api.onexaura.com/templates/fetch' \
 --header 'apikey: YOUR_API_KEY' \
 --header 'Content-Type: application/json' \
 --data '{
-    "channel": "Whatsapp",
+    "channel": "WhatsApp",
     "wabaId": "YOUR_WABA_ID",
     "category": "Marketing",
     "createdDate": "2025-10-22T12:02:28",
@@ -199,10 +194,10 @@ curl --location 'https://api.onexaura.com/templates/fetch' \
   </Expandable>
 </ResponseField>
 
-## Clevertap Fetch Templates
+## CleverTap Fetch Templates
 
 A separate GET endpoint returns templates directly in Meta's native format, intended for
-Clevertap integrations.
+CleverTap integrations.
 
 ### Endpoint
 
@@ -232,9 +227,3 @@ curl --location 'https://api.onexaura.com/oapi/meta/templates/fetch?limit=500' \
 --header 'apikey: YOUR_API_KEY' \
 --header 'wabaid: YOUR_WABA_ID'
 ```
-
-<Note>
-The source Postman collection defines only the request for this endpoint — no sample
-response body is included for the Clevertap fetch. Response shape is expected to mirror
-Meta's native template list format but this is not confirmed in the source material.
-</Note>

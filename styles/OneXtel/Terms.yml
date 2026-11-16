@@ -1,0 +1,21 @@
+extends: substitution
+message: "Use '%s', not '%s'."
+level: error
+ignorecase: false
+swap:
+  '\bOnextel\b': OneXtel
+  '\bONEXTEL\b': OneXtel
+  '\bOnexTel\b': OneXtel
+  '\bWhatsapp\b': WhatsApp
+  '\bwhats app\b': WhatsApp
+  '\bClevertap\b': CleverTap
+  '\bCleverTAP\b': CleverTap
+  '\bMoengage\b': MoEngage
+  '\bMoEngege\b': MoEngage
+  '\bWebengage\b': WebEngage
+  '\bWeb Engage\b': WebEngage
+  '\bLeadsquared\b': LeadSquared
+  '\be-mail\b': email
+  '\bmobile no\.?\b': mobile number
+  '\bSMSes\b': SMS messages
+  '\btele-?marketer ID\b': telemarketer ID

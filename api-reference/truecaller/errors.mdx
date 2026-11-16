@@ -1,0 +1,38 @@
+---
+title: "Errors"
+description: "HTTP status codes, and why individual messages fail or are skipped."
+---
+
+## HTTP status codes
+
+| Code | Meaning |
+| --- | --- |
+| `200` / `201` / `202` | Done. `202` on a send means Truecaller accepted the message |
+| `204` | Deleted |
+| `400` | The request is invalid. `error` says what, `details` lists validation problems |
+| `401` | Missing or invalid `x-api-key` |
+| `403` | The key cannot do this |
+| `404` | Not found in your workspace |
+| `409` | Conflicts with the current state, e.g. launching a campaign that is not a draft |
+| `415` | Unsupported file or body type |
+
+```json
+{ "error": "invalid body", "details": [{ "path": ["to"], "message": "Required" }] }
+```
+
+## Why a message failed or was skipped
+
+A message's `error` (and the campaign report's `categories`) falls into one of these groups.
+
+| Category | Typical `error` | What to do |
+| --- | --- | --- |
+| Not on Truecaller | `Truecaller NOT_FOUND` | The number has no Truecaller account or chat is off. Do not retry |
+| Opted out | `Opted out` | The person asked not to get these messages |
+| Frequency limits | `Limit: 3 promo messages per user per day` | Promotional caps; try another day |
+| Missing personalisation | `missing values for: name` | Add the column to the list or a default to the template |
+| Invalid number | `Truecaller INVALID_ARGUMENT` | Check the number's format |
+| Sender or key problem | `Truecaller UNAUTHENTICATED`, `PERMISSION_DENIED` | Contact your OneXtel account manager |
+| Rate limited | `Truecaller RESOURCE_EXHAUSTED` | Sending too fast; it eases on its own |
+| Truecaller unavailable | `Truecaller UNAVAILABLE`, `DEADLINE_EXCEEDED` | Temporary; safe to send again later |
+
+Skipped messages (opt-outs and limits) have status `blocked`; the others `failed`.

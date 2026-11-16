@@ -59,8 +59,7 @@ curl --location 'https://api.onexaura.com/oapi/send_sms' \
 </ParamField>
 
 <ParamField body="prefix" type="string">
-  Country code prefix applied to recipient numbers (e.g. `+91`). Optional per the Postman
-  collection; documented as mandatory in the PDF's common parameters table — see Gaps.
+  Country code prefix applied to recipient numbers (e.g. `+91`). Optional.
 </ParamField>
 
 <ParamField body="campaignName" type="string">
@@ -75,7 +74,8 @@ curl --location 'https://api.onexaura.com/oapi/send_sms' \
 ### Inside each `rcs` message object
 
 <ParamField body="messageType" type="string" required>
-  Type of message: `Promotional`, `Transactional`, or `OTP`.
+  Type of message: `Promotional` or `Transactional`. OTP is not an RCS message type: send one-time
+  codes as `Transactional`.
 </ParamField>
 
 <ParamField body="recipient" type="string" required>
@@ -119,8 +119,7 @@ curl --location 'https://api.onexaura.com/oapi/send_sms' \
   Optional custom reference field.
 </ParamField>
 <ParamField body="custref6" type="string">
-  Optional custom reference field. Appears in plain-text message examples; not shown in every
-  template example — see Gaps.
+  Optional custom reference field.
 </ParamField>
 
 ### Inside `contentMessage.templateMessage`
@@ -155,9 +154,8 @@ curl --location 'https://api.onexaura.com/oapi/send_sms' \
 </ParamField>
 
 <ParamField body="senderId" type="string">
-  The sender ID or bot ID associated with the message (matches your RCS sender). Named
-  `senderId` in the Send Message examples and `domain` in the parameter reference table for
-  the same field — see Gaps.
+  The sender ID or bot ID associated with the message (matches your RCS sender). Send this
+  field with the key `senderId`.
 </ParamField>
 
 <ParamField body="domain" type="string">
@@ -182,7 +180,7 @@ The minimal payload references an approved template by `templateCode` with no pe
 {
   "rcs": [
     {
-      "messageType": "Transactional/OTP/Promotional",
+      "messageType": "Transactional/Promotional",
       "recipient": "<recipient_phone_number>",
       "sender": "<sender_bot_Id>",
       "contentMessage": {
@@ -394,10 +392,7 @@ placeholders:
 </CodeGroup>
 
 <Note>
-The `customParams` value in the Calendar Event example is documented in the source PDF as
-`"{\"custom_param\":\"Name\"},{\"custom_param2\":\"Thursday\"}"` — two comma-separated objects
-rather than one JSON object with two keys. This looks like a documentation typo, but it is
-reproduced as-is per the fidelity rule. See Gaps.
+Send `customParams` as one JSON object.
 </Note>
 
 ### Media template (with custom params or actions)
@@ -553,7 +548,7 @@ optional `customParams`) differ per action type:
 {
   "rcs": [
     {
-      "messageType": "Transactional/OTP/Promotional",
+      "messageType": "Transactional/Promotional",
       "recipient": "<recipient_phone_number>",
       "sender": "<sender_bot_Id>",
       "contentMessage": {
@@ -585,7 +580,7 @@ Additional rich-card-standalone action variants follow the same shape with a dif
 {
   "rcs": [
     {
-      "messageType": "Transactional/OTP/Promotional",
+      "messageType": "Transactional/Promotional",
       "recipient": "<recipient_phone_number>",
       "sender": "<sender_bot_Id>",
       "contentMessage": {
@@ -708,9 +703,7 @@ Additional rich-card-standalone action variants follow the same shape with a dif
 ```
 
 <Note>
-In this example the source PDF nests `ttl` inside `contentMessage` rather than as a sibling
-of `contentMessage` at the message-object level (as shown in the Common Parameters table and
-all other examples on this page). Reproduced as documented — see Gaps.
+Send `ttl` as a sibling of `contentMessage`, at the message-object level.
 </Note>
 
 ## Response

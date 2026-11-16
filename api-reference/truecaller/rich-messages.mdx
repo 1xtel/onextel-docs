@@ -1,0 +1,62 @@
+---
+title: "Rich messages"
+description: "Attach an image, video or file, and add link buttons and quick replies to Truecaller messages."
+---
+
+A message can carry **one attachment** and **up to 3 buttons**, on top of its text. Put them on a
+template so every campaign and send of it uses them, or pass them with a free-text
+[send](/api-reference/truecaller/send-message).
+
+## Media
+
+| Type | Formats | Shown as |
+| --- | --- | --- |
+| Image | `image/jpeg`, `image/png`, `image/gif` | The image above the text |
+| Video | `video/mp4`, `video/quicktime` | A video above the text |
+| File | `application/pdf`, `text/plain` | A file card with its name, above the text |
+
+Files can be up to 20 MB. [Upload](/api-reference/truecaller/upload-media) the file to get a URL,
+or give any public https URL. Truecaller downloads the file when the message is sent, so the link
+must stay public. For PDFs and text files, `file_name` is the name the recipient sees.
+
+```json
+"media": {
+  "url": "https://example.com/invoice-OX1002.pdf",
+  "mime_type": "application/pdf",
+  "file_name": "invoice.pdf"
+}
+```
+
+## Buttons
+
+| Type | Does | Limits |
+| --- | --- | --- |
+| `link` | Opens a web page (https) or an app deep link | Label up to 40 characters |
+| `reply` | Sends its text back as the person's reply | Up to 100 characters |
+
+Labels and URLs can use `{{variables}}`, filled per contact like the body.
+
+```json
+"buttons": [
+  { "type": "link", "text": "Track order", "url": "https://example.com/t/{{order_id}}" },
+  { "type": "reply", "text": "Call me back" }
+]
+```
+
+## How taps are counted
+
+Every button is tagged per message, so a tap is matched to the person who made it.
+
+- **Link buttons** with click tracking on (`track_links`, on by default in campaigns) open through
+  a short OneXtel redirect, which records the click and its time, then forwards to your URL.
+- **Quick replies** and link buttons without tracking are counted from the tap events Truecaller
+  reports.
+
+Taps appear in the [campaign report](/api-reference/truecaller/campaign-report) per button, and in
+the click rate and time to click.
+
+## How it looks
+
+On the phone, the attachment sits at the top of the message bubble, the text below it, and the
+buttons as outlined rows inside the bubble. The notification shows the sender, the image if there
+is one, the first lines of text, and the first button next to **Mark all as read**.

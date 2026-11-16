@@ -7,8 +7,8 @@ An API key authenticates everything that talks to OneXtel from outside the porta
 [API](/api-reference/whatsapp/overview) calls, every [plugin](/plugins/overview), and the
 [callbacks](/guides/platform/callback-configuration) that report delivery back to you.
 
-Keys are account-level, not channel-level: the same key works across the channels your account
-is entitled to.
+Each key has an **Account Type** that decides which traffic it carries — WhatsApp, RCS, or one of
+the SMS types. Use a separate key for each channel and each integration.
 
 <Note>
 Callbacks are registered **against a specific key**. Messages sent with a key that has no
@@ -32,15 +32,22 @@ key for a new integration, remember to register its callbacks too.
     safely later, because nobody can tell what would break.
   </Step>
   <Step title="Set the account type">
-    Select the **Account Type** for this key.
+    Select the **Account Type** for this key:
+
+    | Channel | Account Type |
+    | --- | --- |
+    | WhatsApp | WhatsApp |
+    | RCS | RCS |
+    | SMS | Government, OTP, Promotional, Service Explicit or Service Implicit |
   </Step>
   <Step title="Set the optional controls">
     | Option | Effect |
     | --- | --- |
-    | Scrub DND | Filters recipients registered on Do Not Disturb |
-    | Match Template | Requires outbound content to match a registered template |
+    | Duplicate Check | Rejects the same message to the same number sent again within a short time |
+    | Match Template | Requires outbound content to match an approved template |
     | IP Whitelist | Restricts use of the key to approved source IP addresses |
-    | PE-TM Settings | Permits only DLT-approved messages |
+    | Scrub DND | SMS only. Filters recipients registered on Do Not Disturb |
+    | PE-TM Settings | SMS only. Permits only DLT-approved messages |
   </Step>
   <Step title="Submit">
     Click **Submit**. The platform generates the API key.
@@ -62,8 +69,9 @@ rejected at the platform rather than by the operator.
 
 ## View keys
 
-In the left pane, click the **API** menu, then the **API** tab, and click **Show API**. The
-platform lists your keys and their details.
+In the left pane, click the **API** menu, then the **API** tab, and click **Show API**. The list
+shows each key's **Name**, **Key**, **Account Type**, **Description**, **Match Template**,
+**Duplicate Check** and **Status**.
 
 <Frame caption="API keys">
   <img src="/images/platform/api-keys.png" alt="API page with Show API and Generate API actions" />
@@ -96,6 +104,10 @@ platform lists your keys and their details.
     Click **Submit**.
   </Step>
 </Steps>
+
+<Warning>
+Treat a key like a password. Never paste it into tickets, chats or screenshots.
+</Warning>
 
 <Warning>
 Deleting a key immediately breaks every integration authenticating with it, and its registered
