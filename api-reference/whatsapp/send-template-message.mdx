@@ -3,6 +3,10 @@ title: "Send WhatsApp Template Message"
 description: "Send an approved WhatsApp template message — media/variable/button payloads, Authentication OTP, Limited Time Offer, and Media Card Carousel sends."
 ---
 
+import ImportWhatsapp from '/snippets/import-whatsapp.mdx';
+
+<ImportWhatsapp />
+
 Use this endpoint to send an already-approved WhatsApp template to one or more recipients.
 Templates must first be created and approved via the
 [Create Template API](/api-reference/whatsapp/templates-create).
@@ -10,8 +14,13 @@ Templates must first be created and approved via the
 ## Endpoint
 
 ```text
-POST /send_sms
+POST /oapi/send_sms
 ```
+
+<Note>
+`/oapi/send_sms` sends WhatsApp, RCS and SMS. The bare `/send_sms` path carries SMS only,
+so a WhatsApp message sent to it is not delivered.
+</Note>
 
 ## Headers
 
@@ -92,7 +101,7 @@ POST /send_sms
 ## cURL
 
 ```bash
-curl --location 'https://api.onexaura.com/send_sms' \
+curl --location 'https://api.onexaura.com/oapi/send_sms' \
 --header 'Content-Type: application/json' \
 --header 'apikey: YOUR_API_KEY' \
 --data '{
@@ -277,7 +286,7 @@ share the same send-time payload shape — only the template's own button config
 }
 ```
 
-Endpoint for Authentication sends: `POST /send_sms`.
+Endpoint for Authentication sends: `POST /oapi/send_sms`.
 </Tab>
 
 <Tab title="Limited Time Offer">

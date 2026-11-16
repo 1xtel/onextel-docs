@@ -1,7 +1,11 @@
 ---
 title: "Send Session Messages"
-description: "Send non-template (session/interactive) WhatsApp messages — text, media, address, contact, URL button, list, media carousel, and reply — via the OneXtel send_sms API."
+description: "Send non-template (session/interactive) WhatsApp messages — text, media, address, contact, URL button, list, media carousel, and reply — through the OneXtel /oapi/send_sms API."
 ---
+
+import ImportWhatsapp from '/snippets/import-whatsapp.mdx';
+
+<ImportWhatsapp />
 
 Session messages are non-template WhatsApp messages. Unlike template messages, they do
 not require prior Meta approval, but they can only be sent within an open 24-hour
@@ -10,8 +14,13 @@ customer service window (i.e., in reply to an inbound message from the recipient
 ## Endpoint
 
 ```
-POST /send_sms
+POST /oapi/send_sms
 ```
+
+<Note>
+`/oapi/send_sms` sends WhatsApp, RCS and SMS. The bare `/send_sms` path carries SMS only,
+so a WhatsApp message sent to it is not delivered.
+</Note>
 
 <ParamField header="apikey" type="string" required>
   API key generated for the TUC (tenant under customer) associated with the sending
@@ -78,7 +87,7 @@ Sends a plain text message, optionally with link preview.
 ```
 
 ```bash cURL
-curl --location 'https://api.onexaura.com/send_sms' \
+curl --location 'https://api.onexaura.com/oapi/send_sms' \
 --header 'apikey: YOUR_API_KEY' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -137,7 +146,7 @@ or `sticker` — pass the media object under the matching key name.
 ```
 
 ```bash cURL
-curl --location 'https://api.onexaura.com/send_sms' \
+curl --location 'https://api.onexaura.com/oapi/send_sms' \
 --header 'apikey: YOUR_API_KEY' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -222,7 +231,7 @@ Sends an interactive address-collection message (India-specific address form).
 ```
 
 ```bash cURL
-curl --location 'https://api.onexaura.com/send_sms' \
+curl --location 'https://api.onexaura.com/oapi/send_sms' \
 --header 'apikey: YOUR_API_KEY' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -344,7 +353,7 @@ Sends one or more vCard-style contact cards.
 ```
 
 ```bash cURL
-curl --location 'https://api.onexaura.com/send_sms' \
+curl --location 'https://api.onexaura.com/oapi/send_sms' \
 --header 'apikey: YOUR_API_KEY' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -441,7 +450,7 @@ Sends an interactive message with a single call-to-action URL button (`cta_url`)
 ```
 
 ```bash cURL
-curl --location 'https://api.onexaura.com/send_sms' \
+curl --location 'https://api.onexaura.com/oapi/send_sms' \
 --header 'apikey: YOUR_API_KEY' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -550,7 +559,7 @@ Sends an interactive list message with sections of selectable rows.
 ```
 
 ```bash cURL
-curl --location 'https://api.onexaura.com/send_sms' \
+curl --location 'https://api.onexaura.com/oapi/send_sms' \
 --header 'apikey: YOUR_API_KEY' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -684,7 +693,7 @@ one URL button, or every card has the same number of quick-reply buttons.
 ```
 
 ```bash cURL
-curl --location 'https://api.onexaura.com/send_sms' \
+curl --location 'https://api.onexaura.com/oapi/send_sms' \
 --header 'apikey: YOUR_API_KEY' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -794,7 +803,7 @@ Sends an interactive message with up to 3 quick-reply buttons.
 ```
 
 ```bash cURL
-curl --location 'https://api.onexaura.com/send_sms' \
+curl --location 'https://api.onexaura.com/oapi/send_sms' \
 --header 'apikey: YOUR_API_KEY' \
 --header 'Content-Type: application/json' \
 --data '{
