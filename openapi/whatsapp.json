@@ -1069,7 +1069,7 @@
         ]
       }
     },
-    "/send_sms": {
+    "/oapi/send_sms": {
       "post": {
         "operationId": "send-template-message-send-whatsapp-template-message",
         "summary": "Send WhatsApp Template Message / Send Session Messages",

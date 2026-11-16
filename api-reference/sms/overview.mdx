@@ -7,8 +7,10 @@ import ImportSms from '/snippets/import-sms.mdx';
 
 <ImportSms />
 
-SMS to Indian numbers is sent to one endpoint, `/send_sms`. You submit message details as a JSON
-payload and the platform delivers to the recipients.
+SMS to Indian numbers is sent to `/send_sms`. You submit message details as a JSON payload and
+the platform delivers to the recipients. `/send_sms` carries SMS only: to send WhatsApp or RCS, or
+to fall back from one channel to another, use `/oapi/send_sms`, described in the
+[OmniChannel API](/api-reference/omnichannel/overview).
 
 <Note>
 For destinations **outside India**, use the
