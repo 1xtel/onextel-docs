@@ -49,3 +49,15 @@ jobs:
             payload field names, error codes or endpoint paths — those are
             verified facts, not style.
           claude_args: "--max-turns 15"
+
+      # The action hides its output on a public repo, so a refused API call (no credit, a revoked
+      # key, a model the workspace cannot use) fails with no reason in the log. Print just that.
+      - name: Explain a failed review
+        if: failure() && steps.guard.outputs.configured == 'true'
+        run: |
+          f="$RUNNER_TEMP/claude-execution-output.json"
+          [ -f "$f" ] || exit 0
+          reason=$(jq -r '(if type == "array" then .[] else . end)
+            | select(.is_api_error_message == true)
+            | "\(.error // "api_error"), HTTP \(.api_error_status // "?"): \(.message.content[0].text // "no message")"' "$f" | tail -n1)
+          if [ -n "$reason" ]; then echo "::error::The Anthropic API refused the review: $reason"; fi
