@@ -1,0 +1,80 @@
+---
+title: "WhatsApp account model"
+description: "How Meta's WhatsApp account and Messaging account split works, and what it changes for templates, billing and limits."
+---
+
+Meta has split the WhatsApp Business Account (WABA) into two objects: a **WhatsApp account
+(WAAC)** for the phone number, and a **Messaging account** for templates and billing. The change
+rolled out from 23 September 2026 and reached all businesses by mid-October 2026. Meta moved
+every account across automatically.
+
+The split lets one phone number work with several providers at once. Each provider gets its own
+Messaging account on the number, while the number itself stays with your business.
+
+Your business is on the new model if Meta Business Suite shows both **WhatsApp accounts** and
+**Messaging accounts**.
+
+## The two accounts
+
+| Account | Holds | How many |
+| --- | --- | --- |
+| **WhatsApp account (WAAC)** | The business phone number, business profile information and product catalogues. Business usernames are planned. | One per phone number. Always owned by your business, and shareable with several providers. |
+| **Messaging account** | Message templates, billing and payment method, webhook subscriptions and analytics. | One per provider. Meta creates it when you connect the provider through Embedded Signup. |
+
+Your existing WABA became your provider's Messaging account, with the same ID. The WABA ID you
+already use is now the Messaging account ID.
+
+<Note>
+Meta's Terms of Service still call the WhatsApp account a "WhatsApp Business Account". To
+manage several numbers as a group, Meta links WhatsApp accounts under a primary one; sharing the
+primary WhatsApp account with a provider gives that provider every number in the group.
+</Note>
+
+## What stays the same
+
+- Cloud API endpoints, phone number IDs and access tokens keep working.
+- Your WABA ID keeps working, as the Messaging account ID.
+- The new WhatsApp account and Messaging account IDs are additions; they don't replace the IDs
+  you store today.
+
+## What changes on a shared number
+
+When more than one provider works on your number:
+
+- **Templates** belong to the Messaging account they were created in. Other providers on the
+  number can't see or reuse them, and they aren't copied when you add a provider. See
+  [Bring your templates](/guides/whatsapp/add-onextel-to-existing-number#bring-your-templates).
+- **Billing** is per Messaging account. Each one has its own payment method, and each provider
+  bills through its own Messaging account, whichever provider handles the conversation. A message
+  is charged to the Messaging account of the app that sends it.
+- **Throughput** is set per phone number, and **messaging limits** (unique users per 24 hours)
+  per business portfolio. All providers on the number share both.
+- **Incoming messages** go to one provider at a time, chosen by your conversation routing setting.
+  See [Conversation routing](/guides/whatsapp/add-onextel-to-existing-number#set-conversation-routing).
+
+<Warning>
+If a partner's credit line is attached to a Messaging account that your business owns, that
+Messaging account can't be shared with another partner.
+</Warning>
+
+## Meta's timeline
+
+| Phase | When | What Meta ships |
+| --- | --- | --- |
+| **1. General availability** | From 23 September 2026; all businesses by mid-October 2026 | Accounts migrated automatically. Embedded Signup creates one Messaging account per provider. Meta Business Suite shows WhatsApp accounts and Messaging accounts. The two-step verification PIN is retired for eligible numbers, in stages. |
+| **2. New Graph API version** | First half of 2027 | The newest Messages API version requires `messaging_account_id` where a sender can use more than one Messaging account on a number. A separate WhatsApp account ID, new endpoints, a new `whatsapp_account` webhook topic and separate permissions. |
+| **3. Mandatory transition** | First half of 2028 | Every Messages API version requires `messaging_account_id` in multi-account setups. APIs that take a phone number ID in the path or query use the WhatsApp account ID instead. |
+
+Meta also asks integrations to move from `paid_messaging_account_id` to `messaging_account_id`
+by **31 December 2026**. The old field stays as a backward-compatible alias until a later Graph
+API version removes it; if a request sends both, `messaging_account_id` wins.
+
+Meta describes the change in
+[account model evolution](https://developers.facebook.com/documentation/business-messaging/whatsapp/account-model-evolution/).
+Meta may update these dates.
+
+## Related
+
+- [Add OneXtel to a number you already use](/guides/whatsapp/add-onextel-to-existing-number)
+- [Phone numbers and pools](/guides/whatsapp/phone-numbers)
+- [WhatsApp Coexistence](/guides/whatsapp/coexistence)

@@ -53,6 +53,8 @@
                 "group": "Onboarding",
                 "pages": [
                   "guides/whatsapp/activation",
+                  "guides/whatsapp/account-model",
+                  "guides/whatsapp/add-onextel-to-existing-number",
                   "guides/whatsapp/business-verification",
                   "guides/whatsapp/coexistence"
                 ]
