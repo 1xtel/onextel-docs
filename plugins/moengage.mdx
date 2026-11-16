@@ -1,6 +1,6 @@
 ---
 title: "MoEngage"
-description: "Set up OneXtel WhatsApp, RCS and SMS in MoEngage — senders, providers, templates, campaigns, callbacks, SMS fallback, and how each OneXtel error code reaches MoEngage."
+description: "Set up OneXtel WhatsApp, RCS and SMS in MoEngage — senders, providers, templates, campaigns, callbacks, WhatsApp → RCS and RCS → SMS fallback, and how each OneXtel error code reaches MoEngage."
 ---
 
 The MoEngage connector adds WhatsApp, RCS and SMS as sendable channels inside MoEngage. You build
@@ -27,6 +27,13 @@ Choosing a tab in any section switches every section on the page to that channel
     | Location | ✅ |
     | Quick Reply buttons | ✅ |
     | Call-to-action buttons — static and dynamic | ✅ |
+
+    **RCS fallback**
+
+    Supported. If a WhatsApp message fails, or no delivery report arrives within the wait time,
+    OneXtel sends it over RCS instead. MoEngage sees one normal WhatsApp lifecycle for the
+    message — see [Add RCS fallback](#add-rcs-fallback-optional) under the **WhatsApp** tab in
+    [Set up](#set-up).
 
     **Inbound**
 
@@ -103,6 +110,7 @@ send.
 | Channel | Purpose | Where you enter it | URL |
 | --- | --- | --- | --- |
 | WhatsApp | Outbound | MoEngage sender — URL | `https://mo.onexaura.com/moengage/whatsapp/outbound` |
+| WhatsApp | Delivery reports — only on senders with RCS fallback | OneXtel callback — Callback URL, header `callback` | `https://mo.onexaura.com/moengage/whatsapp/dlr` |
 | WhatsApp | Inbound and button clicks | OneXtel callback — Callback URL, `?callback_url=` query param | `https://mo.onexaura.com/moengage/whatsapp/inbound` |
 | RCS | Outbound | MoEngage sender — API URL | `https://mo.onexaura.com/moengage/rcs/outbound` |
 | RCS | Button clicks | OneXtel callback — Callback URL, header `callback` | `https://mo.onexaura.com/moengage/rcs/inbound` |
@@ -111,8 +119,10 @@ send.
 | SMS | Delivery reports — plain SMS, and the SMS leg of an RCS fallback | OneXtel callback — Callback URL, header `callback` | `https://mo.onexaura.com/moengage/sms/dlr` |
 
 <Note>
-The WhatsApp **delivery notification** callback is the exception — it takes the callback URL
-MoEngage generates for you and goes straight to MoEngage. Every RCS and SMS callback goes through
+The WhatsApp **delivery notification** callback is the exception — on a sender without RCS
+fallback it takes the callback URL MoEngage generates for you and goes straight to MoEngage. A
+sender with RCS fallback sends it through the connector instead, so the connector can hold a
+WhatsApp failure while the RCS leg runs. Every RCS and SMS callback goes through
 the connector, with MoEngage's URL in the `callback` header. That puts every receipt in the
 connector's logs, which is the only way to tell later whether OneXtel sent a report that MoEngage
 did not count.
@@ -185,6 +195,126 @@ hosts, so check it before saving.
     `callback_url` query parameter, is identical to the inbound callback.
   </Step>
 </Steps>
+
+### Add RCS fallback (optional)
+
+MoEngage WhatsApp campaigns have no fallback setting of their own, so the fallback is set once per
+WhatsApp sender and run by OneXtel's fallback engine. If the WhatsApp message fails, or no
+delivery report arrives within the wait time, OneXtel sends an RCS message instead. Every
+campaign on that sender gets the fallback; senders without it work exactly as above.
+
+<Steps>
+  <Step title="Create a WhatsApp → RCS Fallback ID in OneXtel">
+    In OneXtel, go to **Fallback → Add Fallback**. Set the mode to **Same Account**, the primary
+    channel to **WhatsApp** and the first fallback to **RCS**, then save and copy the Fallback ID.
+
+    Keep the RCS body OneXtel pre-fills. Every field in it — `$$$sender`, `$$$messageType`,
+    `$$$template`, `$$$customParams`, `$$$custref1`…`$$$custref5` — is filled in by the connector
+    on each send. `$$$custref1` and `$$$custref2` must stay: they are how the RCS receipt finds its
+    way back to the WhatsApp message.
+
+    <Warning>
+    **Do not add a second fallback** (SMS after RCS). Its receipts would arrive on the RCS
+    contract, not WhatsApp's, and MoEngage would not count them.
+    </Warning>
+  </Step>
+  <Step title="Set the WhatsApp sender Authorization value">
+    In **Settings → WhatsApp → Sender Configuration**, edit the OneXtel sender and replace the
+    **Authorization** value with tilde-separated values, in this order:
+
+    ```
+    <apikey>~<wabaId>~<fallbackId>~<waitTime>~<rcsSenderProfile>_<messageType>~<rcsBotId>
+    ```
+
+    | Value | What goes in it |
+    | --- | --- |
+    | `apikey` | Your OneXtel API key |
+    | `wabaId` | Your WABA ID. It may be left empty (`apikey~~fallbackId~…`) when the sender's **WABA ID** field carries it |
+    | `fallbackId` | The Fallback ID from the previous step |
+    | `waitTime` | Seconds to wait for a WhatsApp delivery report before falling back, `1`–`86400`. Defaults to `30` |
+    | `rcsSenderProfile_messageType` | The RCS **sender profile name** from **RCS → Asset Management → Sender Profiles**, then `_` and `Promotional`, `Transactional` or `OTP` — for example `promo_onex_Promotional` |
+    | `rcsBotId` | Optional. The RCS bot's ID. With it, the connector creates the RCS fallback templates for you — see the next step |
+
+    For example:
+
+    ```
+    AbCd1234~1790923784894660~05dfa99b-c446-4c66-bcc6-9cae95254964~30~promo_onex_Promotional~6acddecc5636e4f2201f2e13
+    ```
+
+    <Warning>
+    **Use the sender profile name, not the bot ID**, in the fifth value. OneXtel looks the
+    fallback sender up by profile name; a bot ID there fails every RCS leg with `4019`
+    `Platform_Provided_Details_Invalid`. The bot ID goes only in the sixth value.
+    </Warning>
+
+    A value with only `<apikey>` or `<apikey>~<wabaId>` has no fallback and works exactly as
+    before.
+  </Step>
+  <Step title="Let the connector create the RCS templates">
+    With the bot ID in the Authorization value, the connector creates the RCS template for each
+    WhatsApp template itself — nothing has to be built by hand.
+
+    - **Reuse first.** An approved RCS template with exactly the WhatsApp template's name is used
+      as is, if its variables are exactly the ones listed below.
+    - **Otherwise it creates `fb_<whatsapp name>`**, at most 20 characters. A longer name keeps its
+      start and gains a four-character suffix, for example `fb_wen_util_ima_b01b`.
+    - **When.** At MoEngage template sync, for WhatsApp templates created or changed in the last
+      7 days, so carrier approval starts before the first campaign; otherwise on the template's
+      first send.
+    - **Until the RCS template is approved**, sends of that template go out on WhatsApp **without
+      a fallback**. A rejected template is submitted again after 48 hours.
+
+    | WhatsApp template | RCS template created |
+    | --- | --- |
+    | Text, optional header text | Text message; the header text goes in front of the body, the footer is dropped |
+    | Image or video header | Rich card |
+    | Carousel | Carousel, one card per WhatsApp card |
+    | Document header | **None** — sent on WhatsApp without a fallback |
+
+    Variables are named by position: body `{{n}}` becomes `[var<n>]`, header text `{{1}}` becomes
+    `[header_var1]`, a media header becomes `[media_url]`, and a dynamic URL button `n` becomes
+    `[button<n>_url]`. Carousel card `k` uses the same rules prefixed with `card<k>_`.
+
+    **Without the bot ID**, nothing is created: an approved RCS template with **the same name**
+    as the WhatsApp template, using the variable names above, must already exist.
+  </Step>
+  <Step title="Route the delivery callbacks through the connector">
+    On the same API key, replace the WhatsApp delivery callback from step 3 and add an RCS one:
+
+    | Channel | Type | Callback Format Type | Callback URL | Header `callback` |
+    | --- | --- | --- | --- | --- |
+    | WhatsApp | Delivery Notification | Raw (Meta) | `https://mo.onexaura.com/moengage/whatsapp/dlr` | Your MoEngage WhatsApp DLR URL |
+    | RCS | Delivery Notification | Raw (RCS) | `https://mo.onexaura.com/moengage/rcs/dlr` | Your MoEngage RCS DLR URL |
+
+    Tick `custref1` and `custref2` in both callbacks' field lists. If the key already has an RCS
+    delivery callback for RCS campaigns, keep it — WhatsApp fallback receipts use the same one.
+
+    <Warning>
+    **Without these two callbacks, MoEngage never hears the outcome.** The connector holds a
+    WhatsApp failure until the RCS leg reports, and it can only do that if both receipts reach it.
+    </Warning>
+  </Step>
+  <Step title="Test the fallback">
+    Send a campaign to a number that cannot receive the WhatsApp message (for example, one not on
+    WhatsApp) but can receive RCS. MoEngage should show the message as **delivered**, with no
+    WhatsApp failure.
+  </Step>
+</Steps>
+
+**What MoEngage sees**
+
+The connector holds back WhatsApp's `failed` while the RCS leg runs, then reports one outcome:
+
+| What happened | MoEngage receives |
+| --- | --- |
+| WhatsApp delivers | `sent`, `delivered`, `read` — no fallback |
+| WhatsApp fails, RCS delivers | `sent`, `delivered` (and `read`) — the WhatsApp failure is never shown |
+| WhatsApp fails, RCS fails | `failed`, with the RCS failure's code and both reasons in the description |
+| No WhatsApp report within the wait time | Same as above, depending on the RCS outcome |
+| RCS never reports within 15 minutes | The held WhatsApp `failed`, marked "no result from the RCS fallback" |
+
+Statuses always reach MoEngage in order, `sent` → `delivered` → `read`, each once, even when
+OneXtel's receipts arrive out of order.
 
 </Tab>
 <Tab title="RCS" id="setup-rcs">
@@ -859,9 +989,26 @@ replies, and — for SMS — on every delivery report:
 
 **Delivery reports**
 
-WhatsApp delivery reports go straight from OneXtel to MoEngage, on the callback URL MoEngage
-generated for your sender, without passing through the connector. For what a failure code means,
-see [WhatsApp error codes](/api-reference/whatsapp/error-codes).
+On a sender without RCS fallback, WhatsApp delivery reports go straight from OneXtel to MoEngage,
+on the callback URL MoEngage generated for your sender, without passing through the connector.
+For what a failure code means, see [WhatsApp error codes](/api-reference/whatsapp/error-codes).
+
+On a sender with RCS fallback, the connector maps each failure itself. A WhatsApp failure uses
+Meta's code:
+
+| Meta code | MoEngage code |
+| --- | --- |
+| `131005` | `7000` |
+| `1000`, `131008`, `131009`, `131051`, `132000`, `132001`, `132005`, `132007`, `132012`, `132015`, `132016`, `132068`, `MM100` | `7001` |
+| `131021` | `7002` |
+| `131026`, `131047`, `131049`, `131050` | `7003` |
+| Anything else, including `4012` (wait time expired) | `7004` |
+
+When the RCS leg also fails, the RCS failure decides the code: RCS disabled, user not found,
+unreachable or opted out is `7003`; an invalid number `7002`; a template or parameter problem
+`7001`; authentication `7000`; anything else, including TTL expiry, `7004`. The description keeps
+both reasons, for example
+`RCS fallback: RCS Disabled (OneXtel 5); WhatsApp: Api Level Failure (Meta 132005)`.
 
 **Send replies**
 
@@ -871,6 +1018,9 @@ see [WhatsApp error codes](/api-reference/whatsapp/error-codes).
 | `from` or `to` missing from the payload | `7002` |
 | Message ID, template or template name missing from the payload | `7004` |
 | OneXtel refused the request — including a rejected API key | `7004` |
+| RCS fallback only: the Fallback ID is not a valid ID, the wait time is not whole seconds between `1` and `86400`, or the fifth Authorization value is not `<senderProfile>_<type>` | `7004` |
+| RCS fallback only: a template parameter has no value, or a media header has no link | `7001` |
+| RCS fallback only: the template uses a feature RCS cannot show — see [Limitations](#limitations) | `7004` |
 
 </Tab>
 <Tab title="RCS" id="errors-rcs">
@@ -965,6 +1115,18 @@ report.
 - **Click events are not available.** MoEngage exposes no API to receive them, so link clicks
   cannot be written back into MoEngage reporting. Use
   [OneXtel reporting](/guides/rcs-platform/reports-detail) for click data.
+- **RCS fallback is per sender, not per campaign.** Every campaign on a sender with fallback gets
+  it; use a second sender for campaigns that should not fall back.
+- **RCS fallback only, never SMS after it.** A Fallback ID with an SMS leg after RCS is not
+  supported.
+- **Templates with a document header are sent without a fallback.** RCS cannot deliver a document
+  from a variable link.
+- **Some templates are refused on a sender with fallback**, because RCS has no equivalent: a
+  location or product header, copy-code and OTP buttons, limited-time offers, and catalog,
+  multi-product, flow, order and voice-call components. Rich cards and carousel cards allow at
+  most 4 buttons, text messages 11, and button labels 25 characters.
+- **A Fallback ID that does not exist on the API key is not detected.** OneXtel sends the
+  WhatsApp message without a fallback.
 
 </Tab>
 <Tab title="RCS" id="limits-rcs">
