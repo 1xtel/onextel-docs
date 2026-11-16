@@ -346,7 +346,7 @@
     "primary": {
       "type": "button",
       "label": "OneXtel",
-      "href": "https://www.onextel.com"
+      "href": "https://onextel.com"
     },
     "links": [
       {
@@ -373,8 +373,8 @@
   },
   "footer": {
     "socials": {
-      "website": "https://www.onextel.com",
-      "linkedin": "https://www.linkedin.com/company/14525405/admin/dashboard",
+      "website": "https://onextel.com",
+      "linkedin": "https://www.linkedin.com/company/14525405/",
       "instagram": "https://www.instagram.com/onextel_media"
     }
   },
