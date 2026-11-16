@@ -14,22 +14,23 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-      id-token: write
     steps:
       - name: Check the key is configured
         id: guard
         run: echo "configured=${{ secrets.ANTHROPIC_API_KEY != '' }}" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         if: steps.guard.outputs.configured == 'true'
         with:
           fetch-depth: 0
 
       - name: Review the changed pages
         if: steps.guard.outputs.configured == 'true'
-        uses: anthropics/claude-code-action@v1
+        uses: anthropics/claude-code-action@f3b070c88125d33dbae5653df5f143101d4ea9dc # v1.0.276
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Comment with the workflow's own token, so no GitHub App has to be installed on the org.
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: |
             Review only the documentation changes in this pull request against
             STYLE_GUIDE.md in this repository, which is the house standard.
