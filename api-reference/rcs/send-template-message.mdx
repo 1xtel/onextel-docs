@@ -54,8 +54,8 @@ curl --location 'https://api.onexaura.com/oapi/send_sms' \
 ## Request body
 
 <ParamField body="rcs" type="array" required>
-  Wrapper array of one or more message objects. Supports up to 500 objects per request
-  (many-to-many use case).
+  Wrapper array of one or more message objects, up to 500 per request. See
+  [Send to many recipients](#send-to-many-recipients).
 </ParamField>
 
 <ParamField body="prefix" type="string">
@@ -78,9 +78,9 @@ curl --location 'https://api.onexaura.com/oapi/send_sms' \
   codes as `Transactional`.
 </ParamField>
 
-<ParamField body="recipient" type="string" required>
-  Recipient phone number, without prefix. Can also be an array to support a one-to-many use
-  case, containing up to 500 numbers in a single request.
+<ParamField body="recipient" type="string | array" required>
+  Recipient phone number, without prefix, or an array of up to 500 numbers. See
+  [Send to many recipients](#send-to-many-recipients).
 </ParamField>
 
 <ParamField body="sender" type="string" required>
@@ -169,6 +169,56 @@ curl --location 'https://api.onexaura.com/oapi/send_sms' \
 <ParamField body="expiry" type="string">
   Optional expiry for the shortened URL.
 </ParamField>
+
+## Send to many recipients
+
+One request can reach many recipients in two ways:
+
+| Pattern | How | Limit per request |
+| --- | --- | --- |
+| **One to many**: the same message to several numbers | Put the numbers in `recipient` as an array. | 500 numbers in each `recipient` array |
+| **Many to many**: different messages in one request | Add one message object per message to the `rcs` array. | 500 objects in the `rcs` array |
+
+For one recipient, `recipient` can be a single number.
+
+<Tabs>
+  <Tab title="One to many">
+    ```json
+    {
+      "rcs": [
+        {
+          "messageType": "Transactional",
+          "recipient": ["919999999999", "919999999998", "919999999997"],
+          "sender": "your_rcs_sender",
+          "contentMessage": { "templateMessage": { "templateCode": "YOUR_TEMPLATE_CODE" } }
+        }
+      ],
+      "prefix": "+91"
+    }
+    ```
+  </Tab>
+  <Tab title="Many to many">
+    ```json
+    {
+      "rcs": [
+        {
+          "messageType": "Transactional",
+          "recipient": "919999999999",
+          "sender": "your_rcs_sender",
+          "contentMessage": { "templateMessage": { "templateCode": "YOUR_TEMPLATE_CODE" } }
+        },
+        {
+          "messageType": "Transactional",
+          "recipient": "919999999998",
+          "sender": "your_rcs_sender",
+          "contentMessage": { "templateMessage": { "templateCode": "YOUR_SECOND_TEMPLATE_CODE" } }
+        }
+      ],
+      "prefix": "+91"
+    }
+    ```
+  </Tab>
+</Tabs>
 
 ## Examples
 
