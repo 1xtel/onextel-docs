@@ -1,0 +1,97 @@
+---
+title: "Add OneXtel to your number"
+description: "Connect OneXtel to a WhatsApp number you already use with another provider, then set conversation routing so OneXtel receives incoming messages."
+---
+
+If your WhatsApp number already works with another provider, you don't move it. You share your
+existing WhatsApp account with OneXtel instead. The number stays where it is, conversations
+aren't interrupted, and your previous provider keeps working until you remove them.
+
+This replaces the old way of moving a number between providers, which meant offboarding,
+switching off two-step verification and verifying the number again. Meta no longer supports
+moving a number between providers. For background, see
+[WhatsApp account model](/guides/whatsapp/account-model).
+
+## Before you start
+
+- You need an **admin** of your own Meta business portfolio. Only an admin can complete the
+  sign-up and change conversation routing.
+- Have your OneXtel portal account to hand.
+
+## Connect OneXtel
+
+<Steps>
+  <Step title="Start Embedded Signup">
+    In the OneXtel portal, go to **Channels → WhatsApp → Asset Management → Phone Numbers** and
+    click **Add WABA**. Meta's sign-up window opens.
+  </Step>
+  <Step title="Select your existing number">
+    On the first screen, select the phone number you already use. The **Business Portfolio** and
+    **WhatsApp account** fields are greyed out. That's expected: Meta fills them in from the
+    number.
+  </Step>
+  <Step title="Finish the sign-up">
+    Complete the remaining screens. Meta creates a new Messaging account for OneXtel on your
+    number, billed through OneXtel.
+  </Step>
+  <Step title="Set conversation routing">
+    Route conversations to OneXtel, as described below, before you test incoming messages.
+  </Step>
+</Steps>
+
+## Set conversation routing
+
+When several providers share a number, Meta's **conversation routing** decides which one
+receives and answers each conversation. After you add OneXtel, your previous provider stays in
+charge until you change the setting. Only your business can change it; OneXtel can't change it
+for you.
+
+Until routing points to OneXtel:
+
+- incoming messages and message webhooks don't reach OneXtel,
+- Meta's health status says *Your app is not subscribed to the message webhook*, even though the
+  webhook URLs are set,
+- free-form replies sent through OneXtel fail with error `131070`: *Message failed to send
+  because another app is controlling this thread now*.
+
+To route conversations to OneXtel, a business portfolio admin does this in Meta Business Suite:
+
+<Steps>
+  <Step title="Open your WhatsApp account">
+    Go to **Business settings → WhatsApp accounts** and select the account or number.
+  </Step>
+  <Step title="Open conversation routing">
+    Open the **Conversation routing** tab and click **Manage**.
+  </Step>
+  <Step title="Choose OneXtel everywhere">
+    Select **OneXtel Limited** in every dropdown: the five message routing types and **Thread
+    control – All conversations**.
+  </Step>
+  <Step title="Save">
+    Click **Finish**.
+  </Step>
+</Steps>
+
+<Tip>
+Set routing straight after onboarding. If OneXtel isn't receiving any messages on a shared
+number, check routing first.
+</Tip>
+
+## Bring your templates
+
+Templates aren't copied to OneXtel's new Messaging account. If you need the templates you used
+with your previous provider, OneXtel can copy them from that provider's Messaging account on
+request. Your number can have several Messaging accounts, each with different templates, so tell
+OneXtel the WABA ID (Messaging account ID) to copy from. Email
+[support@onextel.com](mailto:support@onextel.com).
+
+Meta resets the quality rating and messaging tier of copied templates to baseline, so expect a
+ramp-up of about 2 to 4 weeks. Meta describes this in
+[template migration](https://developers.facebook.com/documentation/business-messaging/whatsapp/account-model-evolution/).
+
+## Billing
+
+Messages OneXtel sends are charged to OneXtel's Messaging account on your number. Messages your
+other provider sends are charged to theirs, whichever provider is handling the conversation. All
+providers share the number's throughput and your portfolio's messaging limits. See
+[What changes on a shared number](/guides/whatsapp/account-model#what-changes-on-a-shared-number).
