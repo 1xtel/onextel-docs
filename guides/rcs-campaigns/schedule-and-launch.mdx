@@ -57,6 +57,11 @@ Select any one method and enter the details:
     4. Click **+** to add more batches (if required).
 
     Example: Batch 1 – 19,999 recipients scheduled for Nov 7, 2025, 02:18 PM.
+
+    <Note>
+      Manual batching locks **Repeat Campaign** and **Schedule**, because each
+      batch already has its own time.
+    </Note>
   </Tab>
 </Tabs>
 
@@ -80,14 +85,23 @@ frequency and duration.
     | Frequency | Description | Configuration |
     | --- | --- | --- |
     | **Daily** | Sends the campaign every day at the scheduled time. | Keep **Ends** as `Never` or choose an end date. The Schedule Summary shows "Every day". |
-    | **Weekly** | Sends the campaign on selected days every other week or on alternate weeks. | Choose the interval (Every, Alternate, or After weeks), then select specific days (e.g., Mon, Wed, Fri). The Schedule Summary shows "Every Week". |
+    | **Weekly** | Sends the campaign on selected days every week, on alternate weeks, or after a set number of weeks. | Choose the interval (Every, Alternate, or After weeks), then select specific days (e.g., Mon, Wed, Fri). The Schedule Summary shows "Every Week". |
     | **Monthly** | Sends the campaign every month based on specific dates or days. | Choose the interval (Every, Alternate, or After months). Under **Repeat On**, select Specific Dates or Days of Week, then the required Days of Week and Week Position (e.g., First Monday). The Schedule Summary shows "Every Month". |
     | **Custom** | Allows you to manually select specific dates and times for the campaign. | Click **+ Add Date & Time** to schedule manually. The Schedule Summary shows "Custom — Add specific dates and times". |
+  </Step>
+  <Step title="Set when it ends">
+    Under **Ends**, choose **Never**, **After** a number of runs, or **On**
+    a date.
   </Step>
   <Step title="Review the Schedule Summary">
     Confirm the summary matches the intended recurrence before moving on.
   </Step>
 </Steps>
+
+<Warning>
+  Repeat isn't available with **Immediate Execution**. Use **Scheduled
+  Execution** when repeats are on.
+</Warning>
 
 ## Schedule
 
@@ -142,8 +156,28 @@ automatically. Ideal for planned or time-sensitive campaigns.
   </Step>
 </Steps>
 
-<Note>
-  The Schedule section also shows **Test** and **Draft** buttons alongside
-  **Launch**. Campaigns saved as drafts appear on the campaigns dashboard with
-  the Draft status.
-</Note>
+## Launch controls
+
+| Button | What it does |
+| --- | --- |
+| **Test** | Sends the campaign to a few test numbers first. Always do this before a real send. |
+| **Draft** | Saves the campaign without sending. It appears on the campaigns dashboard as `Draft`. |
+| **Launch** | Starts the campaign, or schedules it, per the selected execution type. |
+
+If maker-checker is switched on for your account, **Launch** sends the
+campaign to a checker for approval instead — see
+[Roles](/guides/platform/roles#campaign-maker-checker).
+
+## Before you launch
+
+- The template is `Approved` for the sender profile and message type.
+- Every variable is mapped, and the preview looks right.
+- Numbers include the country code, or **Default Country Code** is on.
+- There is enough credit for the volume. Messages fail with `4010` when
+  credit runs out.
+- Fallback is set, so customers whose phones can't receive RCS still get
+  the message.
+
+After launch, track the campaign from the
+[campaigns dashboard](/guides/rcs-campaigns/manage-campaigns), and read the
+results in [Summary Reports](/guides/rcs-platform/reports-summary).

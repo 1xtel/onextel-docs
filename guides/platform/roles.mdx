@@ -14,8 +14,33 @@ able to send messages or change account settings.
 | Admin | Full access, including user management and account settings |
 | Manager | Day-to-day operation — campaigns, templates, reports |
 | Agent | Sending and handling messages |
-| Checker | Approving activities where maker-checker is enabled |
+| Sales | Sales users |
 | Report Viewer | Read-only access to reports |
+
+If none fits, create up to 5 custom roles — see [Create a custom role](#create-a-custom-role).
+
+## Campaign maker-checker
+
+Maker-checker splits campaign sending between two people, so no single user can create and send a
+WhatsApp or RCS campaign alone. Regulated customers such as banks often require it.
+
+Your tenant administrator switches maker-checker on for your account. Each user then also gets a
+**Maker** or **Checker** role type (an Admin can be either):
+
+<Steps>
+  <Step title="The maker creates the campaign">
+    When a maker clicks **Launch**, the campaign goes to `Pending`.
+  </Step>
+  <Step title="The checker reviews it">
+    The checker opens the campaign and clicks **Approve** or **Reject**.
+  </Step>
+  <Step title="The checker launches it">
+    An `Approved` campaign is launched by the checker. A `Rejected` or `Pending` campaign can be
+    edited and resubmitted.
+  </Step>
+</Steps>
+
+If maker-checker is switched off, `Pending` and `Rejected` campaigns go back to `Draft`.
 
 ## Permissions
 
@@ -27,8 +52,10 @@ Permissions are granted per feature, across three actions:
 | Edit | Creating and changing records |
 | Download | Exporting data out of the platform |
 
-The features that can be controlled are: New SMS, Campaign, User Management, Credits, Reports,
-Telco Reports, DLT, API, Phonebook, Notification, and All Schedule.
+The features that can be controlled include New SMS, Campaign, User Management, Credits, Reports,
+Telco Reports, DLT, API, Phonebook, Notification, All Schedule, WhatsApp and RCS. The number next
+to a feature in the matrix is how many permissions it has — for WhatsApp, for example, viewing
+and creating templates are separate permissions.
 
 <Frame caption="Role Management matrix">
   <img src="/images/platform/roles-matrix.png" alt="Role Management matrix showing view, edit and download permissions per feature for each role" />
@@ -51,7 +78,8 @@ When none of the built-in roles fits, create your own.
     each existing role as a column and each feature as a row.
   </Step>
   <Step title="Name the role">
-    Enter the role name in the **Custom Role** section.
+    Enter the role name in the **Custom Role** section. You can have up to 5 custom roles; the
+    panel shows how many are left, for example `4/5`.
   </Step>
   <Step title="Set the permissions">
     For each feature, select the **View**, **Edit**, and **Download** checkboxes you want to
@@ -86,6 +114,11 @@ When none of the built-in roles fits, create your own.
 
 Roles can also be set when the user is first created — see
 [Add a user](/guides/platform/user-management#add-a-user).
+
+<Tip>
+Give each user the fewest rights they need. Keep **Download** for people who need customer data,
+and separate the campaign maker and checker for regulated customers.
+</Tip>
 
 ## Related
 

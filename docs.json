@@ -53,16 +53,26 @@
             ]
           },
           {
-            "group": "WhatsApp Campaigns",
+            "group": "WhatsApp Setup",
             "pages": [
               "guides/whatsapp/activation",
+              "guides/whatsapp/phone-numbers",
+              "guides/whatsapp/templates",
+              "guides/whatsapp/bulk-template-upload",
+              "guides/whatsapp/direct-send",
+              "guides/whatsapp/business-verification",
+              "guides/whatsapp/settings",
+              "guides/whatsapp/reports"
+            ]
+          },
+          {
+            "group": "WhatsApp Campaigns",
+            "pages": [
               "guides/whatsapp/quickstart",
               "guides/whatsapp/campaign-dashboard",
               "guides/whatsapp/campaign-create",
               "guides/whatsapp/campaign-variable-mapping",
-              "guides/whatsapp/campaign-launch",
-              "guides/whatsapp/direct-send",
-              "guides/whatsapp/bulk-template-upload"
+              "guides/whatsapp/campaign-launch"
             ]
           },
           {

@@ -27,21 +27,37 @@ Enablement happens in two stages, and neither is self-serve.
     messaging policy. If approved, Direct Send is enabled for the WhatsApp Business Account.
   </Step>
   <Step title="Your account is enabled for it">
-    Once Meta has enabled the WABA, a tenant administrator switches the capability on for your
-    account under **WhatsApp → Config → Settings → Direct Send**.
+    Once Meta has enabled the WABA, your tenant administrator switches on **Direct Send API** for
+    that WABA in your account's WhatsApp settings.
   </Step>
 </Steps>
 
-With both in place, the Direct Send sender option and message sample validation become available
-to your users.
+With both in place, the **Message Sample** tab and the **Direct Send** option in the campaign
+builder become available to your users.
 
 ## Validate message content first
 
 Before sending — or before building a campaign around a message — check the content against
 Meta's policies.
 
-Go to **WhatsApp → Asset Management → Message Sample** and submit your sample content. Meta
-returns:
+<Steps>
+  <Step title="Open Message Sample">
+    Go to **Channels → WhatsApp → Asset Management → Message Sample**.
+  </Step>
+  <Step title="Pick the account and type">
+    Pick the **WABA ID** and the **Message type**: **Text**, or **Interactive** (a CTA URL button
+    or reply buttons).
+  </Step>
+  <Step title="Build the message">
+    Fill in the **Body** (up to 1,024 characters), plus the optional header, footer and buttons
+    for an interactive message. Optionally set a **TTL** in seconds.
+  </Step>
+  <Step title="Check it">
+    Click **Check Message Sample**. The result shows Meta's answer as Meta returns it.
+  </Step>
+</Steps>
+
+Meta returns:
 
 | Response | Meaning |
 | --- | --- |
@@ -57,21 +73,32 @@ Validate before you build the campaign, not after.
 ## Create a Direct Send campaign
 
 <Steps>
-  <Step title="Start a campaign">
-    Go to **Campaigns → Create WhatsApp Campaign**.
+  <Step title="Validate the content">
+    Check the message under **Message Sample** first, as above, and confirm Meta classifies it as
+    Utility.
   </Step>
-  <Step title="Choose Direct Send as the sender">
-    In sender selection, set **Sender Module** to **Direct Send**. The message design section
-    becomes available.
+  <Step title="Start a campaign">
+    Go to **Channels → Campaigns**, click **+ New Campaign**, and select **WhatsApp**.
+  </Step>
+  <Step title="Tick Direct Send">
+    In **Sender Details**, pick the WABA ID, then tick **Direct Send**. The **Template** field is
+    greyed out.
   </Step>
   <Step title="Design the message">
-    Build the content directly in the campaign — see [Message types](#message-types) below.
+    Click **Configure** and build a **Text** or **Interactive** message — see
+    [Message types](#message-types) below. The body is required, and an interactive message
+    needs a text or image header. Variables such as `{{Name}}` come from the columns of your
+    uploaded file.
   </Step>
-  <Step title="Validate before launching">
-    Use **Check Message Sample** to submit your designed content to Meta and confirm both policy
-    compliance and expected category without leaving the campaign builder.
+  <Step title="Finish and launch">
+    Complete the rest of the campaign as usual — see
+    [Create a WhatsApp campaign](/guides/whatsapp/campaign-create).
   </Step>
 </Steps>
+
+Direct Send messages appear in the **Outgoing Non-Template** tab of the
+[Detail Report](/guides/whatsapp/reports#detail-report). To check content from your own systems, use the
+Message Sample API (`POST /wa/message_samples`).
 
 ## Message types
 
@@ -132,8 +159,8 @@ Messages sent through Direct Send cause Meta to generate a template from the con
 automatically. These templates are created by Meta, categorised from the content, used for
 matching future messages, and visible in WhatsApp Manager.
 
-To bring them into the platform, go to **WhatsApp → Asset Management → Templates** and click
-**Sync Templates**. The sync fetches newly created Meta templates along with their status and
+To bring them into the portal, go to **Channels → WhatsApp → Asset Management → Templates** and
+click **Sync**. The sync fetches newly created Meta templates along with their status and
 category.
 
 <Note>

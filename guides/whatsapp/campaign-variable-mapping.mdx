@@ -1,6 +1,6 @@
 ---
 title: "Variable Mapping and Additional Settings"
-description: "Fill WhatsApp template placeholders with static or dynamic values, and configure URL shortening for the message body."
+description: "Fill WhatsApp template placeholders with static or dynamic values, add your own reference values, and set link tracking and fallback."
 ---
 
 Variable mapping controls how values such as Name, OTP, URL, and other fields are inserted into the message template during campaign creation. The platform supports two types of variable mapping: **Static** and **Dynamic**.
@@ -12,9 +12,9 @@ This page follows on from [Create a WhatsApp campaign](/guides/whatsapp/campaign
 The panel has two areas:
 
 - **Data Sources** (left) — **File Columns** extracted from your uploaded recipient file (for example `phone_number`, `name`, `OTP`, `url`) and **Static Values** you define yourself.
-- **Body Variables** (right) — the template's placeholders (`{{1}}`, `{{2}}`, `{{3}}`, …) waiting to be filled.
+- **Variables** (right) — the template's placeholders (`{{1}}`, `{{2}}`, `{{3}}`, …) waiting to be filled, grouped by where they sit: **Header**, **Body**, button variables, and each card of a carousel. Drag a data source onto each variable's drop zone.
 
-A progress bar at the top shows how many variables are mapped (for example, "3 of 3 variables mapped (100%)"), and the template preview on the right updates as you map. When every placeholder is filled, the panel shows **All variables mapped successfully**.
+The bar shows **Total Variables**, **Mapped** and **Progress**, and the template preview on the right updates as you map. When every placeholder is filled, the panel shows **All variables mapped successfully**.
 
 ## Static mapping
 
@@ -61,36 +61,63 @@ Use dynamic mapping when the value should change per recipient, pulled directly 
 You can mix both types in one campaign — for example, a dynamic `name` in `{{1}}` and a static brand URL in `{{2}}`.
 </Tip>
 
+## Custom reference parameters
+
+Under **Custom Reference Parameters** you can set **Cust Ref 1** to **Cust Ref 5** — your own
+values, such as a campaign code or order batch. They are returned in reports and in callbacks, so
+your systems can match each delivery report to its source. All five are optional.
+
 ## Additional Settings
 
-Click **Additional Settings** in the campaign builder. This section contains the **URL Shortener in Body** and **Message Expiry** options.
+Click **Additional Settings** in the campaign builder.
 
-### URL Shortener in Body
+### Short and Track URLs in Body Variables
+
+Shortens the links in the body variables and tracks every click, so clicks appear in the URL
+views of [WhatsApp reports](/guides/whatsapp/reports).
 
 <Steps>
-  <Step title="Enable the shortener">
-    Select the **URL Shortener in Body** checkbox. The **Short URL** dialog opens.
+  <Step title="Switch it on">
+    Turn on **Short and Track URLs in Body Variables**.
   </Step>
-  <Step title="Configure the short URL">
-    Complete the fields described below.
+  <Step title="Pick the domain">
+    Pick the **Domain** the short links use.
   </Step>
-  <Step title="Apply">
-    Click **Short** to apply, or **Cancel** to discard.
+  <Step title="Choose which links">
+    Choose **Short and Track all Urls**, or pick the specific body variables whose links should be
+    shortened.
+  </Step>
+  <Step title="Capture location (optional)">
+    Tick **Get Location** to record the location of each click.
   </Step>
 </Steps>
 
-| Field | Description |
-| --- | --- |
-| **URL** | Select the long URL to be shortened from the dropdown list. |
-| **Get Location** | Select the checkbox to capture the recipient's location when the short link is clicked. |
-| **Shorten all URLs in the message** | Select this radio button to shorten every URL present in the message body. |
-| **Shorten URLs in specific variables only** | Use this option to shorten only the URLs placed in selected variable fields. |
+### Fallback
 
-The dialog also shows the selected template and the variables available in it (for example, `Selected Template: url_vi_shorten1`, `Variables available: link`).
+Fallback re-sends the message on another channel — RCS or SMS — when WhatsApp fails or doesn't
+confirm delivery in time. Add recipients first, then:
 
-<Note>
-The **Message Expiry** checkbox appears alongside URL Shortener in Body in Additional Settings, but its configuration is not described in the source manual.
-</Note>
+<Steps>
+  <Step title="Turn on Fallback">
+    Turn on **Fallback**, choose a **Fallback Configuration**, and click **Apply Fallback**.
+  </Step>
+  <Step title="Set the wait time">
+    Enter the wait time, in seconds, before the first fallback starts.
+  </Step>
+  <Step title="Fill in the fallback message">
+    Fill in the fields for each fallback channel. Values can be fixed text, file columns such as
+    `@name`, or a mix — for example `Dear @name, your order has shipped`.
+  </Step>
+</Steps>
+
+<Warning>
+Set a message validity period on the WhatsApp template before you use it with fallback. Without
+one, the customer can receive the late WhatsApp message *and* the fallback. See
+[Create WhatsApp templates](/guides/whatsapp/templates).
+</Warning>
+
+Fallback configurations are created under **Channels → Fallback** — see
+[Configure fallback](/guides/omnichannel/configure-fallback).
 
 ## Next step
 

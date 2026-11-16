@@ -26,23 +26,45 @@ Each campaign includes customization, scheduling, and analytics to track deliver
 
 ## What the dashboard shows
 
-The campaigns dashboard displays all campaigns created for the WhatsApp and RCS channels as cards. Each campaign card shows:
+The campaigns dashboard displays all campaigns created for the WhatsApp and RCS channels as cards.
+Each card shows the created date, channel, status, campaign name, template, uploaded file, number
+of records, creator and scheduled time. A `Stopped` campaign also shows its **Failure Reason**.
 
-| Field | Description |
-| --- | --- |
-| Campaign name | The unique title given at creation. |
-| Template | The message template used. |
-| File | The uploaded recipient file, if any. |
-| Records | The number of recipient records. |
-| Creation date | When the campaign was created. |
-| Created by | The user who created the campaign. |
-| Status | `Created`, `Draft`, or `Completed`. |
+## Find a campaign
 
-## Dashboard actions
-
-- **Search** — use the search box to find a campaign by name.
-- **Filter** — narrow the list by channel, template, type/status, or date.
-- **Clone Campaign** — duplicate an existing campaign instead of rebuilding it.
-- **New Campaign** — click **+ New Campaign** in the top right to start a new campaign. See [Create a WhatsApp campaign](/guides/whatsapp/campaign-create).
+- **Search** by campaign name or campaign ID.
+- **Filter** by Channel, Template, Username, Status and Date. **Clear all** resets the filters.
+- **Refresh** reloads the list with the latest statuses.
 
 The list is paginated; use **Prev** and **Next** at the bottom of the page to move between pages.
+
+## Campaign statuses and actions
+
+The buttons on each card depend on the campaign's status.
+
+| Status | Actions |
+| --- | --- |
+| `Created` / `Draft` (not launched) | Edit, Clone, Delete |
+| `Scheduled` | View, Clone, Reschedule, Cancel |
+| `Running` | View, Clone, Pause, Stop |
+| `Paused` | View, Clone, Resume, Stop |
+| `Completed` / `Stopped` | View, Clone |
+| `Cancelled` / `Failed` | View, Clone |
+| `Pending` / `Rejected` (maker-checker) | Edit, View, Clone |
+| `Approved` (maker-checker) | Edit, View, Clone, Launch (checker only) |
+
+**View** opens a read-only copy of the campaign set-up: recipients, sender, variable mapping,
+settings, batching and schedule. It doesn't show results — use
+[WhatsApp reports](/guides/whatsapp/reports) for those.
+
+<Note>
+The `Pending`, `Rejected` and `Approved` statuses appear only when maker-checker is switched on for
+your account. A maker's campaign goes to `Pending`; a checker approves or rejects it, and launches
+it once approved. See [Roles](/guides/platform/roles#campaign-maker-checker).
+</Note>
+
+## Start or copy a campaign
+
+- **Clone Campaign** — duplicate an existing campaign instead of rebuilding it.
+- **New Campaign** — click **+ New Campaign** in the top right to start a new campaign. See
+  [Create a WhatsApp campaign](/guides/whatsapp/campaign-create).

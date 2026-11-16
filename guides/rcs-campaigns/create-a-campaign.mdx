@@ -19,7 +19,7 @@ Details**, and **Sender Details**. The remaining sections are covered in
 
 <Steps>
   <Step title="Open Channels">
-    In the left pane of the WhatsApp-RCS platform, click **Channels**.
+    In the left pane of the portal, click **Channels**.
   </Step>
   <Step title="Select a channel">
     Select a channel.
@@ -59,8 +59,8 @@ Click **Recipient Details**, then select a method for adding recipient numbers.
     text area.
 
     1. Select **Copy/Paste**.
-    2. Enter phone numbers separated by commas or new lines in the text box.
-       For example: `+919876543210, 919876543211, 919876543212`.
+    2. Enter up to 100,000 phone numbers, separated by commas or new lines.
+       For example: `919999999999, 919999999998`.
     3. Click **Save** to add the numbers or **Clear** to remove them.
   </Tab>
   <Tab title="Upload">
@@ -71,6 +71,8 @@ Click **Recipient Details**, then select a method for adding recipient numbers.
     3. After uploading, a pop-up appears to select the Recipient Number Column.
     4. Choose the correct column (e.g., `phone_number`) and click
        **Confirm Selection**.
+
+    Extra columns in the file can be used as template variables later.
   </Tab>
   <Tab title="Phonebook">
     Enables selecting recipients from existing phonebook groups saved in the
@@ -99,9 +101,10 @@ Click **Sender Details**, then enter the following fields:
 
 <Steps>
   <Step title="Sender Profile">
-    Identifies the sender or business account through which the campaign will
-    be sent. Select the sender ID or profile (e.g., `yahoosp12`) from the
-    dropdown list.
+    Identifies the brand agent the campaign is sent from. Select the sender
+    profile from the dropdown list — or tick **Use sender pool** and pick a
+    [sender pool](/guides/rcs-platform/sender-profiles#sender-pools) to share
+    the traffic across several profiles.
   </Step>
   <Step title="Message Type">
     Ensures the campaign follows the correct message type and compliance
@@ -110,8 +113,9 @@ Click **Sender Details**, then enter the following fields:
   </Step>
   <Step title="Template">
     Defines the content format and structure of the message being sent. Select
-    the approved message template (e.g., `test_video_template`) for the
-    campaign from the dropdown list.
+    the approved message template for the campaign from the dropdown list.
+    Only templates approved for the chosen profile and message type are
+    listed.
   </Step>
 </Steps>
 
