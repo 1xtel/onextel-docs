@@ -50,7 +50,8 @@ function codeTitle(meta) {
     .replace(/\b(wrap|lines|expandable|twoslash)\b/g, "").trim();
 }
 
-export function createRenderer({ highlighter, theme, resolveLink, resolveImage, liveUrl, anchorFor, warn }) {
+// `readSnippet(path)` returns the text of an imported .mdx snippet, such as "/snippets/import-rcs.mdx".
+export function createRenderer({ highlighter, theme, resolveLink, resolveImage, liveUrl, anchorFor, readSnippet, warn }) {
   const langs = new Set(highlighter.getLoadedLanguages());
 
   function code(value, lang, title) {
@@ -62,8 +63,9 @@ export function createRenderer({ highlighter, theme, resolveLink, resolveImage, 
 
   // `markdown` is MDX unless `mdx` is false (OpenAPI descriptions are plain Markdown).
   // `page` is the docs path, such as "guides/sms/overview".
+  const inlining = new Set();
   return function render(markdown, { page, headingOffset = 1, mdx = true, slugger = new GithubSlugger() }) {
-    const imported = new Set();
+    const imported = new Map(); // component name -> import source
     const processor = unified().use(remarkParse);
     if (mdx) processor.use(remarkMdx);
     processor.use(remarkGfm);
@@ -106,8 +108,19 @@ export function createRenderer({ highlighter, theme, resolveLink, resolveImage, 
         case "Tooltip": return h("span", kids());
         case "Icon": return null;
       }
-      if (imported.has(name)) {
-        // Snippet components are interactive widgets; point the reader at the live page.
+      const source = imported.get(name);
+      if (source && /\.mdx?$/.test(source) && !inlining.has(source)) {
+        // An MDX snippet is shared page content: print it where it is used.
+        const text = readSnippet(source);
+        if (text !== null) {
+          inlining.add(source);
+          try { return h("div.snippet", render(splitFrontmatter(text).body, { page, headingOffset, slugger }).children); }
+          finally { inlining.delete(source); }
+        }
+        warn(`${page}: snippet ${source} not found`);
+      }
+      if (source) {
+        // A JSX snippet is an interactive widget; point the reader at the live page.
         const url = liveUrl(page);
         return h("aside.callout.info", [h("div.callout-label", "Interactive tool"),
           h("p", ["This tool runs on the docs site: ", h("a", { href: url }, url)])]);
@@ -146,9 +159,9 @@ export function createRenderer({ highlighter, theme, resolveLink, resolveImage, 
         image: (state, node) => h("img", { src: resolveImage(node.url), alt: node.alt || "" }),
         code: (state, node) => code(node.value, (node.lang || "").toLowerCase(), codeTitle(node.meta)),
         mdxjsEsm(state, node) {
-          for (const m of node.value.matchAll(/import\s+(?:(\w+)|\{([^}]*)\})\s+from/g)) {
-            if (m[1]) imported.add(m[1]);
-            if (m[2]) m[2].split(",").map((s) => s.trim().split(/\s+as\s+/).pop()).filter(Boolean).forEach((n) => imported.add(n));
+          for (const m of node.value.matchAll(/import\s+(?:(\w+)|\{([^}]*)\})\s+from\s+["']([^"']+)["']/g)) {
+            if (m[1]) imported.set(m[1], m[3]);
+            if (m[2]) m[2].split(",").map((s) => s.trim().split(/\s+as\s+/).pop()).filter(Boolean).forEach((n) => imported.set(n, m[3]));
           }
           return null;
         },

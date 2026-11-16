@@ -1,9 +1,10 @@
 // Builds the whole docs site into one PDF, in navigation order, with a cover, numbered contents and
 // PDF bookmarks.
 //
-//   node scripts/pdf/build.mjs [--out path.pdf] [--only guides/sms] [--keep-html]
+//   node scripts/pdf/build.mjs [--out path.pdf] [--doc-version 1.0.3] [--only guides/sms] [--keep-html]
 //
-// The PDF is published on every merge to main by .github/workflows/docs-pdf.yml.
+// The PDF is published on every merge to main by .github/workflows/docs-pdf.yml, which works out
+// the version: VERSION holds major.minor, and each release adds one to the patch number.
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync, statSync } from "node:fs";
 import { dirname, join, posix, resolve } from "node:path";
@@ -27,11 +28,15 @@ const EXCLUDED_TABS = new Set(["Archived APIs"]);
 const TITLE = "OneXtel Documentation";
 
 const { values: args } = parseArgs({ options: {
-  out: { type: "string", default: join(ROOT, ".pdf-build", "OneXtel-Docs.pdf") },
+  out: { type: "string" },
+  "doc-version": { type: "string" },
   only: { type: "string" },
   "keep-html": { type: "boolean", default: false },
 } });
+// A local build without --doc-version is marked as a draft of the version in VERSION.
+const VERSION = args["doc-version"] || `${readFileSync(join(ROOT, "VERSION"), "utf8").trim()} draft`;
 const WORK = join(ROOT, ".pdf-build");
+args.out ||= join(WORK, `OneXtel_Documentation_${VERSION.replace(/\s+/g, "-")}.pdf`);
 mkdirSync(join(WORK, "img"), { recursive: true });
 
 const warnings = new Set();
@@ -141,7 +146,11 @@ const CODE_THEME = {
 // ---------- render pages ----------
 const highlighter = await createHighlighter({ themes: [CODE_THEME], langs: ["bash", "json", "javascript", "csv", "text"] });
 const LANG_ALIASES = { js: "javascript", sh: "bash", shell: "bash", curl: "bash" };
-const render = createRenderer({ highlighter, theme: CODE_THEME.name, resolveLink, resolveImage, liveUrl, anchorFor, warn });
+const readSnippet = (src) => {
+  const file = join(ROOT, src.replace(/^\//, ""));
+  return existsSync(file) ? readFileSync(file, "utf8") : null;
+};
+const render = createRenderer({ highlighter, theme: CODE_THEME.name, resolveLink, resolveImage, liveUrl, anchorFor, readSnippet, warn });
 const codeBlock = (value, lang, title) => {
   const root = highlighter.codeToHast(value, { lang: LANG_ALIASES[lang] || lang, theme: CODE_THEME.name });
   return h("figure.code", [title && h("figcaption", title), ...root.children]);
@@ -255,6 +264,7 @@ const coverHtml = page(`<section style="position:relative;width:210mm;height:296
   <div style="position:absolute;left:22mm;top:88mm;width:150mm">
     <div style="font-size:36pt;font-weight:700;color:#fff;line-height:1.1">Documentation</div>
     <div style="font-size:12.5pt;color:${BRAND.sky};margin-top:5mm;line-height:1.45">Guides, API reference and plugins<br>for WhatsApp, RCS and SMS</div>
+    <div style="font-size:11pt;font-weight:600;color:#fff;margin-top:9mm">Version ${VERSION}</div>
   </div>
   <img src="${curve}" alt="" style="position:absolute;right:0;bottom:34mm;width:182mm">
   <div style="position:absolute;left:22mm;bottom:16mm;font-size:8.6pt;color:${BRAND.sky};line-height:1.7">Generated ${built}${sha ? ` from revision ${sha}` : ""}<br>
@@ -269,7 +279,7 @@ const running = `font: 7pt "Open Sans", sans-serif; color: ${BRAND.muted};`;
 const pageCss = `<style>
   @page { size: A4; margin: 20mm 16mm 17mm;
     @top-right { content: ""; width: 25mm; background: url("${pathToFileURL(headerLogo).href}") no-repeat right 8mm / 25mm auto; }
-    @bottom-left { content: "${TITLE}"; ${running} }
+    @bottom-left { content: "${TITLE} · Version ${VERSION}"; ${running} }
     @bottom-right { content: counter(page) " / " counter(pages); ${running} } }
   @page part { margin: 0; @top-right { content: none; } @bottom-left { content: none; } @bottom-right { content: none; } }
 </style>`;
@@ -337,7 +347,7 @@ await browser.close();
 const out = await PDFDocument.load(bodyPdf);
 const [cover] = await out.copyPages(await PDFDocument.load(coverPdf), [0]);
 out.insertPage(0, cover);
-out.setTitle(TITLE);
+out.setTitle(`${TITLE} ${VERSION}`);
 out.setAuthor("OneXtel");
 out.setSubject("Guides, API reference and plugins");
 mkdirSync(dirname(resolve(args.out)), { recursive: true });
