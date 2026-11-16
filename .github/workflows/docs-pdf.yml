@@ -1,7 +1,9 @@
 name: Docs PDF
 
-# Builds the whole docs site into one PDF. On main it replaces the file behind the site's
-# "Download PDF" link; on a pull request the PDF is attached to the run so you can check it.
+# Builds the whole docs site into one PDF. Every merge to main is a release with its own version
+# and GitHub release, carrying OneXtel_Documentation_<version>.pdf. VERSION holds major.minor
+# (bump it by hand: 1.1, or 2.0 for a new platform); the patch number counts releases since.
+# On a pull request the PDF is attached to the run so you can check it.
 
 on:
   push:
@@ -9,9 +11,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Releases on main run one at a time so version numbers stay in order.
 concurrency:
   group: docs-pdf-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -19,8 +22,30 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      file: ${{ steps.version.outputs.file }}
+      tag: ${{ steps.version.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # tags, to find the last released version
+
+      # 1.0 is the first release of VERSION 1.0, then 1.0.1, 1.0.2 and so on.
+      - name: Work out the version
+        id: version
+        run: |
+          base=$(tr -d '[:space:]' < VERSION)
+          last=$(git tag -l "docs-v$base" "docs-v$base.*" | sed 's/^docs-v//' | sort -V | tail -n1)
+          if [ -z "$last" ]; then next="$base"
+          elif [ "$last" = "$base" ]; then next="$base.1"
+          else next="$base.$(( ${last##*.} + 1 ))"; fi
+          version="$next"
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then version="$next preview"; fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "file=OneXtel_Documentation_${version// /-}.pdf" >> "$GITHUB_OUTPUT"
+          echo "tag=docs-v$next" >> "$GITHUB_OUTPUT"
+          echo "Version $version"
 
       - uses: actions/setup-node@v4
         with:
@@ -35,12 +60,15 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Build
-        run: node scripts/pdf/build.mjs --out OneXtel-Docs.pdf
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          FILE: ${{ steps.version.outputs.file }}
+        run: node scripts/pdf/build.mjs --out "$FILE" --doc-version "$VERSION"
 
       - uses: actions/upload-artifact@v4
         with:
           name: OneXtel-Docs
-          path: OneXtel-Docs.pdf
+          path: ${{ steps.version.outputs.file }}
           retention-days: 14
 
   publish:
@@ -55,16 +83,23 @@ jobs:
         with:
           name: OneXtel-Docs
 
-      # The link on the site points at this release asset, so the tag and file name must not change.
-      - name: Upload to the docs-pdf release
+      # The site's Download PDF button serves the latest release, so the new one is created last
+      # and marked latest. The pre-versioning docs-pdf link keeps getting the newest copy, but as a
+      # prerelease it can never be "latest".
+      - name: Release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.build.outputs.version }}
+          FILE: ${{ needs.build.outputs.file }}
+          TAG: ${{ needs.build.outputs.tag }}
         run: |
-          notes="The whole OneXtel docs site as one PDF, rebuilt on every change to main. This copy is from ${GITHUB_SHA::7}, built $(date -u '+%d %b %Y %H:%M') UTC."
           if gh release view docs-pdf >/dev/null 2>&1; then
+            cp "$FILE" OneXtel-Docs.pdf
             gh release upload docs-pdf OneXtel-Docs.pdf --clobber
-            gh release edit docs-pdf --notes "$notes"
-          else
-            gh release create docs-pdf OneXtel-Docs.pdf --target "$GITHUB_SHA" --title "OneXtel docs (PDF)" --notes "$notes"
+            gh release edit docs-pdf --prerelease --latest=false \
+              --notes "Kept for links made before the docs were versioned. This copy is version $VERSION; see the latest release for the versioned file."
           fi
+          gh release create "$TAG" "$FILE" --target "$GITHUB_SHA" --latest \
+            --title "OneXtel Documentation $VERSION" \
+            --notes "The whole OneXtel docs site as one PDF: version $VERSION, built from ${GITHUB_SHA::7} on $(date -u '+%d %b %Y'). The Download PDF button on the docs site always serves the latest version."

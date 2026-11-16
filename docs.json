@@ -351,7 +351,7 @@
     "links": [
       {
         "label": "Download PDF",
-        "href": "https://github.com/1xtel/onextel-docs/releases/download/docs-pdf/OneXtel-Docs.pdf"
+        "href": "/download-pdf"
       }
     ]
   },
@@ -364,7 +364,7 @@
         "title": "Download all docs",
         "description": "Every guide, API reference and plugin page in one PDF",
         "icon": "file-pdf",
-        "href": "https://github.com/1xtel/onextel-docs/releases/download/docs-pdf/OneXtel-Docs.pdf"
+        "href": "/download-pdf"
       },
       "download-spec",
       "chatgpt",
