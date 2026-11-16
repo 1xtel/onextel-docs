@@ -1,0 +1,1914 @@
+{
+  "info": {
+    "_postman_id": "d52171c3-9df0-4adb-a239-2e07abd466b3",
+    "name": "OmniChannel APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "RCS",
+      "item": [
+        {
+          "name": "Template",
+          "item": [
+            {
+              "name": "Fetch Template",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "apiKey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"channel\": \"RCS\",\n    \"senderProfile\": \"{{rcssender}}\",\n    \"messageType\": \"Promotional\", // Promotional, Transactional or OTP\n    \"pageNo\": 1,\n    \"limit\": 100\n    /*,\"start_date\": \"2025-12-05T00:00:00.000Z\",\n    \"end_date\": \"2025-12-18T11:59:00.000Z\"\n    \"templateName\": \"\",\n    \"status\": \"\", // Approved, Pending or Rejected\n    \"createdDate\": \"\" */\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/templates/fetch",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "templates",
+                    "fetch"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Template Message",
+          "item": [
+            {
+              "name": "Send Template Message",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"rcs\": [\n        {\n            \"sender\": \"{{rcssender}}\",\n            \"recipient\": \"{{recipient1}}\", // Recipient can also be an array to support one to many usecase, containing upto 500 numbers in single request\n            \"messageType\": \"xx\", // Promotional, Transactional or OTP\n            \"contentMessage\": {\n                \"templateMessage\": {\n                    \"templateCode\": \"xx\" /*,\n                    \"customParams\": \"{\\\"var1\\\":\\\"xx\\\",\\\"var2\\\":\\\"xx\\\"}\"*/\n                }\n            } /* ,\n            \"ttl\": \"1200s\",\n            \"expireTime\":\"2024-10-02T15:01:23Z\",\n            \"custref1\": \"\", //optional\n            \"custref2\": \"\", //optional\n            \"custref3\": \"\", //optional\n            \"custref4\": \"\", //optional\n            \"custref5\": \"\"  //optional */\n        }\n        // rcs is an array to support many to many usecase, containing upto 500 objects in single request\n    ]\n    /*,\n    \"prefix\": \"+91\", //optional\n    \"campaignName\": \"xx\" //optional\n    \"urlShortener\": {\n        \"flag\": 1, //Mandatory if urlShortner is required in message body\n        \"urlDetails\": [\n            {\n                \"longUrl\": \"xx\", //Mandatory if urlShortner flag is set to 1\n                \"domain\": \"xx\", //optional\n                \"track_user\": 1. //optional\n            }\n        ]\n    }*/\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Non Template Message",
+          "item": [
+            {
+              "name": "Plain Text",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"rcs\": [\n        {\n            \"sender\": \"{{rcssender}}\",\n            \"recipient\": \"{{recipient1}}\",\n            \"messageType\": \"xx\", // Promotional, Transactional or OTP\n            \"contentMessage\": {\n                \"text\": \"xx\"/*,\n                \"fileUrl\": \"xx\" */\n            } /* ,\n            \"ttl\": \"1200s\", // Optional provide only one of expireTime (UTC/Zulu) or TTL\n            \"expireTime\":\"2024-10-02T15:01:23Z\", // Optional provide only one of expireTime (UTC/Zulu) or TTL */\n        }\n    ] /* ,\n    \"prefix\": \"+91\", //optional */\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "RichCard Standalone",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"rcs\": [\n        {\n            \"sender\": \"{{rcssender}}\",\n            \"recipient\": \"{{recipient1}}\",\n            \"messageType\": \"Promotional\", // Promotional, Transactional or OTP\n            \"contentMessage\": {\n                \"richCard\": {\n                    \"standaloneCard\": {\n                        \"cardOrientation\": \"VERTICAL\", // HORIZONTAL or VERTICAL\n                        //\"thumbnailImageAlignment\": \"xx\", // Optional for HORIZONTAL cardOrientation : LEFT(Default) or RIGHT \n                        \"cardContent\": {\n                            \"title\": \"xx\",\n                            \"description\": \"xx\",\n                            \"media\": {\n                                //\"height\": \"TALL\", //Optional for VERTICAL cardOrientation : SHORT, MEDIUM(Default) or TALL\n                                \"contentInfo\": {\n                                    \"fileUrl\": \"xx\",\n                                    \"thumbnailUrl\": \"\" //optional\n                                }\n                            } /*,\n                            \"suggestions\": [\n                                {\n                                    \"reply\": {\n                                        \"text\": \"xx\",\n                                        \"postbackData\": \"xx\"\n                                    }\n                                },\n                                {\n                                    \"action\": {\n                                        \"text\": \"xx\",\n                                        \"postbackData\": \"xx\",\n                                        \"openUrlAction\": {\n                                            \"url\": \"https://xx\" //,\n                                            //\"application\": \"WEBVIEW\", // Optional BROWSER(Default) OR WEBVIEW\n                                            //\"webviewViewMode\": \"TALL\" //Optional for WEBVIEW application : FULL(Default), TALL OR Half \n                                        }\n                                    }\n                                }\n                            ]*/\n                        }\n                    }\n                }\n            } /* ,\n            \"ttl\": \"1200s\", // Optional provide only one of expireTime (UTC/Zulu) or TTL\n            \"expireTime\":\"2024-10-02T15:01:23Z\", // Optional provide only one of expireTime (UTC/Zulu) or TTL\n            \"custref1\": \"\", //optional\n            \"custref2\": \"\", //optional\n            \"custref3\": \"\", //optional\n            \"custref4\": \"\", //optional\n            \"custref5\": \"\"  //optional */\n        }\n    ] /* ,\n    \"prefix\": \"+91\", //optional */\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "RichCard Carousel",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"rcs\": [\n        {\n            \"sender\": \"{{rcssender}}\",\n            \"recipient\": \"{{recipient1}}\",\n            \"messageType\": \"Promotional\", // Promotional, Transactional or OTP\n            \"contentMessage\": {\n                \"richCard\": {\n                    \"standaloneCard\": {\n                        \"cardOrientation\": \"VERTICAL\", // HORIZONTAL OR VERTICAL\n                        //\"thumbnailImageAlignment\": \"xx\", // Optional for HORIZONTAL cardOrientation : LEFT(Default) or RIGHT \n                        \"cardContent\": {\n                            \"title\": \"xx\",\n                            \"description\": \"xx\",\n                            \"media\": {\n                                //\"height\": \"TALL\", //Optional for VERTICAL cardOrientation : SHORT, MEDIUM(Default) or TALL\n                                \"contentInfo\": {\n                                    \"fileUrl\": \"{{imageUrl}}\", // \"fileName\" generated uing Media API can be used\n                                    \"thumbnailUrl\": \"\" //optional\n                                }\n                            } /*,\n                            \"suggestions\": [\n                                {\n                                    \"reply\": {\n                                        \"text\": \"xx\",\n                                        \"postbackData\": \"xx\"\n                                    }\n                                },\n                                {\n                                    \"action\": {\n                                        \"text\": \"xx\",\n                                        \"postbackData\": \"xx\",\n                                        \"openUrlAction\": {\n                                            \"url\": \"https://xx\" //,\n                                            //\"application\": \"WEBVIEW\", // Optional BROWSER(Default) OR WEBVIEW\n                                            //\"webviewViewMode\": \"TALL\" //Optional for WEBVIEW application : FULL(Default), TALL OR Half \n                                        }\n                                    }\n                                }\n                            ]*/\n                        }\n                    }\n                }\n            } /* ,\n            \"ttl\": \"1200s\", // Optional provide only one of expireTime (UTC/Zulu) or TTL\n            \"expireTime\":\"2024-10-02T15:01:23Z\", // Optional provide only one of expireTime (UTC/Zulu) or TTL */\n        }\n    ] /* ,\n    \"prefix\": \"+91\", //optional\n    \"urlShortener\": {\n        \"flag\": 1, //Mandatory if urlShortner is required in message body\n        \"urlDetails\": [\n            {\n                \"longUrl\": \"xx\", //Mandatory if urlShortner flag is set to 1\n                \"domain\": \"xx\",  //optional\n                \"track_user\": 1. //optional\n            }\n        ]\n    }*/\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Media",
+          "item": [
+            {
+              "name": "Media Upload",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "senderProfileName",
+                      "value": "{{rcssender}}",
+                      "type": "text",
+                      "uuid": "312b59f7-327a-4a16-98a8-cb40eafe9ff0"
+                    },
+                    {
+                      "key": "message_type",
+                      "value": "xx",
+                      "type": "text",
+                      "uuid": "7116329f-c9d9-4b48-9e6b-9e553880773d"
+                    },
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "uuid": "8e5637be-26ec-4df7-9bed-b2ee5bde8c26",
+                      "value": null
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}/rcs/mediaupload",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "rcs",
+                    "mediaupload"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Opt In/ Opt Out",
+          "item": [
+            {
+              "name": "Get Opt Out",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{domain}}/opt/out/rcs",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "opt",
+                    "out",
+                    "rcs"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Opt In",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{domain}}/opt/in/rcs",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "opt",
+                    "in",
+                    "rcs"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Remove Opt Out",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{domain}}/opt/out/rcs?number={{recipient}}&sender={{rcssender}}&message_type=promotional",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "opt",
+                    "out",
+                    "rcs"
+                  ],
+                  "query": [
+                    {
+                      "key": "number",
+                      "value": "{{recipient}}"
+                    },
+                    {
+                      "key": "sender",
+                      "value": "{{rcssender}}"
+                    },
+                    {
+                      "key": "message_type",
+                      "value": "promotional"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Remove Opt In",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{domain}}/opt/in/rcs?number={{recipient}}&sender={{rcssender}}&message_type=promotional",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "opt",
+                    "in",
+                    "rcs"
+                  ],
+                  "query": [
+                    {
+                      "key": "number",
+                      "value": "{{recipient}}"
+                    },
+                    {
+                      "key": "sender",
+                      "value": "{{rcssender}}"
+                    },
+                    {
+                      "key": "message_type",
+                      "value": "promotional"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Add Opt Out",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"numbers\": [\"recipient1\", \"recipient2\"],\n  \"sender\" : \"{{rcssender}}\",\n  \"message_types\": [\"promotional\", \"transactional\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/opt/out/rcs",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "opt",
+                    "out",
+                    "rcs"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Add Opt In",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"numbers\": [\"{{recipient1}}\", \"{{recipient2}}\"],\n  \"sender\" : \"{{rcssender}}\",\n  \"message_types\": [\"promotional\", \"transactional\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/opt/in/rcs",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "opt",
+                    "in",
+                    "rcs"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "WhatsApp",
+      "item": [
+        {
+          "name": "Template",
+          "item": [
+            {
+              "name": "Authentication",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apiKey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n    \"name\": \"xx\",\n    \"language\": \"en_US\",\n    \"category\": \"authentication\",\n    \"components\": [\n        {\n            \"type\": \"BUTTONS\",\n            \"buttons\": [\n                {\n                    \"type\": \"otp\",\n                    \"otp_type\": \"copy_code\",\n                    \"text\": \"xx\"\n                }\n            ]\n        }\n    ]\n}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "waba_id",
+                      "value": "{{wabaId}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}/wa/templates",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "wa",
+                    "templates"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Utility",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apiKey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n    \"name\": \"xx\",\n    \"language\": \"xx\",\n    \"category\": \"utility\",\n    \"parameter_format\": \"POSITIONAL\",\n    \"components\": [\n        {\n            \"type\": \"HEADER\",\n            \"format\": \"VIDEO\",\n            \"example\": {\n                \"url\": \"xx\"\n            }\n        },\n        {\n            \"type\": \"BODY\",\n            \"text\": \"xx\"\n        },\n        {\n            \"type\": \"FOOTER\",\n            \"text\": \"xx\"\n        },\n        {\n            \"type\": \"BUTTONS\",\n            \"buttons\": [\n                {\n                    \"type\": \"PHONE_NUMBER\",\n                    \"text\": \"xx\",\n                    \"phone_number\": \"xx\"\n                }\n            ]\n        }\n    ]\n}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "waba_id",
+                      "value": "{{wabaId}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}/wa/templates",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "wa",
+                    "templates"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Marketing",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apiKey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n    \"name\": \"xx\",\n    \"language\": \"xx\",\n    \"category\": \"marketing\",\n    \"parameter_format\": \"POSITIONAL\",\n    \"components\": [\n        {\n            \"type\": \"header\",\n            \"format\": \"xx\",\n            \"example\": {\n                \"url\": \"xx\"\n            }\n        },\n        {\n            \"type\": \"body\",\n            \"text\": \"<BODY_TEXT>\",\n            \"example\": {\n                \"body_text\": [\n                    \"xx\"\n                ]\n            }\n        },\n        {\n            \"type\": \"buttons\",\n            \"buttons\": [\n                {\n                    \"type\": \"copy_code\",\n                    \"example\": \"xx\"\n                },\n                {\n                    \"type\": \"url\",\n                    \"text\": \"xx\",\n                    \"url\": \"xx\",\n                    \"example\": [\n                        \"xx\"\n                    ]\n                }\n            ]\n        }\n    ]\n}",
+                      "type": "text",
+                      "uuid": "12948684-ddc5-45c0-85d8-938450cff06b"
+                    },
+                    {
+                      "key": "waba_id",
+                      "value": "{{wabaId}}",
+                      "type": "text",
+                      "uuid": "ce2a9e81-076a-46c6-ba05-e923ad22428e"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}/wa/templates",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "wa",
+                    "templates"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Limited Time Offer",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apiKey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n    \"name\": \"xx\",\n    \"language\": \"xx\",\n    \"category\": \"marketing\",\n    \"parameter_format\": \"POSITIONAL\",\n    \"components\": [\n        {\n            \"type\": \"header\",\n            \"format\": \"xx\", //\n            \"example\": {\n                \"url\": \"xx\"\n            }\n        },\n        {\n            \"type\": \"limited_time_offer\",\n            \"limited_time_offer\": {\n                \"text\": \"xx\",\n                \"has_expiration\": true\n            }\n        },\n        {\n            \"type\": \"body\",\n            \"text\": \"<BODY_TEXT>\",\n            \"example\": {\n                \"body_text\": [\n                    \"xx\"\n                ]\n            }\n        },\n        {\n            \"type\": \"buttons\",\n            \"buttons\": [\n                {\n                    \"type\": \"copy_code\",\n                    \"example\": \"xx\"\n                },\n                {\n                    \"type\": \"url\",\n                    \"text\": \"xx\",\n                    \"url\": \"xx\",\n                    \"example\": [\n                        \"xx\"\n                    ]\n                }\n            ]\n        }\n    ]\n}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "waba_id",
+                      "value": "{{wabaId}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}/wa/templates",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "wa",
+                    "templates"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Media Card Carousel",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n    \"name\": \"xx\",\n    \"language\": \"xx\",\n    \"category\": \"marketing\",\n    \"parameter_format\": \"POSITIONAL\",\n    \"components\": [\n        {\n            \"type\": \"body\",\n            \"text\": \"xx\",\n            \"example\": {\n                \"body_text\": [\n                    [\n                        \"xx\"\n                    ]\n                ]\n            }\n        },\n        {\n            \"type\": \"carousel\",\n            \"cards\": [\n                {\n                    \"components\": [\n                        {\n                            \"type\": \"header\",\n                            \"format\": \"xx\",\n                            \"example\": {\n                                \"url\": \"xx\"\n                            }\n                        },\n                        {\n                            \"type\": \"buttons\",\n                            \"buttons\": [\n                                {\n                                    \"type\": \"quick_reply\",\n                                    \"text\": \"xx\"\n                                },\n                                {\n                                    \"type\": \"url\",\n                                    \"text\": \"xx\",\n                                    \"url\": \"xx\",\n                                    \"example\": [\n                                        \"xx\"\n                                    ]\n                                }\n                            ]\n                        }\n                    ]\n                }\n            ]\n        }\n    ]\n}",
+                      "type": "text",
+                      "uuid": "cc5f449f-c697-493d-9336-ad1c3017e3d5"
+                    },
+                    {
+                      "key": "waba_id",
+                      "value": "{{wabaId}}",
+                      "type": "text",
+                      "uuid": "0663029b-75ee-4b39-abf0-246cec0ad1d0"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}/wa/templates",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "wa",
+                    "templates"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Single Product Message",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "apiKey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n    \"name\": \"xx\",\n    \"category\": \"marketing\",\n    \"language\": \"xx\",\n    \"parameter_format\": \"POSITIONAL\",\n    \"components\": [\n        {\n            \"type\": \"HEADER\",\n            \"format\": \"PRODUCT\"\n        },\n        {\n            \"type\": \"BODY\",\n            \"text\": \"xx\",\n            \"example\": {\n                \"body_text\": [\n                    [\n                        \"xx\"\n                    ]\n                ]\n            }\n        },\n        {\n            \"type\": \"BUTTONS\",\n            \"buttons\": [\n                {\n                    \"type\": \"SPM\",\n                    \"text\": \"xx\"\n                }\n            ]\n        }\n    ]\n}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "waba_id",
+                      "value": "{{wabaId}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}/wa/templates",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "wa",
+                    "templates"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Multi Product Message",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "apiKey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n    \"name\": \"mpm_marketing_02\",\n    \"category\": \"MARKETING\",\n    \"language\": \"en_US\",\n    \"components\": [\n        {\n            \"text\": \"your catlog\",\n            \"type\": \"HEADER\",\n            \"format\": \"TEXT\"\n        },\n        {\n            \"text\": \"Hi {{1}}, explore our exclusive collection of {{2}} just for you! Browse through our handpicked items and find the perfect choice today.\",\n            \"type\": \"BODY\",\n            \"example\": {\n                \"body_text\": [\n                    [\n                        \"customer\",\n                        \"product\"\n                    ]\n                ]\n            }\n        },\n        {\n            \"text\": \"Tap below to view our full collection\",\n            \"type\": \"FOOTER\"\n        },\n        {\n            \"type\": \"BUTTONS\",\n            \"buttons\": [\n                {\n                    \"text\": \"View items\",\n                    \"type\": \"MPM\"\n                }\n            ]\n        }\n    ],\n    \"parameter_format\": \"POSITIONAL\"\n}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "waba_id",
+                      "value": "{{wabaId}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}/wa/templates",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "wa",
+                    "templates"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Flows-utility",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "apiKey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n    \"name\": \"flows_template_utility_02\",\n    \"category\": \"UTILITY\",\n    \"language\": \"en_US\",\n    \"components\": [\n        {\n            \"text\": \"Hi {{1}}, your registration is pending. Please complete it\",\n            \"type\": \"BODY\",\n            \"example\": {\n                \"body_text\": [\n                    [\n                        \"customer\"\n                    ]\n                ]\n            }\n        },\n        {\n            \"text\": \"We will share the details of the application soon.\",\n            \"type\": \"FOOTER\"\n        },\n        {\n            \"type\": \"BUTTONS\",\n            \"buttons\": [\n                {\n                    \"text\": \"View Flow\",\n                    \"type\": \"FLOW\",\n                    \"flow_id\": \"805389128575872\",\n                    \"flow_action\": \"NAVIGATE\",\n                    \"navigate_screen\": \"JOIN_NOW\"\n                }\n            ]\n        }\n    ],\n    \"parameter_format\": \"POSITIONAL\"\n}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "waba_id",
+                      "value": "{{wabaId}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}/wa/templates",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "wa",
+                    "templates"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Complete Flow",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "apiKey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n    \"name\": \"flows_template_marketing\",\n    \"category\": \"MARKETING\",\n    \"language\": \"en_US\",\n    \"components\": [\n        {\n            \"text\": \"Hi {{1}}, complete your registration in just a few steps!\",\n            \"type\": \"BODY\",\n            \"example\": {\n                \"body_text\": [\n                    [\n                        \"customer\"\n                    ]\n                ]\n            }\n        },\n        {\n            \"text\": \"Join now and get exclusive benefits.\",\n            \"type\": \"FOOTER\"\n        },\n        {\n            \"type\": \"BUTTONS\",\n            \"buttons\": [\n                {\n                    \"text\": \"View Flow\",\n                    \"type\": \"FLOW\",\n                    \"flow_id\": \"805389128575872\",\n                    \"flow_action\": \"NAVIGATE\",\n                    \"navigate_screen\": \"RECOMMEND\"\n                }\n            ]\n        }\n    ],\n    \"parameter_format\": \"POSITIONAL\"\n}\n",
+                      "type": "text"
+                    },
+                    {
+                      "key": "waba_id",
+                      "value": "{{wabaId}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}/wa/templates",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "wa",
+                    "templates"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Order Status",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "apiKey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n    \"name\": \"order_status_test1\",\n    \"category\": \"UTILITY\",\n    \"language\": \"en_US\",\n    \"components\": [\n        {\n            \"text\": \"Hello {{1}}, your order #{{2}} is currently {{3}}. We will notify you once it is updated.\",\n            \"type\": \"BODY\",\n            \"example\": {\n                \"body_text\": [\n                    [\n                        \"firdous\",\n                        \"1234\",\n                        \"booked\"\n                    ]\n                ]\n            }\n        },\n        {\n            \"text\": \"thank you for shopping with us\",\n            \"type\": \"FOOTER\"\n        }\n    ],\n    \"sub_category\": \"ORDER_STATUS\",\n    \"parameter_format\": \"POSITIONAL\"\n}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "waba_id",
+                      "value": "{{wabaId}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}/wa/templates",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "wa",
+                    "templates"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Order Details",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "apiKey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n  \"name\": \"order_details_test\",\n  \"category\": \"UTILITY\",\n  \"language\": \"en\",\n  \"components\": [\n    {\n      \"text\": \"Hello {{1}}, thank you for your purchase! Here are the details of your order #{{2}}: Product: {{3}} Quantity: {{4}} Total Price: {{5}} We will notify you once your order is ready for shipping.\",\n      \"type\": \"BODY\",\n      \"example\": {\n        \"body_text\": [\n          [\n            \"customer_name\",\n            \"order_id\",\n            \"product\",\n            \"quantity\",\n            \"price\"\n          ]\n        ]\n      }\n    },\n    {\n      \"text\": \"thank you\",\n      \"type\": \"FOOTER\"\n    },\n    {\n      \"type\": \"BUTTONS\",\n      \"buttons\": [\n        {\n          \"text\": \"Review and Pay\",\n          \"type\": \"ORDER_DETAILS\"\n        }\n      ]\n    }\n  ],\n  \"sub_category\": \"ORDER_DETAILS\",\n  \"parameter_format\": \"POSITIONAL\"\n}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "waba_id",
+                      "value": "{{wabaId}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}/wa/templates",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "wa",
+                    "templates"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Fetch Templates",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "apiKey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"channel\": \"WhatsApp\",\n    \"wabaId\": \"{{wabaId}}\",\n    \"pageNo\": 1,\n    \"limit\": 10\n    /*,\"start_date\": \"2025-12-05T00:00:00.000Z\",\n    \"end_date\": \"2025-12-18T11:59:00.000Z\",\n    \"templateName\": \"\",\n    \"status\": \"\", // Approved, Pending or Rejected\n    \"language\":\"\"\n    \"createdDate\": \"\" */\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/templates/fetch",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "templates",
+                    "fetch"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Clevertap Fetch Templates",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}"
+                  },
+                  {
+                    "key": "wabaid",
+                    "value": "{{wabaid}}"
+                  }
+                ],
+                "url": {
+                  "raw": "https://api.onexaura.com/oapi/meta/templates/fetch?limit=500",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "onexaura",
+                    "com"
+                  ],
+                  "path": [
+                    "oapi",
+                    "meta",
+                    "templates",
+                    "fetch"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "500"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Template Message",
+          "item": [
+            {
+              "name": "Media, Variable, Button Payload",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"wa\": [\n        {\n            \"messaging_product\": \"whatsapp\",\n            \"recipient_type\": \"individual\",\n            \"recipient\": [\n                \"{{recipient1}}\",\"{{recipient2}}\"\n            ],\n            \"sender\": \"{{wasender}}\", // Pool Id can also be passed\n            \"type\": \"template\",\n            \"template\": {\n                \"name\": \"xx\",\n                \"language\": {\n                    \"code\": \"xx\" // Template language needs to be added\n                },\n                \"components\": [\n                    {\n                        \"type\": \"header\",\n                        \"parameters\": [\n                            {\n                                \"type\": \"image\", // text, image, video, document, location can be used\n                                \"image\": {\n                                    \"link\": \"xx\" // id can also be used\n                                }\n                            }\n                        ]\n                    },\n                    {\n                        \"type\": \"body\",\n                        \"parameters\": [\n                            {\n                                \"type\": \"text\",\n                                \"text\": \"xx\"\n                            }\n                        ]\n                    },\n                    {\n                        \"type\": \"button\",\n                        \"sub_type\": \"quick_reply\",\n                        \"index\": 0, // index of the button where Quick Reply button is present\n                        \"parameters\": [\n                            {\n                                \"type\": \"payload\",\n                                \"payload\": \"xx\"\n                            }\n                        ]\n                    },\n                    {\n                        \"type\": \"button\",\n                        \"sub_type\": \"url\",\n                        \"index\": 1, // index of the button where URL button is present\n                        \"parameters\": [\n                            {\n                                \"type\": \"text\",\n                                \"text\": \"xx\"\n                            }\n                        ]\n                    }\n                ]\n            } /*\n            \"custref1\": \"\",\n            \"custref2\": \"\",\n            \"custref3\": \"\",\n            \"custref4\": \"\",\n            \"custref5\": \"\" */\n        }\n    ] /*\n    \"prefix\": \"+91\", //optional\n    \"campaignName\":\"xx\" //optional\n    \"urlShortener\": {\n        \"flag\": 1, //Mandatory if urlShortner is required in message body\n        \"urlDetails\": [\n            {\n                \"longUrl\": \"xx\", //Mandatory if urlShortner flag is set to 1\n                \"domain\": \"xx\",  //optional\n                \"track_user\": 1. //optional\n            }\n        ]\n    }*/\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Authentication",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"wa\": [\n        {\n            \"messaging_product\": \"whatsapp\",\n            \"recipient_type\": \"individual\",\n            \"recipient\": [\n                \"{{recipient1}}\",\n                \"{{recipient2}}\"\n            ],\n            \"sender\": \"{{wasender}}\", // Pool Id can also be passed\n            \"type\": \"template\",\n            \"template\": {\n                \"name\": \"xx\",\n                \"language\": {\n                    \"code\": \"xx\" // Template language needs to be added\n                },\n                \"components\": [\n                    {\n                        \"type\": \"body\",\n                        \"parameters\": [\n                            {\n                                \"type\": \"text\",\n                                \"text\": \"xx\"\n                            }\n                        ]\n                    },\n                    {\n                        \"type\": \"button\",\n                        \"sub_type\": \"url\",\n                        \"index\": 0,\n                        \"parameters\": [\n                            {\n                                \"type\": \"text\",\n                                \"text\": \"xx\"\n                            }\n                        ]\n                    }\n                ]\n            } /*\n            \"custref1\": \"\",\n            \"custref2\": \"\",\n            \"custref3\": \"\",\n            \"custref4\": \"\",\n            \"custref5\": \"\" */\n        }\n    ]\n    //\"prefix\": \"+91\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Limited Time Offer",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"wa\": [\n        {\n            \"messaging_product\": \"whatsapp\",\n            \"recipient_type\": \"individual\",\n            \"recipient\": [\n                \"{{recipient1}}\",\n                \"{{recipient2}}\"\n            ],\n            \"sender\": \"{{wasender}}\", // Pool Id can also be passed\n            \"type\": \"template\",\n            \"template\": {\n                \"name\": \"xx\",\n                \"language\": {\n                    \"code\": \"xx\" // Template language\n                },\n                \"components\": [\n                    {\n                        \"type\": \"header\",\n                        \"parameters\": [\n                            {\n                                \"type\": \"xx\", // image or video\n                                \"xx\": {\n                                    \"url\": \"xx\" // id also can be used\n                                }\n                            }\n                        ]\n                    },\n                    {\n                        \"type\": \"body\",\n                        \"parameters\": [\n                            {\n                                \"type\": \"text\",\n                                \"text\": \"xx\"\n                            }\n                        ]\n                    },\n                    {\n                        \"type\": \"limited_time_offer\",\n                        \"parameters\": [\n                            {\n                                \"type\": \"limited_time_offer\",\n                                \"limited_time_offer\": {\n                                    \"expiration_time_ms\": <EXPIRATION_TIME> // UNIX timestamp in milliseconds.\n                                }\n                            }\n                        ]\n                    },\n                    {\n                        \"type\": \"button\",\n                        \"sub_type\": \"copy_code\",\n                        \"index\": 0,\n                        \"parameters\": [\n                            {\n                                \"type\": \"coupon_code\",\n                                \"coupon_code\": \"xx\"\n                            }\n                        ]\n                    },\n                    {\n                        \"type\": \"button\",\n                        \"sub_type\": \"url\",\n                        \"index\": 1,\n                        \"parameters\": [\n                            {\n                                \"type\": \"text\",\n                                \"text\": \"xx\"\n                            }\n                        ]\n                    }\n                ]\n            } /*\n            \"custref1\": \"\",\n            \"custref2\": \"\",\n            \"custref3\": \"\",\n            \"custref4\": \"\",\n            \"custref5\": \"\" */\n        }\n    ] /*\n    \"prefix\": \"+91\", //optional\n    \"campaignName\":\"xx\" //optional\n    \"urlShortener\": {\n        \"flag\": 1, //Mandatory if urlShortner is required in message body\n        \"urlDetails\": [\n            {\n                \"longUrl\": \"xx\", //Mandatory if urlShortner flag is set to 1\n                \"domain\": \"xx\",  //optional\n                \"track_user\": 1. //optional\n            }\n        ]\n    }*/\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Media Card Carousel",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"wa\": [\n        {\n            \"messaging_product\": \"whatsapp\",\n            \"recipient_type\": \"individual\",\n            \"recipient\": [\n                \"{{recipient1}}\",\n                \"{{recipient2}}\"\n            ],\n            \"sender\": \"{{wasender}}\", // Pool Id can also be passed\n            \"type\": \"template\",\n            \"template\": {\n                \"name\": \"xx\",\n                \"language\": {\n                    \"code\": \"xx\" // Template language\n                },\n                \"components\": [\n                    {\n                        \"type\": \"body\",\n                        \"parameters\": [\n                            {\n                                \"type\": \"text\",\n                                \"text\": \"xx\"\n                            },\n                            {\n                                \"type\": \"text\",\n                                \"text\": \"xx\"\n                            }\n                        ]\n                    },\n                    {\n                        \"type\": \"carousel\",\n                        \"cards\": [\n                            {\n                                \"card_index\": 0,\n                                \"components\": [\n                                    {\n                                        \"type\": \"header\",\n                                        \"parameters\": [\n                                            {\n                                                \"type\": \"xx\", // image or video\n                                                \"xx\": {\n                                                    \"url\": \"xx\" // id also can be used\n                                                }\n                                            }\n                                        ]\n                                    },\n                                    {\n                                        \"type\": \"body\",\n                                        \"parameters\": [\n                                            {\n                                                \"type\": \"text\",\n                                                \"text\": \"xx\"\n                                            }\n                                        ]\n                                    },\n                                    {\n                                        \"type\": \"button\",\n                                        \"sub_type\": \"quick_reply\",\n                                        \"index\": 0,\n                                        \"parameters\": [\n                                            {\n                                                \"type\": \"payload\",\n                                                \"payload\": \"xx\"\n                                            }\n                                        ]\n                                    },\n                                    {\n                                        \"type\": \"button\",\n                                        \"sub_type\": \"url\",\n                                        \"index\": 1,\n                                        \"parameters\": [\n                                            {\n                                                \"type\": \"text\",\n                                                \"text\": \"xx\"\n                                            }\n                                        ]\n                                    }\n                                ]\n                            }\n                            // Add additional cards here, following the same structure\n                        ]\n                    }\n                ]\n            } /* \n            \"custref1\": \"\",\n            \"custref2\": \"\",\n            \"custref3\": \"\",\n            \"custref4\": \"\",\n            \"custref5\": \"\" */\n        }\n    ] /*\n    \"prefix\": \"+91\", //optional\n    \"campaignName\":\"xx\" //optional\n    \"urlShortener\": {\n        \"flag\": 1, //Mandatory if urlShortner is required in message body\n        \"urlDetails\": [\n            {\n                \"longUrl\": \"xx\", //Mandatory if urlShortner flag is set to 1\n                \"domain\": \"xx\",  //optional\n                \"track_user\": 1. //optional\n            }\n        ]\n    }*/\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Non Template Message",
+          "item": [
+            {
+              "name": "Address",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"wa\": [\n        {\n            \"messaging_product\": \"whatsapp\",\n            \"recipient_type\": \"individual\",\n            \"recipient\": \"{{recipient1}}\",\n            \"sender\": \"{{wasender}}\",\n            \"type\": \"interactive\",\n            \"interactive\": {\n                \"type\": \"address_message\",\n                \"body\": {\n                    \"text\": \"xx\"\n                },\n                \"action\": {\n                    \"name\": \"address_message\",\n                    \"parameters\": {\n                        \"country\": \"IN\" /* ,\n                        \"saved_addresses\": [\n                            {\n                                \"id\": \"xx\",\n                                \"value\": {\n                                    \"name\": \"xx\",\n                                    \"phone_number\": \"xx\",\n                                    \"in_pin_code\": \"xx\",\n                                    \"house_number\": \"xx\",\n                                    \"floor_number\": \"xx\",\n                                    \"tower_number\": \"xx\",\n                                    \"building_name\": \"xx\",\n                                    \"address\": \"xx\",\n                                    \"landmark_area\": \"xx\",\n                                    \"city\": \"xx\",\n                                    \"state\": \"xx\"\n                                }\n                            }\n                        ] // Businesses can pass in saved addresses previously associated with the user. All the fields are optional.\n                        \"values\": {\n                            \"name\": \"xx\",\n                            \"phone_number\": \"xx\",\n                            \"in_pin_code\": \"xx\",\n                            \"house_number\": \"xx\",\n                            \"floor_number\": \"xx\",\n                            \"tower_number\": \"xx\",\n                            \"building_name\": \"xx\",\n                            \"address\": \"xx\",\n                            \"landmark_area\": \"xx\",\n                            \"city\": \"xx\",\n                            \"state\": \"xx\"\n                        }, //Businesses prefill this for address fields (eg. prefilling the city address field with “India”). All the fields are optional.\n                        \"validation_errors\": {\n                            \"name\": \"xx\",\n                            \"phone_number\": \"xx\",\n                            \"in_pin_code\": \"xx\",\n                            \"house_number\": \"xx\",\n                            \"floor_number\": \"xx\",\n                            \"tower_number\": \"xx\",\n                            \"building_name\": \"xx\",\n                            \"address\": \"xx\",\n                            \"landmark_area\": \"xx\",\n                            \"city\": \"xx\",\n                            \"state\": \"xx\"\n                        } // Businesses can throw errors in the address fields and WhatsApp will prevent the user from submitting the address until the issue(s) are/is resolved. All the fields are optional\n                    } */\n                    }\n                }\n            }\n        }\n    ]\n    //  \"prefix\": \"+91\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Contact",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"wa\": [\n        {\n            \"messaging_product\": \"whatsapp\",\n            \"recipient_type\": \"individual\",\n            \"recipient\": \"{{recipient1}}\",\n            \"sender\": \"{{wasender}}\",\n            \"type\": \"contacts\",\n            \"contacts\": [\n                {\n                    \"addresses\": [\n                        {\n                            \"street\": \"xx\",\n                            \"city\": \"xx\",\n                            \"state\": \"xx\",\n                            \"zip\": \"xx\",\n                            \"country\": \"xx\",\n                            \"country_code\": \"xx\",\n                            \"type\": \"xx\"\n                        } // Additional addresses objects go here, \n                    ],\n                    \"birthday\": \"xx\",\n                    \"emails\": [\n                        {\n                            \"email\": \"xx\",\n                            \"type\": \"xx\"\n                        } // Additional emails objects go here,\n                    ],\n                    \"name\": {\n                        \"formatted_name\": \"xx\",\n                        \"first_name\": \"xx\",\n                        \"last_name\": \"xx\",\n                        \"middle_name\": \"xx\",\n                        \"suffix\": \"xx\",\n                        \"prefix\": \"xx\"\n                    },\n                    \"org\": {\n                        \"company\": \"xx\",\n                        \"department\": \"xx\",\n                        \"title\": \"xx\"\n                    },\n                    \"phones\": [\n                        {\n                            \"phone\": \"xx\",\n                            \"type\": \"xx\",\n                            \"wa_id\": \"xx\"\n                        } // Additional phones objects go here\n                    ],\n                    \"urls\": [\n                        {\n                            \"url\": \"xx\",\n                            \"type\": \"xx\"\n                        } // Additional URLs go here\n                    ]\n                } // All fields are optional.\n            ]\n        }\n    ]\n    // \"prefix\": \"+91\"//optional\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Media",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"wa\": [\n        {\n            \"messaging_product\": \"whatsapp\",\n            \"recipient_type\": \"individual\",\n            \"recipient\": \"{{recipient1}}\",\n            \"sender\": \"{{wasender}}\",\n            \"type\": \"document\", // can be image, video, document, audio, sticker. Pass the media under the same object name.\n            \"document\": {\n                \"link\": \"xx\", // id can also be used\n                \"caption\": \"xx\" // optional. Can be used only in case of image, video,document.\n                // \"filename\": \"xx\", // optional. Can be used only in case of document.\n                // \"voice\": true // optional. Can be used only in case of audio if sending as voice message.\n            }\n        }\n    ]\n    // \"prefix\": \"+91\"//optional\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Text",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"wa\": [\n        {\n            \"messaging_product\": \"whatsapp\",\n            \"recipient_type\": \"individual\",\n            \"recipient\": \"{{recipient1}}\",\n            \"sender\": \"{{wasender}}\",\n            \"type\": \"text\",\n            \"text\": {\n                \"body\": \"xx\",\n                \"preview_url\": true //optional\n            }\n        }\n    ]\n    // \"prefix\": \"+91\"//optional\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "URL Button",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"wa\": [\n        {\n            \"messaging_product\": \"whatsapp\",\n            \"recipient_type\": \"individual\",\n            \"recipient\": \"{{recipient1}}\",\n            \"sender\": \"{{wasender}}\",\n            \"type\": \"interactive\",\n            \"interactive\": {\n                \"type\": \"cta_url\",\n                \"header\": {\n                    \"type\": \"image\", // can be image, video, document. Pass the media under the same object name.\n                    \"image\": {\n                        \"link\": \"xx\"\n                    } // for type as text, pass text parameter with string value\n                }\n            },\n            \"body\": {\n                \"text\": \"xx\"\n            },\n            \"footer\": {\n                \"text\": \"xx\"\n            },\n            \"action\": {\n                \"name\": \"cta_url\",\n                \"parameters\": {\n                    \"display_text\": \"xx\",\n                    \"url\": \"xx\"\n                }\n            }\n        }\n    ]\n    //  \"prefix\": \"+91\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"wa\": [\n        {\n            \"messaging_product\": \"whatsapp\",\n            \"recipient_type\": \"individual\",\n            \"recipient\": \"{{recipient1}}\",\n            \"sender\": \"{{wasender}}\",\n            \"type\": \"interactive\",\n            \"interactive\": {\n                \"type\": \"list\",\n                \"header\": {\n                    \"type\": \"text\",\n                    \"text\": \"xx\"\n                },\n                \"body\": {\n                    \"text\": \"xx\"\n                },\n                \"footer\": {\n                    \"text\": \"xx\"\n                },\n                \"action\": {\n                    \"button\": \"xx\",\n                    \"sections\": [\n                        {\n                            \"title\": \"xx\",\n                            \"rows\": [\n                                {\n                                    \"id\": \"xx\",\n                                    \"title\": \"xx\",\n                                    \"description\": \"xx\"\n                                } // Additional rows would go here\n                            ]\n                        }\n                        // Additional sections would go here\n                    ]\n                }\n            }\n        }\n    ]\n    //  \"prefix\": \"+91\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Media Carousel",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"wa\": [\n        {\n            \"messaging_product\": \"whatsapp\",\n            \"recipient_type\": \"individual\",\n            \"recipient\": \"{{recipient1}}\",\n            \"sender\": \"{{wasender}}\",\n            \"type\": \"interactive\",\n            \"interactive\": {\n                \"type\": \"carousel\",\n                \"body\": {\n                    \"text\": \"xx\"\n                },\n                \"action\": {\n                    // first card object\n                    \"cards\": [ // Messages must include between 2 and 10 cards.\n                        {\n                            \"card_index\": \"\", // starts from zero\n                            \"type\": \"cta_url\",\n                            \"header\": {\n                                \"type\": \"xx\", // Cards must include either an image or video header. Other header types are not supported. Pass the media under the same object name.\n                                \"image\": {\n                                    \"link\": \"xx\"\n                                }\n                            },\n                            \"body\": {\n                                \"text\": \"xx\"\n                            },\n                            \"action\": { // Cards must include either one URL button, or one or more quick-reply buttons. Button types and numbers must match across all cards (for example, if you define a card with 2 quick-reply buttons, all cards must define exactly 2 quick-reply buttons). \n                                \"name\": \"cta_url\", // only if using a URL button\n                                \"parameters\": {\n                                    \"display_text\": \"xx\",\n                                    \"url\": \"xx\"\n                                }, // only if using one or more quick-reply buttons -->\n                                \"buttons\": [\n                                    {\n                                        \"type\": \"quick_reply\",\n                                        \"quick_reply\": {\n                                            \"id\": \"xx\",\n                                            \"title\": \"xx\"\n                                        }\n                                    }\n                                ] // Additional quick-reply buttons would follow\n                            }\n                        } // Additional card objects would follow -->\n                    ]\n                }\n            }\n        }\n    ]\n    //  \"prefix\": \"+91\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Reply",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"wa\": [\n        {\n            \"messaging_product\": \"whatsapp\",\n            \"recipient_type\": \"individual\",\n            \"recipient\": \"{{recipient1}}\",\n            \"sender\": \"{{wasender}}\",\n            \"type\": \"interactive\",\n            \"interactive\": {\n                \"type\": \"button\",\n                \"header\": {\n                    \"type\": \"image\", // can be text, image, video, document. Pass the media under the same object name.\n                    \"image\": {\n                        \"link\": \"xx\" // id can also be used.\n                    } // for type as text, pass text parameter with string value.\n                },\n                \"body\": {\n                    \"text\": \"xx\"\n                },\n                \"footer\": {\n                    \"text\": \"xx\"\n                },\n                \"action\": {\n                    \"buttons\": [\n                        {\n                            \"type\": \"reply\",\n                            \"reply\": {\n                                \"id\": \"xx\",\n                                \"title\": \"xx\"\n                            }\n                        } // Additional buttons would go here (maximum 3)\n                    ]\n                }\n            }\n        }\n    ]\n    //  \"prefix\": \"+91\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/send_sms",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "send_sms"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Media",
+          "item": [
+            {
+              "name": "Media Upload",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "phone_number",
+                      "value": "{{wasender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "value": null
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}/oapi/wa/mediaupload",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "wa",
+                    "mediaupload"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Fetch Media URL",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "apiKey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{domain}}/oapi/wa/media?mediaId={{mediaid}}&phoneNumber={{wasender}}",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "wa",
+                    "media"
+                  ],
+                  "query": [
+                    {
+                      "key": "mediaId",
+                      "value": "{{mediaid}}"
+                    },
+                    {
+                      "key": "phoneNumber",
+                      "value": "{{wasender}}"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Download Media",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "apiKey",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{domain}}/oapi/wa/download-media?mediaUrl={{mediaurl}}&phoneNumber={{wasender}}",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "oapi",
+                    "wa",
+                    "download-media"
+                  ],
+                  "query": [
+                    {
+                      "key": "mediaUrl",
+                      "value": "{{mediaurl}}"
+                    },
+                    {
+                      "key": "phoneNumber",
+                      "value": "{{wasender}}"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Opt In/ Opt Out",
+          "item": [
+            {
+              "name": "Get Opt Out",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{domain}}/opt/out/wa",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "opt",
+                    "out",
+                    "wa"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Opt In",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{domain}}/opt/in/wa",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "opt",
+                    "in",
+                    "wa"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Remove Opt Out",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{domain}}/opt/out/wa?number={{recipient1}}&sender={{wasender}}&message_type=marketing",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "opt",
+                    "out",
+                    "wa"
+                  ],
+                  "query": [
+                    {
+                      "key": "number",
+                      "value": "{{recipient1}}"
+                    },
+                    {
+                      "key": "sender",
+                      "value": "{{wasender}}"
+                    },
+                    {
+                      "key": "message_type",
+                      "value": "marketing"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Remove Opt In",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{domain}}/opt/in/wa?number={{recipient1}}&sender={{wasender}}&message_type=marketing",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "opt",
+                    "in",
+                    "wa"
+                  ],
+                  "query": [
+                    {
+                      "key": "number",
+                      "value": "{{recipient1}}"
+                    },
+                    {
+                      "key": "sender",
+                      "value": "{{wasender}}"
+                    },
+                    {
+                      "key": "message_type",
+                      "value": "marketing"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Add Opt Out",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"numbers\": [\"{{recipient1}}\", \"{{recipient2}}\"],\n  \"sender\" : \"{{wasender}}\",\n  \"message_types\": [\"marketing\", \"utility\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/opt/out/wa",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "opt",
+                    "out",
+                    "wa"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Add Opt In",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "apikey",
+                    "value": "{{apikey}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"numbers\": [\"{{recipient1}}\", \"{{recipient2}}\"],\n  \"sender\" : \"{{wasender}}\",\n  \"message_types\": [\"marketing\", \"utility\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{domain}}/opt/in/wa",
+                  "host": [
+                    "{{domain}}"
+                  ],
+                  "path": [
+                    "opt",
+                    "in",
+                    "wa"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Fallback",
+      "item": [
+        {
+          "name": "Fallback API",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "apikey",
+                "value": "{{apikey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ // Primary Channel can be one of SMS, RCS, WA\n    \"sms\": [\n        {\n            \"sender\": \"{{smssender}}\",\n            \"recipient\": \"recipient1\",\n            \"type\": \"xx\",\n            \"messageBody\": \"xx\",\n            \"templateId\": \"xx\", //Optional\n            \"entityId\": \"xx\", //Optional\n            \"unicode\": 0, //Optional\n            \"custRef1\": {\n                \"CustomReference1\": \"\",\n                \"CustomReference2\": \"\"\n            }\n        }\n    ],\n    \"wa\": [\n        {\n            \"messaging_product\": \"whatsapp\",\n            \"recipient_type\": \"individual\",\n            \"recipient\": [\n                \"{{recipient1}}\",\n                \"{{recipient2}}\"\n            ],\n            \"sender\": \"{{wasender}}\", // Pool Id can also be passed\n            \"type\": \"template\",\n            \"template\": {\n                \"name\": \"xx\",\n                \"language\": {\n                    \"code\": \"xx\" // Template language needs to be added\n                },\n                \"components\": [] // Similar payload of WhatsApp Template Message\n            } /*\n            \"custref1\": \"\",\n            \"custref2\": \"\",\n            \"custref3\": \"\",\n            \"custref4\": \"\",\n            \"custref5\": \"\" */\n        }\n    ],\n    \"rcs\": [\n        {\n            \"sender\": \"{{rcssender}}\",\n            \"messageType\": \"xx\",\n            \"recipient\": \"{{recipient1}}\",\n            \"contentMessage\": {\n                \"templateMessage\": {\n                    \"templateCode\": \"xx\",\n                    \"customParams\": \"{}\" // Similar payload of RCS Template Message\n                }\n            },\n            \"custref1\": \"\",\n            \"custref2\": \"\",\n            \"custref3\": \"\",\n            \"custref4\": \"\",\n            \"custref5\": \"\"\n        }\n    ],\n    \"fallback\": {\n        // Fallback Channel 1 and Fallback Channel 2 details can be added as per Fallback Configuration. If third party fallback is used the dynamic keys can be added with the speicifc channel.\n        \"fallback_id\": \"{{fallbackid}}\",\n        \"fallback\": true,\n        \"waittime\": \"\",\n        \"sms\": {\n            \"sender\": \"{{smssender}}\",\n            \"type\": \"xx\",\n            \"messageBody\": \"xx\",\n            \"unicode\": 0, //Optional\n            \"templateId\": \"xx\", //Optional\n            \"entityId\": \"xx\", //Optional\n            \"custRef1\": \"\", //Optional\n            \"custRef2\": \"\", //Optional\n            \"custRef3\": \"\", //Optional\n            \"custRef4\": \"\", //Optional\n            \"custRef5\": \"\" //Optional\n        },\n        \"wa\": {\n            \"sender\": \"{{wasender}}\",\n            \"template\": \"xx\",\n            \"languageCode\": \"xx\",\n            \"templateComponents\": [], // Similar payload of WhatsApp Template Message\n            \"custref1\": \"\", //Optional\n            \"custref2\": \"\", //Optional\n            \"custref3\": \"\", //Optional\n            \"custref4\": \"\", //Optional\n            \"custref5\": \"\" //Optional\n        },\n        \"rcs\": {\n            \"sender\": \"{{rcssender}}\",\n            \"messageType\": \"xx\",\n            \"templateCode\": \"xx\",\n            \"customParams\": \"{}\", // Similar payload of RCS Template Message\n            \"custref1\": \"\", //Optional\n            \"custref2\": \"\", //Optional\n            \"custref3\": \"\", //Optional\n            \"custref4\": \"\", //Optional\n            \"custref5\": \"\" //Optional\n        }\n    } /*,\n    \"prefix\": \"+91\", //optional\n    \"campaignName\": \"xx\", //optional\n    \"urlShortener\": {\n        \"flag\": 1, //Mandatory if urlShortner is required in message body\n        \"urlDetails\": [\n            {\n                \"longUrl\": \"xx\", //Mandatory if urlShortner flag is set to 1\n                \"domain\": \"xx\", //optional\n                \"track_user\": 1 //optional\n            }\n        ]\n    }*/\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{domain}}/oapi/send_sms",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "oapi",
+                "send_sms"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Status Check",
+      "item": [
+        {
+          "name": "Message Status",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "apikey",
+                "value": "{{apikey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"channel\": \"{{channel}}\", // Either wa or rcs can be passed\n    \"messageId\": [\n        \"xx\"\n    ],\n    /*\"mobileNumber\": [\"xx\"],\n     \"from\": \"2025-12-17 00:00:00\", // Mandatory in case of Mobile Number\n     \"to\": \"2025-12-17 23:59:59\",// Mandatory in case of Mobile Number \n    */\n    \"pageNo\": 0,\n    \"limit\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api.onexaura.com/status",
+              "protocol": "https",
+              "host": [
+                "api",
+                "onexaura",
+                "com"
+              ],
+              "path": [
+                "status"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Message History",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://api.onexaura.com/history?apiKey={{apikey}}&channel={{channel}}&duration=7&page=1&limit=1&type=template,nontemplate&phoneNumber={{recipient1}}&status=sent,delivered,read,failed",
+              "protocol": "https",
+              "host": [
+                "api",
+                "onexaura",
+                "com"
+              ],
+              "path": [
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "apiKey",
+                  "value": "{{apikey}}"
+                },
+                {
+                  "key": "channel",
+                  "value": "{{channel}}"
+                },
+                {
+                  "key": "duration",
+                  "value": "7"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "1"
+                },
+                {
+                  "key": "type",
+                  "value": "template,nontemplate"
+                },
+                {
+                  "key": "phoneNumber",
+                  "value": "{{recipient1}}"
+                },
+                {
+                  "key": "status",
+                  "value": "sent,delivered,read,failed"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "domain",
+      "value": "https://api.onexaura.com"
+    },
+    {
+      "key": "apikey",
+      "value": ""
+    },
+    {
+      "key": "recipient1",
+      "value": ""
+    },
+    {
+      "key": "recipient2",
+      "value": ""
+    },
+    {
+      "key": "wabaId",
+      "value": ""
+    },
+    {
+      "key": "wasender",
+      "value": ""
+    },
+    {
+      "key": "rcssender",
+      "value": ""
+    },
+    {
+      "key": "imageUrl",
+      "value": ""
+    },
+    {
+      "key": "videoUrl",
+      "value": ""
+    },
+    {
+      "key": "documentUrl",
+      "value": ""
+    },
+    {
+      "key": "audiourl",
+      "value": ""
+    }
+  ]
+}
