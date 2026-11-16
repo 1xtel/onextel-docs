@@ -15,7 +15,7 @@ Choosing a tab in any section switches every section on the page to that channel
 ## Scope
 
 <Tabs>
-  <Tab title="WhatsApp">
+  <Tab title="WhatsApp" id="scope-whatsapp">
     **Outbound**
 
     | Type | Supported |
@@ -32,7 +32,7 @@ Choosing a tab in any section switches every section on the page to that channel
 
     Text replies and quick-reply button clicks are routed back to MoEngage.
   </Tab>
-  <Tab title="RCS">
+  <Tab title="RCS" id="scope-rcs">
     **Outbound**
 
     | Type | Supported |
@@ -63,7 +63,7 @@ Choosing a tab in any section switches every section on the page to that channel
     Suggestion interaction callbacks are returned. Inbound *messages* are not supported —
     see [Limitations](#limitations).
   </Tab>
-  <Tab title="SMS">
+  <Tab title="SMS" id="scope-sms">
     **Outbound**
 
     | Type | Supported |
@@ -132,7 +132,7 @@ hosts, so check it before saving.
 ## Set up
 
 <Tabs>
-<Tab title="WhatsApp">
+<Tab title="WhatsApp" id="setup-whatsapp">
 
 <Steps>
   <Step title="Get your OneXtel API key">
@@ -187,7 +187,7 @@ hosts, so check it before saving.
 </Steps>
 
 </Tab>
-<Tab title="RCS">
+<Tab title="RCS" id="setup-rcs">
 
 If an RCS message is not delivered, OneXtel can retry it over SMS. Fallback spans both
 platforms: you create the fallback configuration and its DLR in OneXtel, then reference it from
@@ -624,7 +624,7 @@ capping** off.
 </Tip>
 
 </Tab>
-<Tab title="SMS">
+<Tab title="SMS" id="setup-sms">
 
 Plain SMS campaigns use a MoEngage **custom service provider** that points at the connector.
 Delivery reports come back through the connector too, which maps OneXtel's code onto MoEngage's
@@ -855,7 +855,7 @@ replies, and — for SMS — on every delivery report:
 | `7004` | Any other error |
 
 <Tabs>
-<Tab title="WhatsApp">
+<Tab title="WhatsApp" id="errors-whatsapp">
 
 **Delivery reports**
 
@@ -873,7 +873,7 @@ see [WhatsApp error codes](/api-reference/whatsapp/error-codes).
 | OneXtel refused the request — including a rejected API key | `7004` |
 
 </Tab>
-<Tab title="RCS">
+<Tab title="RCS" id="errors-rcs">
 
 **Delivery reports**
 
@@ -899,7 +899,7 @@ The SMS leg of an RCS fallback reports through the SMS delivery callback and rea
 `SMS_DELIVERED` or `SMS_DELIVERY_FAILED` against the original RCS message.
 
 </Tab>
-<Tab title="SMS">
+<Tab title="SMS" id="errors-sms">
 
 **Delivery reports**
 
@@ -957,7 +957,7 @@ report.
   redelivery.
 
 <Tabs>
-<Tab title="WhatsApp">
+<Tab title="WhatsApp" id="limits-whatsapp">
 
 - **Quick Reply or CTA, not both.** MoEngage does not support templates combining quick-reply
   and call-to-action buttons.
@@ -967,7 +967,7 @@ report.
   [OneXtel reporting](/guides/rcs-platform/reports-detail) for click data.
 
 </Tab>
-<Tab title="RCS">
+<Tab title="RCS" id="limits-rcs">
 
 - **Inbound messages are not supported** by MoEngage. Suggestion interaction callbacks are
   returned, but free-form customer replies cannot be surfaced in MoEngage.
@@ -978,7 +978,7 @@ report.
   [Coming soon](/plugins/overview#coming-soon).
 
 </Tab>
-<Tab title="SMS">
+<Tab title="SMS" id="limits-sms">
 
 - **Inbound SMS is not supported.** Replies to an SMS are not relayed to MoEngage.
 - **India DLT traffic.** The connector sends to OneXtel's India platform. Numbers are passed as
