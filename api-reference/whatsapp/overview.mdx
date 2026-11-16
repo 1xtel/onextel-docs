@@ -3,6 +3,10 @@ title: "WhatsApp API Overview"
 description: "Introduction, base URL, authentication, and endpoint summary for the OneXtel WhatsApp API."
 ---
 
+import ImportWhatsapp from '/snippets/import-whatsapp.mdx';
+
+<ImportWhatsapp />
+
 The WhatsApp API creates templates, submits them to Meta for approval, sends messages against
 the approved ones, and reports delivery back. Every call is a JSON request over HTTPS,
 authenticated with your OneXtel API key.
@@ -40,8 +44,8 @@ curl --location 'https://api.onexaura.com/...' \
 | --- | --- | --- | --- |
 | [Create Template](/api-reference/whatsapp/templates-create) | POST | `/wa/templates` | Create WhatsApp message templates (Authentication, Utility, Marketing, and more) |
 | [Fetch Template](/api-reference/whatsapp/templates-fetch) | POST | `/templates/fetch` | Retrieve templates with filters and pagination |
-| [Send Template Message](/api-reference/whatsapp/send-template-message) | POST | `/send_sms` | Send an approved WhatsApp template message |
-| [Send Session Message](/api-reference/whatsapp/send-session-messages) | POST | `/send_sms` | Send non-template (session) messages — text, media, interactive |
+| [Send Template Message](/api-reference/whatsapp/send-template-message) | POST | `/oapi/send_sms` | Send an approved WhatsApp template message |
+| [Send Session Message](/api-reference/whatsapp/send-session-messages) | POST | `/oapi/send_sms` | Send non-template (session) messages — text, media, interactive |
 | [Media Upload](/api-reference/whatsapp/media) | POST | `/oapi/wa/mediaupload` | Upload media and obtain a media ID |
 | [Opt-in / Opt-out](/api-reference/whatsapp/opt-in-opt-out) | GET/POST/DELETE | `/opt/{in,out}/wa` | Manage recipient opt-in and opt-out lists |
 | [Status Check](/api-reference/omnichannel/message-status) | POST | `/status` | Check delivery status of sent messages |
@@ -80,3 +84,13 @@ curl --location 'https://api.onexaura.com/...' \
     [History API](/api-reference/omnichannel/message-history).
   </Step>
 </Steps>
+
+## Send from a connected platform
+
+If your campaigns already live in a marketing platform or CRM, you can send OneXtel WhatsApp
+from there rather than against this API. [CleverTap](/plugins/clevertap-whatsapp),
+[MoEngage](/plugins/moengage), [WebEngage](/plugins/webengage),
+[Salesforce](/plugins/salesforce),
+[Salesforce Marketing Cloud](/plugins/salesforce-marketing-cloud),
+[LeadSquared](/plugins/leadsquared) and [Shopify](/plugins/shopify) all carry the channel — see
+[all connectors](/plugins/overview) for what each one supports.

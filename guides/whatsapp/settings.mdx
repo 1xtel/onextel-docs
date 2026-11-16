@@ -1,0 +1,104 @@
+---
+title: "WhatsApp settings"
+description: "Control when and how often WhatsApp messages go out, handle opt-outs, get alerts, and see which features your administrator can switch on."
+---
+
+WhatsApp settings live under **Channels → WhatsApp → Configurations → Settings**. Each setting is
+a toggle. Switching one on opens a form; the saved values then show in a small table under the
+setting, with an edit icon. Switching a setting off asks you to confirm and removes its
+configuration.
+
+Some settings are yours to change. Others are switched on for your account by your tenant
+administrator (OneXtel or your reseller) — ask your account manager if you need one.
+
+## Settings you control
+
+### Time Window
+
+Messages go out only between the hours you set.
+
+| Field | What to enter |
+| --- | --- |
+| Start Time, End Time | The sending window. It applies to every day |
+| Preferred Action Post End Time | What happens to messages still waiting at the end: hold them until the next day's start time, or drop them |
+| Filters (optional) | Source (Web or API), Category, WABA ID, Template Name, Phone Numbers, API Name. Leave them empty to cover all traffic |
+
+Sending stops 15 minutes before the end time. A dropped message fails with `900117`
+(`Platform_Timeout`).
+
+### Frequency Capping
+
+Limits how many messages one mobile number can receive in a period. Extra messages are blocked
+with `900115` (`Platform_Frequency_Limit_Reached`).
+
+| Field | What to enter |
+| --- | --- |
+| Number of Messages | The most messages one number can get in the period |
+| Time Window | **Per Day (24 hours)** or **Custom Time Period** |
+| Duplicate Category | What counts towards the cap: **Template + Sender**, or **Sender** |
+| Filters (optional) | The same filters as Time Window |
+
+### Alerts
+
+Emails the addresses you list when Meta sends an update.
+
+| Alert | Sent when |
+| --- | --- |
+| Template Updates | A template's quality, status or category changes |
+| Phone Number Updates | A number's capability or quality changes |
+
+Separate several addresses with commas. The subject reads `Alert : WABA ID : <update name>`.
+
+### Opt-In / Opt-Out
+
+Lets customers start and stop your messages by keyword.
+
+| Field | What to enter |
+| --- | --- |
+| WABA ID(s), WABA Numbers | The accounts and numbers the keywords apply to |
+| Message Type (optional) | Marketing or Utility. Leave it blank to cover all |
+| Keywords (optional) | The words customers send, for example `STOP` and `START` |
+
+Set the Opt-In and Opt-Out configurations separately. How the keywords behave:
+
+| Customer action | Result |
+| --- | --- |
+| Sends an exact opt-out keyword | The number goes on the opt-out list for that sender and message type |
+| Sends an exact opt-in keyword | The number goes on the opt-in list and comes off the opt-out list |
+| Sends any other message, or taps a button | The number comes off the opt-out list, if it is on it |
+
+Matching is exact and not case-sensitive. A number on both lists stays opted out, and messages to
+it fail with `4013` (`User_Opt_Out`). Turning the setting off keeps the lists, and they are reused
+if you turn it on again.
+
+The opt-out list appears under **Config → Blacklist Category** as
+`wa_optout_<WABA number>_<marketing | utility>` — see [Blacklist](/guides/platform/blacklist). To
+manage the lists from your own systems, use the
+[Opt-in / opt-out API](/api-reference/whatsapp/opt-in-opt-out).
+
+### Default Country Code
+
+Pick a country, for example India (+91). The portal removes a leading `0` or `00` and adds the
+country code to numbers saved without one, so a 10-digit Indian number becomes `+91XXXXXXXXXX`.
+
+### Message Limits (view only)
+
+Shows the daily and monthly limits your tenant administrator has set for your account.
+
+## Settings your administrator switches on
+
+| Setting | What it does for you |
+| --- | --- |
+| Category Blocking | Blocks whole categories from sending (`900118`, `Platform_Template_Category_Blocked`), and stops a template whose category Meta has changed, for example Utility to Marketing (`900119`, `Platform_Template_Category_Changed`). Blocked templates don't appear when you pick a template for a campaign |
+| Message Limits | Daily and monthly caps on your volume, overall and per region, and which regions you can send to. When a cap is reached, messages fail with `900121` (daily) or `900120` (monthly). Counters reset each calendar day and month |
+| Billing | Shows **Configurations → Billing** with your rates, and adds a billing column to your reports |
+| Number Pooling | Shows [Number Pools](/guides/whatsapp/phone-numbers#number-pools) |
+| Marketing Message API | Sends marketing templates from the selected WABAs through Meta's [Marketing Messages API](https://developers.facebook.com/documentation/business-messaging/whatsapp/marketing-messages/send-marketing-messages) in place of the standard Cloud API. On by default |
+| Direct Send API | Lets the selected WABAs send utility messages without a template, and shows the **Message Sample** tab — see [Meta Direct Send](/guides/whatsapp/direct-send) |
+| Partner Led Business Verification | Shows the **Business Portfolio** tab, where you submit documents for Meta verification — see [Business verification](/guides/whatsapp/business-verification) |
+
+## Related
+
+- [Phone numbers and pools](/guides/whatsapp/phone-numbers)
+- [WhatsApp reports](/guides/whatsapp/reports)
+- [WhatsApp error codes](/api-reference/whatsapp/error-codes)

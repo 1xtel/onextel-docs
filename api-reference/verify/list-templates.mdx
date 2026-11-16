@@ -4,6 +4,10 @@ description: "The templates a PIN can be sent under, with their PIN rules and pe
 openapi: "GET /v1/templates"
 ---
 
+import ImportVerify from '/snippets/import-verify.mdx';
+
+<ImportVerify />
+
 A template is what a send is configured by. It decides the shape of the PIN — length, character
 set, lifetime, how many verify attempts it allows — and it carries one entry per channel it can
 go out on, each bound to a channel account and to that provider's own template.

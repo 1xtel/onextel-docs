@@ -1,0 +1,745 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OneXtel Omnichannel API",
+    "version": "1.0.0",
+    "description": "Send with channel fallback, check message status and read message history.\n\nGenerated from the OneXtel API reference by scripts/build-openapi.py."
+  },
+  "servers": [
+    {
+      "url": "https://api.onexaura.com",
+      "description": "Production"
+    }
+  ],
+  "paths": {
+    "/oapi/send_sms": {
+      "post": {
+        "operationId": "fallback-fallback-api",
+        "summary": "Fallback API",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/omnichannel/fallback",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "header",
+            "required": true,
+            "description": "API key issued by OneXtel, used for authentication.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "wa": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "messaging_product": {
+                          "type": "string",
+                          "description": "Always `\"whatsapp\"`."
+                        },
+                        "recipient_type": {
+                          "type": "string",
+                          "description": "Always `\"individual\"`."
+                        },
+                        "recipient": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Array of recipient phone numbers."
+                        },
+                        "sender": {
+                          "type": "string",
+                          "description": "WhatsApp sender number. A Pool ID can also be passed."
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Always `\"template\"`."
+                        },
+                        "template": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "language": {
+                              "type": "object",
+                              "properties": {
+                                "code": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "components": {
+                              "type": "array",
+                              "items": {}
+                            }
+                          },
+                          "description": "Object with `name`, `language.code` (the template language), and `components`. Uses the same payload structure as the WhatsApp Template Message API."
+                        }
+                      },
+                      "required": [
+                        "messaging_product",
+                        "recipient_type",
+                        "recipient",
+                        "sender",
+                        "type",
+                        "template"
+                      ]
+                    }
+                  },
+                  "fallback": {
+                    "type": "object",
+                    "properties": {
+                      "fallback_id": {
+                        "type": "string",
+                        "description": "Fallback configuration ID."
+                      },
+                      "fallback": {
+                        "type": "boolean",
+                        "description": "Set to `true` to enable fallback."
+                      },
+                      "wait_time": {
+                        "type": "integer",
+                        "description": "Seconds to wait for a delivery or failure report on the primary channel before falling back, for example `30`. A numeric string such as `\"30\"` is accepted too. If the primary message carries a `ttl` longer than this wait time, the wait time overrides the TTL, so the primary attempt ends when fallback fires and the recipient does not get both messages."
+                      },
+                      "sms": {
+                        "type": "object",
+                        "properties": {
+                          "sender": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "messageBody": {
+                            "type": "string"
+                          },
+                          "templateId": {
+                            "type": "string"
+                          },
+                          "entityId": {
+                            "type": "string"
+                          },
+                          "unicode": {
+                            "type": "integer"
+                          }
+                        },
+                        "description": "SMS fallback object: `sender`, `type`, `messageBody` plus optional `unicode`, `templateId`, `entityId`, and `custRef1`–`custRef5`. Include as per your fallback configuration. `templateId` and `entityId` follow the same auto-match rule as the `sms` channel above."
+                      },
+                      "wa": {
+                        "type": "object",
+                        "properties": {
+                          "sender": {
+                            "type": "string"
+                          },
+                          "template": {
+                            "type": "string"
+                          },
+                          "languageCode": {
+                            "type": "string"
+                          },
+                          "templateComponents": {
+                            "type": "array",
+                            "items": {}
+                          }
+                        },
+                        "description": "WhatsApp fallback object: `sender`, `template`, `languageCode`, `templateComponents` (same payload structure as the WhatsApp Template Message API) plus optional `custref1`–`custref5`. Include as per your fallback configuration."
+                      },
+                      "rcs": {
+                        "type": "object",
+                        "properties": {
+                          "sender": {
+                            "type": "string"
+                          },
+                          "messageType": {
+                            "type": "string"
+                          },
+                          "templateCode": {
+                            "type": "string"
+                          },
+                          "customParams": {
+                            "type": "string"
+                          }
+                        },
+                        "description": "RCS fallback object: `sender`, `messageType`, `templateCode`, `customParams` (same payload structure as the RCS Template Message API) plus optional `custref1`–`custref5`. Include as per your fallback configuration."
+                      }
+                    },
+                    "required": [
+                      "fallback_id",
+                      "fallback",
+                      "wait_time"
+                    ]
+                  },
+                  "sms": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "sender": {
+                          "type": "string",
+                          "description": "SMS sender ID."
+                        },
+                        "recipient": {
+                          "type": "string",
+                          "description": "Recipient phone number."
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Message type. Verified accepted on the SMS send API: `SI`, `OTP`, `SE`. Case-sensitive."
+                        },
+                        "messageBody": {
+                          "type": "string",
+                          "description": "Message content."
+                        },
+                        "templateId": {
+                          "type": "string",
+                          "description": "DLT template ID. Optional only when template auto-match is enabled on the API key; otherwise required for DLT-registered SMS in India."
+                        },
+                        "entityId": {
+                          "type": "string",
+                          "description": "DLT entity ID. Optional only when template auto-match is enabled on the API key; otherwise required for DLT-registered SMS in India."
+                        },
+                        "unicode": {
+                          "type": "integer",
+                          "description": "`0` or `1` — enable Unicode encoding. Optional."
+                        },
+                        "custRef1": {
+                          "type": "object",
+                          "properties": {
+                            "CustomReference1": {
+                              "type": "string"
+                            },
+                            "CustomReference2": {
+                              "type": "string"
+                            }
+                          },
+                          "description": "Optional custom reference fields for tracking or tagging (e.g. `CustomReference1`, `CustomReference2`)."
+                        }
+                      },
+                      "required": [
+                        "sender",
+                        "recipient",
+                        "type",
+                        "messageBody"
+                      ]
+                    }
+                  },
+                  "rcs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "sender": {
+                          "type": "string",
+                          "description": "RCS sender ID."
+                        },
+                        "messageType": {
+                          "type": "string",
+                          "description": "Message type."
+                        },
+                        "recipient": {
+                          "type": "string",
+                          "description": "Recipient phone number."
+                        },
+                        "contentMessage": {
+                          "type": "object",
+                          "properties": {
+                            "templateMessage": {
+                              "type": "object",
+                              "properties": {
+                                "templateCode": {
+                                  "type": "string"
+                                },
+                                "customParams": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "description": "Contains `templateMessage`, an object with `templateCode` and `customParams`. Uses the same payload structure as the RCS Template Message API."
+                        },
+                        "custref1": {
+                          "type": "string",
+                          "description": "Custom reference fields for tracking: `custref1` through `custref5`. Optional."
+                        },
+                        "custref2": {
+                          "type": "string"
+                        },
+                        "custref3": {
+                          "type": "string"
+                        },
+                        "custref4": {
+                          "type": "string"
+                        },
+                        "custref5": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "sender",
+                        "messageType",
+                        "recipient",
+                        "contentMessage"
+                      ]
+                    }
+                  },
+                  "prefix": {
+                    "type": "string",
+                    "description": "Phone number prefix, e.g. `\"+91\"`. Optional."
+                  },
+                  "campaignName": {
+                    "type": "string",
+                    "description": "Campaign identifier string. Optional."
+                  },
+                  "urlShortener": {
+                    "type": "object",
+                    "description": "Object with `flag` (set to `1` — mandatory if a URL shortener is required in the message body) and a `urlDetails` array. Each `urlDetails` item contains `longUrl` (mandatory when `flag` is `1`), `domain` (optional), and `track_user` (optional)."
+                  }
+                }
+              },
+              "examples": {
+                "example-request": {
+                  "summary": "Example request",
+                  "value": {
+                    "wa": [
+                      {
+                        "messaging_product": "whatsapp",
+                        "recipient_type": "individual",
+                        "recipient": [
+                          "919999999999",
+                          "919999999998"
+                        ],
+                        "sender": "YOUR_WA_SENDER",
+                        "type": "template",
+                        "template": {
+                          "name": "YOUR_TEMPLATE_NAME",
+                          "language": {
+                            "code": "en"
+                          },
+                          "components": []
+                        }
+                      }
+                    ],
+                    "fallback": {
+                      "fallback_id": "YOUR_FALLBACK_ID",
+                      "fallback": true,
+                      "wait_time": 30,
+                      "sms": {
+                        "sender": "YOUR_SMS_SENDER",
+                        "type": "SI",
+                        "messageBody": "Your message text",
+                        "templateId": "YOUR_DLT_TEMPLATE_ID",
+                        "entityId": "YOUR_DLT_ENTITY_ID"
+                      }
+                    }
+                  }
+                },
+                "example-request-request-body-all-channels": {
+                  "summary": "Example request — Request body (all channels)",
+                  "value": {
+                    "sms": [
+                      {
+                        "sender": "YOUR_SMS_SENDER",
+                        "recipient": "919999999999",
+                        "type": "SI",
+                        "messageBody": "Your message text",
+                        "templateId": "YOUR_DLT_TEMPLATE_ID",
+                        "entityId": "YOUR_DLT_ENTITY_ID",
+                        "unicode": 0,
+                        "custRef1": {
+                          "CustomReference1": "",
+                          "CustomReference2": ""
+                        }
+                      }
+                    ],
+                    "wa": [
+                      {
+                        "messaging_product": "whatsapp",
+                        "recipient_type": "individual",
+                        "recipient": [
+                          "919999999999",
+                          "919999999998"
+                        ],
+                        "sender": "YOUR_WA_SENDER",
+                        "type": "template",
+                        "template": {
+                          "name": "YOUR_TEMPLATE_NAME",
+                          "language": {
+                            "code": "en"
+                          },
+                          "components": []
+                        }
+                      }
+                    ],
+                    "rcs": [
+                      {
+                        "sender": "YOUR_RCS_SENDER",
+                        "messageType": "Transactional",
+                        "recipient": "919999999999",
+                        "contentMessage": {
+                          "templateMessage": {
+                            "templateCode": "YOUR_TEMPLATE_CODE",
+                            "customParams": "{}"
+                          }
+                        },
+                        "custref1": "",
+                        "custref2": "",
+                        "custref3": "",
+                        "custref4": "",
+                        "custref5": ""
+                      }
+                    ],
+                    "fallback": {
+                      "fallback_id": "YOUR_FALLBACK_ID",
+                      "fallback": true,
+                      "wait_time": 30,
+                      "sms": {
+                        "sender": "YOUR_SMS_SENDER",
+                        "type": "SI",
+                        "messageBody": "Your message text",
+                        "unicode": 0,
+                        "templateId": "YOUR_DLT_TEMPLATE_ID",
+                        "entityId": "YOUR_DLT_ENTITY_ID"
+                      },
+                      "wa": {
+                        "sender": "YOUR_WA_SENDER",
+                        "template": "YOUR_TEMPLATE_NAME",
+                        "languageCode": "en",
+                        "templateComponents": []
+                      },
+                      "rcs": {
+                        "sender": "YOUR_RCS_SENDER",
+                        "messageType": "Transactional",
+                        "templateCode": "YOUR_TEMPLATE_CODE",
+                        "customParams": "{}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "tags": [
+          "Fallback"
+        ]
+      }
+    },
+    "/status": {
+      "post": {
+        "operationId": "message-status-message-status",
+        "summary": "Message Status",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/omnichannel/message-status",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "header",
+            "required": true,
+            "description": "API key issued by OneXtel, used for authentication.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "taId": {
+                    "type": "integer",
+                    "description": "Tenant administrator ID. Scopes the query to a tenant."
+                  },
+                  "tucId": {
+                    "type": "integer",
+                    "description": "TUC ID. Scopes the query to a specific account under the tenant."
+                  },
+                  "channel": {
+                    "type": "string",
+                    "description": "Channel to query — `whatsapp`, `rcs`, or `sms`."
+                  },
+                  "messageId": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of message IDs to look up. Required unless `mobileNumber` is supplied, and mutually exclusive with it."
+                  },
+                  "pageNo": {
+                    "type": "integer",
+                    "description": "Page number for paginated results."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "description": "Number of records to return per page."
+                  },
+                  "mobileNumber": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of recipient mobile numbers, with country code. Required unless `messageId` is supplied, and mutually exclusive with it."
+                  },
+                  "from": {
+                    "type": "string",
+                    "description": "Start of date range, formatted `YYYY-MM-DD HH:mm:ss` — for example `\"2025-12-17 00:00:00\"`. Mandatory when querying by `mobileNumber`."
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "End of date range, formatted `YYYY-MM-DD HH:mm:ss` — for example `\"2025-12-17 23:59:59\"`. Mandatory when querying by `mobileNumber`."
+                  }
+                },
+                "required": [
+                  "channel"
+                ]
+              },
+              "examples": {
+                "example-request": {
+                  "summary": "Example request",
+                  "value": {
+                    "taId": 10,
+                    "tucId": 2002,
+                    "channel": "whatsapp",
+                    "messageId": [
+                      "3I7dnaYRaiTVj8f5EgxsoiJrT5R"
+                    ],
+                    "pageNo": 0,
+                    "limit": 100
+                  }
+                },
+                "example-request-request-body-by-mobilenumber": {
+                  "summary": "Example request — Request body (by mobileNumber)",
+                  "value": {
+                    "channel": "whatsapp",
+                    "mobileNumber": [
+                      "919999999999"
+                    ],
+                    "from": "2025-12-17 00:00:00",
+                    "to": "2025-12-17 23:59:59",
+                    "pageNo": 0,
+                    "limit": 10
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "uuid": {
+                            "type": "string"
+                          },
+                          "mobileNumber": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "failedErrorCode": {
+                            "type": "string"
+                          },
+                          "failedErrorMessage": {
+                            "type": "string"
+                          },
+                          "onexReceivedTs": {
+                            "type": "integer"
+                          },
+                          "credit": {
+                            "type": "integer"
+                          },
+                          "buttonClick": {
+                            "type": "integer"
+                          },
+                          "urlClick": {
+                            "type": "integer"
+                          },
+                          "customParam1": {
+                            "type": "string"
+                          },
+                          "customParam2": {
+                            "type": "string"
+                          },
+                          "customParam3": {
+                            "type": "string"
+                          },
+                          "customParam4": {
+                            "type": "string"
+                          },
+                          "customParam5": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "totalRecords": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "response": {
+                    "summary": "Response",
+                    "value": {
+                      "data": [
+                        {
+                          "uuid": "3I7dnaYRaiTVj8f5EgxsoiJrT5R",
+                          "mobileNumber": "919999999999",
+                          "status": "DELIVERED",
+                          "failedErrorCode": "000",
+                          "failedErrorMessage": "Delivered",
+                          "onexReceivedTs": 1786517520081,
+                          "credit": 1,
+                          "buttonClick": 0,
+                          "urlClick": 0,
+                          "customParam1": "",
+                          "customParam2": "",
+                          "customParam3": "",
+                          "customParam4": "",
+                          "customParam5": ""
+                        }
+                      ],
+                      "pagination": {
+                        "totalRecords": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Message Status"
+        ]
+      }
+    },
+    "/history": {
+      "get": {
+        "operationId": "message-history-message-history",
+        "summary": "Message History",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/omnichannel/message-history",
+        "parameters": [
+          {
+            "name": "apiKey",
+            "in": "query",
+            "required": true,
+            "description": "API key issued by OneXtel, used for authentication.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "YOUR_API_KEY"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": true,
+            "description": "Channel to query.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "wa"
+          },
+          {
+            "name": "duration",
+            "in": "query",
+            "required": true,
+            "description": "Lookback window in days, e.g. `7`.",
+            "schema": {
+              "type": "number"
+            },
+            "example": "7"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": true,
+            "description": "Page number for paginated results.",
+            "schema": {
+              "type": "number"
+            },
+            "example": "1"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "number"
+            },
+            "example": "1"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "description": "Comma-separated message types to filter by, e.g. `template,nontemplate`.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "template,nontemplate"
+          },
+          {
+            "name": "phoneNumber",
+            "in": "query",
+            "required": false,
+            "description": "Recipient phone number to filter by.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "919999999999"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated delivery statuses to filter by, e.g. `sent,delivered,read,failed`.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "sent,delivered,read,failed"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "tags": [
+          "Message History"
+        ]
+      }
+    }
+  }
+}

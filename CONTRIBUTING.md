@@ -24,7 +24,40 @@ through a pull request, and `main` takes no direct commits.
    - **Build and links (Mintlify)** — a broken link or bad frontmatter blocks the merge.
    - **Brand voice review** — reads the diff and comments on tone, structure and unearned
      warnings. Advisory: it comments, it does not block.
+   - **Docs PDF** — builds the whole site into one PDF and attaches it to the run, so you can
+     see how your pages print. Advisory. Every merge to `main` is a release: the same build
+     publishes the next version, and the site's **Download PDF** button serves it.
 6. **Get one approval**, then merge. Delete the branch.
+
+## The PDF
+
+`scripts/pdf/build.mjs` prints every page in the navigation, in order, except the archived
+APIs. Tabs, steps and expandable fields print in full, and API pages built from an OpenAPI spec
+print their parameters and responses. Imported `.mdx` snippets print their content where they are
+used; `.jsx` snippets are interactive, so the PDF points to the page on the site instead. To build
+it yourself:
+
+```bash
+cd scripts/pdf && npm ci && npx playwright install chromium && cd ../..
+node scripts/pdf/build.mjs        # writes .pdf-build/OneXtel_Documentation_<version>-draft.pdf
+```
+
+A component the builder has no mapping for prints its content and a warning in the build log.
+
+The PDF follows the OneXtel brand guidelines: Open Sans, the brand palette only, the wordmark at no less
+than 25 mm, and the brand curve on the cover and section pages. The palette lives in `scripts/pdf/style.css`
+and in `BRAND` in `build.mjs`; change both together.
+
+### Versions
+
+Each release of the docs has a version, shown in the PDF's file name, on its cover and in every
+page footer: `OneXtel_Documentation_1.0.pdf`, then `1.0.1`, `1.0.2` and so on. Every merge to `main`
+adds one to the last number and publishes that version as its own GitHub release (`docs-v1.0.2`).
+Earlier versions stay downloadable from the releases page.
+
+`VERSION`, in the repo root, holds the first two numbers. Raise it by pull request when the docs
+move on: `1.1` for a significant update, `2.0` for a new platform. The next release is then `1.1`,
+and the count starts again from there.
 
 ## What reviewers check
 

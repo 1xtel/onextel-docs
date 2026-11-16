@@ -38,7 +38,13 @@ The template preview on the right stays empty until the sender details are compl
 
 ## Add recipients
 
-Click **Recipient Details** and select one of the three recipient methods.
+Click **Recipient Details**. First choose the **Recipient Type**:
+
+- **Phone Number** — the usual choice.
+- **BSUID** — Meta's business-scoped user ID, for customers who use a WhatsApp username in place
+  of a visible phone number.
+
+Then select one of the three recipient methods.
 
 <Tabs>
   <Tab title="Copy/Paste">
@@ -49,7 +55,7 @@ Click **Recipient Details** and select one of the three recipient methods.
         Under **Method**, select **Copy/Paste**.
       </Step>
       <Step title="Enter the numbers">
-        Enter phone numbers separated by commas or new lines in the text box. Example: `+1234567890, 9876543210, 5551234567`. Include country codes for international numbers.
+        Enter up to 100,000 phone numbers, separated by commas or new lines. Example: `919999999999, 919999999998`. Include the country code, or switch on **Default Country Code** below.
       </Step>
       <Step title="Save">
         Click **Save** to add the numbers, or **Clear** to remove them.
@@ -64,7 +70,7 @@ Click **Recipient Details** and select one of the three recipient methods.
         Under **Method**, select **Upload**.
       </Step>
       <Step title="Choose a file">
-        Click **Browse** and choose a file (`.txt`, `.csv`, `.xls`).
+        Click **Browse** and choose a file (`.txt`, `.csv`, `.xls`). Extra columns in the file can be used as template variables later.
       </Step>
       <Step title="Select the recipient number column">
         After uploading, a pop-up appears to select the Recipient Number Column.
@@ -85,6 +91,9 @@ Click **Recipient Details** and select one of the three recipient methods.
         From the **Phonebook Group** dropdown, choose the desired group or contact list.
       </Step>
     </Steps>
+
+    Groups and contacts are created under **Phonebook** in the left menu — see
+    [Phonebook](/guides/platform/phonebook).
   </Tab>
 </Tabs>
 
@@ -111,12 +120,36 @@ Click **Sender Details** and complete the following fields:
   </Step>
   <Step title="Select the phone numbers">
     Select the phone numbers from the dropdown list and confirm the selected number appears in the list below. This dropdown lists the sender's registered phone numbers associated with the selected WABA ID; messages are sent from this number.
+
+    To send through several numbers, tick **Use number pool** and pick a pool instead — see
+    [Number pools](/guides/whatsapp/phone-numbers#number-pools).
   </Step>
 </Steps>
 
 <Note>
-Templates must already be created and approved on the WhatsApp Business Account — the campaign builder only lets you select from existing approved templates.
+Templates must already be created and approved on the WhatsApp Business Account — the campaign
+builder only lets you select from existing approved templates. Templates in a category your
+administrator has blocked for your account aren't listed. See
+[Create WhatsApp templates](/guides/whatsapp/templates).
 </Note>
+
+### Send without a template (Direct Send)
+
+If Direct Send is switched on for the WABA, a **Direct Send** tick box appears in Sender Details.
+
+<Steps>
+  <Step title="Tick Direct Send">
+    Tick **Direct Send**. The **Template** field is greyed out.
+  </Step>
+  <Step title="Build the message">
+    Click **Configure** and build a **Text** or **Interactive** message. The body is required, and
+    an interactive message needs a text or image header. Variables such as `{{Name}}` come from
+    the columns of your uploaded file.
+  </Step>
+</Steps>
+
+Direct Send carries utility content only. Check the content first under **Message Sample** — see
+[Meta Direct Send](/guides/whatsapp/direct-send).
 
 ## Next step
 

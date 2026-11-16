@@ -3,6 +3,10 @@ title: "RCS Messaging Overview"
 description: "Authenticate, create and fetch RCS templates, and send RCS messages through the OneXtel Omni platform."
 ---
 
+import ImportRcs from '/snippets/import-rcs.mdx';
+
+<ImportRcs />
+
 The RCS API creates and fetches templates, sends messages, and reports what happened to each
 one. Everything is a JSON request over HTTPS, authenticated with your OneXtel API key, so it
 fits whatever your campaigns are already triggered from.
@@ -97,3 +101,11 @@ The Send Message API returns an array with one result object per message:
 <ResponseField name="status" type="string">
   Result status, e.g. `success`.
 </ResponseField>
+
+## Send from a connected platform
+
+If your campaigns already live in a marketing platform or CRM, you can send OneXtel RCS from
+there rather than against this API. [CleverTap](/plugins/clevertap),
+[MoEngage](/plugins/moengage), [WebEngage](/plugins/webengage) and
+[Shopify](/plugins/shopify) all carry the channel — see
+[all connectors](/plugins/overview) for what each one supports.

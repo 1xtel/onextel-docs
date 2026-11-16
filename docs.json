@@ -21,10 +21,9 @@
         "tab": "Guides",
         "groups": [
           {
-            "group": "Channels",
+            "group": "Get started",
             "pages": [
-              "guides/channels/about-rcs",
-              "guides/channels/about-whatsapp"
+              "guides/about-onextel"
             ]
           },
           {
@@ -47,16 +46,33 @@
             ]
           },
           {
-            "group": "WhatsApp Campaigns",
+            "group": "Channels",
+            "pages": [
+              "guides/channels/about-rcs",
+              "guides/channels/about-whatsapp"
+            ]
+          },
+          {
+            "group": "WhatsApp Setup",
             "pages": [
               "guides/whatsapp/activation",
+              "guides/whatsapp/phone-numbers",
+              "guides/whatsapp/templates",
+              "guides/whatsapp/bulk-template-upload",
+              "guides/whatsapp/direct-send",
+              "guides/whatsapp/business-verification",
+              "guides/whatsapp/settings",
+              "guides/whatsapp/reports"
+            ]
+          },
+          {
+            "group": "WhatsApp Campaigns",
+            "pages": [
               "guides/whatsapp/quickstart",
               "guides/whatsapp/campaign-dashboard",
               "guides/whatsapp/campaign-create",
               "guides/whatsapp/campaign-variable-mapping",
-              "guides/whatsapp/campaign-launch",
-              "guides/whatsapp/direct-send",
-              "guides/whatsapp/bulk-template-upload"
+              "guides/whatsapp/campaign-launch"
             ]
           },
           {
@@ -75,6 +91,7 @@
               "guides/whatsapp-voice/how-it-works",
               "guides/whatsapp-voice/getting-started",
               "guides/whatsapp-voice/connect-your-voice-platform",
+              "guides/whatsapp-voice/ipsec-tunnels",
               "guides/whatsapp-voice/protocols-and-media",
               "guides/whatsapp-voice/troubleshooting"
             ]
@@ -331,13 +348,24 @@
       "label": "OneXtel",
       "href": "https://www.onextel.com"
     },
-    "links": []
+    "links": [
+      {
+        "label": "Download PDF",
+        "href": "/download-pdf"
+      }
+    ]
   },
   "contextual": {
     "options": [
       "copy",
       "view",
       "download-pdf",
+      {
+        "title": "Download all docs",
+        "description": "Every guide, API reference and plugin page in one PDF",
+        "icon": "file-pdf",
+        "href": "/download-pdf"
+      },
       "download-spec",
       "chatgpt",
       "claude"

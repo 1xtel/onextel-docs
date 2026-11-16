@@ -3,8 +3,14 @@ title: "India SMS Overview"
 description: "Base URL, authentication, DLT requirements, and endpoint summary for sending SMS to Indian numbers."
 ---
 
-SMS to Indian numbers is sent to one endpoint, `/send_sms`. You submit message details as a JSON
-payload and the platform delivers to the recipients.
+import ImportSms from '/snippets/import-sms.mdx';
+
+<ImportSms />
+
+SMS to Indian numbers is sent to `/send_sms`. You submit message details as a JSON payload and
+the platform delivers to the recipients. `/send_sms` carries SMS only: to send WhatsApp or RCS, or
+to fall back from one channel to another, use `/oapi/send_sms`, described in the
+[OmniChannel API](/api-reference/omnichannel/overview).
 
 <Note>
 For destinations **outside India**, use the
@@ -68,3 +74,5 @@ Messages that fail these checks are rejected before they reach an operator — s
 - [Send SMS — India](/api-reference/sms/send-sms-omni) — payload, DLT fields, and responses
 - [DLR callback](/api-reference/sms/dlr-callback) — the receipt posted to your URL
 - [SMS error codes](/api-reference/sms/error-codes) — what each `errorCode` means
+- [Plugins and connectors](/plugins/overview) — send SMS from CleverTap, MoEngage, WebEngage,
+  Salesforce, Zoho CRM, Shopify or Optimove instead of calling this API directly

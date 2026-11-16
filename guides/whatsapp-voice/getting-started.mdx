@@ -28,6 +28,8 @@ onboarding and tells you if anything needs to change.
 | WhatsApp Business Account ID | Identifies the account the number belongs to. |
 | Phone number ID of the number to enable | Identifies the number inside WhatsApp. This is not the phone number itself. |
 | SIP trunk details | Where your platform wants WhatsApp calls delivered: host or IP address, port, transport, codecs. |
+| Trunk limits and caller ID | If your platform or telephony partner has them: the number of channels, the maximum new calls per second, the calling numbers it accepts, and the number formats it expects. See [Connect your voice platform](/guides/whatsapp-voice/connect-your-voice-platform#channel-limits). |
+| IPsec details, if you need a private connection | See [Connect over an IPsec tunnel](/guides/whatsapp-voice/ipsec-tunnels). |
 | The firewall rule on your side | Your platform must accept signalling and audio from the OneXtel gateway. OneXtel gives you the addresses. |
 | A test contact | Someone who can place a test call and confirm what your platform received. |
 
@@ -87,7 +89,9 @@ but waits for the caller to speak first.
 
 - [ ] A test call connects and audio flows both ways.
 - [ ] The call appears in OneXtel's call records as answered, with two-way audio.
-- [ ] Your platform sees the caller's number in the format you expect.
+- [ ] Your platform sees the caller's number in the format you expect, and reads `X-WA-Caller` if the trunk shows a fixed or business caller ID.
+- [ ] The trunk's channel limits match what your platform or partner allows.
+- [ ] The trunk shows as up in its health check, or the check is turned off for a platform that ignores pings.
 - [ ] Your failover trunk, if you have one, has been tested.
 - [ ] Your support team knows how to report a problem. See [Troubleshooting](/guides/whatsapp-voice/troubleshooting).
 

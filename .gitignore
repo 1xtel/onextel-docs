@@ -7,3 +7,6 @@ node_modules/
 REVIEW_NOTES.md
 COVERAGE.md
 inventory/
+
+# PDF build output
+.pdf-build/
