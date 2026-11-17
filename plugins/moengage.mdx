@@ -196,6 +196,36 @@ hosts, so check it before saving.
   </Step>
 </Steps>
 
+### Template sync
+
+MoEngage reads your WhatsApp templates from OneXtel through the connector — there is nothing to
+build by hand in MoEngage. When you sync or refresh templates on the OneXtel sender, MoEngage calls:
+
+```
+GET https://mo.onexaura.com/moengage/whatsapp/templates
+```
+
+with the sender's **Authorization** value in the `Authorization` header. The connector takes the
+API key and WABA ID from its first two values (`<apikey>~<wabaId>`), or the WABA ID from a `wabaid`
+header, and returns the templates in MoEngage's format: header, body, footer, buttons and carousel,
+with `{{n}}` variables.
+
+| Query parameter | Meaning | Default |
+| --- | --- | --- |
+| `page` | Page number | `1` |
+| `limit` | Templates per page | `100` |
+| `start_date`, `end_date` | Date range, passed to OneXtel as sent | — |
+| `template_name` | Only this template | — |
+
+- **Only approved templates are returned.** A template still pending or rejected in OneXtel does not
+  appear in MoEngage until it is approved.
+- **A missing API key or WABA ID** is refused with `400` — `Missing required fields: token or wabaId`.
+  If OneXtel refuses the request, for example for an unknown API key or WABA, the reply carries
+  OneXtel's reason instead of an empty list.
+- **On a sender with RCS fallback**, a sync also starts the RCS fallback templates for WhatsApp
+  templates created or changed in the last 7 days — see
+  [Add RCS fallback](#add-rcs-fallback-optional).
+
 ### Add RCS fallback (optional)
 
 MoEngage WhatsApp campaigns have no fallback setting of their own, so the fallback is set once per
