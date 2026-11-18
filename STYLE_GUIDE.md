@@ -83,7 +83,8 @@ spells them.
 
 - Document what the live API does, not what a vendor guide says it does. Where they disagree, the
   live behaviour wins and the discrepancy goes in the internal review notes.
-- Say when something is unverified rather than implying it is settled.
+- Publish only what is verified. If a fact can't be confirmed, leave it out and record the gap
+  in the internal tracker; don't publish a guess as settled, or a note that it is unverified.
 - Mark a code or field as deprecated instead of deleting it, until it stops being returned.
 
 ## Before you open a pull request
