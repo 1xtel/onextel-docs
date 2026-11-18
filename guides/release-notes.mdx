@@ -1,0 +1,36 @@
+---
+title: "Release notes"
+description: "New features and changes on the OneXtel platform, newest first."
+keywords: ["release notes", "changelog", "what's new", "new features"]
+rss: true
+---
+
+Each entry is a change you can start using, or one you need to act on: a new feature, a new
+connector, or a change to an API. Filter the entries by channel or connector with the tags, or
+follow the RSS feed to hear about new releases as they ship.
+
+<Update label="16 November 2026" description="MoEngage: WhatsApp to RCS fallback" tags={["WhatsApp", "RCS", "Connectors"]}>
+  MoEngage WhatsApp campaigns can now fall back to RCS. If a WhatsApp message fails, or no
+  delivery report arrives within the wait time you set, OneXtel sends an RCS message instead.
+
+  - **Set once per WhatsApp sender.** Every campaign on that sender gets the fallback.
+  - **RCS templates are created for you.** Add your RCS bot ID to the sender, and the connector
+    creates an RCS template for each WhatsApp template, with matching variables.
+  - **One outcome in MoEngage.** When the RCS message delivers, MoEngage shows the message as
+    delivered, and the WhatsApp failure is never shown.
+
+  [Add RCS fallback to a MoEngage sender](/plugins/moengage#add-rcs-fallback-optional)
+</Update>
+
+<Update label="11 November 2026" description="CleverTap: WhatsApp, with RCS and SMS fallback" tags={["WhatsApp", "RCS", "SMS", "Connectors"]}>
+  CleverTap campaigns can now send WhatsApp through OneXtel, using CleverTap's Generic WhatsApp
+  provider.
+
+  - **Templates and freeform messages** from your OneXtel WhatsApp Business Account, with your
+    approved templates imported into CleverTap.
+  - **Optional fallback.** A WhatsApp message that fails, or isn't delivered within the wait time,
+    is sent over RCS, SMS or both, in the order your Fallback ID sets.
+  - **Delivery reports, inbound replies and clicks** on OneXtel-tracked links reach CleverTap.
+
+  [Set up WhatsApp in CleverTap](/plugins/clevertap#setup-whatsapp)
+</Update>

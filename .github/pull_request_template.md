@@ -14,6 +14,7 @@
 - [ ] `npx -y mint@4.2.917 broken-links` passes
 - [ ] Read it in `mint dev` — tabs, steps and images render
 - [ ] Navigation in `docs.json` updated if pages were added, moved or renamed
+- [ ] If this documents a feature that has gone live: an entry in `guides/release-notes.mdx`
 - [ ] No API keys, customer names, real recipient numbers or internal hostnames
 
 <!-- The house standard is STYLE_GUIDE.md in the repo root. The Vale and Mintlify checks run automatically;

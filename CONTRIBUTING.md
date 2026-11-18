@@ -30,6 +30,31 @@ through a pull request, and `main` takes no direct commits.
      publishes the next version, and the site's **Download PDF** button serves it.
 6. **Get one approval**, then merge. Delete the branch.
 
+## Release notes
+
+`guides/release-notes.mdx` lists what has shipped, newest first. When a feature you own reaches
+production, add an entry at the top, in the same pull request as its docs or on the day it goes
+live:
+
+```mdx
+<Update label="16 November 2026" description="MoEngage: WhatsApp to RCS fallback" tags={["WhatsApp", "RCS", "Connectors"]}>
+  One or two sentences: what the reader can now do.
+
+  - Two to four bullets on what it includes or what changes for them.
+
+  [Link to the guide](/plugins/moengage#add-rcs-fallback-optional)
+</Update>
+```
+
+- **`label`** is the date it went live in production, written `16 November 2026`. Not the date
+  the docs merged.
+- **`description`** names the product or connector, then the change.
+- **`tags`** come from this list, so the filter stays short: `WhatsApp`, `RCS`, `SMS`,
+  `WhatsApp Voice`, `Connectors`, `API`, `Portal`.
+- **Only what customers notice**: new features, connectors, API changes, removals and changes
+  they must act on. Docs edits, fixes to our own wording and internal releases stay out.
+- **Every entry links** to the page that explains it, so the entry stays short.
+
 ## The PDF
 
 `scripts/pdf/build.mjs` prints every page in the navigation, in order, except the archived
