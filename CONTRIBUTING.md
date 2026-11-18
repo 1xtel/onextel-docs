@@ -58,7 +58,8 @@ live:
 ## The PDF
 
 `scripts/pdf/build.mjs` prints every page in the navigation, in order, except the archived
-APIs. Tabs, steps and expandable fields print in full, and API pages built from an OpenAPI spec
+APIs and any page with `pdf: false` in its frontmatter (WhatsApp Voice troubleshooting, for
+example). Those pages stay on the site, and links to them in the PDF open the live page. Tabs, steps and expandable fields print in full, and API pages built from an OpenAPI spec
 print their parameters and responses. Imported `.mdx` snippets print their content where they are
 used; `.jsx` snippets are interactive, so the PDF points to the page on the site instead. To build
 it yourself:

@@ -46,12 +46,23 @@ const warn = (m) => warnings.add(m);
 const config = JSON.parse(readFileSync(join(ROOT, "docs.json"), "utf8"));
 const tabs = [];
 const seenPages = new Set();
+// A page with `pdf: false` in its frontmatter stays on the site but is left out of the PDF;
+// links to it from printed pages go to the live page.
+const pageFile = (id) => [`${id}.mdx`, `${id}.md`].map((f) => join(ROOT, f)).find(existsSync);
+const leftOut = [];
+function inPdf(id) {
+  const file = pageFile(id);
+  if (!file || splitFrontmatter(readFileSync(file, "utf8")).data.pdf !== false) return true;
+  leftOut.push(id);
+  return false;
+}
 function walk(items, groups, openapi, out) {
   for (const item of items || []) {
     if (typeof item === "string") {
       if (item.endsWith(".yaml") || item.endsWith(".json") || seenPages.has(item)) continue;
       if (args.only && !item.startsWith(args.only)) continue;
       seenPages.add(item);
+      if (!inPdf(item)) continue;
       out.push({ id: item, groups, openapi });
     } else if (item.group) {
       walk(item.pages, [...groups, item.group], item.openapi || openapi, out);
@@ -355,6 +366,7 @@ writeFileSync(args.out, await out.save());
 
 const missing = tabs.flatMap((t) => t.pages).filter((p) => !numbers.has(anchorFor(p.id))).length;
 console.log(`${pageSet.size} pages, ${out.getPageCount()} PDF pages, ${(statSync(args.out).size / 1048576).toFixed(1)} MB → ${args.out}`);
+if (leftOut.length) console.log(`left out (pdf: false): ${leftOut.join(", ")}`);
 if (missing) console.log(`${missing} pages have no page number in the contents`);
 if (relinked.length) console.log(`${relinked.length} links pointed at headings slugged differently; they open the page instead:\n  ${relinked.join("\n  ")}`);
 for (const w of warnings) console.log(`warning: ${w}`);
