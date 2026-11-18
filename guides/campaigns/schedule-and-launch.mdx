@@ -1,0 +1,166 @@
+---
+title: "Schedule and launch"
+description: "Split a WhatsApp or RCS campaign into batches, set up repeats, choose immediate or scheduled execution, and launch."
+---
+
+The last sections of the campaign builder control delivery: **Batching** decides how recipients
+are grouped, **Repeat Campaign** sets recurring sends, and **Schedule** decides when the campaign
+starts.
+
+## Batching
+
+Click **Batching**. The **Batching Configuration** panel shows the **Total Recipients** count, for
+example 19,999, and a **Batches Preview** table that updates as you configure. Choose a method:
+
+<Tabs>
+  <Tab title="All">
+    Sends to every recipient in one batch. It's the default, and suits smaller campaigns or sends
+    that should arrive at the same time.
+
+    Example: 19,999 recipients → Batch 1: 19,999 recipients.
+  </Tab>
+  <Tab title="Split">
+    Divides the recipients into up to 10 batches, sent at intervals, so large campaigns don't
+    congest delivery.
+
+    <Steps>
+      <Step title="Select Split">
+        Select **Split**.
+      </Step>
+      <Step title="Set the number of batches">
+        Enter the **Number of Batches**, for example 3.
+      </Step>
+      <Step title="Set the interval">
+        Set the **Interval Between Batches** in `HH:MM:SS`, for example `00:30:00` for 30 minutes.
+      </Step>
+    </Steps>
+
+    The preview lists each batch with its recipient count and send time, for example Batch 1 –
+    6,667 (2:15 PM), Batch 2 – 6,666 (2:45 PM), Batch 3 – 6,666 (3:15 PM).
+  </Tab>
+  <Tab title="Manual">
+    Sets the size and send time of each batch yourself.
+
+    <Steps>
+      <Step title="Select Manual">
+        Select **Manual**.
+      </Step>
+      <Step title="Set the batch size and time">
+        Enter the **Batch Size** and set its **Schedule Time**.
+      </Step>
+      <Step title="Add more batches">
+        Click **+** to add batches. The panel shows the allocated recipients against the total.
+      </Step>
+    </Steps>
+
+    <Note>
+    Manual batching locks **Repeat Campaign** and **Schedule**, because each batch already has
+    its own time.
+    </Note>
+  </Tab>
+</Tabs>
+
+## Repeat Campaign
+
+Repeats send the same campaign on a schedule without rebuilding it. Click **Repeat Campaign**,
+select **Enable Repeat**, and choose a **Frequency**:
+
+| Frequency | What it does | How to set it |
+| --- | --- | --- |
+| **Daily** | Sends every day at the scheduled time. | Select **Daily**. The Schedule Summary shows "Every day". |
+| **Weekly** | Sends on chosen days every week, on alternate weeks, or after a set number of weeks. | Choose the interval (Every, Alternate or After weeks), then the days, for example Mon, Wed, Fri. |
+| **Monthly** | Sends every month on specific dates or days. | Choose the interval (Every, Alternate or After months). Under **Repeat On**, choose Specific Dates or Days of Week, then the day and Week Position, for example First Monday. |
+| **Custom** | Sends on dates and times you pick. | Click **+ Add Date & Time** for each send. |
+
+Under **Ends**, choose **Never**, **After** a number of runs, or **On** a date. Check the
+**Schedule Summary** before you move on.
+
+<Warning>
+Repeat isn't available with **Immediate Execution**. Use **Scheduled Execution** when repeats are
+on.
+</Warning>
+
+## Schedule
+
+Click **Schedule** and choose the **Execution Type** under **Campaign Execution Schedule**.
+
+### Immediate Execution
+
+Launches the campaign as soon as it's ready.
+
+<Steps>
+  <Step title="Choose immediate execution">
+    Select **Immediate Execution**. The panel shows the status `READY TO LAUNCH`, the execution
+    mode ("As soon as campaign is launched") and the current local time.
+  </Step>
+  <Step title="Launch">
+    Click **Launch**.
+  </Step>
+</Steps>
+
+### Scheduled Execution
+
+Starts the campaign automatically at a set date, time and time zone.
+
+<Steps>
+  <Step title="Choose scheduled execution">
+    Select **Scheduled Execution**.
+  </Step>
+  <Step title="Set the time zone">
+    Choose the time zone from the **Timezone** dropdown, for example `Asia/Kolkata` (IST).
+  </Step>
+  <Step title="Set the date and time">
+    Click the calendar icon or the **Scheduled Date & Time** field and pick when the campaign
+    starts.
+  </Step>
+  <Step title="Check the summary">
+    The **Schedule Summary** shows the time in local and UTC formats with the selected time zone.
+  </Step>
+  <Step title="Launch">
+    Click **Launch**.
+  </Step>
+</Steps>
+
+## Launch controls
+
+| Button | What it does |
+| --- | --- |
+| **Test** | Sends the campaign to a few test numbers first. Always do this before a real send. |
+| **Draft** | Saves the campaign without sending. It appears on the campaigns dashboard as `Draft`. |
+| **Launch** | Starts the campaign, or schedules it, per the selected execution type. |
+
+If maker-checker is switched on for your account, **Launch** sends the campaign to a checker for
+approval instead. See [Roles](/guides/platform/roles#campaign-maker-checker).
+
+## Before you launch
+
+- Every variable is mapped, and the preview looks right.
+- Numbers include the country code, or **Default Country Code** is on.
+- There is enough credit for the volume. Messages fail with `4010` when credit runs out.
+
+<Tabs>
+  <Tab title="WhatsApp">
+    - The template is `Approved`, and its category is the one you expect.
+    - Marketing campaigns fall inside the time window set for your account.
+    - Fallback is set if delivery is critical, and the template has a validity period.
+  </Tab>
+  <Tab title="RCS">
+    - The template is `Approved` for the sender profile and message type.
+    - Fallback is set, so customers whose phones can't receive RCS still get the message.
+  </Tab>
+</Tabs>
+
+## After launch
+
+Track the campaign on the [campaigns dashboard](/guides/campaigns/manage-campaigns), where you can
+pause, resume or stop it while it runs. Results are in the channel's reports:
+
+<Tabs>
+  <Tab title="WhatsApp">
+    Delivery, read, failure and click results are in [WhatsApp reports](/guides/whatsapp/reports).
+  </Tab>
+  <Tab title="RCS">
+    Results are in [Summary Reports](/guides/rcs-platform/reports-summary) and
+    [Detail Reports](/guides/rcs-platform/reports-detail).
+  </Tab>
+</Tabs>

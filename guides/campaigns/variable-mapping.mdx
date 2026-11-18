@@ -1,0 +1,73 @@
+---
+title: "Variable mapping"
+description: "Fill WhatsApp and RCS template variables with static values or per-recipient file columns, and add your own reference values."
+---
+
+Variable mapping decides what goes into each template variable, such as a name, OTP or URL. A
+variable takes either a **static** value, the same for every recipient, or a **dynamic** value
+from a column of your uploaded file. Click **Variable Mapping** in the campaign builder to open it.
+
+## The variable mapping panel
+
+- **Data Sources** (left): the **File Columns** from your uploaded recipient file, for example
+  `phone_number`, `name`, `OTP` and `url`, and the **Static Values** you add yourself.
+- **Variables** (right): one drop zone per variable in the template. Drag a data source onto each
+  drop zone. The variables are grouped by where they sit:
+
+  <Tabs>
+    <Tab title="WhatsApp">
+      **Header**, **Body**, button variables, and each card of a carousel. Variables are numbered
+      `{{1}}`, `{{2}}`, `{{3}}` and so on.
+    </Tab>
+    <Tab title="RCS">
+      The message or card text, the suggestion (button) variables, and each card of a carousel.
+    </Tab>
+  </Tabs>
+
+The bar shows **Total Variables**, **Mapped** and **Progress**, and the preview on the right
+updates as you map. When every variable is filled, the panel shows **All variables mapped
+successfully**.
+
+## Static mapping
+
+Use a static value when it's the same for every recipient, such as a fixed URL or brand name.
+
+<Steps>
+  <Step title="Enter the value">
+    In **Static Values**, enter the value and click **+**. It appears in the Static Values list.
+  </Step>
+  <Step title="Map it">
+    Drag the value onto the variable's drop zone. Every recipient gets the same value.
+  </Step>
+</Steps>
+
+## Dynamic mapping
+
+Use a file column when the value changes per recipient, such as an OTP, name or link.
+
+<Steps>
+  <Step title="Review the file columns">
+    In **File Columns**, check the fields taken from your uploaded file.
+  </Step>
+  <Step title="Map each column">
+    Drag a column, for example `name`, onto a variable's drop zone. Repeat for each variable.
+  </Step>
+</Steps>
+
+At send time, each recipient gets the value from their own row in the file.
+
+<Tip>
+You can mix both in one campaign, for example a dynamic `name` in one variable and a static brand
+URL in another.
+</Tip>
+
+## Custom reference parameters
+
+Under **Custom Reference Parameters**, set **Cust Ref 1** to **Cust Ref 5** to your own values,
+such as a campaign code or order batch. They come back in reports and callbacks, so your systems
+can match each delivery report to its source. All five are optional.
+
+## Next step
+
+Continue to [additional settings](/guides/campaigns/additional-settings) for link tracking,
+message expiry and fallback.
