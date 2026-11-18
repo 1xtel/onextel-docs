@@ -22,8 +22,9 @@ through a pull request, and `main` takes no direct commits.
 5. **Checks run automatically** on every pull request, whoever opened it:
    - **House style (Vale)** — terminology, marketing language, minimisers. Errors block the merge.
    - **Build and links (Mintlify)** — a broken link or bad frontmatter blocks the merge.
-   - **Brand voice review** — reads the diff and comments on tone, structure and unearned
-     warnings. Advisory: it comments, it does not block.
+   - **Brand voice review** — reads the diff and suggests up to five tone fixes, quoting the
+     phrase and a replacement. Advisory: it comments and never fails the pull request. If it
+     can't run, the check shows a warning and the docs were not judged.
    - **Docs PDF** — builds the whole site into one PDF and attaches it to the run, so you can
      see how your pages print. Advisory. Every merge to `main` is a release: the same build
      publishes the next version, and the site's **Download PDF** button serves it.
