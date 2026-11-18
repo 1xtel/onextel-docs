@@ -1,0 +1,101 @@
+---
+title: "WhatsApp reports"
+description: "Read WhatsApp delivery totals, failures and link clicks, download message-level detail, and build a report for one campaign."
+---
+
+WhatsApp has three report pages under **Channels → WhatsApp → Reports**:
+
+| Page | Use it for |
+| --- | --- |
+| Summary Report | Totals: the delivery funnel, failures and link clicks |
+| Detail Report | One row per message, to download |
+| Download Center | Large exports prepared in the background |
+
+Delivered, read, failed and click counts update as statuses come back from Meta.
+
+## Summary Report
+
+Pick a **Date** range (Today by default), the **TUC** and the **User Name**, then choose a view.
+
+<Tabs>
+  <Tab title="Overall">
+    Tiles for **Received**, **Submitted**, **Delivered**, **Read**, **Failed**, **Awaited** and
+    **Incoming**, then a **Detailed Breakdown** table with Received, Submitted, Delivered, Read,
+    Failed, Awaited and Button Clicks, and a button table with **Button Text** and **Click Count**.
+
+    **Group By** splits the Detailed Breakdown. TUC and Category are on by default. You can add
+    or remove: TUC, Category, API Name, Date, Template, Country, Campaign, User Name, Source,
+    Type and WABA ID.
+  </Tab>
+  <Tab title="Failure">
+    Total failures, the top error code, and a table of **TUC**, **User Name**, **Error Code**,
+    **Error Message**, **Count** and **Percentage**. Start here when messages are failing.
+  </Tab>
+  <Tab title="URL">
+    **Total URLs**, **Total Clicks**, **Unique Clicks** and **Avg Clicks/URL**, then one row per
+    tracked link with Long URL, clicks, WABA ID, Campaign Name, Template Name, Date, Category,
+    Country, API Name and Source.
+  </Tab>
+</Tabs>
+
+Click **Download** above a table to export it.
+
+## Message statuses
+
+| Status | Meaning |
+| --- | --- |
+| Received | The portal accepted the request |
+| Submitted | Handed to Meta |
+| Sent | Meta sent it to the handset |
+| Delivered | Reached the customer's phone |
+| Read | Opened by the customer, if they have read receipts on |
+| Failed | Not delivered. The error code says why |
+| Awaited | No final status yet |
+| Incoming | A reply from the customer |
+
+## Detail Report
+
+The Detail Report has four tabs: **Outgoing Template**, **Outgoing Non-Template** (free-form
+replies and Direct Send messages), **Incoming** and **URL**. Filter by date and time and TUC, then
+click **Download**.
+
+| Tab | Columns |
+| --- | --- |
+| Outgoing Template | Date, Time, Timezone, UserName, WABA ID, WABA Number, Campaign Name, Message ID, Meta Message ID, Conversation ID, Customer Number, BSUID, Parent BSUID, Customer Username, Country, Category, Source (API or campaign), Template Name, API Name, Status, URL Click, Button Click, Submitted / Sent / Delivered / Read / Failed At, Error Title, Error Code, Error Description, Error Link, Custom Param 1 to 5 |
+| Outgoing Non-Template | Date, Time, Timezone, WABA ID, WABA Number, Message ID, Meta Message ID, Conversation ID, Customer Number, BSUID, Parent BSUID, Customer Username, Country, Category, Source, API Name, Status, status timestamps, Error Title, Error Code, Error Description, Error Link |
+| Incoming | Date, Time, Timezone, Meta Message ID, WABA ID, WABA Number, Customer Number, BSUID, Parent BSUID, Customer Username, Contact Name, Context ID (the message being replied to), Country, Message Content, Selection Title, Selection ID, Selection URL, Selection Payload |
+| URL | Date, Time, Timezone, UserName, Customer Number, BSUID, Original URL, Short URL, Click Time, WABA ID, Message ID, Template Name, Campaign Name, Country, Browser, Operating System, IP Address, Location, Cust Param 1 to 5 |
+
+**BSUID** is Meta's business-scoped user ID, for customers who use a WhatsApp username in place
+of a visible phone number. See [Usernames and BSUID](/guides/whatsapp/usernames-and-bsuid). When billing is switched on for your account, the reports also show a
+billing column for each message.
+
+## Download Center
+
+Large date ranges are prepared in the background. Request the download from the report, then open
+**Download Center**. Filter by **Date & Time**, **Status** and **Requested By**.
+
+| Status | What to do |
+| --- | --- |
+| `IN_PROGRESS` | Wait |
+| `COMPLETED` | Download the `.zip` from **Action** |
+| `FAILED` or `TIMEOUT` | Request it again, or with a shorter date range |
+
+## Report on one campaign
+
+There's no separate campaign report. Build it from the pages above:
+
+- **Summary Report → Overall**, with **Group By → Campaign** (add Date or Template if you need
+  them): one row per campaign with its delivery funnel and button clicks.
+- **Summary Report → URL**: link clicks per campaign, from the Campaign Name column.
+- **Detail Report** for the campaign's date: download it and filter the **Campaign Name** column
+  for one row per message, with status, error code and custom reference values.
+- **Fallback → Reports**, if the campaign used fallback: which channel finally delivered.
+
+API traffic shows **Source** = API with the API Name. Campaign traffic shows **Source** = campaign.
+
+## Related
+
+- [WhatsApp error codes](/api-reference/whatsapp/error-codes)
+- [WhatsApp callback events](/api-reference/whatsapp/callback-events) — the same statuses, pushed to your server
+- [Campaigns dashboard](/guides/campaigns/manage-campaigns)

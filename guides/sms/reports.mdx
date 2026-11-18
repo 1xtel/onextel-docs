@@ -1,0 +1,322 @@
+---
+title: "Reports"
+description: "Generate delivery, campaign, sender ID, template, and click reports for SMS, and build custom exports."
+---
+
+The **Reports** menu generates detailed reports based on parameters such as date range, Sender
+ID, template, and campaign. These support SMS performance analysis, delivery tracking, and
+issue diagnosis.
+
+Each report is a tab under **Reports**, and every one of them can be exported.
+
+| Report | Purpose |
+| --- | --- |
+| MIS Report | SMS delivery counts by hour and day |
+| Summary | Counts and delivery status with percentage breakdowns for a date range |
+| Search | Filter report data by multiple criteria to retrieve message-level detail |
+| Sender ID Summary | Activity for specific Sender IDs, by Sender ID or TUC name |
+| Template Wise Report | Performance and usage grouped by SMS template |
+| Campaign Summary | Campaign performance — delivered, submitted, failed, and awaited — by SMS type |
+| Clicker Data | Click activity on campaign URLs, with IP, browser, operator, circle, and coordinates |
+| Clicker Details | Click activity resolved to individual recipients |
+| Scheduled Campaigns | Campaigns queued for future delivery |
+| Custom Download Report | A bespoke export with your own filters and column selection |
+| Download Data | Previously generated exports, with status and download links |
+
+<Tip>
+For delivery performance broken down by operator rather than by campaign, see
+[Telco Reports](/guides/platform/telco-reports).
+</Tip>
+
+## MIS Report
+
+MIS reports provide detailed records to track, analyze, and manage SMS delivery and performance:
+
+- **SMS Delivery Overview** — a grid divided by days and hours, showing the number of SMS messages delivered during each hour.
+- **Daily and Hourly Breakdown** — dates in rows and hours in columns, to show SMS volume patterns.
+- **Total SMS Sent per Day** — the total number of SMS messages sent each day, in the final column.
+- **Performance Analysis and Issue Identification** — supports campaign performance analysis and identification of delivery issues, including undelivered SMS and Sender ID–related problems.
+- **Data-Based Optimization** — supports SMS campaign optimization through actionable delivery insights.
+
+<Steps>
+  <Step title="Open the MIS tab">
+    In the left pane, click **Reports**, then click the **MIS** tab.
+  </Step>
+  <Step title="Drill into a count">
+    Click any active count of messages sent hourly, or the daily total count. The platform redirects to the **Web** subtab.
+  </Step>
+  <Step title="Search">
+    Click **Search**. The platform tracks the number of SMSs sent through the Web and API.
+  </Step>
+  <Step title="Choose a sending method">
+    Select the required option (**Web** or **API**) to view detailed information for that sending method.
+  </Step>
+  <Step title="Apply filters">
+    Refine report data using filters such as Mobile, Sender ID, Campaign Name, Template ID, and Limit (to control entries per page), then click **Search**.
+  </Step>
+  <Step title="Download">
+    Click a download option (see below).
+  </Step>
+</Steps>
+
+| Download option | Description |
+| --- | --- |
+| Download | Downloads campaign-wise data. Select the file format (CSV or XLSX) from the dropdown list. |
+| Download All | Downloads the complete dataset. Select the file format (CSV or XLSX) from the dropdown list. |
+
+## Summary
+
+View delivered SMS counts and statuses with percentage values, and display a list of delivered SMSs for each child account within the selected date range. Apply filters to generate customized reports.
+
+<Steps>
+  <Step title="Open the Summary tab">
+    In the left pane, click **Reports**, then click the **Summary** tab.
+  </Step>
+  <Step title="Select the TUC and date range">
+    Select the TUC from the dropdown list, then select the date range to view the SMS summary.
+  </Step>
+  <Step title="Select the source type">
+    Select the Source type of the SMS from the dropdown list.
+  </Step>
+  <Step title="Download">
+    Click **Download** and select the required file format (CSV or XLSX) from the dropdown list.
+  </Step>
+</Steps>
+
+## Campaign Summary
+
+Provides an overview of campaign performance, including metrics for delivered, submitted, failed, and awaited messages, and the types of SMS sent.
+
+<Steps>
+  <Step title="Open Campaign Summary">
+    In the left pane, click **Reports**, then click **Campaign Summary**.
+  </Step>
+  <Step title="Select the date range">
+    Select the date range to view the campaign summary.
+  </Step>
+  <Step title="Search">
+    Click **Search**. The platform displays the details of the campaigns.
+  </Step>
+  <Step title="Download">
+    Click **Download** and select the required file format (CSV or XLSX) from the dropdown list.
+  </Step>
+</Steps>
+
+<Frame caption="Campaign Summary tab">
+  <img src="/images/sms/sms-report-campaign-summary.png" alt="Campaign Summary tab with TUC, date range, campaign name and limit filters" />
+</Frame>
+
+## Search
+
+Refine data using available filters to retrieve detailed and specific information.
+
+<Steps>
+  <Step title="Open Campaign Summary">
+    In the left pane, click **Reports**, then click **Campaign Summary**.
+  </Step>
+  <Step title="Select the date range">
+    Select the date range to view the campaign summary.
+  </Step>
+  <Step title="Enter search criteria">
+    Enter the required fields (see table below).
+  </Step>
+  <Step title="Search">
+    Click **Search**. The platform displays the details of the campaigns.
+  </Step>
+  <Step title="Download">
+    Click **Download** and select the required file format (CSV or XLSX) from the dropdown list.
+  </Step>
+</Steps>
+
+| Field | Description |
+| --- | --- |
+| TUC Name | Name of the Tenant User Customer (TUC) associated with the message. |
+| Sender ID | Approved sender identity used for sending the message. |
+| UU ID | Unique identifier assigned to each message, for tracking and reference. |
+| Source Type | Channel through which the message was sent — Web, API, or SMPP. |
+
+## Sender ID Summary
+
+Provides an overview of SMSs sent through specific Sender IDs. Retrieves data by entering the Sender ID or TUC name, and displays all Sender IDs linked to the account within the selected date range.
+
+<Steps>
+  <Step title="Open Sender ID Summary">
+    In the left pane, click **Reports**, then click **Sender ID Summary**.
+  </Step>
+  <Step title="Select the date range">
+    Select the date range to view the Sender ID summary.
+  </Step>
+  <Step title="Search">
+    Click **Search**. The platform displays details such as the TUC ID, TUC name, and credits of the Sender ID.
+  </Step>
+  <Step title="Download">
+    Click **Download** and select the required file format (CSV or XLSX) from the dropdown list.
+  </Step>
+</Steps>
+
+<Frame caption="Sender ID Summary tab">
+  <img src="/images/sms/sms-report-sender-id-summary.png" alt="Sender ID Summary tab with TUC, date range, sender ID, limit and source type filters" />
+</Frame>
+
+## Template Wise Report
+
+Reports message data grouped by SMS template, so you can see how individual templates perform
+and how heavily each is used.
+
+<Steps>
+  <Step title="Open Template Wise Report">
+    In the left pane, click **Reports**, then the **Template Wise Report** tab.
+  </Step>
+  <Step title="Set the filters">
+    Enter or search the required **TUC**, select the **From Date** and **To Date**, optionally
+    enter a **Template ID** to narrow the results, and select the **Source Type**.
+  </Step>
+  <Step title="Search and export">
+    Click **Search** to view the report, then **Download** to export it.
+  </Step>
+</Steps>
+
+<Frame caption="Template Wise Report tab">
+  <img src="/images/sms/sms-report-template-wise.png" alt="Template Wise Report tab with TUC, date range, template ID and source type filters" />
+</Frame>
+
+<Note>
+Filtering by Template ID is the fastest way to check whether a specific DLT-registered template
+is actually being used — an approved template with no traffic usually means a campaign is
+referencing the wrong ID.
+</Note>
+
+## Clicker Data
+
+Detailed insight into how recipients interact with URLs in SMS campaigns — user IP address,
+browser, operator, circle, and geographic coordinates — for analysing click activity and
+engagement.
+
+<Steps>
+  <Step title="Open Clicker Data">
+    In the left pane, click **Reports**, then the **Clicker Data** tab.
+  </Step>
+  <Step title="Set the filters">
+    Enter the required **TUC**, select the **From Date** and **To Date**, enter a **Mobile
+    Number**, then select the **Campaign Name**, **Channel**, and **Limit** from the dropdowns.
+  </Step>
+  <Step title="Search and export">
+    Click **Search**, then **Download** to export the report.
+  </Step>
+</Steps>
+
+<Frame caption="Clicker Data tab">
+  <img src="/images/sms/sms-report-clicker-data.png" alt="Clicker Data tab with TUC, date range, mobile number, campaign name and channel filters" />
+</Frame>
+
+## Clicker Details
+
+Click activity for individual recipients on SMS campaign URLs, for user-level engagement
+tracking.
+
+<Steps>
+  <Step title="Open Clicker Details">
+    In the left pane, click **Reports**, then the **Clicker Details** tab.
+  </Step>
+  <Step title="Set the filters">
+    Enter the required **TUC**, select the **From Date** and **To Date**, then select the
+    **Campaign Name** and **Limit** from the dropdowns.
+  </Step>
+  <Step title="Search and export">
+    Click **Search**, then **Download** to export the report.
+  </Step>
+</Steps>
+
+<Frame caption="Clicker Details tab">
+  <img src="/images/sms/sms-report-clicker-details.png" alt="Clicker Details tab with TUC, date range, campaign name and limit filters" />
+</Frame>
+
+<Note>
+Clicker Data and Clicker Details cover the same clicks from different angles: **Clicker Data**
+aggregates click activity across a campaign, while **Clicker Details** resolves it to individual
+recipients. Use the first to judge whether a campaign worked, the second to see who responded.
+
+Both depend on URL shortening being enabled — without it there is no click to track. See
+[Short URLs](/guides/sms/dlt#short-urls).
+</Note>
+
+## Scheduled Campaigns
+
+Campaigns queued for future delivery, so you can track and manage what is due to go out.
+
+<Steps>
+  <Step title="Open Scheduled Campaigns">
+    In the left pane, click **Reports**, then the **Scheduled Campaigns** tab.
+  </Step>
+  <Step title="Set the filters">
+    Enter the required **TUC**, select the **From Date** and **To Date**, then select the
+    **Campaign Name** and **Limit**.
+  </Step>
+  <Step title="Search and export">
+    Click **Search**, then **Download** to export the report.
+  </Step>
+</Steps>
+
+<Frame caption="Scheduled Campaigns tab">
+  <img src="/images/sms/sms-report-scheduled-campaigns.png" alt="Scheduled Campaigns tab with TUC, date range, campaign name and limit filters" />
+</Frame>
+
+<Note>
+This is the reporting view of what is scheduled. To cancel a scheduled send rather than just
+review it, use [All Schedule](/guides/platform/all-schedule).
+</Note>
+
+## Custom Download Report
+
+Build your own export by applying advanced filters and choosing exactly which columns appear.
+Use it when none of the fixed reports gives you the shape you need.
+
+<Steps>
+  <Step title="Open Custom Download Report">
+    In the left pane, click **Reports**, then the **Custom Download Report** tab.
+  </Step>
+  <Step title="Set the scope">
+    Enter the required **TUC**, select the **From date** and **To date**, enter the **UUID**,
+    and select the **Separator** format — for example comma.
+  </Step>
+  <Step title="Narrow the results">
+    Add any further filters you need: **Error Code**, **Template ID**, **Campaign ID**, **Mobile
+    Number**, and **Sender ID**. Then select the **Source Type** and **Status**.
+  </Step>
+  <Step title="Choose your columns">
+    From **Available Columns**, select the fields you want and move them into **Selected
+    Columns** using the arrow buttons. Arrange them with the up and down controls — the order
+    here is the column order in the export.
+  </Step>
+  <Step title="Download">
+    Click **Download** to export the customised report.
+  </Step>
+</Steps>
+
+<Frame caption="Custom Download Report tab">
+  <img src="/images/sms/sms-report-custom-download.png" alt="Custom Download Report tab showing filters and the Available Columns and Selected Columns pickers" />
+</Frame>
+
+<Note>
+Filtering by **Error Code** is the quickest way to isolate a delivery problem — export only the
+failures carrying one code and you have the full picture of a single failure mode. See
+[DLR callback](/api-reference/sms/dlr-callback) for what the codes mean.
+</Note>
+
+## Download Data
+
+Every report you generate is queued and produced in the background. **Download Data** is where
+finished exports appear.
+
+In the left pane, click **Reports**, then the **Download Data** tab. The list shows the request
+time, file creation time, report type, file name, the filters that were applied, status, and a
+download link.
+
+<Frame caption="Download Data tab">
+  <img src="/images/sms/sms-report-download-data.png" alt="Download Data tab listing generated exports with request time, file name, filters, status and download link" />
+</Frame>
+
+<Note>
+Large exports do not download immediately — they are generated and then appear here. If a
+report seems not to have downloaded, check this tab before running it again.
+</Note>

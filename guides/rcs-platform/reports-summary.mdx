@@ -1,0 +1,97 @@
+---
+title: "Summary Reports"
+description: "Overall, Failure, and URL summary reports for RCS message delivery and performance, and how to build a report for one campaign."
+---
+
+RCS has three report pages under **Channels > RCS > Reports**:
+
+| Page | Use it for |
+|---|---|
+| **Summary Report** (this page) | Totals: the delivery funnel, failures and link clicks |
+| [**Detail Report**](/guides/rcs-platform/reports-detail) | One row per message, to download |
+| [**Download Center**](/guides/rcs-platform/reports-detail#download-center) | Large exports prepared in the background |
+
+Counts update as statuses come back from the operator.
+
+## Open the Summary Report
+
+<Steps>
+  <Step title="Open Channels > RCS > Reports">
+    In the left pane, click **Channels**, select **RCS**, click the
+    **Reports** tab, then **Summary Report**.
+  </Step>
+  <Step title="Set the filters">
+    Pick the **Date** range (**Today** by default) and the **TUC**, or
+    **All TUC**.
+  </Step>
+  <Step title="Choose a view">
+    Click **Overall**, **Failure** or **URL**.
+  </Step>
+  <Step title="Export (optional)">
+    Click **Download** above a table to export it.
+  </Step>
+</Steps>
+
+## Overall
+
+The top tiles show **Received**, **Submitted**, **Delivered**, **Read**,
+**Failed**, **Awaited** and **Incoming**.
+
+The **Detailed Breakdown** table shows Received, Submitted, Delivered, Read,
+Failed, Awaited and Button Clicks. A button table below it shows each
+**Button Text** with its **Click Count**.
+
+**Group By** splits the Detailed Breakdown. TUC and Category are on by
+default. You can add or remove: TUC, Category, API Name, Date, Template,
+Sender Profile, Country, Campaign and User Name.
+
+## Failure
+
+The top section shows the total RCS failures and the top error code. The
+table lists **TUC**, **User Name**, **Error Code**, **Error Message**,
+**Count** and **Percentage** for each error — start here when messages are
+failing. Look up each code in
+[RCS error codes](/api-reference/rcs/error-codes).
+
+## URL
+
+Key metrics for links in your RCS messages:
+
+| Key Metrics | Description |
+|---|---|
+| **Total URLs** | Number of tracked URLs sent. |
+| **Total Clicks** | Total clicks across all URLs. |
+| **Unique Clicks** | Number of distinct customers who clicked. |
+| **Avg Clicks/URL** | Average clicks per URL. |
+
+The table below lists each tracked link with its **Long URL**, clicks,
+campaign, template, date, category, country, API name and source.
+
+## Message statuses
+
+| Status | Meaning |
+|---|---|
+| Received | The portal accepted the request |
+| Submitted | Handed to the operator |
+| Sent | The operator sent it to the handset |
+| Delivered | Reached the customer's phone |
+| Read | Opened by the customer |
+| Failed | Not delivered. The error code says why |
+| Awaited | No final status yet |
+| Incoming | A reply from the customer |
+
+## Report on one campaign
+
+There's no separate campaign report. Build it from the reports:
+
+- **Overall**, with **Group By → Campaign** (add Date or Template if you
+  need them): one row per campaign with its delivery funnel and button
+  clicks.
+- **URL**: link clicks per campaign, from the Campaign Name column.
+- **Detail Report** for the campaign's date: download it and filter the
+  **Campaign Name** column for one row per message.
+- **Fallback > Reports**, if the campaign used fallback: which channel
+  finally delivered.
+
+API traffic shows **Source** = API with the API Name. Campaign traffic shows
+**Source** = campaign.

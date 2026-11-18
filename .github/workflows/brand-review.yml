@@ -1,0 +1,78 @@
+name: Brand voice review
+
+# Reads the diff of each pull request and comments where it departs from
+# STYLE_GUIDE.md. Vale catches the mechanical rules; this catches tone.
+# Advisory only: it leaves comments and never fails a pull request. If the review
+# cannot run (no credit, a revoked key), the check stays green with a warning.
+# Inert until the ANTHROPIC_API_KEY secret exists on the repository.
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  review:
+    name: Voice and tone
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Check the key is configured
+        id: guard
+        run: echo "configured=${{ secrets.ANTHROPIC_API_KEY != '' }}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.guard.outputs.configured == 'true'
+        with:
+          fetch-depth: 0
+
+      - name: Review the changed pages
+        id: review
+        if: steps.guard.outputs.configured == 'true'
+        continue-on-error: true
+        uses: anthropics/claude-code-action@f3b070c88125d33dbae5653df5f143101d4ea9dc # v1.0.276
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Comment with the workflow's own token, so no GitHub App has to be installed on the org.
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: |
+            You are a helpful colleague giving a light second read of the
+            documentation changes in this pull request. STYLE_GUIDE.md in this
+            repository is the house standard. Vale already checks spelling,
+            terms and mechanical rules, so leave those alone.
+
+            Only flag something when a reader would be misled, confused or put
+            off by it:
+            - Marketing or sales language where plain description belongs.
+            - A claim stated with more certainty than the page supports.
+            - A step that doesn't say what the reader does, or a consequence
+              that isn't stated (what breaks, what it costs, what to check).
+            - A heading or table that reads differently from the rest of the docs.
+
+            How to comment:
+            - At most 5 line comments, the most useful first. Skip anything that
+              is a matter of taste or that the author could reasonably leave as is.
+            - Quote the phrase and suggest a replacement. Keep each comment to
+              one or two friendly sentences, framed as a suggestion.
+            - Finish with one short summary comment that starts with what reads
+              well. If the changes read well, say so and leave no line comments.
+            - Comment only. Never request changes or ask for the pull request
+              to be blocked.
+            - Do not comment on code samples, payload field names, error codes
+              or endpoint paths; those are verified facts, not style.
+          claude_args: "--max-turns 15"
+
+      # The action hides its output on a public repo, so a refused API call (no credit, a revoked
+      # key, a model the workspace cannot use) gives no reason in the log. Print just that, as a
+      # warning: the review is advisory, so an unavailable API must not turn the pull request red.
+      - name: Explain a skipped review
+        if: steps.review.outcome == 'failure'
+        run: |
+          f="$RUNNER_TEMP/claude-execution-output.json"
+          reason=""
+          if [ -f "$f" ]; then
+            reason=$(jq -r '(if type == "array" then .[] else . end)
+              | select(.is_api_error_message == true)
+              | "\(.error // "api_error"), HTTP \(.api_error_status // "?"): \(.message.content[0].text // "no message")"' "$f" | tail -n1)
+          fi
+          echo "::warning::Brand voice review skipped, the docs were not judged. ${reason:-The review step failed; see its log.}"

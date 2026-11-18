@@ -1,0 +1,4 @@
+# Every pull request requests a review from the docs owner automatically.
+# Add paths here to route areas to the people who own them, for example:
+#   /api-reference/   @onex-ud @onex-sushantbajaj
+*   @onex-ud

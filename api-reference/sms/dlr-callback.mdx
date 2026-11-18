@@ -1,0 +1,140 @@
+---
+title: "DLR Callback"
+description: "The delivery receipt OneXtel posts to your configured URL after an India SMS reaches its final state."
+---
+
+import ImportSms from '/snippets/import-sms.mdx';
+
+<ImportSms />
+
+When a message reaches its final state, OneXtel posts a **delivery receipt (DLR)** to the
+callback URL registered against your API key.
+
+Register your callback URL under **Configuration → Add New Callback** — see
+[Callback configuration](/guides/platform/callback-configuration).
+
+<Note>
+This receipt uses **camelCase** field names. SMS sent to international destinations through the
+[SMS List API](/api-reference/sms-international/send-sms) produces a different, UPPERCASE
+receipt — see [the international DLR](/api-reference/sms-international/dlr-callback).
+</Note>
+
+## Payload
+
+The full set of parameters currently supported for SMS.
+
+```json
+{
+  "apiKey": "YOUR_API_KEY",
+  "custRef": {
+    "custref1": {
+      "CustomReference1": "testSMS",
+      "CustomReference2": "123"
+    }
+  },
+  "destination": "919999999999",
+  "dlrCode": "001",
+  "doneDate": "260812122201",
+  "errorCode": "000",
+  "errorDesc": "Delivered",
+  "header": "ONEXTEL",
+  "incomingTs": 1786517520081,
+  "messageTxt": "Dear Customer, your account has been created. URL: (#var#) Username: (#var#) Password: (#var#)",
+  "status": "DELIVERED",
+  "submitDate": "260812122200",
+  "submitTs": 1786517520149,
+  "templateId": "YOUR_DLT_TEMPLATE_ID",
+  "uuid": "3HnxEKeKkZ0tAvEdTYiV6ADJ3la"
+}
+```
+
+### Identity and routing
+
+<ResponseField name="uuid" type="string">
+  Unique message identifier. Use it to correlate the receipt with the message you sent.
+</ResponseField>
+
+<ResponseField name="apiKey" type="string">
+  The API key the message was sent with.
+</ResponseField>
+
+<ResponseField name="destination" type="string">
+  Recipient mobile number.
+</ResponseField>
+
+<ResponseField name="header" type="string">
+  Sender ID the message was sent from.
+</ResponseField>
+
+<ResponseField name="templateId" type="string">
+  DLT template ID the message was sent against.
+</ResponseField>
+
+### Outcome
+
+<ResponseField name="status" type="string">
+  Final delivery state — for example `DELIVERED`.
+</ResponseField>
+
+<ResponseField name="errorCode" type="string">
+  Outcome code. `000` is delivered; anything else is a failure reason. See
+  [SMS error codes](/api-reference/sms/error-codes).
+</ResponseField>
+
+<ResponseField name="errorDesc" type="string">
+  Human-readable description of `errorCode`.
+</ResponseField>
+
+<ResponseField name="dlrCode" type="string">
+  Delivery receipt code.
+</ResponseField>
+
+<Warning>
+`dlrCode` and `errorCode` are separate fields carrying different values — a delivered message
+shows `dlrCode: "001"` alongside `errorCode: "000"`. Branch your logic on **`errorCode`**, which
+is the field the [error code table](/api-reference/sms/error-codes) documents. The relationship
+between the two is not documented; treat `dlrCode` as informational until it is.
+</Warning>
+
+### Content
+
+<ResponseField name="messageTxt" type="string">
+  The message text as sent. Template variables appear in their substituted form.
+</ResponseField>
+
+<ResponseField name="custRef" type="object">
+  The custom references you set on the original send, echoed back unchanged — `custref1`
+  containing `CustomReference1` and `CustomReference2`. This is the simplest way to carry your
+  own order or campaign identifiers through to the receipt.
+</ResponseField>
+
+### Timestamps
+
+<ResponseField name="submitDate" type="string">
+  When the message was submitted, formatted `YYMMDDHHmmss`.
+</ResponseField>
+
+<ResponseField name="doneDate" type="string">
+  When the message reached its final state, formatted `YYMMDDHHmmss`.
+</ResponseField>
+
+<ResponseField name="submitTs" type="integer">
+  Submission timestamp in epoch milliseconds.
+</ResponseField>
+
+<ResponseField name="incomingTs" type="integer">
+  Timestamp in epoch milliseconds at which the receipt was received.
+</ResponseField>
+
+<Note>
+`submitDate` and `doneDate` give you delivery latency directly — in the example above the
+message was submitted at `...122200` and completed at `...122201`, one second later. Tracking
+the spread across a campaign surfaces routing problems earlier than the delivery rate does.
+</Note>
+
+## Related
+
+- [SMS error codes](/api-reference/sms/error-codes)
+- [Callback configuration](/guides/platform/callback-configuration)
+- [Message status](/api-reference/omnichannel/message-status) — poll for status instead of receiving it
+- [International DLR callback](/api-reference/sms-international/dlr-callback) — the equivalent for non-India traffic

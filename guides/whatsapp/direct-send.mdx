@@ -1,0 +1,186 @@
+---
+title: "Meta Direct Send"
+description: "Send WhatsApp utility messages without pre-creating templates — Meta generates them from your content and categorises them automatically."
+---
+
+Direct Send is a Meta capability that lets you send WhatsApp **utility** messages without
+creating and submitting a template first. You write the message content in the campaign itself;
+Meta validates it, generates a template from it, and delivers.
+
+The normal template flow requires you to anticipate every message you will send, submit each one
+for approval, and wait. Direct Send removes that step for utility traffic — useful when message
+content varies by situation and pre-registering every variant is impractical.
+
+<Warning>
+Direct Send covers **utility messages only**. Marketing and authentication messages are not
+supported and must go through the standard
+[template flow](/api-reference/whatsapp/templates-create).
+</Warning>
+
+## Getting Direct Send enabled
+
+Enablement happens in two stages, and neither is self-serve.
+
+<Steps>
+  <Step title="Meta enables it on your WABA">
+    Meta reviews your business use case, your message samples, and your compliance with utility
+    messaging policy. If approved, Direct Send is enabled for the WhatsApp Business Account.
+  </Step>
+  <Step title="Your account is enabled for it">
+    Once Meta has enabled the WABA, your tenant administrator switches on **Direct Send API** for
+    that WABA in your account's WhatsApp settings.
+  </Step>
+</Steps>
+
+With both in place, the **Message Sample** tab and the **Direct Send** option in the campaign
+builder become available to your users.
+
+## Validate message content first
+
+Before sending — or before building a campaign around a message — check the content against
+Meta's policies.
+
+<Steps>
+  <Step title="Open Message Sample">
+    Go to **Channels → WhatsApp → Asset Management → Message Sample**.
+  </Step>
+  <Step title="Pick the account and type">
+    Pick the **WABA ID** and the **Message type**: **Text**, or **Interactive** (a CTA URL button
+    or reply buttons).
+  </Step>
+  <Step title="Build the message">
+    Fill in the **Body** (up to 1,024 characters), plus the optional header, footer and buttons
+    for an interactive message. Optionally set a **TTL** in seconds.
+  </Step>
+  <Step title="Check it">
+    Click **Check Message Sample**. The result shows Meta's answer as Meta returns it.
+  </Step>
+</Steps>
+
+Meta returns:
+
+| Response | Meaning |
+| --- | --- |
+| Approval status | Whether the content is acceptable |
+| Category classification | Which category Meta assigns it — Utility, Marketing, or Authentication |
+
+<Note>
+The category classification is the part to watch. If Meta classifies your content as Marketing
+rather than Utility, Direct Send will not carry it, no matter how the message reads to you.
+Validate before you build the campaign, not after.
+</Note>
+
+## Create a Direct Send campaign
+
+<Steps>
+  <Step title="Validate the content">
+    Check the message under **Message Sample** first, as above, and confirm Meta classifies it as
+    Utility.
+  </Step>
+  <Step title="Start a campaign">
+    Go to **Channels → Campaigns**, click **+ New Campaign**, and select **WhatsApp**.
+  </Step>
+  <Step title="Tick Direct Send">
+    In **Sender Details**, pick the WABA ID, then tick **Direct Send**. The **Template** field is
+    greyed out.
+  </Step>
+  <Step title="Design the message">
+    Click **Configure** and build a **Text** or **Interactive** message — see
+    [Message types](#message-types) below. The body is required, and an interactive message
+    needs a text or image header. Variables such as `{{Name}}` come from the columns of your
+    uploaded file.
+  </Step>
+  <Step title="Finish and launch">
+    Complete the rest of the campaign as usual — see
+    [Create a WhatsApp campaign](/guides/campaigns/create-a-campaign).
+  </Step>
+</Steps>
+
+Direct Send messages appear in the **Outgoing Non-Template** tab of the
+[Detail Report](/guides/whatsapp/reports#detail-report). To check content from your own systems, use the
+Message Sample API (`POST /wa/message_samples`).
+
+## Message types
+
+<Tabs>
+  <Tab title="Text">
+    A plain text utility message.
+
+    | Field | Description |
+    | --- | --- |
+    | Body | The message content |
+  </Tab>
+  <Tab title="CTA URL">
+    Adds a call-to-action URL button.
+
+    | Field |
+    | --- |
+    | Header |
+    | Body |
+    | CTA Button |
+    | Footer |
+  </Tab>
+  <Tab title="Reply Buttons">
+    Adds predefined response buttons.
+
+    | Field |
+    | --- |
+    | Header |
+    | Body |
+    | Reply Buttons |
+    | Footer |
+  </Tab>
+</Tabs>
+
+### Supported content
+
+| Type | Supported |
+| --- | :---: |
+| Text | ✅ |
+| Interactive — CTA URL | ✅ |
+| Interactive — Reply Buttons | ✅ |
+| Footer | ✅ |
+| Utility messages | ✅ |
+| Marketing messages | — |
+| Authentication messages | — |
+
+## TTL
+
+**TTL (Time To Live)** sets how long Meta should keep attempting delivery before the message
+expires. Set it in seconds — a TTL of 600 gives Meta ten minutes, after which an undelivered
+message expires rather than arriving late.
+
+Match the TTL to how long the message stays useful. A delivery-window notification that arrives
+two hours late is worse than one that never arrives.
+
+## Auto-generated templates
+
+Messages sent through Direct Send cause Meta to generate a template from the content
+automatically. These templates are created by Meta, categorised from the content, used for
+matching future messages, and visible in WhatsApp Manager.
+
+To bring them into the portal, go to **Channels → WhatsApp → Asset Management → Templates** and
+click **Sync**. The sync fetches newly created Meta templates along with their status and
+category.
+
+<Note>
+You never author these templates, but they accumulate. Sync periodically so the platform's
+template list reflects what Meta actually holds against your WABA.
+</Note>
+
+## Compliance
+
+Direct Send content must follow Meta's utility messaging guidelines:
+
+- Content is transactional or service-based
+- Messages are expected by the recipient
+- Message samples represent genuine business use cases
+
+Non-compliant content risks template rejection, message blocking, or losing Direct Send access
+altogether — which is why the validation step exists. Use it.
+
+## Related
+
+- [WhatsApp template categories](/guides/whatsapp/template-categories)
+- [Create a WhatsApp campaign](/guides/campaigns/create-a-campaign)
+- [WhatsApp error codes](/api-reference/whatsapp/error-codes)

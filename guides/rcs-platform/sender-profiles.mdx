@@ -1,0 +1,96 @@
+---
+title: "Sender Profiles"
+description: "See the RCS sender profiles in your account, and group profiles into sender pools to share or move traffic between them."
+---
+
+A sender profile is your brand's verified identity on RCS — the agent (or
+bot) customers see, with your name, logo, banner and verified tick. Each
+profile is approved by the operator for certain message types:
+
+| Message type | Use it for |
+|---|---|
+| **Promotional** | Marketing campaigns, offers and advertisements |
+| **Transactional** | Service updates, confirmations and alerts |
+| **OTP** | One-time passwords for verification and login |
+
+OneXtel registers each profile with the operators and sets it up in your
+account, so the list is read-only for you.
+
+## View sender profiles
+
+<Steps>
+  <Step title="Open Channels > RCS">
+    In the left pane, click **Channels**, then select **RCS**.
+  </Step>
+  <Step title="Open Sender Profiles">
+    Click **Asset Management**, then the **Sender Profiles** subtab.
+  </Step>
+  <Step title="Export the list (optional)">
+    Click **Download** to export the list.
+  </Step>
+</Steps>
+
+| Column Name | Description |
+|---|---|
+| **Profile Name** | The unique name of the sender profile. |
+| **Message Type** | Promotional, Transactional, OTP, or **No Message Type** for a profile without a defined type. |
+| **Status** | **Active** (enabled) or **Inactive** (temporarily disabled). |
+
+The list header also shows the **Total**, **Active** and **Inactive**
+profile counts for the account.
+
+## Sender pools
+
+A sender pool groups two or more sender profiles of the same message type
+under one **Pool ID**. Sending through the pool shares traffic across the
+profiles, or moves it to another profile when one fails.
+
+<Note>
+  **Sender Pool** appears only after your tenant administrator switches on
+  Sender Profile Pool for your account.
+</Note>
+
+<Steps>
+  <Step title="Start a pool">
+    Go to **Asset Management > Sender Pool** and click **Create Pool**.
+  </Step>
+  <Step title="Name it">
+    Enter a **Pool Name** and, optionally, a **Description**.
+  </Step>
+  <Step title="Pick the message type">
+    Pick the **Message Type** (Promotional, Transactional or OTP). Only
+    profiles approved for that type are listed.
+  </Step>
+  <Step title="Pick the profiles">
+    Pick at least two **Sender Profiles**.
+  </Step>
+  <Step title="Pick the routing logic">
+    | Routing logic | How messages are sent |
+    |---|---|
+    | **Round Robin** (default) | Each message goes to the next profile in turn. |
+    | **Same Sender Profile** | If the customer got a message from one of the pool's profiles in the last 30 days, the same profile is used again. Otherwise round robin. |
+    | **Different Sender Profile** | A different profile from the one the customer heard from last (30-day history). If only one profile is available, that one is used. |
+    | **Failure** | An ordered list of up to 5 profiles. If a profile fails with a retryable error — for example the operator's monthly per-number limit, or HTTP 429 Too Many Requests — the message is retried on the next profile in the list. |
+  </Step>
+  <Step title="Save">
+    Save the pool. The portal creates the Pool ID.
+  </Step>
+</Steps>
+
+Use the Pool ID as the sender in a campaign (tick **Use sender pool**), in
+the API, and in fallback. You can also submit one template to every profile
+in a pool — see [RCS Templates](/guides/rcs-platform/templates).
+
+The pool list shows **Pool Name**, **Pool ID**, **Description**, **Message
+Type**, **Sender Profiles** and **Routing Logic**. The **⋮** menu has
+**Preview** and **Delete**. A pool can't be edited: delete it and create a
+new one. Two pools can't have the same message type and exactly the same
+profiles.
+
+Reports show the actual profile each message was sent from.
+
+## Related
+
+- [RCS Templates](/guides/rcs-platform/templates)
+- [Create an RCS campaign](/guides/campaigns/create-a-campaign)
+- [Settings](/guides/rcs-platform/settings)

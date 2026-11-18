@@ -1,0 +1,291 @@
+---
+title: "Send SMS — India"
+description: "Send SMS to Indian numbers with DLT fields, custom references, campaign tagging, and URL shortening."
+---
+
+import ImportSms from '/snippets/import-sms.mdx';
+
+<ImportSms />
+
+Send SMS to Indian numbers. Messages go in an `sms` array, so one request can carry several.
+
+<Note>
+This API covers **India**, and carries the DLT fields Indian traffic requires. For destinations
+outside India, use the [SMS List API](/api-reference/sms-international/send-sms) — a different host with a
+different authentication scheme. See [how the two compare](/api-reference/sms/overview#how-it-compares-to-international-sms).
+</Note>
+
+## Endpoint
+
+```
+POST https://api.onexaura.com/send_sms
+```
+
+<Warning>
+Call the endpoint over **HTTPS**. An `http://` request is answered with a `301` redirect, and a
+client that does not follow redirects — or that follows one without re-sending the body — will
+appear to send nothing while reporting no error.
+</Warning>
+
+## Headers
+
+<ParamField header="apikey" type="string" required>
+  API key issued by OneXtel.
+</ParamField>
+
+<ParamField header="Content-Type" type="string" required>
+  Must be `application/json`.
+</ParamField>
+
+## Example request
+
+<CodeGroup>
+
+```bash cURL
+curl --location 'https://api.onexaura.com/send_sms' \
+--header 'apikey: YOUR_API_KEY' \
+--header 'Content-Type: application/json' \
+--data '{
+  "sms": [
+    {
+      "sender": "ONEXTL",
+      "recipient": "919999999999",
+      "templateId": "YOUR_DLT_TEMPLATE_ID",
+      "entityId": "YOUR_DLT_ENTITY_ID",
+      "type": "SI",
+      "custRef1": "order-4821",
+      "custRef2": "",
+      "custRef3": "",
+      "custRef4": "",
+      "custRef5": "",
+      "messageBody": "Hi {#var#}, your secure code is {#var#}. Click here {#var#}",
+      "unicode": 0
+    }
+  ],
+  "validation": false,
+  "campaignName": "SpringPromo2026",
+  "prefix": "+91",
+  "urlShortener": {
+    "flag": 1,
+    "urlDetails": [
+      {
+        "longUrl": "https://example.com/offers/spring",
+        "senderId": "ONEXTL",
+        "domain": "links.example.com",
+        "track_user": 1
+      }
+    ]
+  }
+}'
+```
+
+```json Request body
+{
+  "sms": [
+    {
+      "sender": "ONEXTL",
+      "recipient": "919999999999",
+      "type": "SI",
+      "messageBody": "This is a test sms.",
+      "templateId": "YOUR_DLT_TEMPLATE_ID",
+      "entityId": "YOUR_DLT_ENTITY_ID",
+      "unicode": 0,
+      "custRef1": {
+        "CustomReference1": "testSMS",
+        "CustomReference2": "123"
+      }
+    }
+  ],
+  "campaignName": "SMS2026",
+  "prefix": "+91",
+  "validation": false,
+  "urlShortener": {
+    "flag": 0,
+    "urlDetails": [
+      {
+        "longUrl": "",
+        "senderId": "",
+        "domain": "",
+        "track_user": 1
+      }
+    ]
+  }
+}
+```
+
+</CodeGroup>
+
+## The `sms` array
+
+The `sms` array carries one or more messages in a single call. Each object is one message.
+
+<ParamField body="sms[].sender" type="string" required>
+  Sender ID. Must be DLT-approved — see [DLT registration](/guides/sms/dlt).
+</ParamField>
+
+<ParamField body="sms[].recipient" type="string" required>
+  Recipient mobile number.
+</ParamField>
+
+<ParamField body="sms[].messageBody" type="string" required>
+  Content of the SMS.
+</ParamField>
+
+<ParamField body="sms[].type" type="string" required>
+  Message type: `SI`, `OTP`, or `SE`. Case-sensitive.
+</ParamField>
+
+<Note>
+`SI` and `SE` correspond to the DLT consent categories Service Implicit and Service Explicit —
+see [DLT registration](/guides/sms/dlt#template-types).
+</Note>
+
+<ParamField body="sms[].templateId" type="string">
+  DLT-approved template ID.
+</ParamField>
+
+<ParamField body="sms[].entityId" type="string">
+  DLT entity ID.
+</ParamField>
+
+<ParamField body="sms[].unicode" type="integer">
+  `1` for a Unicode message, `0` for normal text. **Required when sending Unicode.**
+</ParamField>
+
+<ParamField body="sms[].custRef1 … custRef5" type="string | object">
+  Up to five custom references of your own, echoed back on the
+  [delivery report](/api-reference/sms/dlr-callback) so you can match a receipt to your own
+  record. Each slot takes either a plain string or a nested object:
+
+  ```json
+  "custRef1": "order-4821"
+
+  "custRef1": {
+    "CustomReference1": "testSMS",
+    "CustomReference2": "123"
+  }
+  ```
+
+  The nested form lets one slot carry several values — useful when five slots are not enough,
+  or when you want the pairs kept together.
+</ParamField>
+
+<Note>
+**The nested object form is supported on SMS only.** WhatsApp and RCS take custom references as
+plain values. Sending an object on those channels is not supported.
+</Note>
+
+<Warning>
+**The message type is ultimately determined by your API key configuration, regardless of the
+`type` you send in the request.** If messages are being charged or routed as a different
+category than you expect, the API key is the thing to check — not the payload.
+</Warning>
+
+<Note>
+`templateId` and `entityId` are marked optional in the API, but DLT-regulated traffic in India
+will be rejected by the operator without them. Treat them as required for Indian destinations.
+See [DLT registration](/guides/sms/dlt).
+</Note>
+
+## Top-level fields
+
+<ParamField body="campaignName" type="string">
+  Identifier used to group and track messages as a campaign. Set it if you want the send to be
+  filterable in [reports](/guides/sms/reports).
+</ParamField>
+
+<ParamField body="prefix" type="string">
+  Country code applied to recipient numbers — for example `+91`.
+</ParamField>
+
+<ParamField body="validation" type="boolean">
+  `true` rejects invalid requests outright; `false` processes them anyway.
+</ParamField>
+
+<Note>
+Set `validation` to `true` while integrating. With `false`, a malformed request is accepted and
+fails silently downstream, which is far harder to diagnose than an upfront rejection.
+</Note>
+
+## URL shortener
+
+Include the `urlShortener` object when your message contains a link you want shortened and
+tracked.
+
+<ParamField body="urlShortener.flag" type="integer">
+  `1` enables shortening, `0` disables it. Required if short-URL conversion is needed.
+</ParamField>
+
+<ParamField body="urlShortener.urlDetails[].longUrl" type="string">
+  The original URL to shorten. Required when `flag` is `1`.
+</ParamField>
+
+<ParamField body="urlShortener.urlDetails[].senderId" type="string">
+  Sender ID associated with the shortened URL. Required when `flag` is `1`.
+</ParamField>
+
+<ParamField body="urlShortener.urlDetails[].domain" type="string">
+  Custom domain, if one is configured for your account. Required when `flag` is `1`.
+</ParamField>
+
+<ParamField body="urlShortener.urlDetails[].track_user" type="integer">
+  `1` enables click tracking, `0` disables it. Required if location tracking is needed.
+</ParamField>
+
+Click data captured this way appears in the
+[Clicker Data and Clicker Details reports](/guides/sms/reports#clicker-data).
+
+## Response
+
+A request with a valid API key returns **HTTP 200**, with one entry per message inside
+`smslist.sms[]`. The wrapper key is lowercase `smslist`.
+
+```json Accepted
+{
+  "smslist": {
+    "sms": [
+      {
+        "description": "Message submitted with tracking id ( UID )",
+        "messageid": "3JLkExampleMessageId0000000",
+        "status": 200
+      }
+    ]
+  }
+}
+```
+
+<ResponseField name="smslist.sms[].status" type="integer">
+  Per-message result. `200` means the message was accepted for processing.
+</ResponseField>
+
+<ResponseField name="smslist.sms[].description" type="string">
+  Outcome text — for an accepted message, the tracking-id confirmation.
+</ResponseField>
+
+<ResponseField name="smslist.sms[].messageid" type="string">
+  Tracking ID for the accepted message.
+</ResponseField>
+
+<Warning>
+**Accepted is not delivered.** A `200` entry means OneXtel accepted the message for processing —
+not that it reached the handset, and not that the recipient number is valid. Confirm the outcome
+from the [delivery report](/api-reference/sms/dlr-callback).
+</Warning>
+
+### Authentication errors
+
+A request with an invalid API key is rejected with **HTTP 401**, before any message is read:
+
+```json
+{
+  "status": "Failed",
+  "reason": "API_Invalid_Authorisation",
+  "code": 401
+}
+```
+
+## Related
+
+- [DLR callback](/api-reference/sms/dlr-callback)
+- [SMS error codes](/api-reference/sms/error-codes)
+- [DLT registration](/guides/sms/dlt)

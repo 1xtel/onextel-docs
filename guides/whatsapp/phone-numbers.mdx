@@ -1,0 +1,149 @@
+---
+title: "Phone numbers and pools"
+description: "Connect a WhatsApp Business Account, add numbers, read each number's health, and group numbers into pools."
+---
+
+Your WhatsApp numbers live under **Channels → WhatsApp → Asset Management → Phone Numbers**. Pick
+the **WABA ID** at the top to see the numbers in that WhatsApp Business Account (WABA).
+
+## How your number gets connected
+
+Your number reaches the portal in one of three ways. Your account manager tells you which one
+applies to you.
+
+| Method | Who does it | What happens |
+| --- | --- | --- |
+| Embedded Signup | You | You connect your own WABA through Meta's sign-up window. You own the WABA. |
+| On behalf of (OBO) | OneXtel or your reseller | The WABA is created and linked for you. Your number appears under Phone Numbers with nothing for you to do in Meta. |
+| Coexistence | You, through Embedded Signup | A number already running on the WhatsApp Business app is connected and keeps working in the app. |
+
+### Connect a WABA with Embedded Signup
+
+<Steps>
+  <Step title="Start the sign-up">
+    Click **Add WABA**. Meta's sign-up window opens.
+  </Step>
+  <Step title="Choose your business">
+    Log in with Facebook, then choose or create your Meta business portfolio.
+  </Step>
+  <Step title="Set up the WABA">
+    Create or choose the WhatsApp Business Account, and set the display name customers will see.
+  </Step>
+  <Step title="Verify the number">
+    Add the phone number and verify it with the one-time code Meta sends by SMS or voice call.
+  </Step>
+  <Step title="Finish">
+    The number appears in the list. If it doesn't show straight away, click **Sync**.
+  </Step>
+</Steps>
+
+Have your Facebook admin login and the phone itself to hand before you start. If sign-up fails,
+the error comes from Meta — see [Onboarding WhatsApp](/guides/whatsapp/activation#embedded-signup)
+for Meta's error references.
+
+### Keep using the WhatsApp Business app (Coexistence)
+
+<Steps>
+  <Step title="Start Add WABA">
+    Click **Add WABA** and enter the number you use on the WhatsApp Business app.
+  </Step>
+  <Step title="Confirm on the phone">
+    Meta recognises the number and switches to the Coexistence steps. Confirm in the WhatsApp
+    Business app on your phone when asked.
+  </Step>
+  <Step title="Finish the sign-up">
+    The number works in both places. Keep chatting one-to-one in the app, and send campaigns and
+    API messages from the portal. Chats stay in sync.
+  </Step>
+</Steps>
+
+A Coexistence number sends more slowly than a standard API number. Messages you send from the
+WhatsApp Business app itself aren't charged by Meta; messages sent through the portal are charged
+as usual. Meta describes the flow in
+[Onboarding WhatsApp Business app users](https://developers.facebook.com/documentation/business-messaging/whatsapp/embedded-signup/onboarding-business-app-users).
+For what you can and can't do on the number, see [WhatsApp Coexistence](/guides/whatsapp/coexistence).
+
+### Add another number to a WABA
+
+<Steps>
+  <Step title="Open the form">
+    Click **Add Phone Number** and pick the **WABA ID**.
+  </Step>
+  <Step title="Enter the number">
+    Enter the **Phone Number** and **Display Name**.
+  </Step>
+  <Step title="Verify it">
+    Choose the **Verification Method** (SMS or Voice) and click **Generate OTP**. Enter the code
+    Meta sends to the number.
+  </Step>
+</Steps>
+
+## Read your number's health
+
+| Column | What it tells you |
+| --- | --- |
+| Phone Number, Phone Number ID | The business number and its Meta ID |
+| Display Name | The name customers see in WhatsApp |
+| Data Region | Where message data is stored |
+| Tier | Meta's messaging limit: how many different customers the number can message outside a customer service window in 24 hours. It grows as you send good-quality messages |
+| Quality | `GREEN` is good. `YELLOW` means take care. `RED` means customers are blocking or reporting you — cut back marketing |
+| Blue Tick | Whether the number has the verified business badge |
+| Status | `CONNECTED` means the number is ready to send |
+
+Click **Sync** to refresh tier, quality and status from Meta. **Filter** and **Download** sit above
+the list. Meta explains tiers in
+[Messaging limits](https://developers.facebook.com/documentation/business-messaging/whatsapp/messaging-limits).
+
+<Warning>
+A `RED` quality rating is the early warning before Meta restricts the number. Send fewer
+marketing messages, check that the content is what customers signed up for, and honour every
+opt-out.
+</Warning>
+
+## Number pools
+
+A number pool groups several numbers under one **Pool ID**. A campaign or API call that sends
+through the pool spreads the load across the numbers, which protects any one number's quality
+rating and limits.
+
+<Note>
+**Number Pools** appears only after your tenant administrator switches on Number Pooling for your
+account.
+</Note>
+
+<Steps>
+  <Step title="Start a pool">
+    Go to **Asset Management → Number Pools** and click **Create Pool**.
+  </Step>
+  <Step title="Name it">
+    Enter a **Pool Name** and, optionally, a **Description**.
+  </Step>
+  <Step title="Choose how repeat customers are handled">
+    | Recurring Message Type | Behaviour |
+    | --- | --- |
+    | Blank (default) | Round robin: messages are shared evenly across the numbers |
+    | Maintain Same Number | A customer who got a message in the last 30 days gets the next one from the same number |
+    | Use Different Number | A customer gets the next message from a different number to the one used last time |
+  </Step>
+  <Step title="Pick the numbers">
+    Pick the **WABA ID** and at least two **Phone Numbers**. Numbers can come from different WABAs
+    in your account.
+  </Step>
+  <Step title="Save">
+    Click **Save Configuration**. The portal creates the Pool ID.
+  </Step>
+</Steps>
+
+Use the pool by ticking **Use number pool** in a [campaign](/guides/campaigns/create-a-campaign), or
+by sending the Pool ID as the sender in the API. You can also submit one template to every WABA
+in a pool — see [Create WhatsApp templates](/guides/whatsapp/templates).
+
+The pool list shows **Pool Name**, **Pool ID**, **Description**, **Recurring Type**, **Total
+Numbers** and **Created Date**. A pool can't be edited: delete it from the **⋮** menu and create
+a new one. Two pools can't contain exactly the same numbers.
+
+## Related
+
+- [Onboarding WhatsApp](/guides/whatsapp/activation)
+- [WhatsApp settings](/guides/whatsapp/settings)
+- [Business verification](/guides/whatsapp/business-verification)

@@ -1,0 +1,78 @@
+---
+title: "India SMS Overview"
+description: "Base URL, authentication, DLT requirements, and endpoint summary for sending SMS to Indian numbers."
+---
+
+import ImportSms from '/snippets/import-sms.mdx';
+
+<ImportSms />
+
+SMS to Indian numbers is sent to `/send_sms`. You submit message details as a JSON payload and
+the platform delivers to the recipients. `/send_sms` carries SMS only: to send WhatsApp or RCS, or
+to fall back from one channel to another, use `/oapi/send_sms`, described in the
+[OmniChannel API](/api-reference/omnichannel/overview).
+
+<Note>
+For destinations **outside India**, use the
+[International SMS List API](/api-reference/sms-international/overview) — a different host, a
+different authentication scheme, and no DLT fields.
+</Note>
+
+<Tip>
+Check a request body before you send it with the [payload validator](/api-reference/payload-validator).
+It shows what the API would reject, without sending anything.
+</Tip>
+
+## Endpoint
+
+```
+POST https://api.onexaura.com/send_sms
+```
+
+## Authentication
+
+An `apikey` HTTP header carrying your account's API key — see
+[API keys](/guides/platform/api-keys).
+
+<ParamField header="apikey" type="string" required>
+  Your OneXtel API key.
+</ParamField>
+
+<ParamField header="Content-Type" type="string" required>
+  `application/json`
+</ParamField>
+
+## DLT is mandatory
+
+Indian SMS traffic is regulated by TRAI's DLT framework. Every message must reference a
+registered entity, sender ID, and template, supplied on the send as `entityId` and `templateId`.
+Messages that fail these checks are rejected before they reach an operator — see
+[DLT registration](/guides/sms/dlt) and the `201`–`227` band in
+[SMS error codes](/api-reference/sms/error-codes).
+
+## How it compares to international SMS
+
+| | India | [International](/api-reference/sms-international/overview) |
+| --- | --- | --- |
+| Host | `api.onexaura.com` | `api.int.onexglobal.io` |
+| Path | `/send_sms` | `/api/jsmslist` |
+| Authentication | `apikey` header | `key` in the body |
+| Message array | `sms` | `listsms` |
+| DLT fields (`templateId`, `entityId`) | Required | Not used |
+| DLR field style | camelCase | UPPERCASE |
+
+## Endpoints at a glance
+
+| Endpoint | Method | Purpose |
+| --- | --- | --- |
+| [`/send_sms`](/api-reference/sms/send-sms-omni) | POST | Send SMS, with DLT fields, custom references, campaign tagging, and URL shortening |
+| [DLR callback](/api-reference/sms/dlr-callback) | POST (inbound, to your URL) | Receive the final delivery state |
+| [Message status](/api-reference/omnichannel/message-status) | POST | Poll for status instead of receiving it |
+
+## Next steps
+
+- [Send SMS — India](/api-reference/sms/send-sms-omni) — payload, DLT fields, and responses
+- [DLR callback](/api-reference/sms/dlr-callback) — the receipt posted to your URL
+- [SMS error codes](/api-reference/sms/error-codes) — what each `errorCode` means
+- [Plugins and connectors](/plugins/overview) — send SMS from CleverTap, MoEngage, WebEngage,
+  Salesforce, Zoho CRM, Shopify or Optimove instead of calling this API directly

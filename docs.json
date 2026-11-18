@@ -1,0 +1,510 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "OneXtel",
+  "colors": {
+    "primary": "#242C6A",
+    "light": "#242C6A",
+    "dark": "#242C6A"
+  },
+  "favicon": {
+    "light": "/images/Xsymbol.png",
+    "dark": "/images/logo.png"
+  },
+  "logo": {
+    "light": "/images/Xsymbol.png",
+    "dark": "/images/logo.png"
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "guides/about-onextel",
+              "guides/release-notes"
+            ]
+          },
+          {
+            "group": "Platform",
+            "pages": [
+              "guides/platform/overview",
+              "guides/platform/getting-started",
+              "guides/platform/account-settings",
+              "guides/platform/user-management",
+              "guides/platform/roles",
+              "guides/platform/credits",
+              "guides/platform/api-keys",
+              "guides/platform/phonebook",
+              "guides/platform/blacklist",
+              "guides/platform/callback-configuration",
+              "guides/platform/vmn-configuration",
+              "guides/platform/notifications",
+              "guides/platform/telco-reports",
+              "guides/platform/all-schedule"
+            ]
+          },
+          {
+            "group": "WhatsApp",
+            "pages": [
+              "guides/channels/about-whatsapp",
+              {
+                "group": "Onboarding",
+                "pages": [
+                  "guides/whatsapp/activation",
+                  "guides/whatsapp/business-verification",
+                  "guides/whatsapp/coexistence"
+                ]
+              },
+              {
+                "group": "Asset management",
+                "pages": [
+                  "guides/whatsapp/phone-numbers",
+                  "guides/whatsapp/usernames-and-bsuid",
+                  "guides/whatsapp/templates",
+                  "guides/whatsapp/bulk-template-upload",
+                  {
+                    "group": "Template categories",
+                    "pages": [
+                      "guides/whatsapp/template-categories",
+                      "guides/whatsapp/template-categories-marketing",
+                      "guides/whatsapp/template-categories-utility",
+                      "guides/whatsapp/template-categories-authentication"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Configurations",
+                "pages": [
+                  "guides/whatsapp/settings",
+                  "guides/whatsapp/direct-send"
+                ]
+              },
+              {
+                "group": "Reports",
+                "pages": [
+                  "guides/whatsapp/reports"
+                ]
+              },
+              {
+                "group": "WhatsApp Voice",
+                "pages": [
+                  "guides/whatsapp-voice/overview",
+                  "guides/whatsapp-voice/how-it-works",
+                  "guides/whatsapp-voice/getting-started",
+                  "guides/whatsapp-voice/connect-your-voice-platform",
+                  "guides/whatsapp-voice/ipsec-tunnels",
+                  "guides/whatsapp-voice/protocols-and-media",
+                  "guides/whatsapp-voice/troubleshooting"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "RCS",
+            "pages": [
+              "guides/channels/about-rcs",
+              {
+                "group": "Onboarding",
+                "pages": [
+                  "guides/rcs-platform/overview",
+                  "guides/rcs-platform/getting-started"
+                ]
+              },
+              {
+                "group": "Asset management",
+                "pages": [
+                  "guides/rcs-platform/sender-profiles",
+                  "guides/rcs-platform/templates",
+                  "guides/rcs-platform/template-guidelines"
+                ]
+              },
+              {
+                "group": "Configurations",
+                "pages": [
+                  "guides/rcs-platform/billing-config",
+                  "guides/rcs-platform/settings"
+                ]
+              },
+              {
+                "group": "Reports",
+                "pages": [
+                  "guides/rcs-platform/reports-summary",
+                  "guides/rcs-platform/reports-detail"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Campaigns",
+            "pages": [
+              "guides/campaigns/overview",
+              "guides/campaigns/create-a-campaign",
+              "guides/campaigns/variable-mapping",
+              "guides/campaigns/additional-settings",
+              "guides/campaigns/schedule-and-launch",
+              "guides/campaigns/manage-campaigns"
+            ]
+          },
+          {
+            "group": "Fallback",
+            "pages": [
+              "guides/omnichannel/fallback-overview",
+              "guides/omnichannel/configure-fallback",
+              "guides/omnichannel/dynamic-field-variables"
+            ]
+          },
+          {
+            "group": "SMS",
+            "pages": [
+              "guides/sms/overview",
+              "guides/sms/dlt",
+              "guides/sms/send-sms",
+              "guides/sms/campaigns",
+              "guides/sms/templates",
+              "guides/sms/sender-id",
+              "guides/sms/reports"
+            ]
+          },
+          {
+            "group": "Partners",
+            "pages": [
+              "guides/partners/tsp-onboarding"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Tools",
+            "pages": [
+              "api-reference/payload-validator"
+            ]
+          },
+          {
+            "group": "WhatsApp",
+            "pages": [
+              "api-reference/whatsapp/overview",
+              "api-reference/whatsapp/templates-create",
+              "api-reference/whatsapp/templates-fetch",
+              "api-reference/whatsapp/send-template-message",
+              "api-reference/whatsapp/send-session-messages",
+              "api-reference/whatsapp/media",
+              "api-reference/whatsapp/opt-in-opt-out",
+              {
+                "group": "Callbacks",
+                "pages": [
+                  "api-reference/whatsapp/callback-events",
+                  "api-reference/whatsapp/callback-incoming-messages",
+                  "api-reference/whatsapp/callback-delivery-notification",
+                  "api-reference/whatsapp/callback-button-clicks",
+                  "api-reference/whatsapp/callback-url-click"
+                ]
+              },
+              "api-reference/whatsapp/error-codes"
+            ]
+          },
+          {
+            "group": "RCS",
+            "pages": [
+              "api-reference/rcs/overview",
+              "api-reference/rcs/templates",
+              "api-reference/rcs/send-template-message",
+              "api-reference/rcs/send-messages",
+              "api-reference/rcs/media",
+              "api-reference/rcs/opt-in-opt-out",
+              "api-reference/rcs/callback-delivery-notification",
+              "api-reference/rcs/error-codes"
+            ]
+          },
+          {
+            "group": "SMS (India)",
+            "pages": [
+              "api-reference/sms/overview",
+              "api-reference/sms/send-sms-omni",
+              "api-reference/sms/dlr-callback",
+              "api-reference/sms/error-codes"
+            ]
+          },
+          {
+            "group": "SMS (International)",
+            "pages": [
+              "api-reference/sms-international/overview",
+              "api-reference/sms-international/send-sms",
+              "api-reference/sms-international/dlr-callback",
+              "api-reference/sms-international/error-codes"
+            ]
+          },
+          {
+            "group": "OmniChannel",
+            "pages": [
+              "api-reference/omnichannel/overview",
+              "api-reference/omnichannel/fallback",
+              "api-reference/omnichannel/message-status",
+              "api-reference/omnichannel/message-history"
+            ]
+          },
+          {
+            "group": "Verify",
+            "openapi": "api-reference/verify/openapi.yaml",
+            "pages": [
+              "api-reference/verify/overview",
+              "api-reference/verify/create-and-dispatch-a-pin",
+              "api-reference/verify/resend-a-pin",
+              "api-reference/verify/verify-a-pin",
+              "api-reference/verify/list-templates",
+              "api-reference/verify/list-channel-accounts",
+              "api-reference/verify/error-codes"
+            ]
+          },
+          {
+            "group": "Truecaller",
+            "pages": [
+              "api-reference/truecaller/overview",
+              "api-reference/truecaller/rich-messages",
+              "api-reference/truecaller/webhooks",
+              "api-reference/truecaller/errors",
+              {
+                "group": "Messages",
+                "pages": [
+                  "api-reference/truecaller/send-message",
+                  "api-reference/truecaller/get-message"
+                ]
+              },
+              {
+                "group": "Templates",
+                "pages": [
+                  "api-reference/truecaller/list-templates",
+                  "api-reference/truecaller/create-template",
+                  "api-reference/truecaller/get-template",
+                  "api-reference/truecaller/update-template",
+                  "api-reference/truecaller/submit-template",
+                  "api-reference/truecaller/preview-template",
+                  "api-reference/truecaller/delete-template",
+                  "api-reference/truecaller/upload-media"
+                ]
+              },
+              {
+                "group": "Contact lists",
+                "pages": [
+                  "api-reference/truecaller/list-contact-lists",
+                  "api-reference/truecaller/create-contact-list",
+                  "api-reference/truecaller/add-contacts",
+                  "api-reference/truecaller/validate-audience",
+                  "api-reference/truecaller/get-contact-list",
+                  "api-reference/truecaller/delete-contact-list",
+                  "api-reference/truecaller/opt-out",
+                  "api-reference/truecaller/remove-opt-out"
+                ]
+              },
+              {
+                "group": "Campaigns",
+                "pages": [
+                  "api-reference/truecaller/list-campaigns",
+                  "api-reference/truecaller/create-campaign",
+                  "api-reference/truecaller/get-campaign",
+                  "api-reference/truecaller/launch-campaign",
+                  "api-reference/truecaller/cancel-campaign",
+                  "api-reference/truecaller/delete-campaign",
+                  "api-reference/truecaller/campaign-report",
+                  "api-reference/truecaller/export-campaign-messages"
+                ]
+              },
+              {
+                "group": "Senders",
+                "pages": [
+                  "api-reference/truecaller/list-senders"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Plugins",
+        "pages": [
+          {
+            "group": "Overview",
+            "pages": [
+              "plugins/overview"
+            ]
+          },
+          {
+            "group": "Connectors",
+            "pages": [
+              "plugins/moengage",
+              "plugins/clevertap",
+              "plugins/webengage",
+              "plugins/salesforce",
+              "plugins/salesforce-marketing-cloud",
+              "plugins/leadsquared",
+              "plugins/zoho-crm",
+              "plugins/shopify",
+              "plugins/optimove",
+              "plugins/fyno"
+            ]
+          },
+          "zoho-crm-wa-and-rcs"
+        ]
+      },
+      {
+        "tab": "Archived APIs",
+        "groups": [
+          {
+            "group": "Previous platform",
+            "pages": [
+              "legacy/overview",
+              "legacy/sms-aura",
+              "legacy/sms-dlt",
+              "legacy/sms-plugins",
+              "legacy/whatsapp-api",
+              "legacy/rcs-api"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "OneXtel",
+      "href": "https://onextel.com"
+    },
+    "links": [
+      {
+        "label": "Download PDF",
+        "href": "/download-pdf"
+      }
+    ]
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "download-pdf",
+      {
+        "title": "Download all docs",
+        "description": "Every guide, API reference and plugin page in one PDF",
+        "icon": "file-pdf",
+        "href": "/download-pdf"
+      },
+      "download-spec",
+      "chatgpt",
+      "claude"
+    ]
+  },
+  "footer": {
+    "socials": {
+      "website": "https://onextel.com",
+      "linkedin": "https://www.linkedin.com/company/14525405/",
+      "instagram": "https://www.instagram.com/onextel_media"
+    }
+  },
+  "redirects": [
+    {
+      "source": "/plugins/clevertap-whatsapp",
+      "destination": "/plugins/clevertap#setup-whatsapp",
+      "permanent": true
+    },
+    {
+      "source": "/guides/sms/phonebook",
+      "destination": "/guides/platform/phonebook",
+      "permanent": true
+    },
+    {
+      "source": "/guides/sms/settings",
+      "destination": "/guides/platform/account-settings",
+      "permanent": true
+    },
+    {
+      "source": "/guides/platform/dlt",
+      "destination": "/guides/sms/dlt",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/sms/send-sms",
+      "destination": "/api-reference/sms-international/send-sms",
+      "permanent": true
+    },
+    {
+      "source": "/guides/whatsapp/quickstart",
+      "destination": "/guides/campaigns/overview",
+      "permanent": true
+    },
+    {
+      "source": "/guides/whatsapp/campaign-dashboard",
+      "destination": "/guides/campaigns/manage-campaigns",
+      "permanent": true
+    },
+    {
+      "source": "/guides/whatsapp/campaign-create",
+      "destination": "/guides/campaigns/create-a-campaign",
+      "permanent": true
+    },
+    {
+      "source": "/guides/whatsapp/campaign-variable-mapping",
+      "destination": "/guides/campaigns/variable-mapping",
+      "permanent": true
+    },
+    {
+      "source": "/guides/whatsapp/campaign-launch",
+      "destination": "/guides/campaigns/schedule-and-launch",
+      "permanent": true
+    },
+    {
+      "source": "/guides/rcs-campaigns/overview",
+      "destination": "/guides/campaigns/overview",
+      "permanent": true
+    },
+    {
+      "source": "/guides/rcs-campaigns/getting-started",
+      "destination": "/guides/campaigns/overview",
+      "permanent": true
+    },
+    {
+      "source": "/guides/rcs-campaigns/manage-campaigns",
+      "destination": "/guides/campaigns/manage-campaigns",
+      "permanent": true
+    },
+    {
+      "source": "/guides/rcs-campaigns/create-a-campaign",
+      "destination": "/guides/campaigns/create-a-campaign",
+      "permanent": true
+    },
+    {
+      "source": "/guides/rcs-campaigns/variable-mapping",
+      "destination": "/guides/campaigns/variable-mapping",
+      "permanent": true
+    },
+    {
+      "source": "/guides/rcs-campaigns/additional-settings",
+      "destination": "/guides/campaigns/additional-settings",
+      "permanent": true
+    },
+    {
+      "source": "/guides/rcs-campaigns/schedule-and-launch",
+      "destination": "/guides/campaigns/schedule-and-launch",
+      "permanent": true
+    }
+  ],
+  "background": {
+    "color": {
+      "light": "#ffffff",
+      "dark": "#ffffff"
+    },
+    "decoration": "grid"
+  },
+  "appearance": {
+    "default": "light",
+    "strict": true
+  },
+  "icons": {
+    "library": "fontawesome"
+  }
+}

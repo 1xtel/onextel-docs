@@ -1,0 +1,219 @@
+---
+title: "India SMS Error Codes"
+description: "Every SMS delivery and rejection code, grouped by where the failure happened and whether a retry can help."
+---
+
+import ImportSms from '/snippets/import-sms.mdx';
+
+<ImportSms />
+
+Every SMS delivery report carries an `errorCode`. The code tells you the outcome — but more
+usefully, **the range tells you where the message stopped**, which decides who can fix it.
+
+<Note>
+These codes apply to SMS sent to **India**. International traffic uses a different and much
+shorter set — see
+[International SMS error codes](/api-reference/sms-international/error-codes).
+</Note>
+
+| Range | Where it failed | Can a retry help? |
+| --- | --- | --- |
+| `000` | Delivered | — |
+| `101`–`143` | Handset, network, or operator | Sometimes — many are transient |
+| `201`–`227` | DLT / regulatory checks (India) | No — fix the registration |
+| `527` | Message assembly | No — fix the payload |
+| `970`–`995`, `900xxx` | OneXtel platform, before submission | No — fix the account, config, or content |
+
+<Note>
+A `9xx` or `900xxx` code means the message **never left the platform**, so it was never charged to an
+operator and nothing reached the network. Those are the ones you can resolve yourself, usually
+in the portal.
+</Note>
+
+<Note>
+**This is the complete set**, checked against the platform's own lists in September 2026: 90
+three-digit codes, plus five newer platform checks that so far have only a six-digit code. The
+gaps in the three-digit numbering (`105`, `106`, `122`, `202`, `212`, `217`, `219`, `221`) are
+unused values, not omissions from this page.
+</Note>
+
+## Success
+
+| Code | Description |
+| --- | --- |
+| `000` | SMS delivered successfully |
+
+## Handset, network and operator — `101`–`143`
+
+The message reached the operator but was not delivered. Some of these are genuinely temporary
+(handset off, congestion) and worth retrying; others describe a permanent property of the
+number.
+
+| Code | Description |
+| --- | --- |
+| `101` | Absent / roaming failed / roaming not allowed |
+| `102` | Delivery failure — memory capacity exceeded |
+| `103` | Call barred |
+| `104` | Temporary handset failure / illegal equipment |
+| `107` | Invalid source address |
+| `108` | Invalid destination address numbering plan (NPI) |
+| `109` | Blacklisted destination address |
+| `110` | Multipart missing |
+| `111` | Delivery awaited |
+| `112` | Expired — DLR unknown |
+| `113` | SMSC not supported in SMPP PDU |
+| `114` | Validity expired or incorrect |
+| `115` | Invalid destination address |
+| `116` | Service not provisioned |
+| `117` | Network system failure |
+| `118` | Unsupported media type / protocol failure |
+| `119` | Unknown network error reported by SMSC |
+| `120` | Throttling error |
+| `121` | System failure |
+| `123` | Network congestion / network timeout |
+| `124` | Signalling error / MAP dialog network error |
+| `125` | SMSC system failure |
+| `126` | SMSC rejection |
+| `127` | Service centre not provisioned or expired |
+| `128` | SMS rejected by mobile operator |
+| `129` | Submit SM timeout |
+| `130` | Busy subscriber |
+| `131` | Invalid source address numbering plan (NPI) |
+| `132` | MO handover — system error |
+| `133` | MAP abort error |
+| `134` | Invalid request type |
+| `135` | Jio off-net rejected |
+| `136` | Message expired |
+| `137` | Message rejected by SMSC |
+| `138` | ESME rejection error by SMSC |
+| `139` | Facility not supported |
+| `140` | Incorrect transport type parameter usage |
+| `141` | Invalid source address type of number (TON) |
+| `142` | Invalid destination address type of number (TON) |
+| `143` | Unknown subscriber |
+
+<Note>
+`111` (delivery awaited) is not a failure — the message is still in flight and no final status
+has arrived. Treat it as pending rather than counting it against your delivery rate.
+</Note>
+
+## DLT and regulatory — `201`–`227`
+
+India-specific. The message was stopped by TRAI/DLT scrubbing or by consent rules. Retrying
+changes nothing — the registration or the content has to be corrected. See
+[DLT registration](/guides/sms/dlt).
+
+<Note>
+**These are OneXtel codes, not the DLT platform's own.** Each operator's DLT platform — Airtel,
+Jio, Vi, BSNL — has its own numbering, and OneXtel normalises them into the band below so you
+get one set regardless of which platform scrubbed the message. If you see a differently numbered
+code inside a DLT portal, that is the platform's own code and will not match this table.
+</Note>
+
+| Code | Description |
+| --- | --- |
+| `201` | Entity blacklisted or inactive at DLT |
+| `203` | Suspended or blacklisted sender ID |
+| `204` | Invalid or inactive sender ID |
+| `205` | Telemarketer blacklisted or inactive at DLT |
+| `206` | Telemarketer not allowed for this entity |
+| `207` | Telemarketer PE-TM hash error or suspended |
+| `208` | Suspended or blacklisted template ID |
+| `209` | CLI mismatch |
+| `210` | Invalid or inactive template ID |
+| `211` | Template variable exceeded maximum length |
+| `213` | Alphanumeric header not allowed on the assigned route |
+| `214` | UDH header refused |
+| `215` | CTA mismatch |
+| `216` | DLT scrubbing failed |
+| `218` | DND preference |
+| `220` | SE category block |
+| `222` | CLI not present in the government header lookup |
+| `223` | Invalid or missing TLV parameters |
+| `224` | Message filter / spam blocked |
+| `225` | Invalid entity ID |
+| `226` | Content mismatch at DLT |
+| `227` | Suspended at DLT |
+
+<Warning>
+`226` (content mismatch) and `211` (variable too long) mean the message body did not match the
+registered template. This is the most common DLT rejection: the template is approved, but the
+message built from it drifted — an extra space, a changed word, or a variable longer than
+registered.
+</Warning>
+
+<Note>
+`218` (DND preference) is the recipient's own registration on the Do Not Disturb list. It is not
+a fault, and the number cannot be messaged promotionally until they change it. Use the
+[Scrub DND option on your API key](/guides/platform/api-keys) to filter these before sending
+rather than paying for the rejection.
+</Note>
+
+## Message assembly — `527`
+
+| Code | Description |
+| --- | --- |
+| `527` | ESME multipart missing |
+
+## Platform — `970`–`995` and `900xxx`
+
+The message was rejected by OneXtel before it reached an operator. Every one of these is
+something you or your account team can resolve.
+
+The platform records each of these checks under a six-digit code as well as the three-digit one.
+The table gives both, so you can match whichever form you see.
+
+| Code | Description | Six-digit code |
+| --- | --- | --- |
+| `970` | Throttle error | `900088` |
+| `971` | Invalid source ID | `900100` |
+| `972` | Invalid destination | `900101` |
+| `973` | Message filter / spam blocked | `900102` |
+| `974` | Blacklisted number | `900103` |
+| `975` | Blacklisted sender ID | `900104` |
+| `976` | Number blacklisted for this user | `900105` |
+| `977` | Sender ID blacklisted for this user | `900106` |
+| `978` | DND number found | `900107` |
+| `979` | Content mismatch | `900108` |
+| `980` | Entity ID mismatch | `900109` |
+| `981` | Template ID mismatch | `900110` |
+| `982` | Credit check failed / no balance | `900111` |
+| `983` | Nack failure or timeout on the request | `900112` |
+| `984` | Bind not found | `900113` |
+| `985` | Expired message | `900114` |
+| `986` | SMS frequency limit reached | `900115` |
+| `987` | Credit limit exceeded | `900116` |
+| `988` | Encoding limit exceeded | `900118` |
+| `989` | Sender ID restricted for this user ID | `900119` |
+| `990` | SMPP account disabled | `900120` |
+| `991` | TUC account disabled | `900121` |
+| `992` | TUC validity expired | `900122` |
+| `993` | Account disabled | `900123` |
+| `994` | DLR expired | `900124` |
+| `995` | Time window — discarded | `900125` |
+
+These five newer checks have a six-digit code only:
+
+| Six-digit code | Description | What to do |
+| --- | --- | --- |
+| `900126` | Unauthorised source address — discarded | The sender ID isn't authorised for your account, so the message was dropped |
+| `900127` | Variable length exceeded | A variable's value is longer than the template allows. Shorten it |
+| `900128` | Invalid or inactive sender ID | The sender ID isn't registered, or has been deactivated |
+| `900129` | Blacklisted country | The destination country is blocked on your account |
+| `900130` | Duplicate message dropped | The platform took this for a repeat of a message it had already accepted, and dropped it. Don't resend |
+
+<Note>
+Several of these map directly to settings you control:
+
+- `974`, `976` — the [blacklist](/guides/platform/blacklist)
+- `982`, `987` — [credits](/guides/platform/credits)
+- `992` — the TUC validity period, set in [user management](/guides/platform/user-management)
+- `995` — the **SMS Time Window** account setting; the message fell outside the permitted
+  sending hours and was dropped rather than queued
+</Note>
+
+## Related
+
+- [DLR callback](/api-reference/sms/dlr-callback) — where these codes are delivered
+- [DLT registration](/guides/sms/dlt)
+- [SMS API overview](/api-reference/sms/overview)

@@ -1,0 +1,108 @@
+---
+title: "OneXtel Documentation"
+description: "Enterprise messaging APIs and campaign tools — WhatsApp, RCS, SMS, and omnichannel."
+mode: "custom"
+---
+
+export const Page = ({children}) => (
+  <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(20px, 5vw, 64px) 64px' }}>
+    {children}
+  </div>
+)
+
+export const Hero = () => (
+  <div style={{ background: '#1E2A5E', borderRadius: '16px', padding: '56px 40px', textAlign: 'center', marginBottom: '32px' }}>
+    <h1 style={{ color: '#FFFFFF', fontSize: '2.2rem', margin: 0 }}>
+      Build on One<span style={{ color: '#C23B34' }}>X</span>tel
+    </h1>
+    <p style={{ color: '#E2E8F0', maxWidth: '620px', margin: '16px auto 0' }}>
+      One platform for WhatsApp, RCS, and SMS at enterprise scale — send via a single
+      omnichannel API, orchestrate fallback across channels, and run campaigns from the
+      OneXtel portal.
+    </p>
+  </div>
+)
+
+<Page>
+
+<Hero />
+
+## Start here
+
+<CardGroup cols={2}>
+  <Card title="About OneXtel" icon="circle-info" href="/guides/about-onextel">
+    Who OneXtel is, what you can do on the platform, and how these docs are organised.
+  </Card>
+  <Card title="Sign in to the portal" icon="right-to-bracket" href="/guides/platform/getting-started">
+    Sign in, read the dashboard, and see what your account can do.
+  </Card>
+  <Card title="Understand your account" icon="sitemap" href="/guides/platform/overview">
+    Tenants, TUCs, users, roles and credits, and what to set up before you send.
+  </Card>
+  <Card title="Release notes" icon="bullhorn" href="/guides/release-notes">
+    What has shipped on the platform and its connectors, newest first.
+  </Card>
+</CardGroup>
+
+## Platform guides
+
+<CardGroup cols={2}>
+  <Card title="WhatsApp Campaigns" icon="bullhorn" href="/guides/campaigns/overview">
+    Create templates and launch WhatsApp campaigns from the portal.
+  </Card>
+  <Card title="RCS Campaigns" icon="mobile-screen" href="/guides/campaigns/overview">
+    Run rich RCS campaigns end to end.
+  </Card>
+  <Card title="Multi-Channel Fallback" icon="shuffle" href="/guides/omnichannel/fallback-overview">
+    Configure fallback chains so every message reaches its recipient.
+  </Card>
+  <Card title="SMS" icon="paper-plane" href="/guides/sms/overview">
+    Portal guide for SMS campaigns, templates, and reporting.
+  </Card>
+</CardGroup>
+
+## Developer API reference
+
+<CardGroup cols={3}>
+  <Card title="WhatsApp API" icon="whatsapp" href="/api-reference/whatsapp/overview">
+    Send template and session messages, manage media, opt-outs, and receive callbacks.
+  </Card>
+  <Card title="RCS API" icon="message" href="/api-reference/rcs/overview">
+    Rich cards, carousels, and template messaging over RCS Business Messaging.
+  </Card>
+  <Card title="SMS API" icon="globe" href="/api-reference/sms/overview">
+    Domestic and international SMS with delivery reports.
+  </Card>
+</CardGroup>
+
+<CardGroup cols={2}>
+  <Card title="Omnichannel & Fallback" icon="arrows-split-up-and-left" href="/api-reference/omnichannel/overview">
+    One send API across channels, automatic fallback, message status and history.
+  </Card>
+  <Card title="WhatsApp Callbacks" icon="webhook" href="/api-reference/whatsapp/callback-events">
+    Incoming messages, delivery notifications, button clicks, and URL click events.
+  </Card>
+</CardGroup>
+
+## Plugins & connectors
+
+Send through OneXtel from the tools your team already works in — no code required.
+
+<CardGroup cols={3}>
+  <Card title="MoEngage" icon="chart-line" href="/plugins/moengage">
+    WhatsApp and RCS campaigns from MoEngage.
+  </Card>
+  <Card title="WebEngage" icon="chart-simple" href="/plugins/webengage">
+    WhatsApp and RCS campaigns from WebEngage.
+  </Card>
+  <Card title="All connectors" icon="plug" href="/plugins/overview">
+    Salesforce, LeadSquared, Zoho CRM, Shopify, Optimove, and more.
+  </Card>
+</CardGroup>
+
+<Note>
+Integrating against `api.onex-aura.com` or `365cx.io`? Those are earlier APIs, still documented
+under [Archived APIs](/legacy/overview). Everything current uses `api.onexaura.com`.
+</Note>
+
+</Page>

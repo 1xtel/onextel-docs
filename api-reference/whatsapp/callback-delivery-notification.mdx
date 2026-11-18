@@ -1,0 +1,253 @@
+---
+title: "Callback: Delivery Notification"
+description: "Receive WhatsApp delivery status updates, with the full status lifecycle, conversation, pricing, and error fields explained."
+---
+
+import ImportWhatsapp from '/snippets/import-whatsapp.mdx';
+
+<ImportWhatsapp />
+
+OneXtel posts a Delivery Notification callback to your configured endpoint whenever the delivery
+status of an outbound WhatsApp message changes. The events originate from Meta's webhooks and
+give you real-time visibility from submission through to outcome.
+
+Register your endpoint under **Configuration → Add New Callback** — see
+[Callback configuration](/guides/platform/callback-configuration).
+
+## Status lifecycle
+
+Every message moves through a defined set of statuses. Map all four in your system, or your
+delivery tracking will be wrong.
+
+| Status | Meaning | Triggered when |
+| --- | --- | --- |
+| `sent` | Accepted by the WhatsApp server | The API request is validated and queued |
+| `delivered` | Delivered to the recipient's device | The device receives the message |
+| `read` | Read by the recipient | The user opens the message, if read receipts are enabled |
+| `failed` | Delivery failed | An error occurred — invalid number, throttling, ecosystem health, or template rejection |
+
+<Note>
+`read` only ever arrives if the recipient has read receipts enabled. Its absence is not evidence
+the message went unread, so never treat `delivered` without a subsequent `read` as a failure.
+</Note>
+
+## Payload format
+
+```json
+{
+  "waba_id": "entry.id",
+  "custref1": "custref1",
+  "custref2": "custref2",
+  "custref3": "custref3",
+  "custref4": "custref4",
+  "custref5": "custref5",
+  "entry": [
+    {
+      "id": "entry.id",
+      "changes": [
+        {
+          "value": {
+            "metadata": {
+              "display_phone_number": "...",
+              "phone_number_id": "..."
+            },
+            "statuses": [
+              {
+                "id": "message_id",
+                "status": "sent/delivered/read/failed",
+                "timestamp": "unix_timestamp",
+                "errors": {
+                  "code": "...",
+                  "message": "...",
+                  "title": "...",
+                  "href": "...",
+                  "error_data": {
+                    "details": "..."
+                  }
+                },
+                "conversation": {
+                  "id": "...",
+                  "origin": {
+                    "type": "user_initiated/business_initiated/referral"
+                  },
+                  "expiration_timestamp": "..."
+                },
+                "pricing": {
+                  "category": "utility/marketing/authentication",
+                  "billable": true,
+                  "pricing_model": "..."
+                },
+                "recipient_id": "customer_phone_number"
+              }
+            ],
+            "messaging_product": "whatsapp"
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Top-level fields
+
+<ResponseField name="waba_id" type="string">
+  Unique identifier of the WhatsApp Business Account generating the event.
+</ResponseField>
+
+<ResponseField name="custref1" type="string">
+  Custom key passed at the time of submission, echoed back unchanged.
+</ResponseField>
+
+<ResponseField name="custref2" type="string">
+  Custom key passed at the time of submission.
+</ResponseField>
+
+<ResponseField name="custref3" type="string">
+  Custom key passed at the time of submission.
+</ResponseField>
+
+<ResponseField name="custref4" type="string">
+  Custom key passed at the time of submission.
+</ResponseField>
+
+<ResponseField name="custref5" type="string">
+  Custom key passed at the time of submission.
+</ResponseField>
+
+<ResponseField name="entry" type="array">
+  Webhook event batches from WhatsApp.
+  <Expandable title="entry properties">
+    <ResponseField name="id" type="string">
+      Unique ID of the WhatsApp Business Account.
+    </ResponseField>
+    <ResponseField name="changes" type="array">
+      Event changes related to messages and status updates.
+      <Expandable title="changes properties">
+        <ResponseField name="field" type="string">
+          Type of webhook event — `messages` for delivery status.
+        </ResponseField>
+        <ResponseField name="value" type="object">
+          Core object containing message delivery and metadata details.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<Note>
+The `custref1`–`custref5` fields are the simplest way to correlate a callback with your own
+records — set them on the original send and they come straight back. See
+[Send template messages](/api-reference/whatsapp/send-template-message).
+</Note>
+
+## Value fields
+
+<ResponseField name="metadata.display_phone_number" type="string">
+  The business WhatsApp number visible to users.
+</ResponseField>
+
+<ResponseField name="metadata.phone_number_id" type="string">
+  Unique ID of the WhatsApp number.
+</ResponseField>
+
+<ResponseField name="messaging_product" type="string">
+  Messaging platform identifier — `whatsapp`.
+</ResponseField>
+
+<ResponseField name="statuses" type="array">
+  Message delivery status updates.
+</ResponseField>
+
+## Status fields
+
+<ResponseField name="statuses[].id" type="string">
+  Unique message ID. Match it against the ID returned when you sent the message.
+</ResponseField>
+
+<ResponseField name="statuses[].status" type="string">
+  Delivery status — `sent`, `delivered`, `read`, or `failed`.
+</ResponseField>
+
+<ResponseField name="statuses[].timestamp" type="string">
+  Unix timestamp of the status event.
+</ResponseField>
+
+<ResponseField name="statuses[].recipient_id" type="string">
+  Recipient's WhatsApp phone number.
+</ResponseField>
+
+### Errors
+
+The `errors` object is present **only when `status` is `failed`**.
+
+<ResponseField name="statuses[].errors.code" type="string">
+  Error code indicating the failure reason. See
+  [WhatsApp error codes](/api-reference/whatsapp/error-codes) for the values OneXtel has
+  observed and whether each is worth retrying.
+</ResponseField>
+
+<ResponseField name="statuses[].errors.message" type="string">
+  Description of the error.
+</ResponseField>
+
+<ResponseField name="statuses[].errors.title" type="string">
+  Short error category or title.
+</ResponseField>
+
+<ResponseField name="statuses[].errors.href" type="string">
+  URL for detailed error documentation.
+</ResponseField>
+
+<ResponseField name="statuses[].errors.error_data.details" type="string">
+  Additional granular error detail.
+</ResponseField>
+
+Meta publishes the full list of failure reasons in its
+[error codes reference](https://developers.facebook.com/documentation/business-messaging/whatsapp/support/error-codes).
+
+### Conversation
+
+<ResponseField name="statuses[].conversation.id" type="string">
+  Unique conversation identifier.
+</ResponseField>
+
+<ResponseField name="statuses[].conversation.origin.type" type="string">
+  How the conversation was initiated — `user_initiated`, `business_initiated`, or `referral`.
+</ResponseField>
+
+<ResponseField name="statuses[].conversation.expiration_timestamp" type="string">
+  Timestamp when the conversation window expires.
+</ResponseField>
+
+<Note>
+`expiration_timestamp` is when the session window closes. After it passes you can no longer send
+free-form messages to that recipient — only templates. Track it if your application sends
+session messages. See [Send session messages](/api-reference/whatsapp/send-session-messages).
+</Note>
+
+### Pricing
+
+<ResponseField name="statuses[].pricing.category" type="string">
+  Message category used for billing — `utility`, `marketing`, or `authentication`.
+</ResponseField>
+
+<ResponseField name="statuses[].pricing.billable" type="boolean">
+  Whether the message is billable.
+</ResponseField>
+
+<ResponseField name="statuses[].pricing.pricing_model" type="string">
+  Pricing model used for billing.
+</ResponseField>
+
+<Note>
+The pricing object is what to reconcile billing against — `category` here is the category Meta
+actually charged at, which is not always the category you submitted the template under.
+</Note>
+
+## Related
+
+- [Callback events overview](/api-reference/whatsapp/callback-events)
+- [WhatsApp error codes](/api-reference/whatsapp/error-codes)
+- [Callback configuration](/guides/platform/callback-configuration)

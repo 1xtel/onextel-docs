@@ -1,0 +1,153 @@
+---
+title: "Template Guidelines"
+description: "What an RCS template must satisfy to be approved — category rules, delivery windows, volume limits, and the checks that cause rejection."
+---
+
+Every RCS template is reviewed before it can be used. This page covers what that review checks,
+so you can write templates that pass first time rather than discovering the rules through
+rejections.
+
+Templates are assessed on two things: whether the **category** is right, and whether the
+**content** meets the quality and compliance rules.
+
+<Note>
+Review is carried out by the mobile operator, and requirements can differ between operators and
+change over time. Treat this as the baseline your template needs to clear.
+</Note>
+
+## Categories
+
+Your template's category determines when it can be sent and how often. Choosing the wrong one
+is the most common reason a template is rejected outright.
+
+### OTP / Authentication
+
+One-time passcodes — typically 4–8 digit alphanumeric codes — used for login, account
+verification, recovery, or integrity challenges.
+
+| | |
+| --- | --- |
+| Delivery window | No restriction — 24/7 |
+| Volume limits | None |
+
+<Warning>
+**OTP templates are restricted to non-BFSI sectors.** Authentication templates for Banking,
+Financial Services, and Insurance are prohibited on RCS. If you are in BFSI and need to deliver
+OTPs, use another channel — see [SMS](/guides/sms/overview).
+</Warning>
+
+### Transactional
+
+Content tied strictly to a transactional trigger: invoice generation, payment due alerts,
+transaction confirmations, and account updates.
+
+| | |
+| --- | --- |
+| Delivery window | No restriction — 24/7 |
+| Volume limits | No monthly frequency limit |
+
+### Promotional
+
+Marketing content: product offers, sales, welcome and closing messages, system updates, event
+invitations, and product recommendations.
+
+| | |
+| --- | --- |
+| Sending window | Business hours only |
+| Volume limits | 2 messages per unique user per 28-day cycle |
+
+<Note>
+The promotional limit can be raised to **8 messages per user per month** for agents with a
+proven low spam rate. It is earned through delivery behaviour over time, not requested — which
+makes complaint rate worth watching as a commercial metric, not just a compliance one.
+</Note>
+
+## Content rules
+
+Every template is checked against the following. Failing any one of them causes rejection.
+
+### Category and agent alignment
+
+The agent type and the content category must be identical, and the message content must match
+the registered agent type. A promotional message from an agent registered as transactional will
+be rejected even if the content is otherwise fine.
+
+### Brand visibility
+
+The brand name must appear explicitly **in the message body**, and must match the registered
+agent brand name. Having it only in the sender profile is not sufficient.
+
+### Variable formatting
+
+Custom parameters must use the `[custom_param]` form.
+
+<Warning>
+**Consecutive variables are forbidden.** A template containing `[param1][param2]` with no static
+text between them will be rejected. Separate every pair of variables with fixed content.
+</Warning>
+
+### Static-to-dynamic ratio
+
+At least **70% of the message must be static text**. Variables can make up no more than 30%.
+
+This is the rule most likely to catch a template that looks reasonable — a short message built
+mostly from variables fails it even when every individual rule above is satisfied. Write the
+fixed copy first, then decide what genuinely needs to vary.
+
+### Links and CTAs
+
+- **WhatsApp links are restricted.** Redirecting to WhatsApp is permitted only when the target
+  is the brand's own verified WhatsApp channel.
+- **Test every CTA link before submitting.** A broken or redirecting target is a rejection.
+
+### Media and landing pages
+
+All media assets — images, videos, cards — and any target website URL must relate directly to
+the registered brand. Anything else requires official supporting documentation from the brand.
+
+### Cross-promotion
+
+Promoting a secondary or third-party brand is prohibited without formal proof of the business
+relationship. Cross-promotional templates submitted without relationship documents are rejected.
+
+### Prohibited content
+
+Obscene, inappropriate, or restricted terminology is prohibited — dating services and friendship
+clubs are explicit examples.
+
+### Political content
+
+Political **awareness** campaigns are permitted. Political **promotional** campaigns are
+restricted on RCS.
+
+## Before you submit
+
+<Steps>
+  <Step title="Confirm the category matches the agent">
+    The agent type, the declared category, and the content must all agree.
+  </Step>
+  <Step title="Put the brand name in the body">
+    Explicitly, and matching the registered brand name.
+  </Step>
+  <Step title="Check the variable layout">
+    `[custom_param]` form, never two variables adjacent, and at least 70% static text.
+  </Step>
+  <Step title="Test every link">
+    Open each CTA and confirm it lands on a brand-owned destination.
+  </Step>
+  <Step title="Check the field limits">
+    Character limits and suggestion counts are enforced separately — see
+    [RCS templates](/api-reference/rcs/templates#field-constraints).
+  </Step>
+</Steps>
+
+<Note>
+For edge cases or anything ambiguous, raise it with your OneXtel account team before submitting
+rather than after a rejection — a rejected template can take a full review cycle to resubmit.
+</Note>
+
+## Related
+
+- [Create RCS templates](/guides/rcs-platform/templates)
+- [RCS templates API](/api-reference/rcs/templates) — field constraints and payload structure
+- [RCS operator error codes](/api-reference/rcs/error-codes)

@@ -1,0 +1,141 @@
+---
+title: "Create a campaign"
+description: "Start a WhatsApp or RCS campaign: set the title and channel, add recipients, and choose the sender and template."
+---
+
+This page covers the first sections of the campaign builder: title and channel, **Recipient
+Details** and **Sender Details**. Then continue with
+[variable mapping](/guides/campaigns/variable-mapping),
+[additional settings](/guides/campaigns/additional-settings) and
+[schedule and launch](/guides/campaigns/schedule-and-launch).
+
+## Start a new campaign
+
+<Steps>
+  <Step title="Open Campaigns">
+    In the left pane, click **Channels**, select **WhatsApp** or **RCS**, then click
+    **Campaigns**. The campaigns dashboard appears.
+  </Step>
+  <Step title="Create the campaign">
+    Click **+ New Campaign**. The New Campaign page opens with a template preview panel on the
+    right.
+  </Step>
+  <Step title="Enter a unique campaign title">
+    Enter the **Campaign Title** and click **Check**. The portal shows an alert if the title
+    already exists.
+
+    Once the title is accepted, the remaining sections (Recipient Details, Sender Details,
+    Variable Mapping, Additional Settings, Batching) open up.
+  </Step>
+  <Step title="Select the channel">
+    Under **Select Channel**, select **WhatsApp** or **RCS**.
+  </Step>
+</Steps>
+
+<Note>
+The template preview on the right stays empty until the sender details are complete.
+</Note>
+
+## Add recipients
+
+Click **Recipient Details**.
+
+<Tabs>
+  <Tab title="WhatsApp">
+    First choose the **Recipient Type**:
+
+    - **Phone Number**: the usual choice.
+    - **BSUID**: Meta's business-scoped user ID, for customers who use a WhatsApp username in
+      place of a visible phone number.
+  </Tab>
+  <Tab title="RCS">
+    RCS recipients are phone numbers.
+  </Tab>
+</Tabs>
+
+Then select one of the three recipient methods:
+
+| Method | How it works |
+| --- | --- |
+| **Copy/Paste** | Enter or paste up to 100,000 phone numbers, separated by commas or new lines, for example `919999999999, 919999999998`. Click **Save** to add them, or **Clear** to remove them. |
+| **Upload** | Click **Browse** and choose a `.txt`, `.csv` or `.xls` file. In the pop-up, select the column that holds the numbers (for example `phone_number`) and click **Confirm Selection**. Extra columns can fill template variables later. |
+| **Phonebook** | Choose a group from the **Phonebook Group** dropdown. Groups are created under [Phonebook](/guides/platform/phonebook). |
+
+### Recipient options
+
+| Option | What it does |
+| --- | --- |
+| **Default Country Code** | Adds the selected country code to every number, for example `+91` for India. Use it when your numbers don't include a country code. |
+| **Remove Duplicate** | Removes repeated numbers across all files and lists, so each recipient gets the message once. On by default. |
+| **Exclude Numbers** | Upload a file of numbers to leave out, such as unsubscribed or blocked contacts. |
+
+## Configure sender details
+
+Click **Sender Details**.
+
+<Tabs>
+  <Tab title="WhatsApp">
+    <Steps>
+      <Step title="Select the WABA ID">
+        Select your WhatsApp Business Account (WABA) ID from the dropdown, then check the ID
+        shown below it. The campaign is sent from this account.
+      </Step>
+      <Step title="Select the template">
+        Choose an approved template that matches the campaign's purpose. Templates in a category
+        your administrator has blocked for your account aren't listed.
+      </Step>
+      <Step title="Select the phone number">
+        Select the sender number from the dropdown, which lists the numbers registered to the
+        selected WABA ID. To send through several numbers, tick **Use number pool** and pick a
+        pool instead. See [Number pools](/guides/whatsapp/phone-numbers#number-pools).
+      </Step>
+    </Steps>
+
+    Templates are created and approved before the campaign. See
+    [Create WhatsApp templates](/guides/whatsapp/templates).
+
+    #### Send without a template (Direct Send)
+
+    If Direct Send is switched on for the WABA, a **Direct Send** tick box appears in Sender
+    Details.
+
+    <Steps>
+      <Step title="Tick Direct Send">
+        Tick **Direct Send**. The **Template** field is greyed out.
+      </Step>
+      <Step title="Build the message">
+        Click **Configure** and build a **Text** or **Interactive** message. The body is
+        required, and an interactive message needs a text or image header. Variables such as
+        `{{Name}}` come from the columns of your uploaded file.
+      </Step>
+    </Steps>
+
+    Direct Send carries utility content only. Check the content first under **Message Sample**.
+    See [Meta Direct Send](/guides/whatsapp/direct-send).
+  </Tab>
+  <Tab title="RCS">
+    <Steps>
+      <Step title="Select the sender profile">
+        Select the brand agent the campaign is sent from. To share the traffic across several
+        profiles, tick **Use sender pool** and pick a
+        [sender pool](/guides/rcs-platform/sender-profiles#sender-pools) instead.
+      </Step>
+      <Step title="Select the message type">
+        Select **Promotional**, **Transactional** or **OTP**, so the campaign follows the rules
+        for that type.
+      </Step>
+      <Step title="Select the template">
+        Select the approved template. Only templates approved for the chosen profile and message
+        type are listed.
+      </Step>
+    </Steps>
+
+    Templates are created and approved before the campaign. See
+    [RCS templates](/guides/rcs-platform/templates).
+  </Tab>
+</Tabs>
+
+## Next step
+
+Continue to [variable mapping](/guides/campaigns/variable-mapping) to fill the template's
+variables.

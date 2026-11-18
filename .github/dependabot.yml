@@ -1,0 +1,19 @@
+# Keeps the pinned GitHub Actions and the PDF builder's npm packages current. Each ecosystem gets
+# one grouped pull request a month; security fixes still arrive as soon as they are published.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /scripts/pdf
+    schedule:
+      interval: monthly
+    groups:
+      pdf-builder:
+        patterns: ["*"]

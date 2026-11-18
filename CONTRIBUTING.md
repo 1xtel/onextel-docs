@@ -1,0 +1,109 @@
+# Contributing to the OneXtel docs
+
+Anything merged here publishes to the live docs site within a few minutes. So every change goes
+through a pull request, and `main` takes no direct commits.
+
+## The flow
+
+1. **Branch.** `git checkout -b sms/dlr-codes` — name it after what you are changing.
+2. **Write.** Follow `STYLE_GUIDE.md`. It is the standard reviewers apply.
+3. **Check it yourself**, before anyone reads it:
+
+   ```bash
+   vale api-reference guides plugins legacy index.mdx   # house style
+   npx -y mint@4.2.917 validate                         # build, frontmatter, nav
+   npx -y mint@4.2.917 broken-links                     # internal links
+   npx -y mint@4.2.917 dev                              # preview at localhost:3000
+   ```
+
+   Install Vale once with `brew install vale`. It reads `.vale.ini` in this repo.
+4. **Open a pull request.** Fill in the template: what changed, where the facts came from, and
+   what you checked.
+5. **Checks run automatically** on every pull request, whoever opened it:
+   - **House style (Vale)** — terminology, marketing language, minimisers. Errors block the merge.
+   - **Build and links (Mintlify)** — a broken link or bad frontmatter blocks the merge.
+   - **Brand voice review** — reads the diff and suggests up to five tone fixes, quoting the
+     phrase and a replacement. Advisory: it comments and never fails the pull request. If it
+     can't run, the check shows a warning and the docs were not judged.
+   - **Docs PDF** — builds the whole site into one PDF and attaches it to the run, so you can
+     see how your pages print. Advisory. Every merge to `main` is a release: the same build
+     publishes the next version, and the site's **Download PDF** button serves it.
+6. **Get one approval**, then merge. Delete the branch.
+
+## Release notes
+
+`guides/release-notes.mdx` lists what has shipped, newest first. When a feature you own reaches
+production, add an entry at the top, in the same pull request as its docs or on the day it goes
+live:
+
+```mdx
+<Update label="16 November 2026" description="MoEngage: WhatsApp to RCS fallback" tags={["WhatsApp", "RCS", "Connectors"]}>
+  One or two sentences: what the reader can now do.
+
+  - Two to four bullets on what it includes or what changes for them.
+
+  [Link to the guide](/plugins/moengage#add-rcs-fallback-optional)
+</Update>
+```
+
+- **`label`** is the date it went live in production, written `16 November 2026`. Not the date
+  the docs merged.
+- **`description`** names the product or connector, then the change.
+- **`tags`** come from this list, so the filter stays short: `WhatsApp`, `RCS`, `SMS`,
+  `WhatsApp Voice`, `Connectors`, `API`, `Portal`.
+- **Only what customers notice**: new features, connectors, API changes, removals and changes
+  they must act on. Docs edits, fixes to our own wording and internal releases stay out.
+- **Every entry links** to the page that explains it, so the entry stays short.
+
+## The PDF
+
+`scripts/pdf/build.mjs` prints every page in the navigation, in order, except the archived
+APIs and any page with `pdf: false` in its frontmatter (WhatsApp Voice troubleshooting, for
+example). Those pages stay on the site, and links to them in the PDF open the live page. Tabs, steps and expandable fields print in full, and API pages built from an OpenAPI spec
+print their parameters and responses. Imported `.mdx` snippets print their content where they are
+used; `.jsx` snippets are interactive, so the PDF points to the page on the site instead. To build
+it yourself:
+
+```bash
+cd scripts/pdf && npm ci && npx playwright install chromium && cd ../..
+node scripts/pdf/build.mjs        # writes .pdf-build/OneXtel_Documentation_<version>-draft.pdf
+```
+
+A component the builder has no mapping for prints its content and a warning in the build log.
+
+The PDF follows the OneXtel brand guidelines: Open Sans, the brand palette only, the wordmark at no less
+than 25 mm, and the brand curve on the cover and section pages. The palette lives in `scripts/pdf/style.css`
+and in `BRAND` in `build.mjs`; change both together.
+
+### Versions
+
+Each release of the docs has a version, shown in the PDF's file name, on its cover and in every
+page footer: `OneXtel_Documentation_1.0.pdf`, then `1.0.1`, `1.0.2` and so on. Every merge to `main`
+adds one to the last number and publishes that version as its own GitHub release (`docs-v1.0.2`).
+Earlier versions stay downloadable from the releases page.
+
+`VERSION`, in the repo root, holds the first two numbers. Raise it by pull request when the docs
+move on: `1.1` for a significant update, `2.0` for a new platform. The next release is then `1.1`,
+and the count starts again from there.
+
+## What reviewers check
+
+- **Is it true?** Endpoints, parameters, codes and limits match the live API or a named source.
+  Anything unverified says so.
+- **Does it read like the rest of the docs?** Second person, present tense, no marketing register,
+  consequences stated plainly.
+- **Is it in the right place?** One page, one job, and the navigation in `docs.json` updated.
+- **Would someone finish the task?** Steps in the order the reader does them, with what to check
+  at the end.
+
+## Facts before prose
+
+These pages are pasted into production code. Never guess a parameter name, an enum value, an
+error code or a limit. Where a vendor document and the live API disagree, document the live
+behaviour. Where something cannot be confirmed, write what is known, say what is not, and record
+the gap in the internal review notes rather than filling it with something plausible.
+
+## Things that are not documentation
+
+Screenshots go in `images/`, referenced with `<Frame>`. Keep API keys, customer names, real
+recipient numbers and internal hostnames out of this repo entirely — it is public.

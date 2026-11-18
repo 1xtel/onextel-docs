@@ -1,0 +1,179 @@
+---
+title: "RCS Templates"
+description: "Create and manage pre-approved RCS message templates in the OneXtel platform."
+---
+
+
+<Note>
+Before you write a template, check the
+[template guidelines](/guides/rcs-platform/template-guidelines) — category rules, the 70% static
+text requirement, and the checks that cause rejection.
+</Note>
+The Templates section manages predefined message formats for OneXtel RCS
+communication. Templates ensure consistency, compliance, and faster
+delivery of business messages. RCS templates help businesses create
+structured, interactive messages that are reviewed and approved before
+being sent to end-users, ensuring both quality and compliance.
+
+<Note>
+  This page covers creating and managing templates in the portal. For
+  using a template inside a campaign (variable mapping, recipients,
+  scheduling), see [RCS Campaigns](/guides/campaigns/overview).
+</Note>
+
+## View templates
+
+<Steps>
+  <Step title="Open Channels > RCS">
+    In the left pane, click **Channels**, then select **RCS**.
+  </Step>
+  <Step title="Open Templates">
+    Click **Asset Management**, then the **Templates** subtab. Pick the
+    **Profile** and **Message Type** at the top.
+  </Step>
+  <Step title="Export the list (optional)">
+    Click **Download** to export the list.
+  </Step>
+</Steps>
+
+| Column | Description |
+|---|---|
+| **Template Name** | The unique name of the template. |
+| **Type** | **Text Message**, **Rich Card Stand Alone** or **Rich Card Carousel**. |
+| **Status** | **Pending** (waiting for approval), **Approved** (ready to use) or **Rejected**. |
+
+Use **Filter** to search the list. Each template's **⋮** menu has:
+
+| Action | What it does |
+|---|---|
+| **Clone** | Copy the template as the start of a new one |
+| **Preview** | See how it looks on a phone |
+| **Generate cURL** | Show a ready-made API request for this template, for your developers to copy |
+| **Delete** | Remove the template |
+
+<Note>
+  RCS templates can't be edited. To change one, **Clone** it, make the
+  change, and submit the copy for approval.
+</Note>
+
+## Add a template
+
+<Steps>
+  <Step title="Open Templates">
+    Go to **Channels > RCS > Asset Management > Templates**.
+  </Step>
+  <Step title="Start a new template">
+    Click **+Add Template**. The Add Template form is displayed.
+  </Step>
+  <Step title="Choose the approval scope">
+    - **Individual**: pick the **Profile** and **Message Type**.
+    - **Pool**: pick a [sender pool](/guides/rcs-platform/sender-profiles#sender-pools).
+      The template is submitted for every profile in the pool.
+  </Step>
+  <Step title="Name the template">
+    Enter the **Template Name/Code**: letters, numbers and underscores only,
+    up to 20 characters.
+  </Step>
+  <Step title="Allow text formatting (optional)">
+    Tick **Text Formatting** to allow bold, italic and strikethrough in the
+    text, including in variables.
+  </Step>
+  <Step title="Choose the type and fill in the content">
+    See the fields below.
+  </Step>
+  <Step title="Add buttons (optional)">
+    Click **+ Add Suggestion** — see [Suggested actions](#suggested-actions-and-reply-buttons).
+  </Step>
+  <Step title="Set the TTL (optional)">
+    **TTL** sets how long the operator keeps trying to deliver — for example
+    `45m`, `2h` or `30d`. A campaign or API call can override it.
+  </Step>
+</Steps>
+
+### Template types
+
+| Template type | Fields |
+|---|---|
+| **Text Message** | Message content, up to 2,500 characters, with variables. |
+| **Rich Card Stand Alone** | **Card Orientation** (Vertical or Horizontal), **Media Height** (Short or Medium), **Media** (image, video or PDF), **Card Title** (up to 200 characters), **Card Description** (up to 2,000 characters). |
+| **Rich Card Carousel** | Two or more cards. For the carousel: **Card Width** (Small or Medium) and **Media Height** (Short or Medium). For each card: media, title, description and its own buttons. |
+
+### Media
+
+The **Upload** button opens **Select Media**, with three sources:
+
+- **Upload**: drag and drop or browse for a file. Unsupported image formats
+  are converted to JPEG, and an animated GIF asks how to convert it.
+- **Upload from URL**: a public link to the file.
+- **Variable Media URL**: choose Image, Video or PDF and enter a base URL
+  ending in a variable, for example `https://example.com/offers/[event]`.
+  The variable is filled at send time from the campaign or API call, and the
+  final link must be public.
+
+The image rules depend on the card settings, and the builder shows them
+under **Media** as you choose.
+
+| Card | Settings | Image ratio, best size, max | Video max |
+|---|---|---|---|
+| Stand Alone | Vertical, Short height | 3:1, 1440 × 480 px, 2 MB | 10 MB |
+| Stand Alone | Vertical, Medium height | 2:1, 1440 × 720 px, 2 MB | 10 MB |
+| Stand Alone | Horizontal | 3:4, 768 × 1024 px, 2 MB | 10 MB |
+| Carousel | Small width, Short height | 5:4, 960 × 720 px, 1 MB | 5 MB |
+| Carousel | Small width, Medium height | 4:5, 576 × 720 px, 1 MB | 5 MB |
+| Carousel | Medium width, Short height | 2:1, 1440 × 720 px, 1 MB | 5 MB |
+| Carousel | Medium width, Medium height | 4:3, 1440 × 1080 px, 1 MB | 5 MB |
+
+- **PDF**: up to 10 MB on any card.
+- **Formats**: images JPEG, JPG, PNG or GIF (other formats are converted);
+  videos MP4 or MPEG.
+- **Image fit**: **Cropper** (recommended) crops the image to the required
+  ratio. **Original** sends the image as it is, and the phone crops it.
+- **Video thumbnail**: JPEG, JPG or PNG, about 40 KB and no more than
+  100 KB. It uses the card's ratio, except a Vertical Medium stand-alone card
+  (7:3) and a Horizontal card (25:33).
+
+<Warning>
+  If you change the orientation, width or height after uploading, check the
+  image still fits the new ratio. The builder reminds you, but a wrongly
+  sized image is cropped on the phone.
+</Warning>
+
+### Suggested actions and reply buttons
+
+Each suggestion has a **Suggestion Text** (the button label, up to 25
+characters) and a **Suggestion Postback** (up to 120 characters), which is
+sent back to you when the customer taps it. Use **Add Variable** to put
+variables in either.
+
+| Type of action | What it does |
+|---|---|
+| **Reply** | Sends a quick reply back to you. |
+| **Dialer Action** | Opens the phone dialler with a number. |
+| **URL Action** | Opens a web link. **Application** sets how: **Browser**, or in-app **Webview-Full**, **Webview-Half** or **Webview-Tall**. |
+| **Dynamic Link Tracking** | A short tracked link (domain plus variable), so clicks show in URL reports. |
+| **View Location (Lat/Long)** / **View Location (Query)** | Opens a map pin. |
+| **Share Location** | Asks the customer to share their location. |
+| **Calendar Event** | Adds an event to the customer's calendar. |
+
+## Submit for approval
+
+<Steps>
+  <Step title="Submit">
+    Click **Submit for Approval**.
+  </Step>
+  <Step title="Confirm">
+    In the confirmation pop-up, mark the checkbox and click **Submit**.
+  </Step>
+</Steps>
+
+Who approves the template depends on the operator of the sender profile:
+
+| Operator | Approval |
+|---|---|
+| **Vi** | The template goes straight to Vi for approval. |
+| **Jio** | The template waits as **Pending** until your tenant administrator approves it. If Template Auto Approval is switched on for your account, it is approved automatically within about 2 minutes. |
+
+Before you submit, check the content rules in the
+[template guidelines](/guides/rcs-platform/template-guidelines): the brand
+name in the body, at least 70% fixed text, no two variables side by side,
+and the message type that matches the content.

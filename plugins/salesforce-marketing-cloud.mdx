@@ -1,0 +1,172 @@
+---
+title: "Salesforce Marketing Cloud"
+description: "Send SMS and WhatsApp from Journey Builder through OneXtel, with delivery reports written to data extensions and channel fallback via decision splits."
+---
+
+The Salesforce Marketing Cloud plugin adds SMS and WhatsApp as Journey Builder activities.
+Journeys are built exactly as they are today; OneXtel handles delivery, and message reports
+land in data extensions inside your own Marketing Cloud instance.
+
+Because delivery status is returned as a journey activity rather than only as a report, you can
+branch on it — checking whether WhatsApp delivered and falling back to SMS in the same journey.
+
+## Scope
+
+<CardGroup cols={2}>
+  <Card title="Journey Builder activities" icon="diagram-project">
+    Four activities: Send SMS, Send WhatsApp, Check DLR SMS, and Check DLR WhatsApp.
+  </Card>
+  <Card title="Multiple accounts" icon="users">
+    Add multiple SMS and WhatsApp credentials and pick the account per activity.
+  </Card>
+  <Card title="Reports in data extensions" icon="table">
+    Delivery and inbound data is written to data extensions under Contact Builder.
+  </Card>
+  <Card title="Channel fallback" icon="shuffle">
+    Branch on delivery status with a decision split to retry a failed message on another
+    channel.
+  </Card>
+</CardGroup>
+
+### Supported message types
+
+| Type | SMS | WhatsApp |
+| --- | :---: | :---: |
+| Text | ✅ | ✅ |
+| Free-form | — | ✅ |
+| Media header — image, video, document | — | ✅ |
+| Quick Reply buttons | — | ✅ |
+| Copy Code buttons | — | ✅ |
+| Carousel | — | ✅ |
+| Limited Time Offer (LTO) | — | ✅ |
+| Inbound | — | ✅ |
+
+## Setup
+
+You need your Marketing Cloud **MID** (account ID), shown in the top-right corner of the SFMC
+interface, and the connector base URL, which OneXtel provides during onboarding. Both appear in
+the URLs below as `{MID}` and `{connectorBaseUrl}`.
+
+<Steps>
+  <Step title="Deploy the reports data extensions">
+    Go to **Dashboard → Package Manager → Deployment**, upload the JSON file supplied by
+    OneXtel, and click **Done**. This creates the data extensions that carry message and
+    delivery data from OneXtel into your instance.
+  </Step>
+  <Step title="Create an installed package">
+    Go to **Dashboard → Profile → Setup → Apps → Installed Packages → New**. Enter a name and
+    description, then save.
+
+    Open the package and choose **Add Component → API Integration → Server-to-Server**, with
+    these scopes:
+
+    | Scope | Permissions |
+    | --- | --- |
+    | Automation | Enabled |
+    | Journey | Read, Write, Execute |
+    | Data | Enabled |
+    | Data Extension | Read, Write |
+
+    Save, then copy the generated **Client ID** and **Client Secret** and store them securely.
+  </Step>
+  <Step title="Add the Marketing Cloud App component">
+    In the same installed package, choose **Add Component → Marketing Cloud App**. Enter a name
+    and description, and set the login endpoint URL to:
+
+    ```
+    {connectorBaseUrl}/{MID}
+    ```
+
+    Save.
+  </Step>
+  <Step title="Add the Journey Builder activities">
+    In the same installed package, choose **Add Component → Journey Builder Activity** and
+    create these four, saving after each:
+
+    | Activity name | URL |
+    | --- | --- |
+    | Send SMS Messages | `{connectorBaseUrl}/api/salesforce/sms/{MID}` |
+    | Send WhatsApp Messages | `{connectorBaseUrl}/api/salesforce/whatsapp/{MID}` |
+    | Check DLR SMS Messages | `{connectorBaseUrl}/api/salesforce/sms/dlr/{MID}` |
+    | Check DLR WhatsApp Messages | `{connectorBaseUrl}/api/salesforce/whatsapp/dlr/{MID}` |
+  </Step>
+  <Step title="Configure the OneXtel app">
+    Go to **Dashboard → AppExchange → Your App → App Setup** and enter the API credentials from
+    step 2: Client ID, Client Secret, Auth Base URL, REST Base URL, and JWT Signing Secret.
+  </Step>
+  <Step title="Add channel credentials">
+    Under **SMS Configuration** and **WhatsApp Configuration**, add your OneXtel API keys. Each
+    generates a DLR URL — copy it and register it as the delivery callback in OneXtel. For
+    WhatsApp, also copy the inbound URL and configure it in your OneXtel account.
+  </Step>
+</Steps>
+
+## Build a journey
+
+<Steps>
+  <Step title="Set the entry source">
+    In **Journey Builder**, select the data extension that supplies your audience.
+  </Step>
+  <Step title="Add a send activity">
+    Drag in **Send SMS** or **Send WhatsApp** and set the activity name, the account, and the
+    phone field from the entry source attributes. Select your template and map any variables
+    from the dropdown.
+
+    For WhatsApp you can add a media header and body text with variables, map variables in the
+    header, body, or buttons, enter a media URL for media headers, and set an expiry date for
+    LTO templates. Quick Reply buttons take a payload; Copy Code buttons take a code value.
+    Carousel cards are configured card by card, each with its own header, body, and buttons.
+  </Step>
+  <Step title="Add a DLR check">
+    Drag in **Check DLR SMS** or **Check DLR WhatsApp**, name it, select the account, and point
+    it at the send activity whose status you want to read.
+  </Step>
+  <Step title="Wait before checking">
+    Insert a wait of **at least two minutes** before each DLR activity. Checking sooner returns
+    an incomplete status.
+  </Step>
+  <Step title="Branch on the result">
+    Add a decision split after the DLR activity and configure paths from the out-arguments it
+    returns. This is how you route failed messages to another channel.
+  </Step>
+  <Step title="Activate">
+    Click **Activate**. The journey begins executing and messages start sending.
+  </Step>
+</Steps>
+
+<Warning>
+Without a wait of two minutes or more before a DLR activity, the delivery status will not have
+settled and your decision splits will branch on incomplete data.
+</Warning>
+
+## Viewing reports
+
+Delivery and inbound data is written to data extensions under
+**Audience Builder → Contact Builder → Data Extensions**:
+
+| Data extension | Contents |
+| --- | --- |
+| `Onextel_SMS_Message_Report` | SMS delivery status |
+| `Onextel_WhatsApp_Message_Report` | WhatsApp delivery status and inbound messages |
+
+## Requirements
+
+- A Marketing Cloud instance with Journey Builder, Package Manager, and Contact Builder access.
+- A OneXtel account with SMS and/or WhatsApp enabled.
+- Approved templates in OneXtel.
+- The reports data extension JSON and the connector base URL, both supplied by OneXtel.
+
+## Limitations
+
+- **SMS and WhatsApp only.** RCS is not yet available on this plugin — see
+  [Coming soon](/plugins/overview#coming-soon).
+- **A reports and dashboard module is in development.** Until it ships, delivery data is read
+  from the data extensions directly rather than through a built-in dashboard.
+- **DLR is a polled activity, not a push.** Status is read when the journey reaches the DLR
+  activity, so a contact's status is only as current as the last check.
+
+## Related
+
+- [Salesforce Sales & Service Cloud plugin](/plugins/salesforce)
+- [WhatsApp error codes](/api-reference/whatsapp/error-codes)
+- [All plugins](/plugins/overview)

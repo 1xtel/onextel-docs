@@ -1,0 +1,121 @@
+---
+title: "API Keys"
+description: "Generate and manage the API keys that authenticate API calls, plugin connections, and callback registrations."
+---
+
+An API key authenticates everything that talks to OneXtel from outside the portal — direct
+[API](/api-reference/whatsapp/overview) calls, every [plugin](/plugins/overview), and the
+[callbacks](/guides/platform/callback-configuration) that report delivery back to you.
+
+Each key has an **Account Type** that decides which traffic it carries — WhatsApp, RCS, or one of
+the SMS types. Use a separate key for each channel and each integration.
+
+<Note>
+Callbacks are registered **against a specific key**. Messages sent with a key that has no
+callback registered will send perfectly well and report nothing back — so if you issue a second
+key for a new integration, remember to register its callbacks too.
+</Note>
+
+## Generate a key
+
+<Steps>
+  <Step title="Open the API tab">
+    In the left pane, click the **API** menu, then click the **API** tab.
+  </Step>
+  <Step title="Generate">
+    Click **+ Generate API**.
+  </Step>
+  <Step title="Name and describe the key">
+    Enter a **Name** and a **description**.
+
+    Write a real description. A key labelled only by its creation date is impossible to retire
+    safely later, because nobody can tell what would break.
+  </Step>
+  <Step title="Set the account type">
+    Select the **Account Type** for this key:
+
+    | Channel | Account Type |
+    | --- | --- |
+    | WhatsApp | WhatsApp |
+    | RCS | RCS |
+    | SMS | Government, OTP, Promotional, Service Explicit or Service Implicit |
+  </Step>
+  <Step title="Set the optional controls">
+    | Option | Effect |
+    | --- | --- |
+    | Duplicate Check | Rejects the same message to the same number sent again within a short time |
+    | Match Template | Requires outbound content to match an approved template |
+    | IP Whitelist | Restricts use of the key to approved source IP addresses |
+    | Scrub DND | SMS only. Filters recipients registered on Do Not Disturb |
+    | PE-TM Settings | SMS only. Permits only DLT-approved messages |
+  </Step>
+  <Step title="Submit">
+    Click **Submit**. The platform generates the API key.
+  </Step>
+</Steps>
+
+<Warning>
+**Account type cannot be changed once the key is created.** If you pick the wrong type you will
+need to generate a replacement key and re-point every integration using it — including its
+callback registrations. Confirm the type before submitting.
+</Warning>
+
+<Note>
+**IP Whitelist** is the single most effective control here — a leaked key is unusable from an
+unapproved address. Set it for any key used by a fixed server. For [DLT-regulated
+sending](/guides/sms/dlt) in India, enable **PE-TM Settings** so unregistered content is
+rejected at the platform rather than by the operator.
+</Note>
+
+## View keys
+
+In the left pane, click the **API** menu, then the **API** tab, and click **Show API**. The list
+shows each key's **Name**, **Key**, **Account Type**, **Description**, **Match Template**,
+**Duplicate Check** and **Status**.
+
+<Frame caption="API keys">
+  <img src="/images/platform/api-keys.png" alt="API page with Show API and Generate API actions" />
+</Frame>
+
+## Edit a key
+
+<Steps>
+  <Step title="Open the API list">
+    Click **API**, then **Show API** to display the keys and their details.
+  </Step>
+  <Step title="Open the edit action">
+    In the **Action** column, click the ellipsis (**...**) icon.
+  </Step>
+  <Step title="Save">
+    Make your changes and click **Submit**.
+  </Step>
+</Steps>
+
+## Delete a key
+
+<Steps>
+  <Step title="Open the API list">
+    Click **API**, then **Show API** to display the keys and their details.
+  </Step>
+  <Step title="Delete">
+    In the **Action** column, click the **Delete** icon.
+  </Step>
+  <Step title="Submit">
+    Click **Submit**.
+  </Step>
+</Steps>
+
+<Warning>
+Treat a key like a password. Never paste it into tickets, chats or screenshots.
+</Warning>
+
+<Warning>
+Deleting a key immediately breaks every integration authenticating with it, and its registered
+callbacks stop firing. Check which plugins and applications use a key before removing it.
+</Warning>
+
+## Related
+
+- [Callback configuration](/guides/platform/callback-configuration)
+- [Plugins overview](/plugins/overview)
+- [Platform overview](/guides/platform/overview)

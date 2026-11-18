@@ -1,0 +1,13 @@
+---
+title: "Campaign report"
+description: "Funnel, rates, timings, clicks and failure reasons for a campaign."
+openapi: "/api-reference/truecaller/openapi.yaml GET /v1/campaigns/{id}/report"
+---
+
+- **`timing`**: average and median seconds to deliver, read and click, measured from when
+  Truecaller accepted each message.
+- **`clicks.by_button`**: taps per button and on links in the text. Taps on link buttons and quick
+  replies are reported by Truecaller; links are counted through a short redirect when
+  `track_links` is on.
+- **`categories`**: failed and skipped messages grouped by reason. See
+  [Errors](/api-reference/truecaller/errors).

@@ -1,0 +1,99 @@
+---
+title: "Detail Reports"
+description: "Message-level outgoing template, non-template, incoming, and URL click reports for RCS, and how to download large date ranges."
+---
+
+The **Detail Report** (**Channels > RCS > Reports > Detail Report**) gives
+one row per message. For totals, see
+[Summary Reports](/guides/rcs-platform/reports-summary).
+
+## Open a detail report
+
+<Steps>
+  <Step title="Open Channels > RCS > Reports">
+    In the left pane, click **Channels**, select **RCS**, click the
+    **Reports** tab, then **Detail Report**.
+  </Step>
+  <Step title="Pick the tab">
+    Click **Outgoing Template**, **Outgoing Non-Template**, **Incoming** or
+    **URL**.
+  </Step>
+  <Step title="Set the filters">
+    Pick the **Date & Time** and the **TUC**.
+  </Step>
+  <Step title="Download">
+    Click **Download**. For a large date range, the file is prepared in the
+    [Download Center](#download-center).
+  </Step>
+</Steps>
+
+## Outgoing Template
+
+One row per template message you sent.
+
+| Column | Description |
+|---|---|
+| **Date, Time, Timezone** | When the message was sent. |
+| **UserName** | The user who sent it. |
+| **Sender Profile** | The profile it was sent from. When you send through a sender pool, this is the actual profile used. |
+| **Campaign Name** | The campaign, for campaign traffic. |
+| **Message ID** | The unique ID of the message. |
+| **Customer Number** | The recipient's mobile number. |
+| **Country** | The recipient's country. |
+| **Template Name** | The template used. |
+| **Category** | **Basic** or **Rich** — how the message is billed. |
+| **Message Type** | Promotional, Transactional or OTP. |
+| **Type** | `text`, `rich_card` or `carousel`. |
+| **Source, API Name** | API or campaign, and the API name for API traffic. |
+| **Status** | The latest status — see [message statuses](/guides/rcs-platform/reports-summary#message-statuses). |
+| **URL Click, Button Click** | Whether the customer clicked a link or a button. |
+| **Status timestamps** | When the message was submitted, sent, delivered, read or failed. |
+| **Error Title, Error Code** | Why a failed message failed — see [RCS error codes](/api-reference/rcs/error-codes). |
+| **Custom Param 1 to 5** | The custom reference values you set on the send. |
+
+## Outgoing Non-Template
+
+One row per message sent without a template: Date, Time, Timezone, Sender
+Profile, Message ID, Customer Number, Country, Category, Message Type,
+Type, Source, API Name, Status, status timestamps, Error Title and Error
+Code.
+
+## Incoming
+
+One row per message a customer sent you.
+
+| Column | Description |
+|---|---|
+| **Date, Time, Timezone** | When the message arrived. |
+| **Message ID** | The unique ID of the incoming message. |
+| **Message Type** | The message type of the profile it reached. |
+| **Sender Profile** | The profile the customer replied to. |
+| **Customer Number** | The customer's mobile number. |
+| **Context ID** | The message the customer was replying to. |
+| **Country** | The customer's country. |
+| **Message Content** | What the customer sent. |
+| **Selection Type, Selection Payload** | For a button tap: the kind of suggestion, and the postback you set on it. |
+
+## URL
+
+One row per click on a tracked link: Date, Time, Timezone, UserName,
+Sender Phone Number, Original URL, Short URL, Click Time, Sender Profile,
+Message ID, Template Name, Campaign Name, Country, Browser, Operating
+System, IP Address, Location and Cust Param 1 to 5.
+
+When billing is switched on for your account, the reports also show a
+billing column for each message.
+
+## Download Center
+
+Large date ranges are prepared in the background. Request the download from
+the report, then open **Download Center**. Filter by **Date & Time**,
+**Status** and **Requested By**. The list shows **Report Name**, **Filter
+Applied**, **Requested By**, **Requested On**, **Report Date Range** and
+**Status**.
+
+| Status | What to do |
+|---|---|
+| `IN_PROGRESS` | Wait |
+| `COMPLETED` | Download the `.zip` from **Action** |
+| `FAILED` or `TIMEOUT` | Request it again, or with a shorter date range |

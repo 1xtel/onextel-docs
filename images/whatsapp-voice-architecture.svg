@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" role="img" aria-labelledby="t d" font-family="Montserrat, 'Segoe UI', Arial, sans-serif">
+  <title id="t">WhatsApp Voice architecture</title>
+  <desc id="d">A customer's WhatsApp call goes to Meta, then to the OneXtel WhatsApp Voice gateway over SIP on TLS with encrypted audio, and is delivered to any third-party voice platform, including voice AI agents, over SIP and RTP.</desc>
+  <defs>
+    <marker id="aNavy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#252e6a"/></marker>
+    <marker id="aRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#D72327"/></marker>
+    <marker id="aRedStart" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#D72327"/></marker>
+    <marker id="aGrey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8a8fa3"/></marker>
+  </defs>
+
+  <rect x="1" y="1" width="1198" height="598" rx="16" fill="#ffffff" stroke="#e6e7e8" stroke-width="2"/>
+  <text x="40" y="52" font-size="13" font-weight="600" letter-spacing="2.2" fill="#5c6178">WHATSAPP VOICE · INBOUND CALL PATH</text>
+
+  <!-- Customer -->
+  <rect x="24" y="190" width="150" height="150" rx="12" fill="#ffffff" stroke="#252e6a" stroke-width="2"/>
+  <rect x="87" y="206" width="24" height="42" rx="5" fill="none" stroke="#252e6a" stroke-width="2.5"/>
+  <line x1="94" y1="239" x2="104" y2="239" stroke="#252e6a" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="99" y="279" text-anchor="middle" font-size="15" font-weight="700" fill="#14172b">Customer</text>
+  <text x="99" y="299" text-anchor="middle" font-size="12" fill="#5c6178">WhatsApp app</text>
+  <text x="99" y="316" text-anchor="middle" font-size="12" fill="#5c6178">iPhone · Android</text>
+
+  <!-- Meta -->
+  <rect x="250" y="190" width="150" height="150" rx="12" fill="#ffffff" stroke="#252e6a" stroke-width="2"/>
+  <text x="325" y="262" text-anchor="middle" font-size="18" font-weight="700" fill="#14172b">Meta</text>
+  <text x="325" y="284" text-anchor="middle" font-size="12" fill="#5c6178">WhatsApp</text>
+  <text x="325" y="301" text-anchor="middle" font-size="12" fill="#5c6178">Business Calling</text>
+
+  <!-- Gateway (drawn before the arrows so they run on top of it) -->
+  <rect x="560" y="95" width="300" height="420" rx="16" fill="#dae6f1"/>
+  <text x="710" y="128" text-anchor="middle" font-size="14" font-weight="700" fill="#252e6a">OneXtel WhatsApp Voice gateway</text>
+
+  <rect x="584" y="160" width="252" height="100" rx="10" fill="#ffffff"/>
+  <text x="710" y="190" text-anchor="middle" font-size="15" font-weight="700" fill="#252e6a">SIP edge</text>
+  <text x="710" y="214" text-anchor="middle" font-size="12" fill="#5c6178">Authenticates Meta's calls</text>
+  <text x="710" y="232" text-anchor="middle" font-size="12" fill="#5c6178">Routing to your trunk · failover</text>
+
+  <rect x="584" y="280" width="252" height="100" rx="10" fill="#ffffff"/>
+  <text x="710" y="310" text-anchor="middle" font-size="15" font-weight="700" fill="#252e6a">Media relay</text>
+  <text x="710" y="334" text-anchor="middle" font-size="12" fill="#5c6178">SRTP ⇄ RTP</text>
+  <text x="710" y="352" text-anchor="middle" font-size="12" fill="#5c6178">Opus ⇄ G.711 conversion</text>
+
+  <rect x="584" y="400" width="252" height="92" rx="10" fill="#ffffff"/>
+  <text x="710" y="430" text-anchor="middle" font-size="15" font-weight="700" fill="#252e6a">Control &amp; call records</text>
+  <text x="710" y="454" text-anchor="middle" font-size="12" fill="#5c6178">Numbers · trunks · monitoring</text>
+  <text x="710" y="472" text-anchor="middle" font-size="12" fill="#5c6178">Console · audit log</text>
+
+  <!-- Voice platform -->
+  <rect x="980" y="190" width="196" height="150" rx="12" fill="#ffffff" stroke="#252e6a" stroke-width="2"/>
+  <text x="1078" y="238" text-anchor="middle" font-size="16" font-weight="700" fill="#14172b">Any third-party</text>
+  <text x="1078" y="259" text-anchor="middle" font-size="16" font-weight="700" fill="#14172b">voice platform</text>
+  <text x="1078" y="288" text-anchor="middle" font-size="12" fill="#5c6178">IVR · contact centre</text>
+  <text x="1078" y="306" text-anchor="middle" font-size="12" font-weight="600" fill="#252e6a">Voice AI agents</text>
+
+  <!-- Your systems (dashed, outside OneXtel's scope) -->
+  <rect x="980" y="420" width="196" height="72" rx="10" fill="#ffffff" stroke="#8a8fa3" stroke-width="2" stroke-dasharray="7 6"/>
+  <text x="1078" y="452" text-anchor="middle" font-size="14" font-weight="700" fill="#5c6178">Business systems</text>
+  <text x="1078" y="472" text-anchor="middle" font-size="11.5" fill="#5c6178">integrated by the platform</text>
+  <line x1="1078" y1="340" x2="1078" y2="418" stroke="#8a8fa3" stroke-width="2.5" stroke-dasharray="7 6" marker-end="url(#aGrey)"/>
+
+  <!-- Arrows (on top) -->
+  <!-- Customer to Meta -->
+  <line x1="174" y1="265" x2="248" y2="265" stroke="#252e6a" stroke-width="3" marker-end="url(#aNavy)"/>
+  <text x="211" y="251" text-anchor="middle" font-size="11.5" font-weight="600" fill="#252e6a">WhatsApp</text>
+  <text x="211" y="285" text-anchor="middle" font-size="11.5" font-weight="600" fill="#252e6a">call</text>
+
+  <!-- Meta to gateway -->
+  <line x1="400" y1="215" x2="582" y2="215" stroke="#252e6a" stroke-width="3" marker-end="url(#aNavy)"/>
+  <text x="480" y="203" text-anchor="middle" font-size="11.5" font-weight="600" fill="#252e6a">SIP over TLS</text>
+  <text x="480" y="236" text-anchor="middle" font-size="10.5" fill="#5c6178">digest authentication</text>
+  <line x1="400" y1="320" x2="582" y2="320" stroke="#D72327" stroke-width="3.5" marker-start="url(#aRedStart)" marker-end="url(#aRed)"/>
+  <text x="480" y="308" text-anchor="middle" font-size="11.5" font-weight="600" fill="#D72327">Audio</text>
+  <text x="480" y="342" text-anchor="middle" font-size="10.5" fill="#5c6178">SRTP · Opus</text>
+
+  <!-- Gateway to platform -->
+  <line x1="836" y1="215" x2="978" y2="215" stroke="#252e6a" stroke-width="3" marker-end="url(#aNavy)"/>
+  <text x="907" y="203" text-anchor="middle" font-size="11.5" font-weight="600" fill="#252e6a">SIP</text>
+  <text x="907" y="236" text-anchor="middle" font-size="10.5" fill="#5c6178">UDP · TCP · TLS</text>
+  <line x1="836" y1="320" x2="978" y2="320" stroke="#D72327" stroke-width="3.5" marker-start="url(#aRedStart)" marker-end="url(#aRed)"/>
+  <text x="907" y="308" text-anchor="middle" font-size="11.5" font-weight="600" fill="#D72327">Audio</text>
+  <text x="907" y="342" text-anchor="middle" font-size="10.5" fill="#5c6178">RTP / SRTP</text>
+  <text x="907" y="357" text-anchor="middle" font-size="10.5" fill="#5c6178">G.711 · Opus</text>
+
+  <!-- Configuration to Meta (dashed) -->
+  <path d="M584 446 H325 V342" fill="none" stroke="#8a8fa3" stroke-width="2.5" stroke-dasharray="7 6" marker-end="url(#aGrey)"/>
+  <text x="338" y="470" font-size="11.5" font-weight="600" fill="#5c6178">Graph API</text>
+  <text x="338" y="486" font-size="10.5" fill="#5c6178">calling &amp; SIP settings</text>
+
+  <!-- Legend -->
+  <line x1="40" y1="548" x2="80" y2="548" stroke="#252e6a" stroke-width="3" marker-end="url(#aNavy)"/>
+  <text x="92" y="552" font-size="12" fill="#14172b">Call signalling</text>
+  <line x1="240" y1="548" x2="280" y2="548" stroke="#D72327" stroke-width="3.5"/>
+  <text x="292" y="552" font-size="12" fill="#14172b">Audio, both directions</text>
+  <line x1="480" y1="548" x2="520" y2="548" stroke="#8a8fa3" stroke-width="2.5" stroke-dasharray="7 6"/>
+  <text x="532" y="552" font-size="12" fill="#14172b">Configuration and external systems</text>
+  <text x="1160" y="552" text-anchor="end" font-size="11.5" fill="#5c6178">Inbound calls only</text>
+</svg>

@@ -1,0 +1,61 @@
+---
+title: "Archived APIs"
+description: "Reference for earlier OneXtel APIs hosted on api.onex-aura.com and 365cx.io, retained for existing integrations."
+---
+
+## Does this apply to you?
+
+Check the base URL your integration calls:
+
+| Base URL | Status |
+| --- | --- |
+| `api.onexaura.com` | **Current.** See the [API Reference](/api-reference/whatsapp/overview) — nothing here applies to you |
+| `api.onex-aura.com` (hyphenated) | Earlier SMS API — documented here |
+| `365cx.io` | Earlier WhatsApp and RCS APIs — documented here |
+
+If you are building something new, use the current APIs. This section exists so that
+integrations written against the earlier endpoints still have a reference.
+
+<Warning>
+These pages describe APIs that are no longer actively developed. Endpoints, parameters, and
+procedures may be outdated, deprecated, or no longer functional. Migrate to the current
+[API Reference](/api-reference/whatsapp/overview) when you can.
+</Warning>
+
+## What is archived here
+
+Two distinct earlier API surfaces are covered.
+
+The **`api.onex-aura.com` SMS platform** combined portal instructions — campaigns, phonebook,
+credits, sub-accounts, reports — with developer material: API key generation, send and report
+APIs, DLT entity, template and sender-ID registration, and marketing-platform connectors.
+
+The **`365cx.io` WhatsApp and RCS APIs** were a separate surface using token-based
+authentication, template-based sends, and delivery callbacks. They are unrelated to the current
+API and share no endpoints with it.
+
+Voice and Email appeared in the earlier navigation as "coming soon" but were never published, so
+no content exists for them.
+
+## Pages archived here
+
+| Page | Covers |
+| --- | --- |
+| [SMS API](/legacy/sms-aura) | Platform overview, terminology, and the `api.onex-aura.com` send-SMS and reporting APIs |
+| [SMS Plugins](/legacy/sms-plugins) | Earlier marketing-platform SMS connectors |
+| [SMS DLT](/legacy/sms-dlt) | Earlier DLT terminology, Entity ID management, and operator registration portals |
+| [WhatsApp API](/legacy/whatsapp-api) | `365cx.io` token generation, send-message, and delivery-callback APIs |
+| [RCS API](/legacy/rcs-api) | `365cx.io` token generation and send-message API |
+
+## Current equivalents
+
+Most of what these pages cover has a supported equivalent today:
+
+| Archived | Current |
+| --- | --- |
+| SMS send and report APIs | [SMS API](/api-reference/sms/overview) |
+| DLT registration | [DLT registration](/guides/sms/dlt) |
+| SMS connectors | [Plugins](/plugins/overview) |
+| WhatsApp API | [WhatsApp API](/api-reference/whatsapp/overview) |
+| RCS API | [RCS API](/api-reference/rcs/overview) |
+| Portal workflows — campaigns, phonebook, reports, credits, sub-accounts, notifications, dashboard, scheduling | [Platform](/guides/platform/overview) and the channel guides |

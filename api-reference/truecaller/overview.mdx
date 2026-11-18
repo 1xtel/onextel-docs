@@ -1,0 +1,109 @@
+---
+title: "Truecaller API Overview"
+description: "Send verified business messages to Truecaller users: single messages, templates, rich media, campaigns and delivery webhooks."
+---
+
+The Truecaller Business Messaging API sends messages that arrive in Truecaller from your
+verified business profile: your name, logo and verified badge above every message. You can send
+one message at a time, or a template to a whole contact list as a campaign, and follow every
+message to delivered, read and clicked.
+
+## Base URL
+
+```
+https://truecaller.udchowdhury.me
+```
+
+## Authentication
+
+Every request carries a workspace API key in the `x-api-key` header. Create one in the
+Truecaller campaigns portal under **Developers → API keys**. The key is shown once, so store it
+safely; anyone with it can send from your workspace.
+
+<ParamField header="x-api-key" type="string" required>
+  `tc_live_…` workspace API key.
+</ParamField>
+
+```bash
+curl https://truecaller.udchowdhury.me/v1/templates \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+## Send your first message
+
+<Steps>
+  <Step title="Create a template">
+    [`POST /v1/templates`](/api-reference/truecaller/create-template) with a name, a category and
+    a body such as `Hi {{name}}, your order *{{order_id}}* has shipped.`
+  </Step>
+  <Step title="Submit it">
+    [`POST /v1/templates/{id}/submit`](/api-reference/truecaller/submit-template). It is approved
+    straight away.
+  </Step>
+  <Step title="Send it">
+    [`POST /v1/messages`](/api-reference/truecaller/send-message) with `to`, `template_id` and
+    `variables`.
+  </Step>
+  <Step title="Follow it">
+    Add a [webhook](/api-reference/truecaller/webhooks) in the portal to receive `message.delivered`,
+    `message.read` and `message.failed` events.
+  </Step>
+</Steps>
+
+<CodeGroup>
+```bash Send a template
+curl -X POST https://truecaller.udchowdhury.me/v1/messages \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "919999999999",
+    "template_id": "TEMPLATE_ID",
+    "variables": { "name": "Asha", "order_id": "OX1002" }
+  }'
+```
+
+```json Response (202)
+{
+  "id": "0d6f5a7e-3c1b-4f0a-9a52-6b8f1e2d4c11",
+  "to": "+919999999999",
+  "sender_id": "YOUR_SENDER_ID",
+  "category": "transactional",
+  "body": "Hi Asha, your order *OX1002* has shipped.",
+  "status": "sent",
+  "error": null,
+  "events": [
+    { "status": "queued", "created_at": "2026-10-30T10:42:01.120Z" },
+    { "status": "sent", "created_at": "2026-10-30T10:42:01.480Z" }
+  ]
+}
+```
+</CodeGroup>
+
+## Message categories
+
+| Category | Use it for | Limits |
+| --- | --- | --- |
+| `transactional` | OTP follow-ups, order, payment and account updates | None beyond your sender |
+| `service` | Reminders, alerts and service notices | None beyond your sender |
+| `promotional` | Offers and marketing | 3 per person per day, 4 per person per sender in 28 days, and the sender's daily limit |
+
+## Phone numbers
+
+Send numbers with the country code, with or without `+` (`+919999999999` or `919999999999`).
+Bare 10-digit numbers are treated as Indian.
+
+## Statuses
+
+| Status | Meaning |
+| --- | --- |
+| `queued` | Accepted by OneXtel, not yet handed to Truecaller |
+| `sent` | Accepted by Truecaller |
+| `delivered` | Reached the person's phone |
+| `read` | Opened in Truecaller |
+| `failed` | Could not be sent, see `error` |
+| `blocked` | Skipped by an opt-out or a promotional limit |
+
+## Errors
+
+Errors return a JSON body with an `error` string; validation errors also carry `details`. See
+[Errors](/api-reference/truecaller/errors) for status codes and failure reasons.

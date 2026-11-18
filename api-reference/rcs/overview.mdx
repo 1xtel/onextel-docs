@@ -1,0 +1,111 @@
+---
+title: "RCS Messaging Overview"
+description: "Authenticate, create and fetch RCS templates, and send RCS messages through the OneXtel Omni platform."
+---
+
+import ImportRcs from '/snippets/import-rcs.mdx';
+
+<ImportRcs />
+
+The RCS API creates and fetches templates, sends messages, and reports what happened to each
+one. Everything is a JSON request over HTTPS, authenticated with your OneXtel API key, so it
+fits whatever your campaigns are already triggered from.
+
+Start by copying your API key from the portal. The endpoints below are the whole surface:
+templates, sends, and the callbacks that carry delivery status back.
+
+<Tip>
+Check a request body before you send it with the [payload validator](/api-reference/payload-validator).
+It shows what the API would reject, without sending anything.
+</Tip>
+
+## Authentication
+
+Every request is authenticated with your API key passed in the `apikey` request header:
+
+```bash
+--header 'apikey: YOUR_API_KEY'
+```
+
+JSON endpoints also require:
+
+```bash
+--header 'Content-Type: application/json'
+```
+
+## Base URL
+
+```
+https://api.onexaura.com
+```
+
+## Endpoints
+
+| API | Method | Endpoint |
+| --- | --- | --- |
+| [Create Template](/api-reference/rcs/templates) | POST | `/rcs/templates` |
+| [Fetch Templates](/api-reference/rcs/templates) | POST | `/oapi/templates/fetch` |
+| [Send Template Message](/api-reference/rcs/send-template-message) | POST | `/oapi/send_sms` |
+| [Send Non-Template Message](/api-reference/rcs/send-messages) | POST | `/oapi/send_sms` |
+| [Media Upload](/api-reference/rcs/media) | POST | `/rcs/mediaupload` |
+| [Opt-in / Opt-out](/api-reference/rcs/opt-in-opt-out) | GET/POST/DELETE | `/opt/{in,out}/rcs` |
+| [Delivery Notification](/api-reference/rcs/callback-delivery-notification) | POST | Your endpoint |
+
+Failures fall into two layers: OneXtel API validation errors are listed under
+[Send messages](/api-reference/rcs/send-messages#error-codes), and errors raised downstream by
+the recipient's operator are listed under
+[RCS operator error codes](/api-reference/rcs/error-codes).
+
+<Note>
+The RCS Send Message API and Fetch Template API share the same endpoints as the other
+OneXtel channels (`/oapi/send_sms`, `/oapi/templates/fetch`). The channel is determined by
+the request body: RCS messages are wrapped in an `rcs` array, and template fetches set
+`"channel": "RCS"`.
+</Note>
+
+## Message types
+
+Every RCS message is classified with a `messageType` of `Promotional`, `Transactional`, or
+`OTP`.
+
+You can send two kinds of message bodies through the Send Message API:
+
+- **Non-template messages** — free-form content built in the request itself:
+  [plain text, rich card standalone, and rich card carousel](/api-reference/rcs/send-messages).
+- **Template messages** — pre-approved templates referenced by `templateCode`, optionally
+  personalized with `customParams`. See
+  [Send template messages](/api-reference/rcs/send-template-message).
+
+## Response format
+
+The Send Message API returns an array with one result object per message:
+
+```json
+[
+  {
+    "messageId": "33mXmXf0myfFe7lA1QpPcDJcVaH",
+    "code": 200,
+    "status": "success"
+  }
+]
+```
+
+<ResponseField name="messageId" type="string">
+  Unique identifier for the submitted message. Use it to correlate delivery reports.
+</ResponseField>
+
+<ResponseField name="code" type="integer">
+  Result code. `200` indicates the message was accepted.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Result status, e.g. `success`.
+</ResponseField>
+
+## Send from a connected platform
+
+If your campaigns already live in a marketing platform or CRM, you can send OneXtel RCS from
+there rather than against this API. [CleverTap](/plugins/clevertap),
+[MoEngage](/plugins/moengage), [WebEngage](/plugins/webengage) and
+[Shopify](/plugins/shopify) all carry the channel — see
+[all connectors](/plugins/overview) for what each one supports.
