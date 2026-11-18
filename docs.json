@@ -23,7 +23,8 @@
           {
             "group": "Get started",
             "pages": [
-              "guides/about-onextel"
+              "guides/about-onextel",
+              "guides/release-notes"
             ]
           },
           {

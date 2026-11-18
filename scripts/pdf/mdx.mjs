@@ -100,7 +100,17 @@ export function createRenderer({ highlighter, theme, resolveLink, resolveImage, 
         case "AccordionGroup": return h("div.accordion-group", kids());
         case "Accordion": return h("div.accordion", [h("div.accordion-title", String(a.title || "")), ...kids()]);
         case "Frame": return h("figure.frame", [...kids(), a.caption && h("figcaption", String(a.caption))]);
-        case "Update": return h("section.update", [h("div.update-label", String(a.label || "")), ...kids()]);
+        case "Update": {
+          const tags = Array.isArray(a.tags) ? a.tags : [];
+          return h("section.update", [
+            h("div.update-head", [
+              h("span.update-label", String(a.label || "")),
+              a.description && h("span.update-title", String(a.description)),
+              ...tags.map((t) => h("span.badge", String(t))),
+            ]),
+            ...kids(),
+          ]);
+        }
         case "Badge": return h("span.badge", kids());
         case "video": {
           return h("aside.callout.info", [h("div.callout-label", "Video"), h("p", ["This page has a video. Watch it on the docs site: ", h("a", { href: liveUrl(page) }, liveUrl(page))])]);
