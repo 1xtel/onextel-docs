@@ -54,11 +54,16 @@ confession: "the source does not say which code the platform emits" becomes "han
 | Write | Not |
 | --- | --- |
 | OneXtel | `Onextel`, `ONEXTEL`, `OneXTel` |
+| OneXtel Media Private Limited | `OneXtel Media Pvt Ltd`, `OneXtel Media Pvt. Ltd.`, `Onextel Media` |
 | the OneXtel portal | the dashboard, the panel, the UI |
 | WhatsApp | `Whatsapp`, `whats app` |
 | RCS, SMS, DLT, DLR, MSISDN | expanded on every mention |
 | CleverTap, MoEngage, WebEngage, LeadSquared | `Clevertap`, `Moengage`, `Webengage` |
 | email | `e-mail` |
+
+The company is OneXtel everywhere. Write the legal name, OneXtel Media Private Limited, in full
+and only where the registered entity matters: DLT registration, contracts, compliance and
+copyright lines.
 
 Channel names are WhatsApp, RCS and SMS. Partner product names are spelled the way the partner
 spells them.
