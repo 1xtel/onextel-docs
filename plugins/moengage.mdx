@@ -155,12 +155,17 @@ hosts, so check it before saving.
 
     | Field | Value |
     | --- | --- |
-    | URL | `https://mo.onexaura.com/moengage/whatsapp/outbound` |
-    | WABA ID | From the OneXtel dashboard under **Channel → WhatsApp** |
+    | Sender name | Any name, shown when you pick the sender in a campaign |
+    | WhatsApp business number | Your registered WhatsApp Business number |
+    | API URL | `https://mo.onexaura.com/moengage/whatsapp/outbound` |
     | Authorization | The API key from step 1 |
-    | WABA Number | Your registered WhatsApp Business number |
+    | wabaid | Your WABA ID, from the OneXtel portal under **Channel → WhatsApp** |
 
     Click **Save**.
+
+    <Frame caption="OneXtel WhatsApp sender in MoEngage">
+      <img src="/images/plugins/moengage-whatsapp-sender.png" alt="MoEngage WhatsApp sender configuration with OneXtel selected among the WhatsApp connectors, showing the sender name, WhatsApp business number, API URL, Authorization and wabaid fields" />
+    </Frame>
   </Step>
   <Step title="Configure the delivery report callback">
     In OneXtel, go to **Configuration → Add New Callback**. Give it a title, set **Channel**
@@ -199,7 +204,14 @@ hosts, so check it before saving.
 ### Template sync
 
 MoEngage reads your WhatsApp templates from OneXtel through the connector — there is nothing to
-build by hand in MoEngage. When you sync or refresh templates on the OneXtel sender, MoEngage calls:
+build by hand in MoEngage. Click **Sync Template** under **Settings → WhatsApp → Approved
+templates**, and your approved OneXtel templates appear with **onextel** as the provider.
+
+<Frame caption="WhatsApp templates synced from OneXtel">
+  <img src="/images/plugins/moengage-whatsapp-templates.png" alt="MoEngage Approved templates tab listing WhatsApp templates synced from OneXtel, with category, Approved status, content, provider onextel and the Sync Template button" />
+</Frame>
+
+When you sync or refresh templates on the OneXtel sender, MoEngage calls:
 
 ```
 GET https://mo.onexaura.com/moengage/whatsapp/templates
