@@ -262,13 +262,13 @@ campaign on that sender gets the fallback; senders without it work exactly as ab
     | `wabaId` | Your WABA ID. It may be left empty (`apikey~~fallbackId~…`) when the sender's **WABA ID** field carries it |
     | `fallbackId` | The Fallback ID from the previous step |
     | `waitTime` | Seconds to wait for a WhatsApp delivery report before falling back, `1`–`86400`. Defaults to `30` |
-    | `rcsSenderProfile_messageType` | The RCS **sender profile name** from **RCS → Asset Management → Sender Profiles**, then `_` and `Promotional`, `Transactional` or `OTP` — for example `promo_onex_Promotional` |
+    | `rcsSenderProfile_messageType` | The RCS **sender profile name** from **RCS → Asset Management → Sender Profiles**, then `_` and `Promotional`, `Transactional` or `OTP` — for example `yourbrand_promo_Promotional` |
     | `rcsBotId` | Optional. The RCS bot's ID. With it, the connector creates the RCS fallback templates for you — see the next step |
 
     For example:
 
     ```
-    AbCd1234~1790923784894660~05dfa99b-c446-4c66-bcc6-9cae95254964~30~promo_onex_Promotional~6acddecc5636e4f2201f2e13
+    YOUR_API_KEY~YOUR_WABA_ID~YOUR_FALLBACK_ID~30~yourbrand_promo_Promotional~YOUR_RCS_BOT_ID
     ```
 
     <Warning>

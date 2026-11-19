@@ -25,18 +25,27 @@ import { createOpenapiRenderer, loadSpec, parseOpenapiRef } from "./openapi.mjs"
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const SITE = (process.env.DOCS_SITE_URL || "https://onextel-09023014.mintlify.site").replace(/\/$/, "");
 const EXCLUDED_TABS = new Set(["Archived APIs"]);
-const TITLE = "OneXtel Documentation";
 
 const { values: args } = parseArgs({ options: {
   out: { type: "string" },
   "doc-version": { type: "string" },
   only: { type: "string" },
   "keep-html": { type: "boolean", default: false },
+  // A PDF of one section, for sharing on its own: node build.mjs --only plugins/moengage
+  //   --title "OneXtel MoEngage Integration" --cover-title "MoEngage integration"
+  //   --cover-subtitle "WhatsApp, RCS and SMS from MoEngage through OneXtel"
+  title: { type: "string" },
+  "cover-title": { type: "string" },
+  "cover-subtitle": { type: "string" },
 } });
 // A local build without --doc-version is marked as a draft of the version in VERSION.
+const TITLE = args.title || "OneXtel Documentation";
+const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const COVER_TITLE = esc(args["cover-title"] || "Documentation");
+const COVER_SUBTITLE = args["cover-subtitle"] ? esc(args["cover-subtitle"]) : "Guides, API reference and plugins<br>for WhatsApp, RCS and SMS";
 const VERSION = args["doc-version"] || `${readFileSync(join(ROOT, "VERSION"), "utf8").trim()} draft`;
 const WORK = join(ROOT, ".pdf-build");
-args.out ||= join(WORK, `OneXtel_Documentation_${VERSION.replace(/\s+/g, "-")}.pdf`);
+args.out ||= join(WORK, `${TITLE.replace(/\s+/g, "_")}_${VERSION.replace(/\s+/g, "-")}.pdf`);
 mkdirSync(join(WORK, "img"), { recursive: true });
 
 const warnings = new Set();
@@ -273,8 +282,8 @@ const page = (body, extra = "") => `<!doctype html><html lang="en"><head><meta c
 const coverHtml = page(`<section style="position:relative;width:210mm;height:296mm;background:${BRAND.navy};overflow:hidden">
   <img src="${pathToFileURL(whiteLogo).href}" alt="OneXtel" style="position:absolute;top:20mm;right:20mm;width:62mm">
   <div style="position:absolute;left:22mm;top:88mm;width:150mm">
-    <div style="font-size:36pt;font-weight:700;color:#fff;line-height:1.1">Documentation</div>
-    <div style="font-size:12.5pt;color:${BRAND.sky};margin-top:5mm;line-height:1.45">Guides, API reference and plugins<br>for WhatsApp, RCS and SMS</div>
+    <div style="font-size:36pt;font-weight:700;color:#fff;line-height:1.1">${COVER_TITLE}</div>
+    <div style="font-size:12.5pt;color:${BRAND.sky};margin-top:5mm;line-height:1.45">${COVER_SUBTITLE}</div>
     <div style="font-size:11pt;font-weight:600;color:#fff;margin-top:9mm">Version ${VERSION}</div>
   </div>
   <img src="${curve}" alt="" style="position:absolute;right:0;bottom:34mm;width:182mm">
