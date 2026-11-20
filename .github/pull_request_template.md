@@ -5,7 +5,7 @@
 ## Where the facts came from
 
 <!-- Live API call, portal screen, vendor guide + date, or connector code + file. If something
-     here is unverified, say which part. -->
+     couldn't be verified, leave it off the page and say here what was left out. -->
 
 ## Checked
 
