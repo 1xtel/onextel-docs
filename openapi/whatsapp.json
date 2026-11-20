@@ -1106,7 +1106,7 @@
                           "items": {
                             "type": "string"
                           },
-                          "description": "Recipient phone number(s), without country prefix (prefix supplied separately via the root-level `prefix` field)."
+                          "description": "Recipient phone number, without country prefix (prefix supplied separately via the root-level `prefix` field), or an array of up to 500 numbers."
                         },
                         "sender": {
                           "type": "string",
@@ -1559,7 +1559,7 @@
                         "type"
                       ]
                     },
-                    "description": "Wrapper array for one or more WhatsApp message objects (batch send)."
+                    "description": "Wrapper array for one or more WhatsApp message objects, up to 500 per request. See Send to many recipients."
                   },
                   "prefix": {
                     "type": "string",
@@ -1615,7 +1615,7 @@
                   },
                   "recipient": {
                     "type": "string",
-                    "description": "Recipient's WhatsApp phone number."
+                    "description": "Recipient's WhatsApp phone number, or an array of up to 500 numbers."
                   },
                   "sender": {
                     "type": "string",

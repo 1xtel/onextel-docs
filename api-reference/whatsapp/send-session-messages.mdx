@@ -33,7 +33,8 @@ Every message is wrapped in a `wa` array. Each object in the array shares these
 top-level fields regardless of message type:
 
 <ParamField body="wa" type="array" required>
-  Wrapper array for one or more WhatsApp message objects.
+  Wrapper array for one or more WhatsApp message objects, up to 500 per request. See
+  [Send to many recipients](#send-to-many-recipients).
 </ParamField>
 <ParamField body="messaging_product" type="string" required>
   Always `"whatsapp"`.
@@ -41,8 +42,8 @@ top-level fields regardless of message type:
 <ParamField body="recipient_type" type="string" required>
   Always `"individual"`.
 </ParamField>
-<ParamField body="recipient" type="string" required>
-  Recipient's WhatsApp phone number.
+<ParamField body="recipient" type="string | array" required>
+  Recipient's WhatsApp phone number, or an array of up to 500 numbers.
 </ParamField>
 <ParamField body="sender" type="string" required>
   Sender's registered WhatsApp number.
@@ -54,6 +55,64 @@ top-level fields regardless of message type:
 <ParamField body="prefix" type="string">
   Optional country prefix (e.g. `+91`), set at the root of the request body alongside `wa`.
 </ParamField>
+
+## Send to many recipients
+
+One request can reach many recipients in two ways:
+
+| Pattern | How | Limit per request |
+| --- | --- | --- |
+| **One to many**: the same message to several numbers | Put the numbers in `recipient` as an array. | 500 numbers in each `recipient` array |
+| **Many to many**: different messages in one request | Add one message object per message to the `wa` array. | 500 objects in the `wa` array |
+
+For one recipient, `recipient` can be a single number.
+
+<Tabs>
+  <Tab title="One to many">
+    ```json
+    {
+      "wa": [
+        {
+          "messaging_product": "whatsapp",
+          "recipient_type": "individual",
+          "recipient": ["919999999999", "919999999998", "919999999997"],
+          "sender": "919888888888",
+          "type": "text",
+          "text": { "body": "Your order has shipped." }
+        }
+      ],
+      "prefix": "+91"
+    }
+    ```
+  </Tab>
+  <Tab title="Many to many">
+    ```json
+    {
+      "wa": [
+        {
+          "messaging_product": "whatsapp",
+          "recipient_type": "individual",
+          "recipient": "919999999999",
+          "sender": "919888888888",
+          "type": "text",
+          "text": { "body": "Your order has shipped." }
+        },
+        {
+          "messaging_product": "whatsapp",
+          "recipient_type": "individual",
+          "recipient": "919999999998",
+          "sender": "919888888888",
+          "type": "text",
+          "text": { "body": "Your order is out for delivery." }
+        }
+      ],
+      "prefix": "+91"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Message types
 
 <Tabs>
 

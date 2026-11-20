@@ -572,7 +572,7 @@
                         }
                       }
                     },
-                    "description": "Wrapper array of one or more message objects. Supports up to 500 objects per request (many-to-many use case)."
+                    "description": "Wrapper array of one or more message objects, up to 500 per request. See Send to many recipients."
                   },
                   "prefix": {
                     "type": "string",
@@ -626,7 +626,7 @@
                   },
                   "recipient": {
                     "type": "string",
-                    "description": "Recipient phone number, without prefix. Can also be an array to support a one-to-many use case, containing up to 500 numbers in a single request."
+                    "description": "Recipient phone number, without prefix, or an array of up to 500 numbers. See Send to many recipients."
                   },
                   "sender": {
                     "type": "string",

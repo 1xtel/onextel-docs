@@ -51,6 +51,11 @@ https://api.onexaura.com
 | [Opt-in / Opt-out](/api-reference/rcs/opt-in-opt-out) | GET/POST/DELETE | `/opt/{in,out}/rcs` |
 | [Delivery Notification](/api-reference/rcs/callback-delivery-notification) | POST | Your endpoint |
 
+One send request can reach many recipients: put up to 500 numbers in `recipient` to send one
+message to all of them (one to many), or add up to 500 message objects to the `rcs` array to send
+different messages (many to many). See
+[Send to many recipients](/api-reference/rcs/send-template-message#send-to-many-recipients).
+
 Failures fall into two layers: OneXtel API validation errors are listed under
 [Send messages](/api-reference/rcs/send-messages#error-codes), and errors raised downstream by
 the recipient's operator are listed under
