@@ -173,7 +173,8 @@ hosts, so check it before saving.
     used in MoEngage.
 
     Under **Request Configuration**, set **Type** to `Delivery Notification` and **HTTP
-    Method** to `POST`. Paste the callback URL copied from your MoEngage dashboard, then save.
+    Method** to `POST`. Paste the MoEngage delivery tracking URL, then save. MoEngage shows it
+    under **Enable delivery tracking** on the OneXtel sender, with a copy button.
   </Step>
   <Step title="Configure the inbound callback">
     Add a second callback in OneXtel with the same channel, format type, and API key. Under
@@ -238,6 +239,23 @@ with `{{n}}` variables.
   templates created or changed in the last 7 days — see
   [Add RCS fallback](#add-rcs-fallback-optional).
 
+### Build the WhatsApp campaign
+
+Create a WhatsApp campaign in MoEngage as usual, and pick the OneXtel sender and an approved
+template. The campaign itself has no fallback setting: a sender with RCS fallback applies it to
+every campaign that uses it.
+
+<Frame caption="A WhatsApp campaign sent through the OneXtel sender">
+  <img src="/images/plugins/moengage-whatsapp-campaign-sender.png" alt="Sender info of a sent MoEngage WhatsApp campaign: service provider onextel, the sender name, the WhatsApp number, the template and template type Carousel" />
+</Frame>
+
+Delivery reports, reads and clicks come back from OneXtel and show on the campaign like those
+of any other WhatsApp provider.
+
+<Frame caption="Campaign results in MoEngage">
+  <img src="/images/plugins/moengage-whatsapp-campaign-stats.png" alt="MoEngage campaign analytics for a WhatsApp campaign sent through OneXtel, showing sent, delivered, read and clicked counts" />
+</Frame>
+
 ### Add RCS fallback (optional)
 
 MoEngage WhatsApp campaigns have no fallback setting of their own, so the fallback is set once per
@@ -282,6 +300,10 @@ campaign on that sender gets the fallback; senders without it work exactly as ab
     ```
     YOUR_API_KEY~YOUR_WABA_ID~YOUR_FALLBACK_ID~30~yourbrand_promo_Promotional~YOUR_RCS_BOT_ID
     ```
+
+    <Frame caption="WhatsApp sender with RCS fallback">
+      <img src="/images/plugins/moengage-whatsapp-fallback-sender.png" alt="MoEngage OneXtel WhatsApp sender whose Authorization field holds the tilde-separated API key, WABA ID, Fallback ID and wait time, with the delivery tracking URL and its copy button below" />
+    </Frame>
 
     <Warning>
     **Use the sender profile name, not the bot ID**, in the fifth value. OneXtel looks the
