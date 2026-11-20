@@ -2,6 +2,9 @@ extends: substitution
 message: "Use '%s', not '%s'."
 level: error
 ignorecase: false
+# Meta's routing dropdown shows the name OneXtel is registered under with Meta.
+exceptions:
+  - Onextel Limited
 swap:
   '\bOnextel\b': OneXtel
   '\bONEXTEL\b': OneXtel

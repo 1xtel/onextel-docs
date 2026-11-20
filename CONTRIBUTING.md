@@ -89,7 +89,8 @@ and the count starts again from there.
 ## What reviewers check
 
 - **Is it true?** Endpoints, parameters, codes and limits match the live API or a named source.
-  Anything unverified says so.
+  Anything that can't be verified is left off the page, and the pull request says what was left
+  out.
 - **Does it read like the rest of the docs?** Second person, present tense, no marketing register,
   consequences stated plainly.
 - **Is it in the right place?** One page, one job, and the navigation in `docs.json` updated.
@@ -100,8 +101,9 @@ and the count starts again from there.
 
 These pages are pasted into production code. Never guess a parameter name, an enum value, an
 error code or a limit. Where a vendor document and the live API disagree, document the live
-behaviour. Where something cannot be confirmed, write what is known, say what is not, and record
-the gap in the internal review notes rather than filling it with something plausible.
+behaviour. Where something cannot be confirmed, document what is known, leave the rest out, and
+record the gap in the internal tracker rather than filling it with something plausible. Don't
+write on the page that something is unverified: a reader can't act on it.
 
 ## Things that are not documentation
 
