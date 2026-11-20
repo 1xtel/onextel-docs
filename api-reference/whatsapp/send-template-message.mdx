@@ -43,9 +43,9 @@ so a WhatsApp message sent to it is not delivered.
 <ParamField body="wa[].recipient_type" type="string" required>
   Always `"individual"`.
 </ParamField>
-<ParamField body="wa[].recipient" type="array" required>
-  Recipient phone number(s), without country prefix (prefix supplied separately via the
-  root-level `prefix` field). Up to 500 numbers per message object.
+<ParamField body="wa[].recipient" type="string | array" required>
+  Recipient phone number, without country prefix (prefix supplied separately via the
+  root-level `prefix` field), or an array of up to 500 numbers.
 </ParamField>
 <ParamField body="wa[].sender" type="string" required>
   Sender's registered WhatsApp number. A pool ID can also be passed here.
@@ -108,7 +108,7 @@ One request can reach many recipients in two ways:
 | **One to many**: the same message to several numbers | Put the numbers in `recipient` as an array. | 500 numbers in each `recipient` array |
 | **Many to many**: different messages in one request | Add one message object per message to the `wa` array. | 500 objects in the `wa` array |
 
-For one recipient, `recipient` is an array with one number.
+For one recipient, `recipient` can be a single number or an array with one number.
 
 <Tabs>
   <Tab title="One to many">
