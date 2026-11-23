@@ -175,6 +175,10 @@ hosts, so check it before saving.
     Under **Request Configuration**, set **Type** to `Delivery Notification` and **HTTP
     Method** to `POST`. Paste the MoEngage delivery tracking URL, then save. MoEngage shows it
     under **Enable delivery tracking** on the OneXtel sender, with a copy button.
+
+    <Frame caption="Callback Configuration — Add New Callback">
+      <img src="/images/plugins/moengage-rcs-callback-list.png" alt="OneXtel Config page on the Callback Configuration tab with the Add New Callback button highlighted" />
+    </Frame>
   </Step>
   <Step title="Configure the inbound callback">
     Add a second callback in OneXtel with the same channel, format type, and API key. Under
@@ -347,11 +351,19 @@ campaign on that sender gets the fallback; senders without it work exactly as ab
 
     | Channel | Type | Callback Format Type | Callback URL | Header `callback` |
     | --- | --- | --- | --- | --- |
-    | WhatsApp | Delivery Notification | Raw (Meta) | `https://mo.onexaura.com/moengage/whatsapp/dlr` | Your MoEngage WhatsApp DLR URL |
-    | RCS | Delivery Notification | Raw (RCS) | `https://mo.onexaura.com/moengage/rcs/dlr` | Your MoEngage RCS DLR URL |
+    | WhatsApp | Delivery Notification | Meta | `https://mo.onexaura.com/moengage/whatsapp/dlr` | Your MoEngage WhatsApp DLR URL |
+    | RCS | Delivery Notification | RCS | `https://mo.onexaura.com/moengage/rcs/dlr` | Your MoEngage RCS DLR URL |
 
     Tick `custref1` and `custref2` in both callbacks' field lists. If the key already has an RCS
     delivery callback for RCS campaigns, keep it — WhatsApp fallback receipts use the same one.
+
+    <Frame caption="WhatsApp delivery callback for a sender with RCS fallback: Callback Format Meta, the connector whatsapp/dlr URL, and your MoEngage WhatsApp DLR URL in the `callback` header">
+      <img src="/images/plugins/moengage-whatsapp-fallback-callback-wa.png" alt="OneXtel Edit Callback screen with Channel WhatsApp, Callback Format Meta, Type Delivery Notification, method POST, the connector whatsapp/dlr URL, a request preview that starts with custref1 to custref5, and a callback header row" />
+    </Frame>
+
+    <Frame caption="RCS delivery callback on the same API key: Callback Format RCS, the connector rcs/dlr URL, and your MoEngage RCS DLR URL in the `callback` header">
+      <img src="/images/plugins/moengage-whatsapp-fallback-callback-rcs.png" alt="OneXtel Edit Callback screen with Channel RCS, Callback Format RCS, Type Delivery Notification, method POST, the connector rcs/dlr URL, a request preview that starts with botId and custref1 to custref5, and a callback header row" />
+    </Frame>
 
     <Warning>
     **Without these two callbacks, MoEngage never hears the outcome.** The connector holds a
