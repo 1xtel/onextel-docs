@@ -6,14 +6,14 @@ openapi: "/api-reference/truecaller/openapi.yaml POST /v1/lists/{id}/contacts"
 
 <CodeGroup>
 ```bash CSV file
-curl -X POST https://truecaller.udchowdhury.me/v1/lists/LIST_ID/contacts \
+curl -X POST https://truecaller.onexaura.com/v1/lists/LIST_ID/contacts \
   -H "x-api-key: YOUR_API_KEY" \
   -H "Content-Type: text/csv" \
   --data-binary @contacts.csv
 ```
 
 ```bash Google Sheet
-curl -X POST https://truecaller.udchowdhury.me/v1/lists/LIST_ID/contacts \
+curl -X POST https://truecaller.onexaura.com/v1/lists/LIST_ID/contacts \
   -H "x-api-key: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{ "source": "sheet", "url": "https://docs.google.com/spreadsheets/d/SHEET_ID/edit" }'
