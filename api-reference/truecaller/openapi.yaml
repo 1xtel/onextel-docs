@@ -16,7 +16,7 @@ info:
     ```
 
 servers:
-  - url: https://truecaller.udchowdhury.me
+  - url: https://truecaller.onexaura.com
     description: Production
 
 security:
@@ -283,7 +283,7 @@ paths:
                 type: object
                 properties:
                   id: { type: string, format: uuid }
-                  url: { type: string, example: "https://truecaller.udchowdhury.me/m/1c9e…/invoice.pdf" }
+                  url: { type: string, example: "https://truecaller.onexaura.com/m/1c9e…/invoice.pdf" }
                   mime_type: { type: string, example: application/pdf }
                   file_name: { type: string, example: invoice.pdf }
                   size: { type: integer, example: 48213 }
