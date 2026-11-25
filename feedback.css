@@ -1,0 +1,237 @@
+/* On-page feedback for the beta docs. See feedback.js. */
+
+.oxf {
+  --oxf-navy: #252e6a;
+  --oxf-red: #d72327;
+  --oxf-sky: #dae6f1;
+  --oxf-grey: #e6e7e8;
+  --oxf-ink: #231f20;
+  --oxf-surface: #ffffff;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+html.dark .oxf {
+  --oxf-sky: #2a3350;
+  --oxf-grey: #3a3f55;
+  --oxf-ink: #f1f3f8;
+  --oxf-surface: #151a2e;
+}
+
+.oxf[hidden],
+.oxf [hidden] {
+  display: none;
+}
+
+.oxf-bubble,
+.oxf-launcher,
+.oxf-primary {
+  background: var(--oxf-navy);
+  color: #ffffff;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.18);
+}
+
+.oxf-bubble {
+  position: absolute;
+  z-index: 60;
+}
+
+.oxf-launcher {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 55;
+}
+
+.oxf-bubble:focus-visible,
+.oxf-launcher:focus-visible,
+.oxf-panel button:focus-visible,
+.oxf-input:focus-visible {
+  outline: 2px solid var(--oxf-red);
+  outline-offset: 2px;
+}
+
+.oxf-panel {
+  position: fixed;
+  right: 20px;
+  bottom: 68px;
+  z-index: 56;
+  width: min(380px, calc(100vw - 32px));
+  max-height: min(70vh, 640px);
+  overflow-y: auto;
+  padding: 16px;
+  background: var(--oxf-surface);
+  color: var(--oxf-ink);
+  border: 1px solid var(--oxf-grey);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.22);
+}
+
+.oxf-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.oxf-help,
+.oxf-local,
+.oxf-status,
+.oxf-meta,
+.oxf-empty {
+  margin: 8px 0 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.oxf-status:empty {
+  display: none;
+}
+
+.oxf-starters,
+.oxf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.oxf-secondary {
+  background: transparent;
+  color: inherit;
+  border: 1px solid var(--oxf-grey);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.oxf-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.oxf-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.oxf-quote,
+.oxf-jump {
+  margin: 0;
+  padding: 8px 10px;
+  background: var(--oxf-sky);
+  color: inherit;
+  border: 0;
+  border-left: 3px solid var(--oxf-navy);
+  border-radius: 4px;
+  font-size: 13px;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.oxf-jump {
+  display: block;
+  width: 100%;
+  cursor: pointer;
+}
+
+.oxf-input {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--oxf-surface);
+  color: inherit;
+  border: 1px solid var(--oxf-grey);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.oxf-primary {
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.oxf-primary:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.oxf-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.oxf-item {
+  padding-top: 12px;
+  border-top: 1px solid var(--oxf-grey);
+}
+
+.oxf-comment {
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.oxf-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.oxf-resolved .oxf-jump,
+.oxf-resolved .oxf-comment {
+  opacity: 0.55;
+}
+
+.oxf-pick-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  z-index: 57;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
+  padding: 10px 14px;
+  background: var(--oxf-navy);
+  color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.18);
+}
+
+html.oxf-picking #content,
+html.oxf-picking main {
+  cursor: crosshair;
+}
+
+.oxf-pick-target {
+  outline: 2px solid #d72327;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+::highlight(oxf-note) {
+  background-color: rgb(247 231 206 / 0.9);
+  color: #231f20;
+}
+
+::highlight(oxf-focus) {
+  background-color: rgb(215 35 39 / 0.3);
+}
+
+@media print {
+  .oxf {
+    display: none;
+  }
+}

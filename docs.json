@@ -15,6 +15,11 @@
     "light": "/images/Xsymbol.png",
     "dark": "/images/logo.png"
   },
+  "banner": {
+    "content": "**Beta documentation, for internal review.** Do not share this site with customers.",
+    "type": "warning",
+    "dismissible": false
+  },
   "navigation": {
     "tabs": [
       {
