@@ -1,0 +1,217 @@
+---
+title: "Clicker Callback"
+description: "The callback OneXtel posts to your configured URL when a recipient clicks a shortened link in an SMS."
+---
+
+import ImportSms from '/snippets/import-sms.mdx';
+
+<ImportSms />
+
+When a recipient clicks a shortened link in an SMS, OneXtel posts a **clicker callback** to the
+callback URL registered against your API key, alongside the
+[delivery report](/api-reference/sms/dlr-callback) for the message itself.
+
+Register your callback URL under **Configuration → Add New Callback**, with **URL Click** as the
+event type — see [Callback configuration](/guides/platform/callback-configuration).
+
+<Note>
+Click tracking depends on URL shortening being enabled on the send — see
+[URL shortener](/api-reference/sms/send-sms-omni#url-shortener). Without it, there is no click to
+report.
+</Note>
+
+## Payload
+
+```json
+{
+  "apiKey": "YOUR_API_KEY",
+  "tucId": 2176,
+  "clickId": "3L2AO46VicHM4V2NKU",
+  "header": "ONEXTEL",
+  "templateId": "YOUR_DLT_TEMPLATE_ID",
+  "campaignName": "SMS2026",
+  "channel": "sms",
+  "destination": "919999999999",
+  "custref2": "order-4821",
+  "category": "SE",
+  "isOtp": "0",
+  "credit": 1,
+  "split_count": "1",
+  "operator": "Airtel",
+  "circle": "UP (West)",
+  "os": "macOS",
+  "browser": "Safari",
+  "long_url": "https://example.com/offers/spring",
+  "short_url": "onexaura.com/shu/00I3wX",
+  "short_code": "0I3wX",
+  "VENDOR_ID": "Vendor",
+  "baseId": null,
+  "submitDate": "261022130408",
+  "submitTS_ISO": "22-10-2026 13:04:08",
+  "incomingTS_ISO": "22-10-2026 13:04:08",
+  "doneDate": "261022130424",
+  "doneTS_ISO": "22-10-2026 13:04:24",
+  "clickTS_ISO": "22-10-2026 13:04:24",
+  "clickedTs": 1792654464936,
+  "receivedDate": "261022130408",
+  "currentDate": "22-10-2026 13:04:25",
+  "partition_year": "2026",
+  "partition_month": "10",
+  "partition_day": "22"
+}
+```
+
+### Identity and routing
+
+<ResponseField name="apiKey" type="string">
+  The API key the original message was sent with.
+</ResponseField>
+
+<ResponseField name="tucId" type="integer">
+  TUC (account) identifier for the original send.
+</ResponseField>
+
+<ResponseField name="clickId" type="string">
+  Unique identifier for this click event.
+</ResponseField>
+
+<ResponseField name="header" type="string">
+  Sender ID the original message was sent from.
+</ResponseField>
+
+<ResponseField name="templateId" type="string">
+  DLT template ID the original message was sent against.
+</ResponseField>
+
+<ResponseField name="campaignName" type="string">
+  Campaign name set on the original send, if any.
+</ResponseField>
+
+<ResponseField name="channel" type="string">
+  Channel the click came from — `sms`.
+</ResponseField>
+
+<ResponseField name="destination" type="string">
+  Recipient mobile number.
+</ResponseField>
+
+<ResponseField name="category" type="string">
+  DLT consent category of the original message — for example `SE` for Service Explicit. See
+  [DLT template types](/guides/sms/dlt#template-types).
+</ResponseField>
+
+<ResponseField name="VENDOR_ID" type="string">
+  Vendor or routing identifier associated with the click record.
+</ResponseField>
+
+<ResponseField name="baseId" type="string">
+  Internal reference identifier. May be `null`.
+</ResponseField>
+
+### Custom references
+
+<ResponseField name="custref1 … custref5" type="string">
+  Whichever custom references you set on the original send, echoed back under the same names you
+  sent them with — see
+  [custom references](/api-reference/sms/dlr-callback#custom-references) on the delivery report.
+</ResponseField>
+
+### Click details
+
+<ResponseField name="isOtp" type="string">
+  Whether the original message was an OTP message — `1` for yes, `0` for no.
+</ResponseField>
+
+<ResponseField name="credit" type="integer">
+  Credits consumed by the original SMS send.
+</ResponseField>
+
+<ResponseField name="split_count" type="string">
+  Number of parts the original SMS was split into.
+</ResponseField>
+
+<ResponseField name="operator" type="string">
+  Telecom operator that delivered the message, for example `Airtel`.
+</ResponseField>
+
+<ResponseField name="circle" type="string">
+  Telecom circle the recipient's number belongs to.
+</ResponseField>
+
+<ResponseField name="os" type="string">
+  Operating system of the device used to click the link.
+</ResponseField>
+
+<ResponseField name="browser" type="string">
+  Browser used to click the link.
+</ResponseField>
+
+### URL
+
+<ResponseField name="long_url" type="string">
+  The original, unshortened URL from the message.
+</ResponseField>
+
+<ResponseField name="short_url" type="string">
+  The shortened URL the recipient clicked.
+</ResponseField>
+
+<ResponseField name="short_code" type="string">
+  The code portion of the shortened URL.
+</ResponseField>
+
+### Timestamps
+
+<ResponseField name="submitDate" type="string">
+  When the original message was submitted, formatted `YYMMDDHHmmss`.
+</ResponseField>
+
+<ResponseField name="submitTS_ISO" type="string">
+  When the original message was submitted, formatted `DD-MM-YYYY HH:mm:ss`.
+</ResponseField>
+
+<ResponseField name="incomingTS_ISO" type="string">
+  When the original request entered the platform, formatted `DD-MM-YYYY HH:mm:ss`.
+</ResponseField>
+
+<ResponseField name="doneDate" type="string">
+  When the original message reached its final delivery state, formatted `YYMMDDHHmmss`.
+</ResponseField>
+
+<ResponseField name="doneTS_ISO" type="string">
+  When the original message reached its final delivery state, formatted `DD-MM-YYYY HH:mm:ss`.
+</ResponseField>
+
+<ResponseField name="clickTS_ISO" type="string">
+  When the recipient clicked the link, formatted `DD-MM-YYYY HH:mm:ss`.
+</ResponseField>
+
+<ResponseField name="clickedTs" type="integer">
+  When the recipient clicked the link, in epoch milliseconds.
+</ResponseField>
+
+<ResponseField name="receivedDate" type="string">
+  When the platform recorded this click event, formatted `YYMMDDHHmmss`.
+</ResponseField>
+
+<ResponseField name="currentDate" type="string">
+  When this callback payload was generated, formatted `DD-MM-YYYY HH:mm:ss`.
+</ResponseField>
+
+<ResponseField name="partition_year" type="string">
+  Year used to partition click data by date.
+</ResponseField>
+
+<ResponseField name="partition_month" type="string">
+  Month used to partition click data by date.
+</ResponseField>
+
+<ResponseField name="partition_day" type="string">
+  Day used to partition click data by date.
+</ResponseField>
+
+## Related
+
+- [DLR callback](/api-reference/sms/dlr-callback) — the delivery receipt for the message itself
+- [Callback configuration](/guides/platform/callback-configuration)
+- [SMS reports](/guides/sms/reports#clicker-data) — the same click activity, viewed in the portal

@@ -235,6 +235,9 @@
               "api-reference/sms/overview",
               "api-reference/sms/send-sms-omni",
               "api-reference/sms/dlr-callback",
+              "api-reference/sms/clicker-callback",
+              "api-reference/sms/get-status",
+              "api-reference/sms/url-shortener",
               "api-reference/sms/error-codes"
             ]
           },
