@@ -4,10 +4,6 @@ description: "Issue a fresh PIN on an existing pinId, optionally on a different 
 openapi: "POST /v1/pins/{pinId}/resend"
 ---
 
-import ImportVerify from '/snippets/import-verify.mdx';
-
-<ImportVerify />
-
 Use this when the user says they never got the code, or when the PIN has expired and you want to
 keep them in the same flow rather than starting over.
 

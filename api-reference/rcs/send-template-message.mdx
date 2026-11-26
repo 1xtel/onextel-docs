@@ -3,10 +3,6 @@ title: "Send an RCS Template Message"
 description: "Send an approved RCS template, optionally personalized with custom parameters, via the OneXtel Omni platform."
 ---
 
-import ImportRcs from '/snippets/import-rcs.mdx';
-
-<ImportRcs />
-
 Once an RCS template is created and approved (see [RCS Templates](/api-reference/rcs/templates)),
 send it to a recipient by referencing its `templateCode` in a Send Message request. This is the
 same `/oapi/send_sms` endpoint used for [non-template RCS messages](/api-reference/rcs/send-messages) —
