@@ -227,6 +227,334 @@
         "tags": [
           "Send Sms Omni"
         ]
+      },
+      "get": {
+        "operationId": "send-sms-omni-send-sms-india-get",
+        "summary": "Send SMS — India (GET)",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/sms/send-sms-omni#send-via-get",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "query",
+            "required": true,
+            "description": "Your OneXtel API key.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "sender",
+            "in": "query",
+            "required": true,
+            "description": "Sender ID. Must be DLT-approved.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "recipient",
+            "in": "query",
+            "required": true,
+            "description": "Recipient mobile number. Pass a comma-separated list for one-to-many.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "messageBody",
+            "in": "query",
+            "required": true,
+            "description": "Content of the SMS.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "description": "Message type: SI, OTP, or SE. Case-sensitive.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "templateId",
+            "in": "query",
+            "required": false,
+            "description": "DLT-approved template ID.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "entityId",
+            "in": "query",
+            "required": false,
+            "description": "DLT entity ID.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "campaignName",
+            "in": "query",
+            "required": false,
+            "description": "Identifier used to group and track messages as a campaign.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "urlflag",
+            "in": "query",
+            "required": false,
+            "description": "The query-string equivalent of urlShortener.flag.",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "custref1",
+            "in": "query",
+            "required": false,
+            "description": "Custom reference 1.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "custref2",
+            "in": "query",
+            "required": false,
+            "description": "Custom reference 2.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "custref3",
+            "in": "query",
+            "required": false,
+            "description": "Custom reference 3.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "custref4",
+            "in": "query",
+            "required": false,
+            "description": "Custom reference 4.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "custref5",
+            "in": "query",
+            "required": false,
+            "description": "Custom reference 5.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "requestId": { "type": "string" },
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "status": { "type": "string" },
+                          "recipient": { "type": "string" },
+                          "messageId": { "type": "string" },
+                          "description": { "type": "string" }
+                        }
+                      }
+                    },
+                    "campaignName": { "type": "string" }
+                  }
+                },
+                "examples": {
+                  "response-success": {
+                    "summary": "Accepted",
+                    "value": {
+                      "status": "SUCCESS",
+                      "requestId": "3LEHfngZVkPpKMuOLeNg8a9svwE",
+                      "messages": [
+                        {
+                          "status": "SENT",
+                          "recipient": "919999999999",
+                          "messageId": "3LEHfn7qH426KqtcrpkEMn6vigq",
+                          "description": "Message submitted successfully"
+                        }
+                      ],
+                      "campaignName": "SMS2026"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Send Sms Omni"
+        ]
+      }
+    },
+    "/surl": {
+      "get": {
+        "operationId": "sms-url-shortener",
+        "summary": "Standalone URL Shortener",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/sms/url-shortener",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "description": "The long URL to shorten.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "apikey",
+            "in": "query",
+            "required": true,
+            "description": "Your OneXtel API key. Can also be passed as a header.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "short_url": { "type": "string" }
+                  }
+                },
+                "examples": {
+                  "response-success": {
+                    "summary": "Accepted",
+                    "value": { "short_url": "onexaura.com/shu/00BLlM" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "URL Shortener"
+        ]
+      }
+    },
+    "/get_status": {
+      "get": {
+        "operationId": "sms-get-status-get",
+        "summary": "Pull Message Status (GET)",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/sms/get-status",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "required": true,
+            "description": "Your OneXtel API key.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "uuid",
+            "in": "query",
+            "required": true,
+            "description": "One message UUID, or several separated by commas.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "UUId": { "type": "string" },
+                    "statusCode": { "type": "string" },
+                    "description": { "type": "string" },
+                    "deliveryStatus": { "type": "string" },
+                    "deliveredtimestamp": { "type": "string" }
+                  }
+                },
+                "examples": {
+                  "response-success": {
+                    "summary": "Accepted",
+                    "value": {
+                      "UUId": "3KaaATbUD5rSac7HTgm98ihFRUw",
+                      "statusCode": "000",
+                      "description": "Message delivered successfully",
+                      "deliveryStatus": "DELIVERED",
+                      "deliveredtimestamp": "2026-10-12 15:09:49"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Get Status"
+        ]
+      },
+      "post": {
+        "operationId": "sms-get-status-post",
+        "summary": "Pull Message Status (POST)",
+        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/sms/get-status",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "description": "Your OneXtel API key."
+                  },
+                  "uuid": {
+                    "type": "string",
+                    "description": "One message UUID, or several separated by commas."
+                  }
+                },
+                "required": ["key", "uuid"]
+              },
+              "examples": {
+                "example-request": {
+                  "summary": "Example request",
+                  "value": {
+                    "key": "YOUR_API_KEY",
+                    "uuid": "3DItarIKq8YPm07DoV"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "UUId": { "type": "string" },
+                    "statusCode": { "type": "string" },
+                    "description": { "type": "string" },
+                    "deliveryStatus": { "type": "string" },
+                    "deliveredtimestamp": { "type": "string" }
+                  }
+                },
+                "examples": {
+                  "response-success": {
+                    "summary": "Accepted",
+                    "value": {
+                      "UUId": "3KaaATbUD5rSac7HTgm98ihFRUw",
+                      "statusCode": "000",
+                      "description": "Message delivered successfully",
+                      "deliveryStatus": "DELIVERED",
+                      "deliveredtimestamp": "2026-10-12 15:09:49"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Get Status"
+        ]
       }
     }
   }

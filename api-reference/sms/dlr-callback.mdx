@@ -26,6 +26,7 @@ The full set of parameters currently supported for SMS.
 ```json
 {
   "apiKey": "YOUR_API_KEY",
+  "appname": "YOUR_APP_NAME",
   "custRef": {
     "custref1": {
       "CustomReference1": "testSMS",
@@ -40,10 +41,14 @@ The full set of parameters currently supported for SMS.
   "header": "ONEXTEL",
   "incomingTs": 1786517520081,
   "messageTxt": "Dear Customer, your account has been created. URL: (#var#) Username: (#var#) Password: (#var#)",
+  "operator": "Airtel",
+  "receiveDate": "260812122201",
   "status": "DELIVERED",
+  "subCode": "001",
   "submitDate": "260812122200",
   "submitTs": 1786517520149,
   "templateId": "YOUR_DLT_TEMPLATE_ID",
+  "tucId": 2176,
   "uuid": "3HnxEKeKkZ0tAvEdTYiV6ADJ3la"
 }
 ```
@@ -58,6 +63,10 @@ The full set of parameters currently supported for SMS.
   The API key the message was sent with.
 </ResponseField>
 
+<ResponseField name="appname" type="string">
+  The application or source identifier associated with the send, where one is configured.
+</ResponseField>
+
 <ResponseField name="destination" type="string">
   Recipient mobile number.
 </ResponseField>
@@ -66,8 +75,17 @@ The full set of parameters currently supported for SMS.
   Sender ID the message was sent from.
 </ResponseField>
 
+<ResponseField name="operator" type="string">
+  The telecom operator that handled delivery, for example `Airtel`, when the platform has this
+  information.
+</ResponseField>
+
 <ResponseField name="templateId" type="string">
   DLT template ID the message was sent against.
+</ResponseField>
+
+<ResponseField name="tucId" type="integer">
+  TUC (account) identifier the message was sent under.
 </ResponseField>
 
 ### Outcome
@@ -89,11 +107,16 @@ The full set of parameters currently supported for SMS.
   Delivery receipt code.
 </ResponseField>
 
+<ResponseField name="subCode" type="string">
+  Additional status code alongside `dlrCode` and `errorCode`.
+</ResponseField>
+
 <Warning>
-`dlrCode` and `errorCode` are separate fields carrying different values — a delivered message
-shows `dlrCode: "001"` alongside `errorCode: "000"`. Branch your logic on **`errorCode`**, which
-is the field the [error code table](/api-reference/sms/error-codes) documents. The relationship
-between the two is not documented; treat `dlrCode` as informational until it is.
+`dlrCode`, `subCode` and `errorCode` are separate fields carrying different values — a delivered
+message shows `dlrCode: "001"` alongside `errorCode: "000"`. Branch your logic on **`errorCode`**,
+which is the field the [error code table](/api-reference/sms/error-codes) documents. The
+relationship between `dlrCode`/`subCode` and `errorCode` is not documented; treat the former as
+informational until it is.
 </Warning>
 
 ### Content
@@ -102,11 +125,25 @@ between the two is not documented; treat `dlrCode` as informational until it is.
   The message text as sent. Template variables appear in their substituted form.
 </ResponseField>
 
-<ResponseField name="custRef" type="object">
-  The custom references you set on the original send, echoed back unchanged — `custref1`
-  containing `CustomReference1` and `CustomReference2`. This is the simplest way to carry your
-  own order or campaign identifiers through to the receipt.
+### Custom references
+
+Custom references come back in whichever form you sent them on the
+[original send](/api-reference/sms/send-sms-omni#the-sms-array) — the two forms are independent.
+
+<ResponseField name="custref1 … custref5" type="string">
+  Present when you sent a plain string value for `custRef1`–`custRef5`. Each is echoed back as
+  its own flat field — `custref1`, `custref2`, and so on.
 </ResponseField>
+
+<ResponseField name="custRef" type="object">
+  Present when you sent `custRef1` as a nested object. Echoed back unchanged — `custref1`
+  containing `CustomReference1` and `CustomReference2`, or whatever keys you nested inside it.
+</ResponseField>
+
+<Note>
+Either form is the simplest way to carry your own order or campaign identifiers through to the
+receipt — use whichever matches how you sent it.
+</Note>
 
 ### Timestamps
 
@@ -116,6 +153,10 @@ between the two is not documented; treat `dlrCode` as informational until it is.
 
 <ResponseField name="doneDate" type="string">
   When the message reached its final state, formatted `YYMMDDHHmmss`.
+</ResponseField>
+
+<ResponseField name="receiveDate" type="string">
+  When the platform or network recorded this receipt, formatted `YYMMDDHHmmss`.
 </ResponseField>
 
 <ResponseField name="submitTs" type="integer">
@@ -135,6 +176,8 @@ the spread across a campaign surfaces routing problems earlier than the delivery
 ## Related
 
 - [SMS error codes](/api-reference/sms/error-codes)
+- [Clicker callback](/api-reference/sms/clicker-callback) — the equivalent receipt for link clicks
+- [Pull message status](/api-reference/sms/get-status) — look up status instead of receiving it
 - [Callback configuration](/guides/platform/callback-configuration)
 - [Message status](/api-reference/omnichannel/message-status) — poll for status instead of receiving it
 - [International DLR callback](/api-reference/sms-international/dlr-callback) — the equivalent for non-India traffic
