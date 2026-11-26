@@ -20,7 +20,7 @@ const PV_LABEL = {
 const PV_SAMPLES = {
   smsBroken: '{\n  "sms": [\n    {\n      "sender": "ONEXTL",\n      "recipient": "9823329163",\n      "type": "TRANS",\n      "messageBody": "1234 is your ONEXTEL verification code. Visit https://onextel.com/help",\n      "templateId": 1007206634501788500,\n      "entityId": "10019213851834602",\n      "unicode": 0,\n      "custRef1": { "CustomReference1": "order-1042", "CustomReference9": "x" }\n    }\n  ],\n  "campaignName": "OTP-OCT",\n  "prefix": "",\n  "validation": true,\n  "urlShortener": { "flag": 1, "urlDetails": [ { "longUrl": "https://onextel.com/help" } ] }\n}',
   sms: { sms: [{ sender: "ONEXTL", recipient: "919999999999", type: "SE", messageBody: "1234 is your ONEXTEL verification code.", templateId: "1007206634501788500", entityId: "1001921385183460200", unicode: 0, custRef1: { CustomReference1: "order-1042", CustomReference2: "123" } }], campaignName: "SMS2026", prefix: "", validation: true },
-  intl: { key: "YOUR_API_KEY", listsms: [{ from: "OneXtel", to: "971501234567", body: "Your code is 4821.", clientsmsid: "c-1001", custref1: "order-1042" }] },
+  intl: { key: "YOUR_API_KEY", listsms: [{ from: "OneXtel", to: "971501234567", body: "Your code is 4821.", clientsmsid: "c-1001" }] },
   "wa-template": { wa: [{ messaging_product: "whatsapp", recipient_type: "individual", recipient: ["9999999999"], sender: "919217090193", type: "template", template: { name: "order_update", language: { code: "en_US" }, components: [{ type: "body", parameters: [{ type: "text", text: "Arjun" }, { type: "text", text: "1042" }] }] }, custref1: "order-1042" }], prefix: "+91", campaignName: "orders" },
   "wa-session": { wa: [{ messaging_product: "whatsapp", recipient_type: "individual", recipient: "919999999999", sender: "919217090193", type: "interactive", interactive: { type: "button", body: { text: "Did your order arrive?" }, action: { buttons: [{ type: "reply", reply: { id: "yes", title: "Yes" } }, { type: "reply", reply: { id: "no", title: "No" } }] } } }] },
   "rcs-template": { rcs: [{ messageType: "Transactional", recipient: "9999999999", sender: "Acme_trans", ttl: "1200s", contentMessage: { templateMessage: { templateCode: "payment_success_onex", customParams: "{\"custom_param1\":\"Arjun\"}" } }, custref1: "pay-1042" }], prefix: "+91", campaignName: "payments" },
@@ -73,11 +73,11 @@ const pvIndia = (r, value, path, doc, opts = {}) => {
   r.warn(path, `\`${d}\` is not a valid Indian mobile number: 10 digits in the 6–9 series, optionally after 91.`, opts.lenient ? billed : null, doc);
 };
 
-const pvIntl = (r, value, path, doc) => {
+const pvIntl = (r, value, path, doc, rejected = "Rejected as an invalid mobile number (code 900101).") => {
   const raw = String(value);
   if (raw.startsWith("+")) r.warn(path, "Drop the leading `+`. Send digits only, with the country code.", null, doc);
   const d = pvDigits(raw);
-  if (d.length < 8 || d.length > 15 || /[^\d+]/.test(raw)) r.err(path, `\`${raw}\` is not a valid international number: 8 to 15 digits including the country code.`, "Rejected as an invalid mobile number (code 900101).", doc);
+  if (d.length < 8 || d.length > 15 || /[^\d+]/.test(raw)) r.err(path, `\`${raw}\` is not a valid international number: 8 to 15 digits including the country code.`, rejected, doc);
 };
 
 const pvAnyNumber = (r, value, path, doc, prefixSet) => {
@@ -175,16 +175,14 @@ const pvIntlList = (r, b) => {
   if (!b.key) r.err("key", "`key` is required: on this API the API key goes in the body.", "Rejected: authentication failure.", d);
   if (!Array.isArray(b.listsms)) { r.err("listsms", "`listsms` is required: an array of message objects.", null, d); return; }
   if (b.listsms.length === 0) r.warn("listsms", "`listsms` is empty. Nothing is sent.", null, d);
-  if (b.listsms.length > 2500) r.err("listsms", `\`listsms\` has ${b.listsms.length} entries. The maximum is 2,500 per request.`, null, d);
   b.listsms.forEach((m, i) => {
     const p = `listsms[${i}]`;
     if (!pvIsObj(m)) { r.err(p, "Each entry must be an object.", null, d); return; }
     pvRequireStr(r, m, "from", `${p}.from`, null, d);
-    if (!m.to) r.err(`${p}.to`, "`to` is required, with the country code.", null, d); else pvIntl(r, m.to, `${p}.to`, d);
+    if (!m.to) r.err(`${p}.to`, "`to` is required, with the country code.", null, d); else pvIntl(r, m.to, `${p}.to`, d, "Rejected on submission with `code` 700, invalid mobile number.");
     pvRequireStr(r, m, "body", `${p}.body`, null, d);
     if (m.body && pvNonGsm(m.body).length) r.info(`${p}.body`, "The body contains characters outside the GSM alphabet, so it is sent as Unicode: 70 characters per part instead of 160.", null, d);
-    pvCustRefs(r, m, p, d, 5, {});
-    pvUnknown(r, m, ["from", "to", "body", "clientsmsid", "custref1", "custref2", "custref3", "custref4", "custref5"], p, d);
+    pvUnknown(r, m, ["from", "to", "body", "clientsmsid"], p, d);
   });
   pvUnknown(r, b, ["key", "listsms"], "body", d);
 };

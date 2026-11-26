@@ -15,7 +15,7 @@ check runs in your browser: nothing is sent, and your payload and API key never 
 | API | Checks |
 | --- | --- |
 | [SMS, India](/api-reference/sms/send-sms-omni) | Required fields, `type` (`SI`, `OTP` or `SE`, case-sensitive), recipient format, DLT IDs, Unicode, custom references, URL shortening |
-| [SMS, international](/api-reference/sms-international/send-sms) | `key`, the 2,500-message limit, numbers with country codes, Unicode |
+| [SMS, international](/api-reference/sms-international/send-sms) | `key`, `listsms` and its `from`, `to`, `body` and `clientsmsid` fields, numbers with country codes, Unicode |
 | [WhatsApp template](/api-reference/whatsapp/send-template-message) | Envelope fields, business number, template name and language, components, buttons, carousels |
 | [WhatsApp session message](/api-reference/whatsapp/send-session-messages) | Message type and its required fields, interactive buttons, lists and carousels |
 | [RCS](/api-reference/rcs/send-template-message) | `messageType`, recipients, `ttl` format, `customParams` as a JSON string, rich card and carousel limits |
