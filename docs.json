@@ -33,6 +33,15 @@
             ]
           },
           {
+            "group": "Compliance",
+            "pages": [
+              "guides/compliance/overview",
+              "guides/compliance/regulatory",
+              "guides/compliance/security",
+              "guides/compliance/privacy"
+            ]
+          },
+          {
             "group": "Platform",
             "pages": [
               "guides/platform/overview",

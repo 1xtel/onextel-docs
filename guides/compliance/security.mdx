@@ -1,0 +1,97 @@
+---
+title: "Security"
+description: "How OneXtel protects your data: encryption, access control, monitoring, security testing and incident response."
+keywords: ["encryption", "AES-256", "TLS 1.3", "RBAC", "SIEM", "penetration test", "VAPT", "incident response"]
+---
+
+This page describes the controls that protect the data you send through OneXtel. An independent
+auditor tests these controls for the [SOC 2 Type II report](/guides/compliance/regulatory#soc-2-type-ii).
+
+## Encryption
+
+| Data | Protection |
+| --- | --- |
+| At rest | AES-256-GCM |
+| In transit | TLS 1.3 |
+
+Send API requests and receive callbacks over HTTPS only. A callback URL that starts with
+`http://` sends delivery reports, including recipient numbers, unencrypted.
+
+## Access control
+
+Access to the platform is role-based. Each user gets a role, and the role decides which features
+the user can view, change or download from.
+
+- **In your account**, you choose who gets which role. The portal has built-in roles and lets you
+  define your own. See [Roles](/guides/platform/roles) and
+  [User management](/guides/platform/user-management).
+- **At OneXtel**, staff access to production systems follows the same principle: access is granted
+  by role, to the people whose job needs it.
+
+Give each person their own user, with the narrowest role that lets them do their work. A shared
+login makes the activity log useless for finding out who did what.
+
+## Logging and monitoring
+
+OneXtel runs a security information and event management (SIEM) system that collects security
+events from its servers and endpoints. A security operations centre (SOC) monitors those events
+continuously, triages alerts, and escalates confirmed incidents.
+
+## Security testing
+
+OneXtel runs vulnerability assessment and penetration testing (VAPT) on a schedule: every quarter
+for production infrastructure and for the OneXtel platform.
+
+The most recent web application penetration test:
+
+| | |
+| --- | --- |
+| Tester | Auriseg, an independent security firm |
+| Method | Grey-box testing against the OWASP Top 10 and SANS 25 |
+| Scope | The OneXtel portal, in staging and production |
+| Tested | 13 to 20 August 2026 |
+| Retested | 7 to 8 October 2026 |
+| Result | Every finding closed on retest. Overall status: pass. |
+
+The full report is confidential. To get a copy for your review, see
+[Request evidence](/guides/compliance/overview#request-evidence).
+
+## Endpoint and patch management
+
+OneXtel's security objectives, measured on a schedule, include:
+
+| Control | Target |
+| --- | --- |
+| Antivirus on endpoints | Every active machine |
+| Data leakage protection on endpoints | Every active machine |
+| Patching | 95% of systems patched within 14 days |
+| Security and privacy awareness training | 90% of employees each month |
+
+## Incident response
+
+OneXtel follows a documented incident management process: detect and report, validate and
+analyse, contain, restore service, find the root cause, and apply corrective action. Incidents at
+the two highest priorities always get a root cause analysis.
+
+Each incident is given a priority, which sets how fast OneXtel responds:
+
+| Priority | Meaning | Mean time to respond | Mean time to resolve |
+| --- | --- | --- | --- |
+| P1 | System not operable, organisation-wide impact, or a possible leak of confidential data | 15 minutes | 4 hours |
+| P2 | System working at reduced capacity, many users affected | 30 minutes | 8 hours |
+| P3 | One user affected, work can continue | 1 hour | 48 hours |
+| P4 | One user affected, closer to a service request | 2 hours | 72 hours |
+
+### Report a security problem
+
+If you find a vulnerability in OneXtel, or suspect that your account or API key has been
+misused, write to [security@onextel.com](mailto:security@onextel.com). Include what you saw,
+when, and the account it concerns.
+
+If an API key may have leaked, replace it. See [API keys](/guides/platform/api-keys).
+
+## Business continuity
+
+OneXtel's data centres run in active-active or active-standby pairs, so traffic fails over to
+another site if one region goes down. See
+[Where data is hosted](/guides/compliance/privacy#where-data-is-hosted).
