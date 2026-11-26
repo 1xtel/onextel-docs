@@ -2,13 +2,11 @@
   "openapi": "3.1.0",
   "info": {
     "title": "OneXtel SMS API (International)",
-    "version": "1.0.0",
-    "description": "Send SMS to destinations outside India.\n\nGenerated from the OneXtel API reference by scripts/build-openapi.py."
+    "version": "1.0.0"
   },
   "servers": [
     {
-      "url": "https://api.int.onexglobal.io",
-      "description": "Production"
+      "url": "https://api.int.onexglobal.io"
     }
   ],
   "paths": {
@@ -16,7 +14,6 @@
       "post": {
         "operationId": "send-sms-send-sms-international",
         "summary": "Send SMS — International",
-        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/sms-international/send-sms",
         "requestBody": {
           "required": true,
           "content": {
@@ -25,8 +22,7 @@
                 "type": "object",
                 "properties": {
                   "key": {
-                    "type": "string",
-                    "description": "An API key, assigned to the user for authentication."
+                    "type": "string"
                   },
                   "listsms": {
                     "type": "array",
@@ -61,44 +57,34 @@
                           "type": "string"
                         }
                       }
-                    },
-                    "description": "A list containing one or more SMS message objects to be sent. **Maximum 2,500 objects per request.**"
+                    }
                   },
                   "from": {
-                    "type": "string",
-                    "description": "Sender ID or name that appears as the message originator. Accepts alphanumeric or numeric values — OneXtel applies no validation to this field. See Sender IDs before you choose one."
+                    "type": "string"
                   },
                   "to": {
-                    "type": "string",
-                    "description": "Recipient's mobile number including country code (e.g., `918872725225`)."
+                    "type": "string"
                   },
                   "body": {
-                    "type": "string",
-                    "description": "The text content of the SMS message."
+                    "type": "string"
                   },
                   "clientsmsid": {
-                    "type": "string",
-                    "description": "Client-side unique identifier for tracking the message. Echoed back as `CLIENTMSID` on the delivery receipt."
+                    "type": "string"
                   },
                   "custref1": {
-                    "type": "string",
-                    "description": "Custom reference value. Echoed back unchanged on both the submission response and the delivery receipt. See Reference IDs."
+                    "type": "string"
                   },
                   "custref2": {
-                    "type": "string",
-                    "description": "Second custom reference value."
+                    "type": "string"
                   },
                   "custref3": {
-                    "type": "string",
-                    "description": "Third custom reference value."
+                    "type": "string"
                   },
                   "custref4": {
-                    "type": "string",
-                    "description": "Fourth custom reference value."
+                    "type": "string"
                   },
                   "custref5": {
-                    "type": "string",
-                    "description": "Fifth custom reference value."
+                    "type": "string"
                   }
                 },
                 "required": [
@@ -179,7 +165,6 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -258,11 +243,12 @@
                   }
                 }
               }
-            }
+            },
+            "description": "OK"
           }
         },
         "tags": [
-          "Send Sms"
+          "Send SMS — International"
         ]
       }
     }

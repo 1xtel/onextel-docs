@@ -2,699 +2,121 @@
   "openapi": "3.1.0",
   "info": {
     "title": "OneXtel WhatsApp API",
-    "version": "1.0.0",
-    "description": "Create and fetch WhatsApp templates, send template and session messages, upload media and manage opt-in / opt-out lists.\n\nGenerated from the OneXtel API reference by scripts/build-openapi.py."
+    "version": "1.0.0"
   },
   "servers": [
     {
-      "url": "https://api.onexaura.com",
-      "description": "Production"
+      "url": "https://api.onexaura.com"
     }
   ],
   "paths": {
     "/wa/templates": {
       "post": {
-        "operationId": "templates-create-create-whatsapp-template",
-        "summary": "Create WhatsApp Template",
-        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/templates-create",
+        "tags": [
+          "Template"
+        ],
+        "summary": "Template",
+        "operationId": "whatsapp-template-post",
         "parameters": [
           {
-            "name": "apikey",
+            "name": "apiKey",
             "in": "header",
-            "required": true,
-            "description": "API key generated for the TUC (telecom user connection) associated with the sending WhatsApp phone number. Example: `7pvxoA4c`.",
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "{{apikey}}"
           }
         ],
         "requestBody": {
-          "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "Unique template name in the Meta Cloud API. Should be descriptive of the template's purpose (e.g. `zero_tap_authentication_temp_3`)."
-                  },
-                  "category": {
-                    "type": "string",
-                    "description": "Template category: `AUTHENTICATION`, `UTILITY`, or `MARKETING`."
-                  },
-                  "language": {
-                    "type": "string",
-                    "description": "Template language code per ISO (e.g. `en_US`)."
-                  },
-                  "components": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string"
-                        },
-                        "add_security_recommendation": {
-                          "type": "boolean",
-                          "description": "Adds a security note below the OTP message (recommended). Set on the `BODY` component."
-                        },
-                        "code_expiration_minutes": {
-                          "type": "integer",
-                          "description": "OTP code validity in minutes. Set on the `FOOTER` component; required only if the OTP has an expiry."
-                        },
-                        "buttons": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "url": {
-                                "type": "string"
-                              },
-                              "text": {
-                                "type": "string"
-                              },
-                              "type": {
-                                "type": "string"
-                              },
-                              "example": {
-                                "type": "array",
-                                "items": {
-                                  "type": "string"
-                                }
-                              },
-                              "otp_type": {
-                                "type": "string"
-                              },
-                              "phone_number": {
-                                "type": "string"
-                              },
-                              "flow_id": {
-                                "type": "string"
-                              },
-                              "flow_action": {
-                                "type": "string"
-                              },
-                              "navigate_screen": {
-                                "type": "string"
-                              }
-                            }
-                          }
-                        },
-                        "format": {
-                          "type": "string"
-                        },
-                        "example": {
-                          "type": "object",
-                          "properties": {
-                            "media_id": {
-                              "type": "string"
-                            },
-                            "body_text": {
-                              "type": "array",
-                              "items": {
-                                "type": "array",
-                                "items": {
-                                  "type": "string"
-                                }
-                              }
-                            },
-                            "url": {
-                              "type": "string"
-                            }
-                          }
-                        },
-                        "text": {
-                          "type": "string"
-                        },
-                        "limited_time_offer": {
-                          "type": "object",
-                          "properties": {
-                            "text": {
-                              "type": "string",
-                              "description": "Display text for the offer banner."
-                            },
-                            "has_expiration": {
-                              "type": "boolean",
-                              "description": "Whether the offer expires. Defaults to `false`."
-                            }
-                          },
-                          "required": [
-                            "text"
-                          ]
-                        },
-                        "cards": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "components": {
-                                "type": "array",
-                                "items": {
-                                  "type": "object",
-                                  "properties": {
-                                    "type": {
-                                      "type": "string"
-                                    },
-                                    "format": {
-                                      "type": "string"
-                                    },
-                                    "buttons": {
-                                      "type": "array",
-                                      "items": {
-                                        "type": "object",
-                                        "properties": {
-                                          "text": {
-                                            "type": "string"
-                                          },
-                                          "type": {
-                                            "type": "string"
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "description": "Array of component objects — combinations of `HEADER`, `BODY`, `FOOTER`, `BUTTONS`, `LIMITED_TIME_OFFER`, and `CAROUSEL`, depending on template type. See the tabs below."
-                  },
-                  "parameter_format": {
-                    "type": "string",
-                    "description": "Determines how body/header variables are referenced. `POSITIONAL` (default, e.g. `{{1}}`) or `NAMED` (e.g. `{{customer_name}}`)."
-                  },
-                  "message_send_ttl_seconds": {
-                    "type": "integer",
-                    "description": "Time-to-live for the message in seconds. Range varies by category: Authentication 30 seconds–15 minutes; Utility 30 seconds–12 hours; Marketing/LTO/Carousel 12 hours–30 days (30-day maximum applies only for MM Lite)."
-                  },
-                  "sub_category": {
-                    "type": "string",
-                    "description": "Only used for `ORDER_STATUS` and `ORDER_DETAILS` utility templates — see those tabs."
-                  },
                   "data": {
-                    "type": "string",
-                    "description": "JSON-encoded string containing the template payload (name, category, language, components, etc. — see below). Sent as a form field, not raw JSON."
+                    "type": "string"
                   },
                   "waba_id": {
-                    "type": "string",
-                    "description": "WhatsApp Business Account ID the template is created under."
-                  },
-                  "update_by": {
-                    "type": "string",
-                    "description": "Free-text string."
-                  },
-                  "cards": {
-                    "type": "array",
-                    "description": "Array of card objects, each with its own `components` (header + buttons).",
-                    "items": {}
+                    "type": "string"
                   }
-                },
-                "required": [
-                  "data",
-                  "waba_id",
-                  "name",
-                  "category",
-                  "language",
-                  "components",
-                  "cards",
-                  "sub_category"
-                ]
+                }
               },
               "examples": {
-                "example-zero-tap-autofill-with-expiry": {
-                  "summary": "Example — Zero Tap AutoFill (with expiry)",
+                "authentication": {
+                  "summary": "Authentication",
                   "value": {
-                    "name": "zero_tap_authentication_temp_3",
-                    "category": "AUTHENTICATION",
-                    "language": "en_US",
-                    "components": [
-                      {
-                        "type": "BODY",
-                        "add_security_recommendation": true
-                      },
-                      {
-                        "type": "FOOTER",
-                        "code_expiration_minutes": 10
-                      },
-                      {
-                        "type": "BUTTONS",
-                        "buttons": [
-                          {
-                            "url": "https://www.whatsapp.com/otp/code/?otp_type=ZERO_TAP&cta_display_name=Autofill&package_name=com.example.authentication&signature_hash=123456789qw&code_expiration_minutes=10&code=otp{{1}}",
-                            "text": "Copy Code",
-                            "type": "URL",
-                            "example": [
-                              "https://www.whatsapp.com/otp/code/?otp_type=ZERO_TAP&cta_display_name=Autofill&package_name=com.example.authentication&signature_hash=123456789qw&code_expiration_minutes=10&code=otp123456"
-                            ]
-                          }
-                        ]
-                      }
-                    ],
-                    "parameter_format": "POSITIONAL",
-                    "message_send_ttl_seconds": 600
+                    "data": "{\n    \"name\": \"xx\",\n    \"language\": \"en_US\",\n    \"category\": \"authentication\",\n    \"components\": [\n        {\n            \"type\": \"BUTTONS\",\n            \"buttons\": [\n                {\n                    \"type\": \"otp\",\n                    \"otp_type\": \"copy_code\",\n                    \"text\": \"xx\"\n                }\n            ]\n        }\n    ]\n}",
+                    "waba_id": "{{wabaId}}"
                   }
                 },
-                "example-zero-tap-autofill-with-expiry-2": {
-                  "summary": "Example — Zero Tap AutoFill (with expiry) (2)",
+                "utility": {
+                  "summary": "Utility",
                   "value": {
-                    "name": "xx",
-                    "language": "en_US",
-                    "category": "authentication",
-                    "components": [
-                      {
-                        "type": "BUTTONS",
-                        "buttons": [
-                          {
-                            "type": "otp",
-                            "otp_type": "copy_code",
-                            "text": "xx"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                },
-                "body-with-header-image-and-buttons-full-example": {
-                  "summary": "Body with header image and buttons — full example",
-                  "value": {
-                    "name": "image_utility_with_params",
-                    "category": "UTILITY",
-                    "language": "en",
-                    "components": [
-                      {
-                        "type": "HEADER",
-                        "format": "IMAGE",
-                        "example": {
-                          "media_id": "<Media_ID>"
-                        }
-                      },
-                      {
-                        "text": "Hello {{1}}, your order #{{2}} has been placed successfully. It will be delivered by {{3}}. Track your order anytime from our app or website.",
-                        "type": "BODY",
-                        "example": {
-                          "body_text": [
-                            [
-                              "Customer_name",
-                              "order_id",
-                              "date"
-                            ]
-                          ]
-                        }
-                      },
-                      {
-                        "text": "Welcome To OneXtel LTD",
-                        "type": "FOOTER"
-                      },
-                      {
-                        "type": "BUTTONS",
-                        "buttons": [
-                          {
-                            "url": "https://fdqn/<URL>",
-                            "text": "Visit website",
-                            "type": "URL"
-                          },
-                          {
-                            "text": "Quick Reply",
-                            "type": "QUICK_REPLY"
-                          }
-                        ]
-                      }
-                    ],
-                    "parameter_format": "POSITIONAL"
+                    "data": "{\n    \"name\": \"xx\",\n    \"language\": \"xx\",\n    \"category\": \"utility\",\n    \"parameter_format\": \"POSITIONAL\",\n    \"components\": [\n        {\n            \"type\": \"HEADER\",\n            \"format\": \"VIDEO\",\n            \"example\": {\n                \"url\": \"xx\"\n            }\n        },\n        {\n            \"type\": \"BODY\",\n            \"text\": \"xx\"\n        },\n        {\n            \"type\": \"FOOTER\",\n            \"text\": \"xx\"\n        },\n        {\n            \"type\": \"BUTTONS\",\n            \"buttons\": [\n                {\n                    \"type\": \"PHONE_NUMBER\",\n                    \"text\": \"xx\",\n                    \"phone_number\": \"xx\"\n                }\n            ]\n        }\n    ]\n}",
+                    "waba_id": "{{wabaId}}"
                   }
                 },
                 "marketing": {
                   "summary": "Marketing",
                   "value": {
-                    "name": "image_marketing",
-                    "category": "MARKETING",
-                    "language": "en_US",
-                    "components": [
-                      {
-                        "type": "HEADER",
-                        "format": "IMAGE",
-                        "example": {
-                          "media_id": "<Media_ID>"
-                        }
-                      },
-                      {
-                        "text": "Hi {{1}}, exciting news! Your Fresh Basket shopping unlocks a special treat. Enjoy {{2}} exclusive discount on your next order and keep the savings rolling.",
-                        "type": "BODY",
-                        "example": {
-                          "body_text": [
-                            [
-                              "name",
-                              "offer"
-                            ]
-                          ]
-                        }
-                      },
-                      {
-                        "text": "Fresh Basket - Freshness with Rewards",
-                        "type": "FOOTER"
-                      },
-                      {
-                        "type": "BUTTONS",
-                        "buttons": [
-                          {
-                            "text": "Call phone number",
-                            "type": "PHONE_NUMBER",
-                            "phone_number": "+91**********"
-                          }
-                        ]
-                      }
-                    ],
-                    "parameter_format": "POSITIONAL"
+                    "data": "{\n    \"name\": \"xx\",\n    \"language\": \"xx\",\n    \"category\": \"marketing\",\n    \"parameter_format\": \"POSITIONAL\",\n    \"components\": [\n        {\n            \"type\": \"header\",\n            \"format\": \"xx\",\n            \"example\": {\n                \"url\": \"xx\"\n            }\n        },\n        {\n            \"type\": \"body\",\n            \"text\": \"<BODY_TEXT>\",\n            \"example\": {\n                \"body_text\": [\n                    \"xx\"\n                ]\n            }\n        },\n        {\n            \"type\": \"buttons\",\n            \"buttons\": [\n                {\n                    \"type\": \"copy_code\",\n                    \"example\": \"xx\"\n                },\n                {\n                    \"type\": \"url\",\n                    \"text\": \"xx\",\n                    \"url\": \"xx\",\n                    \"example\": [\n                        \"xx\"\n                    ]\n                }\n            ]\n        }\n    ]\n}",
+                    "waba_id": "{{wabaId}}"
                   }
                 },
                 "limited-time-offer": {
                   "summary": "Limited Time Offer",
                   "value": {
-                    "name": "lto_template_1",
-                    "language": "en_US",
-                    "category": "LTO",
-                    "parameter_format": "POSITIONAL",
-                    "message_send_ttl_seconds": 600,
-                    "components": [
-                      {
-                        "type": "header",
-                        "format": "image",
-                        "example": {
-                          "url": "https://example.com/offer-image.jpg"
-                        }
-                      },
-                      {
-                        "type": "limited_time_offer",
-                        "limited_time_offer": {
-                          "text": "Get 20% off on all products until midnight!",
-                          "has_expiration": true
-                        }
-                      },
-                      {
-                        "type": "buttons",
-                        "buttons": [
-                          {
-                            "type": "copy_code",
-                            "example": "OFFER20"
-                          },
-                          {
-                            "type": "url",
-                            "text": "Shop Now",
-                            "url": "https://example.com/shop",
-                            "example": [
-                              "https://example.com/shop?offer=OFFER20"
-                            ]
-                          }
-                        ]
-                      }
-                    ]
+                    "data": "{\n    \"name\": \"xx\",\n    \"language\": \"xx\",\n    \"category\": \"marketing\",\n    \"parameter_format\": \"POSITIONAL\",\n    \"components\": [\n        {\n            \"type\": \"header\",\n            \"format\": \"xx\", //\n            \"example\": {\n                \"url\": \"xx\"\n            }\n        },\n        {\n            \"type\": \"limited_time_offer\",\n            \"limited_time_offer\": {\n                \"text\": \"xx\",\n                \"has_expiration\": true\n            }\n        },\n        {\n            \"type\": \"body\",\n            \"text\": \"<BODY_TEXT>\",\n            \"example\": {\n                \"body_text\": [\n                    \"xx\"\n                ]\n            }\n        },\n        {\n            \"type\": \"buttons\",\n            \"buttons\": [\n                {\n                    \"type\": \"copy_code\",\n                    \"example\": \"xx\"\n                },\n                {\n                    \"type\": \"url\",\n                    \"text\": \"xx\",\n                    \"url\": \"xx\",\n                    \"example\": [\n                        \"xx\"\n                    ]\n                }\n            ]\n        }\n    ]\n}",
+                    "waba_id": "{{wabaId}}"
+                  }
+                },
+                "media-card-carousel": {
+                  "summary": "Media Card Carousel",
+                  "value": {
+                    "data": "{\n    \"name\": \"xx\",\n    \"language\": \"xx\",\n    \"category\": \"marketing\",\n    \"parameter_format\": \"POSITIONAL\",\n    \"components\": [\n        {\n            \"type\": \"body\",\n            \"text\": \"xx\",\n            \"example\": {\n                \"body_text\": [\n                    [\n                        \"xx\"\n                    ]\n                ]\n            }\n        },\n        {\n            \"type\": \"carousel\",\n            \"cards\": [\n                {\n                    \"components\": [\n                        {\n                            \"type\": \"header\",\n                            \"format\": \"xx\",\n                            \"example\": {\n                                \"url\": \"xx\"\n                            }\n                        },\n                        {\n                            \"type\": \"buttons\",\n                            \"buttons\": [\n                                {\n                                    \"type\": \"quick_reply\",\n                                    \"text\": \"xx\"\n                                },\n                                {\n                                    \"type\": \"url\",\n                                    \"text\": \"xx\",\n                                    \"url\": \"xx\",\n                                    \"example\": [\n                                        \"xx\"\n                                    ]\n                                }\n                            ]\n                        }\n                    ]\n                }\n            ]\n        }\n    ]\n}",
+                    "waba_id": "{{wabaId}}"
                   }
                 },
                 "single-product-message": {
                   "summary": "Single Product Message",
                   "value": {
-                    "name": "spm_marketing",
-                    "category": "MARKETING",
-                    "language": "en_US",
-                    "components": [
-                      {
-                        "text": "Use code {{1}} to get {{2}} off our newest succulent!",
-                        "type": "BODY",
-                        "example": {
-                          "body_text": [
-                            [
-                              "offer_code",
-                              "offer_discount"
-                            ]
-                          ]
-                        }
-                      },
-                      {
-                        "type": "CAROUSEL",
-                        "cards": [
-                          {
-                            "components": [
-                              {
-                                "type": "HEADER",
-                                "format": "PRODUCT"
-                              },
-                              {
-                                "type": "BUTTONS",
-                                "buttons": [
-                                  {
-                                    "text": "View",
-                                    "type": "SPM"
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "components": [
-                              {
-                                "type": "HEADER",
-                                "format": "PRODUCT"
-                              },
-                              {
-                                "type": "BUTTONS",
-                                "buttons": [
-                                  {
-                                    "text": "View",
-                                    "type": "SPM"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ],
-                    "parameter_format": "POSITIONAL"
-                  }
-                },
-                "single-product-message-2": {
-                  "summary": "Single Product Message (2)",
-                  "value": {
-                    "name": "xx",
-                    "category": "marketing",
-                    "language": "xx",
-                    "parameter_format": "POSITIONAL",
-                    "components": [
-                      {
-                        "type": "HEADER",
-                        "format": "PRODUCT"
-                      },
-                      {
-                        "type": "BODY",
-                        "text": "xx",
-                        "example": {
-                          "body_text": [
-                            [
-                              "xx"
-                            ]
-                          ]
-                        }
-                      },
-                      {
-                        "type": "BUTTONS",
-                        "buttons": [
-                          {
-                            "type": "SPM",
-                            "text": "xx"
-                          }
-                        ]
-                      }
-                    ]
+                    "data": "{\n    \"name\": \"xx\",\n    \"category\": \"marketing\",\n    \"language\": \"xx\",\n    \"parameter_format\": \"POSITIONAL\",\n    \"components\": [\n        {\n            \"type\": \"HEADER\",\n            \"format\": \"PRODUCT\"\n        },\n        {\n            \"type\": \"BODY\",\n            \"text\": \"xx\",\n            \"example\": {\n                \"body_text\": [\n                    [\n                        \"xx\"\n                    ]\n                ]\n            }\n        },\n        {\n            \"type\": \"BUTTONS\",\n            \"buttons\": [\n                {\n                    \"type\": \"SPM\",\n                    \"text\": \"xx\"\n                }\n            ]\n        }\n    ]\n}",
+                    "waba_id": "{{wabaId}}"
                   }
                 },
                 "multi-product-message": {
                   "summary": "Multi Product Message",
                   "value": {
-                    "name": "mpm_marketing_02",
-                    "category": "MARKETING",
-                    "language": "en_US",
-                    "components": [
-                      {
-                        "text": "your catlog",
-                        "type": "HEADER",
-                        "format": "TEXT"
-                      },
-                      {
-                        "text": "Hi {{1}}, explore our exclusive collection of {{2}} just for you! Browse through our handpicked items and find the perfect choice today.",
-                        "type": "BODY",
-                        "example": {
-                          "body_text": [
-                            [
-                              "customer",
-                              "product"
-                            ]
-                          ]
-                        }
-                      },
-                      {
-                        "text": "Tap below to view our full collection",
-                        "type": "FOOTER"
-                      },
-                      {
-                        "type": "BUTTONS",
-                        "buttons": [
-                          {
-                            "text": "View items",
-                            "type": "MPM"
-                          }
-                        ]
-                      }
-                    ],
-                    "parameter_format": "POSITIONAL"
+                    "data": "{\n    \"name\": \"mpm_marketing_02\",\n    \"category\": \"MARKETING\",\n    \"language\": \"en_US\",\n    \"components\": [\n        {\n            \"text\": \"your catlog\",\n            \"type\": \"HEADER\",\n            \"format\": \"TEXT\"\n        },\n        {\n            \"text\": \"Hi {{1}}, explore our exclusive collection of {{2}} just for you! Browse through our handpicked items and find the perfect choice today.\",\n            \"type\": \"BODY\",\n            \"example\": {\n                \"body_text\": [\n                    [\n                        \"customer\",\n                        \"product\"\n                    ]\n                ]\n            }\n        },\n        {\n            \"text\": \"Tap below to view our full collection\",\n            \"type\": \"FOOTER\"\n        },\n        {\n            \"type\": \"BUTTONS\",\n            \"buttons\": [\n                {\n                    \"text\": \"View items\",\n                    \"type\": \"MPM\"\n                }\n            ]\n        }\n    ],\n    \"parameter_format\": \"POSITIONAL\"\n}",
+                    "waba_id": "{{wabaId}}"
                   }
                 },
-                "utility-category": {
-                  "summary": "Utility category",
+                "flows-utility": {
+                  "summary": "Flows-utility",
                   "value": {
-                    "name": "flows_template_utility_02",
-                    "category": "UTILITY",
-                    "language": "en_US",
-                    "components": [
-                      {
-                        "text": "Hi {{1}}, your registration is pending. Please complete it",
-                        "type": "BODY",
-                        "example": {
-                          "body_text": [
-                            [
-                              "customer"
-                            ]
-                          ]
-                        }
-                      },
-                      {
-                        "text": "We will share the details of the application soon.",
-                        "type": "FOOTER"
-                      },
-                      {
-                        "type": "BUTTONS",
-                        "buttons": [
-                          {
-                            "text": "View Flow",
-                            "type": "FLOW",
-                            "flow_id": "805389128575872",
-                            "flow_action": "NAVIGATE",
-                            "navigate_screen": "JOIN_NOW"
-                          }
-                        ]
-                      }
-                    ],
-                    "parameter_format": "POSITIONAL"
+                    "data": "{\n    \"name\": \"flows_template_utility_02\",\n    \"category\": \"UTILITY\",\n    \"language\": \"en_US\",\n    \"components\": [\n        {\n            \"text\": \"Hi {{1}}, your registration is pending. Please complete it\",\n            \"type\": \"BODY\",\n            \"example\": {\n                \"body_text\": [\n                    [\n                        \"customer\"\n                    ]\n                ]\n            }\n        },\n        {\n            \"text\": \"We will share the details of the application soon.\",\n            \"type\": \"FOOTER\"\n        },\n        {\n            \"type\": \"BUTTONS\",\n            \"buttons\": [\n                {\n                    \"text\": \"View Flow\",\n                    \"type\": \"FLOW\",\n                    \"flow_id\": \"805389128575872\",\n                    \"flow_action\": \"NAVIGATE\",\n                    \"navigate_screen\": \"JOIN_NOW\"\n                }\n            ]\n        }\n    ],\n    \"parameter_format\": \"POSITIONAL\"\n}",
+                    "waba_id": "{{wabaId}}"
                   }
                 },
-                "marketing-category": {
-                  "summary": "Marketing category",
+                "complete-flow": {
+                  "summary": "Complete Flow",
                   "value": {
-                    "name": "flows_template_marketing",
-                    "category": "MARKETING",
-                    "language": "en_US",
-                    "components": [
-                      {
-                        "text": "Hi {{1}}, complete your registration in just a few steps!",
-                        "type": "BODY",
-                        "example": {
-                          "body_text": [
-                            [
-                              "customer"
-                            ]
-                          ]
-                        }
-                      },
-                      {
-                        "text": "Join now and get exclusive benefits.",
-                        "type": "FOOTER"
-                      },
-                      {
-                        "type": "BUTTONS",
-                        "buttons": [
-                          {
-                            "text": "View Flow",
-                            "type": "FLOW",
-                            "flow_id": "805389128575872",
-                            "flow_action": "NAVIGATE",
-                            "navigate_screen": "RECOMMEND"
-                          }
-                        ]
-                      }
-                    ],
-                    "parameter_format": "POSITIONAL"
+                    "data": "{\n    \"name\": \"flows_template_marketing\",\n    \"category\": \"MARKETING\",\n    \"language\": \"en_US\",\n    \"components\": [\n        {\n            \"text\": \"Hi {{1}}, complete your registration in just a few steps!\",\n            \"type\": \"BODY\",\n            \"example\": {\n                \"body_text\": [\n                    [\n                        \"customer\"\n                    ]\n                ]\n            }\n        },\n        {\n            \"text\": \"Join now and get exclusive benefits.\",\n            \"type\": \"FOOTER\"\n        },\n        {\n            \"type\": \"BUTTONS\",\n            \"buttons\": [\n                {\n                    \"text\": \"View Flow\",\n                    \"type\": \"FLOW\",\n                    \"flow_id\": \"805389128575872\",\n                    \"flow_action\": \"NAVIGATE\",\n                    \"navigate_screen\": \"RECOMMEND\"\n                }\n            ]\n        }\n    ],\n    \"parameter_format\": \"POSITIONAL\"\n}\n",
+                    "waba_id": "{{wabaId}}"
                   }
                 },
                 "order-status": {
                   "summary": "Order Status",
                   "value": {
-                    "name": "order_status_test1",
-                    "category": "UTILITY",
-                    "language": "en_US",
-                    "components": [
-                      {
-                        "text": "Hello {{1}}, your order #{{2}} is currently {{3}}. We will notify you once it is updated.",
-                        "type": "BODY",
-                        "example": {
-                          "body_text": [
-                            [
-                              "firdous",
-                              "1234",
-                              "booked"
-                            ]
-                          ]
-                        }
-                      },
-                      {
-                        "text": "thank you for shopping with us",
-                        "type": "FOOTER"
-                      }
-                    ],
-                    "sub_category": "ORDER_STATUS",
-                    "parameter_format": "POSITIONAL"
+                    "data": "{\n    \"name\": \"order_status_test1\",\n    \"category\": \"UTILITY\",\n    \"language\": \"en_US\",\n    \"components\": [\n        {\n            \"text\": \"Hello {{1}}, your order #{{2}} is currently {{3}}. We will notify you once it is updated.\",\n            \"type\": \"BODY\",\n            \"example\": {\n                \"body_text\": [\n                    [\n                        \"firdous\",\n                        \"1234\",\n                        \"booked\"\n                    ]\n                ]\n            }\n        },\n        {\n            \"text\": \"thank you for shopping with us\",\n            \"type\": \"FOOTER\"\n        }\n    ],\n    \"sub_category\": \"ORDER_STATUS\",\n    \"parameter_format\": \"POSITIONAL\"\n}",
+                    "waba_id": "{{wabaId}}"
                   }
                 },
                 "order-details": {
                   "summary": "Order Details",
                   "value": {
-                    "name": "order_details_test",
-                    "category": "UTILITY",
-                    "language": "en",
-                    "components": [
-                      {
-                        "text": "Hello {{1}}, thank you for your purchase! Here are the details of your order #{{2}}: Product: {{3}} Quantity: {{4}} Total Price: {{5}} We will notify you once your order is ready for shipping.",
-                        "type": "BODY",
-                        "example": {
-                          "body_text": [
-                            [
-                              "customer_name",
-                              "order_id",
-                              "product",
-                              "quantity",
-                              "price"
-                            ]
-                          ]
-                        }
-                      },
-                      {
-                        "text": "thank you",
-                        "type": "FOOTER"
-                      },
-                      {
-                        "type": "BUTTONS",
-                        "buttons": [
-                          {
-                            "text": "Review and Pay",
-                            "type": "ORDER_DETAILS"
-                          }
-                        ]
-                      }
-                    ],
-                    "sub_category": "ORDER_DETAILS",
-                    "parameter_format": "POSITIONAL"
+                    "data": "{\n  \"name\": \"order_details_test\",\n  \"category\": \"UTILITY\",\n  \"language\": \"en\",\n  \"components\": [\n    {\n      \"text\": \"Hello {{1}}, thank you for your purchase! Here are the details of your order #{{2}}: Product: {{3}} Quantity: {{4}} Total Price: {{5}} We will notify you once your order is ready for shipping.\",\n      \"type\": \"BODY\",\n      \"example\": {\n        \"body_text\": [\n          [\n            \"customer_name\",\n            \"order_id\",\n            \"product\",\n            \"quantity\",\n            \"price\"\n          ]\n        ]\n      }\n    },\n    {\n      \"text\": \"thank you\",\n      \"type\": \"FOOTER\"\n    },\n    {\n      \"type\": \"BUTTONS\",\n      \"buttons\": [\n        {\n          \"text\": \"Review and Pay\",\n          \"type\": \"ORDER_DETAILS\"\n        }\n      ]\n    }\n  ],\n  \"sub_category\": \"ORDER_DETAILS\",\n  \"parameter_format\": \"POSITIONAL\"\n}",
+                    "waba_id": "{{wabaId}}"
                   }
                 }
               }
@@ -703,125 +125,56 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer"
-                    },
-                    "description": {
-                      "type": "object",
-                      "properties": {
-                        "message": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "response": {
-                    "summary": "Response",
-                    "value": {
-                      "status": 200,
-                      "description": {
-                        "message": "success"
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            "description": "OK"
           }
-        },
-        "tags": [
-          "Templates Create"
-        ]
+        }
       }
     },
     "/templates/fetch": {
       "post": {
-        "operationId": "templates-fetch-onextel-fetch-templates",
-        "summary": "OneXtel Fetch Templates",
-        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/templates-fetch",
+        "tags": [
+          "Template"
+        ],
+        "summary": "Fetch Templates",
+        "operationId": "whatsapp-fetch-templates-post",
         "parameters": [
           {
-            "name": "apikey",
+            "name": "apiKey",
             "in": "header",
-            "required": true,
-            "description": "API key generated for the TUC.",
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "{{apikey}}"
           }
         ],
         "requestBody": {
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "channel": {
-                    "type": "string",
-                    "description": "Messaging channel. Must be `WhatsApp`."
+                    "type": "string"
                   },
                   "wabaId": {
-                    "type": "string",
-                    "description": "WhatsApp Business Account (WABA) identifier."
-                  },
-                  "category": {
-                    "type": "string",
-                    "description": "Template category filter, e.g. `Marketing`, `Utility`, `Authentication`."
-                  },
-                  "createdDate": {
-                    "type": "string",
-                    "description": "Filters templates created on or after the given time. Local datetime format `YYYY-MM-DDTHH:mm:ss`."
-                  },
-                  "templateName": {
-                    "type": "string",
-                    "description": "WhatsApp template name to filter by."
-                  },
-                  "language": {
-                    "type": "string",
-                    "description": "Template language code, e.g. `en_US`."
-                  },
-                  "status": {
-                    "type": "string",
-                    "description": "Template lifecycle status filter: `Approved`, `Pending`, or `Rejected`."
+                    "type": "string"
                   },
                   "pageNo": {
-                    "type": "integer",
-                    "description": "Page number for pagination. Must be a non-negative integer."
+                    "type": "integer"
                   },
                   "limit": {
-                    "type": "integer",
-                    "description": "Number of records to return per page."
+                    "type": "integer"
                   }
-                },
-                "required": [
-                  "channel",
-                  "wabaId",
-                  "pageNo",
-                  "limit"
-                ]
+                }
               },
               "examples": {
-                "curl": {
-                  "summary": "cURL",
+                "fetch-templates": {
+                  "summary": "Fetch Templates",
                   "value": {
                     "channel": "WhatsApp",
-                    "wabaId": "YOUR_WABA_ID",
-                    "category": "Marketing",
-                    "createdDate": "2025-10-22T12:02:28",
-                    "templateName": "lto_00012",
-                    "language": "en_US",
-                    "status": "pending",
-                    "pageNo": 0,
-                    "limit": 5
+                    "wabaId": "{{wabaId}}",
+                    "pageNo": 1,
+                    "limit": 10
                   }
                 }
               }
@@ -830,263 +183,69 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "page_details": {
-                      "type": "object",
-                      "properties": {
-                        "pageNo": {
-                          "type": "integer"
-                        },
-                        "limit": {
-                          "type": "integer"
-                        }
-                      }
-                    },
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          },
-                          "status": {
-                            "type": "string"
-                          },
-                          "category": {
-                            "type": "string"
-                          },
-                          "language": {
-                            "type": "string"
-                          },
-                          "components": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "text": {
-                                  "type": "string"
-                                },
-                                "type": {
-                                  "type": "string"
-                                },
-                                "example": {
-                                  "type": "object",
-                                  "properties": {
-                                    "body_text": {
-                                      "type": "array",
-                                      "items": {
-                                        "type": "array",
-                                        "items": {
-                                          "type": "string"
-                                        }
-                                      }
-                                    }
-                                  }
-                                },
-                                "limited_time_offer": {
-                                  "type": "object",
-                                  "properties": {
-                                    "text": {
-                                      "type": "string"
-                                    },
-                                    "has_expiration": {
-                                      "type": "boolean"
-                                    }
-                                  }
-                                },
-                                "buttons": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object",
-                                    "properties": {
-                                      "text": {
-                                        "type": "string"
-                                      },
-                                      "type": {
-                                        "type": "string"
-                                      },
-                                      "example": {
-                                        "type": "array",
-                                        "items": {
-                                          "type": "string"
-                                        }
-                                      },
-                                      "url": {
-                                        "type": "string"
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          "parameter_format": {
-                            "type": "string"
-                          },
-                          "created_on": {
-                            "type": "string"
-                          },
-                          "updated_on": {
-                            "type": "string"
-                          },
-                          "previous_category": {
-                            "type": "string"
-                          },
-                          "quality_score": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "response": {
-                    "summary": "Response",
-                    "value": {
-                      "page_details": {
-                        "pageNo": 0,
-                        "limit": 5
-                      },
-                      "data": [
-                        {
-                          "id": "1521226662554788",
-                          "name": "lto_00012",
-                          "status": "Pending",
-                          "category": "MARKETING",
-                          "language": "en_US",
-                          "components": [
-                            {
-                              "text": "Hi {{1}},\n\nYour new order with id - {{2}} has been placed successfully. \n\nPlease check below to see the status of your updates.",
-                              "type": "BODY",
-                              "example": {
-                                "body_text": [
-                                  [
-                                    "sarthak",
-                                    "23432"
-                                  ]
-                                ]
-                              }
-                            },
-                            {
-                              "type": "LIMITED_TIME_OFFER",
-                              "limited_time_offer": {
-                                "text": "Expiring offer!",
-                                "has_expiration": true
-                              }
-                            },
-                            {
-                              "type": "BUTTONS",
-                              "buttons": [
-                                {
-                                  "text": "Copy offer code",
-                                  "type": "COPY_CODE",
-                                  "example": [
-                                    "50OFF"
-                                  ]
-                                },
-                                {
-                                  "url": "https://bitly.com/{{1}}",
-                                  "text": "Visit website",
-                                  "type": "URL",
-                                  "example": [
-                                    "EXAMPLE"
-                                  ]
-                                }
-                              ]
-                            }
-                          ],
-                          "parameter_format": "POSITIONAL",
-                          "created_on": "2025-10-22T12:02:28.963",
-                          "updated_on": "2025-10-31T06:21:05.142",
-                          "previous_category": null,
-                          "quality_score": null
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
+            "description": "OK"
           }
-        },
-        "tags": [
-          "Templates Fetch"
-        ]
+        }
       }
     },
     "/oapi/meta/templates/fetch": {
       "get": {
-        "operationId": "templates-fetch-clevertap-fetch-templates",
-        "summary": "CleverTap Fetch Templates",
-        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/templates-fetch",
+        "tags": [
+          "Template"
+        ],
+        "summary": "Clevertap Fetch Templates",
+        "operationId": "whatsapp-clevertap-fetch-templates-get",
         "parameters": [
           {
             "name": "apikey",
             "in": "header",
-            "required": true,
-            "description": "API key for the TUC.",
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "{{apikey}}"
           },
           {
             "name": "wabaid",
             "in": "header",
-            "required": true,
-            "description": "WhatsApp Business Account ID.",
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "{{wabaid}}"
           },
           {
             "name": "limit",
             "in": "query",
-            "required": false,
-            "description": "Maximum number of templates to return. Example: `500`.",
             "schema": {
-              "type": "integer"
+              "type": "string"
             },
             "example": "500"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
-        },
-        "tags": [
-          "Templates Fetch"
-        ]
+        }
       }
     },
     "/oapi/send_sms": {
       "post": {
-        "operationId": "send-template-message-send-whatsapp-template-message",
-        "summary": "Send WhatsApp Template Message / Send Session Messages",
-        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/send-template-message, https://onextel-09023014.mintlify.site/api-reference/whatsapp/send-session-messages",
+        "tags": [
+          "Template Message"
+        ],
+        "summary": "Template Message / Non Template Message",
+        "operationId": "whatsapp-template-message-non-template-message-post",
         "parameters": [
           {
             "name": "apikey",
             "in": "header",
-            "required": true,
-            "description": "API key for the sending WhatsApp number's TUC.",
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "{{apikey}}"
           }
         ],
         "requestBody": {
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -1098,42 +257,36 @@
                       "type": "object",
                       "properties": {
                         "messaging_product": {
-                          "type": "string",
-                          "description": "Always `\"whatsapp\"`."
+                          "type": "string"
+                        },
+                        "recipient_type": {
+                          "type": "string"
                         },
                         "recipient": {
                           "type": "array",
                           "items": {
                             "type": "string"
-                          },
-                          "description": "Recipient phone number, without country prefix (prefix supplied separately via the root-level `prefix` field), or an array of up to 500 numbers."
+                          }
                         },
                         "sender": {
-                          "type": "string",
-                          "description": "Sender's registered WhatsApp number. A pool ID can also be passed here."
+                          "type": "string"
                         },
                         "type": {
-                          "type": "string",
-                          "description": "Always `\"template\"`."
+                          "type": "string"
                         },
                         "template": {
                           "type": "object",
                           "properties": {
                             "name": {
-                              "type": "string",
-                              "description": "Name of the approved WhatsApp template."
+                              "type": "string"
                             },
                             "language": {
                               "type": "object",
                               "properties": {
                                 "code": {
-                                  "type": "string",
-                                  "description": "Template language code, e.g. `en_US`."
+                                  "type": "string"
                                 }
-                              },
-                              "required": [
-                                "code"
-                              ]
+                              }
                             },
                             "components": {
                               "type": "array",
@@ -1156,9 +309,6 @@
                                           "properties": {
                                             "link": {
                                               "type": "string"
-                                            },
-                                            "url": {
-                                              "type": "string"
                                             }
                                           }
                                         },
@@ -1168,11 +318,19 @@
                                         "payload": {
                                           "type": "string"
                                         },
+                                        "xx": {
+                                          "type": "object",
+                                          "properties": {
+                                            "url": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
                                         "limited_time_offer": {
                                           "type": "object",
                                           "properties": {
                                             "expiration_time_ms": {
-                                              "type": "integer"
+                                              "type": "string"
                                             }
                                           }
                                         },
@@ -1187,40 +345,62 @@
                                   },
                                   "index": {
                                     "type": "integer"
+                                  },
+                                  "cards": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "card_index": {
+                                          "type": "integer"
+                                        },
+                                        "components": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "properties": {
+                                              "type": {
+                                                "type": "string"
+                                              },
+                                              "parameters": {
+                                                "type": "array",
+                                                "items": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "type": {
+                                                      "type": "string"
+                                                    },
+                                                    "xx": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "url": {
+                                                          "type": "string"
+                                                        }
+                                                      }
+                                                    },
+                                                    "text": {
+                                                      "type": "string"
+                                                    },
+                                                    "payload": {
+                                                      "type": "string"
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "sub_type": {
+                                                "type": "string"
+                                              },
+                                              "index": {
+                                                "type": "integer"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
                                   }
                                 }
-                              },
-                              "description": "Defines all template components to fill in at send time (header, body, button parameters). Shape depends on template type — see the tabs below."
-                            }
-                          },
-                          "required": [
-                            "name",
-                            "components"
-                          ]
-                        },
-                        "recipient_type": {
-                          "type": "string",
-                          "description": "Always `\"individual\"`."
-                        },
-                        "text": {
-                          "type": "object",
-                          "properties": {
-                            "body": {
-                              "type": "string"
-                            },
-                            "preview_url": {
-                              "type": "boolean"
-                            }
-                          }
-                        },
-                        "document": {
-                          "type": "object",
-                          "properties": {
-                            "link": {
-                              "type": "string"
-                            },
-                            "caption": {
-                              "type": "string"
+                              }
                             }
                           }
                         },
@@ -1272,9 +452,6 @@
                                               "type": "string"
                                             },
                                             "title": {
-                                              "type": "string"
-                                            },
-                                            "description": {
                                               "type": "string"
                                             }
                                           }
@@ -1332,6 +509,28 @@
                                               },
                                               "url": {
                                                 "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "buttons": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string"
+                                                },
+                                                "quick_reply": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "id": {
+                                                      "type": "string"
+                                                    },
+                                                    "title": {
+                                                      "type": "string"
+                                                    }
+                                                  }
+                                                }
                                               }
                                             }
                                           }
@@ -1515,6 +714,28 @@
                             }
                           }
                         },
+                        "document": {
+                          "type": "object",
+                          "properties": {
+                            "link": {
+                              "type": "string"
+                            },
+                            "caption": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "text": {
+                          "type": "object",
+                          "properties": {
+                            "body": {
+                              "type": "string"
+                            },
+                            "preview_url": {
+                              "type": "boolean"
+                            }
+                          }
+                        },
                         "body": {
                           "type": "object",
                           "properties": {
@@ -1550,137 +771,29 @@
                             }
                           }
                         }
-                      },
-                      "required": [
-                        "messaging_product",
-                        "recipient_type",
-                        "recipient",
-                        "sender",
-                        "type"
-                      ]
-                    },
-                    "description": "Wrapper array for one or more WhatsApp message objects, up to 500 per request. See Send to many recipients."
-                  },
-                  "prefix": {
-                    "type": "string",
-                    "description": "Country prefix applied to all recipients, e.g. `+91`."
-                  },
-                  "campaignName": {
-                    "type": "string",
-                    "description": "Optional campaign label for reporting."
-                  },
-                  "urlShortener": {
-                    "type": "object",
-                    "properties": {
-                      "flag": {
-                        "type": "integer",
-                        "description": "Set to `1` to enable URL shortening."
-                      },
-                      "urlDetails": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "longUrl": {
-                              "type": "string"
-                            },
-                            "domain": {
-                              "type": "string"
-                            },
-                            "track_user": {
-                              "type": "integer"
-                            }
-                          }
-                        },
-                        "description": "Array of URLs to shorten."
                       }
-                    },
-                    "description": "Optional URL-shortening configuration for links in the message body.",
-                    "required": [
-                      "flag",
-                      "urlDetails"
-                    ]
-                  },
-                  "message_send_ttl_seconds": {
-                    "type": "integer",
-                    "description": "Time-to-live in seconds for the message send. Default `600`."
-                  },
-                  "messaging_product": {
-                    "type": "string",
-                    "description": "Always `\"whatsapp\"`."
-                  },
-                  "recipient_type": {
-                    "type": "string",
-                    "description": "Always `\"individual\"`."
-                  },
-                  "recipient": {
-                    "type": "string",
-                    "description": "Recipient's WhatsApp phone number, or an array of up to 500 numbers."
-                  },
-                  "sender": {
-                    "type": "string",
-                    "description": "Sender's registered WhatsApp number."
-                  },
-                  "type": {
-                    "type": "string",
-                    "description": "Message type — one of `text`, `document` / `image` / `video` / `audio` / `sticker`, `interactive`, or `contacts`. See the tabs below for the value per message type."
-                  },
-                  "contacts": {
-                    "type": "array",
-                    "description": "Array of contact objects. All fields inside each contact object are optional.",
-                    "items": {}
+                    }
                   }
-                },
-                "required": [
-                  "wa",
-                  "messaging_product",
-                  "recipient_type",
-                  "recipient",
-                  "sender",
-                  "type",
-                  "contacts"
-                ]
+                }
               },
               "examples": {
-                "curl": {
-                  "summary": "cURL",
-                  "value": {
-                    "wa": [
-                      {
-                        "messaging_product": "whatsapp",
-                        "recipient": [
-                          "919999999999"
-                        ],
-                        "sender": "919888888888",
-                        "type": "template",
-                        "template": {
-                          "name": "onextel_warcs",
-                          "language": {
-                            "code": "en_US"
-                          }
-                        }
-                      }
-                    ],
-                    "prefix": "+91"
-                  }
-                },
-                "media-variable-button": {
-                  "summary": "Media / Variable / Button",
+                "media-variable-button-payload": {
+                  "summary": "Media, Variable, Button Payload",
                   "value": {
                     "wa": [
                       {
                         "messaging_product": "whatsapp",
                         "recipient_type": "individual",
                         "recipient": [
-                          "919999999999",
-                          "919888888888"
+                          "{{recipient1}}",
+                          "{{recipient2}}"
                         ],
-                        "sender": "919777777777",
+                        "sender": "{{wasender}}",
                         "type": "template",
                         "template": {
-                          "name": "utility_image_with_params",
+                          "name": "xx",
                           "language": {
-                            "code": "en_US"
+                            "code": "xx"
                           },
                           "components": [
                             {
@@ -1689,7 +802,7 @@
                                 {
                                   "type": "image",
                                   "image": {
-                                    "link": "https://example.com/banner.jpg"
+                                    "link": "xx"
                                   }
                                 }
                               ]
@@ -1699,7 +812,7 @@
                               "parameters": [
                                 {
                                   "type": "text",
-                                  "text": "Rahul"
+                                  "text": "xx"
                                 }
                               ]
                             },
@@ -1710,7 +823,7 @@
                               "parameters": [
                                 {
                                   "type": "payload",
-                                  "payload": "confirm_order"
+                                  "payload": "xx"
                                 }
                               ]
                             },
@@ -1721,44 +834,33 @@
                               "parameters": [
                                 {
                                   "type": "text",
-                                  "text": "order-123"
+                                  "text": "xx"
                                 }
                               ]
                             }
                           ]
                         }
                       }
-                    ],
-                    "prefix": "+91",
-                    "campaignName": "diwali_promo",
-                    "urlShortener": {
-                      "flag": 1,
-                      "urlDetails": [
-                        {
-                          "longUrl": "https://example.com/order/123",
-                          "domain": "short.ly",
-                          "track_user": 1
-                        }
-                      ]
-                    }
+                    ]
                   }
                 },
-                "authentication-otp": {
-                  "summary": "Authentication (OTP)",
+                "authentication": {
+                  "summary": "Authentication",
                   "value": {
                     "wa": [
                       {
                         "messaging_product": "whatsapp",
-                        "recipient": [
-                          "919999999999"
-                        ],
-                        "sender": "919888888888",
                         "recipient_type": "individual",
+                        "recipient": [
+                          "{{recipient1}}",
+                          "{{recipient2}}"
+                        ],
+                        "sender": "{{wasender}}",
                         "type": "template",
                         "template": {
-                          "name": "zero_tap_authentication_temp_3",
+                          "name": "xx",
                           "language": {
-                            "code": "en_US"
+                            "code": "xx"
                           },
                           "components": [
                             {
@@ -1766,26 +868,25 @@
                               "parameters": [
                                 {
                                   "type": "text",
-                                  "text": "123490"
+                                  "text": "xx"
                                 }
                               ]
                             },
                             {
                               "type": "button",
                               "sub_type": "url",
-                              "index": "0",
+                              "index": 0,
                               "parameters": [
                                 {
                                   "type": "text",
-                                  "text": "1234567890"
+                                  "text": "xx"
                                 }
                               ]
                             }
                           ]
                         }
                       }
-                    ],
-                    "prefix": "+91"
+                    ]
                   }
                 },
                 "limited-time-offer": {
@@ -1794,25 +895,26 @@
                     "wa": [
                       {
                         "messaging_product": "whatsapp",
-                        "recipient": [
-                          "919999999999"
-                        ],
-                        "sender": "919888888888",
                         "recipient_type": "individual",
+                        "recipient": [
+                          "{{recipient1}}",
+                          "{{recipient2}}"
+                        ],
+                        "sender": "{{wasender}}",
                         "type": "template",
                         "template": {
-                          "name": "lto_03",
+                          "name": "xx",
                           "language": {
-                            "code": "en_US"
+                            "code": "xx"
                           },
                           "components": [
                             {
                               "type": "header",
                               "parameters": [
                                 {
-                                  "type": "image",
-                                  "image": {
-                                    "url": "https://example.com/offer-image.jpg"
+                                  "type": "xx",
+                                  "xx": {
+                                    "url": "xx"
                                   }
                                 }
                               ]
@@ -1822,7 +924,7 @@
                               "parameters": [
                                 {
                                   "type": "text",
-                                  "text": "Priya"
+                                  "text": "xx"
                                 }
                               ]
                             },
@@ -1832,7 +934,7 @@
                                 {
                                   "type": "limited_time_offer",
                                   "limited_time_offer": {
-                                    "expiration_time_ms": 1767225600000
+                                    "expiration_time_ms": "<EXPIRATION_TIME>"
                                   }
                                 }
                               ]
@@ -1844,7 +946,7 @@
                               "parameters": [
                                 {
                                   "type": "coupon_code",
-                                  "coupon_code": "SAVE25"
+                                  "coupon_code": "xx"
                                 }
                               ]
                             },
@@ -1855,73 +957,115 @@
                               "parameters": [
                                 {
                                   "type": "text",
-                                  "text": "https://example.com/shop?offer=SAVE25"
+                                  "text": "xx"
                                 }
                               ]
                             }
                           ]
                         }
                       }
-                    ],
-                    "prefix": "+91",
-                    "campaignName": "lto_campaign",
-                    "urlShortener": {
-                      "flag": 1,
-                      "urlDetails": [
-                        {
-                          "longUrl": "https://example.com/shop?offer=SAVE25",
-                          "domain": "short.ly",
-                          "track_user": 1
-                        }
-                      ]
-                    }
+                    ]
                   }
                 },
-                "text-request": {
-                  "summary": "Text — Request",
+                "media-card-carousel": {
+                  "summary": "Media Card Carousel",
                   "value": {
                     "wa": [
                       {
                         "messaging_product": "whatsapp",
                         "recipient_type": "individual",
-                        "recipient": "919999999999",
-                        "sender": "919888888888",
-                        "type": "text",
-                        "text": {
-                          "body": "xx",
-                          "preview_url": true
+                        "recipient": [
+                          "{{recipient1}}",
+                          "{{recipient2}}"
+                        ],
+                        "sender": "{{wasender}}",
+                        "type": "template",
+                        "template": {
+                          "name": "xx",
+                          "language": {
+                            "code": "xx"
+                          },
+                          "components": [
+                            {
+                              "type": "body",
+                              "parameters": [
+                                {
+                                  "type": "text",
+                                  "text": "xx"
+                                },
+                                {
+                                  "type": "text",
+                                  "text": "xx"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "carousel",
+                              "cards": [
+                                {
+                                  "card_index": 0,
+                                  "components": [
+                                    {
+                                      "type": "header",
+                                      "parameters": [
+                                        {
+                                          "type": "xx",
+                                          "xx": {
+                                            "url": "xx"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "body",
+                                      "parameters": [
+                                        {
+                                          "type": "text",
+                                          "text": "xx"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "button",
+                                      "sub_type": "quick_reply",
+                                      "index": 0,
+                                      "parameters": [
+                                        {
+                                          "type": "payload",
+                                          "payload": "xx"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "button",
+                                      "sub_type": "url",
+                                      "index": 1,
+                                      "parameters": [
+                                        {
+                                          "type": "text",
+                                          "text": "xx"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
                         }
                       }
                     ]
                   }
                 },
-                "media-request": {
-                  "summary": "Media — Request",
+                "address": {
+                  "summary": "Address",
                   "value": {
                     "wa": [
                       {
                         "messaging_product": "whatsapp",
                         "recipient_type": "individual",
-                        "recipient": "919999999999",
-                        "sender": "919888888888",
-                        "type": "document",
-                        "document": {
-                          "link": "xx",
-                          "caption": "xx"
-                        }
-                      }
-                    ]
-                  }
-                },
-                "address-request": {
-                  "summary": "Address — Request",
-                  "value": {
-                    "wa": [
-                      {
-                        "messaging_product": "whatsapp",
-                        "recipient_type": "individual",
-                        "recipient": "919999999999",
-                        "sender": "919888888888",
+                        "recipient": "{{recipient1}}",
+                        "sender": "{{wasender}}",
                         "type": "interactive",
                         "interactive": {
                           "type": "address_message",
@@ -1939,15 +1083,15 @@
                     ]
                   }
                 },
-                "contact-request": {
-                  "summary": "Contact — Request",
+                "contact": {
+                  "summary": "Contact",
                   "value": {
                     "wa": [
                       {
                         "messaging_product": "whatsapp",
                         "recipient_type": "individual",
-                        "recipient": "919999999999",
-                        "sender": "919888888888",
+                        "recipient": "{{recipient1}}",
+                        "sender": "{{wasender}}",
                         "type": "contacts",
                         "contacts": [
                           {
@@ -2001,44 +1145,51 @@
                     ]
                   }
                 },
-                "contact": {
-                  "summary": "Contact",
+                "media": {
+                  "summary": "Media",
                   "value": {
                     "wa": [
                       {
                         "messaging_product": "whatsapp",
                         "recipient_type": "individual",
-                        "recipient": "919999999999",
-                        "sender": "919888888888",
-                        "type": "contacts",
-                        "contacts": [
-                          {
-                            "name": {
-                              "formatted_name": "xx",
-                              "first_name": "xx"
-                            },
-                            "phones": [
-                              {
-                                "phone": "xx",
-                                "type": "xx",
-                                "wa_id": "xx"
-                              }
-                            ]
-                          }
-                        ]
+                        "recipient": "{{recipient1}}",
+                        "sender": "{{wasender}}",
+                        "type": "document",
+                        "document": {
+                          "link": "xx",
+                          "caption": "xx"
+                        }
                       }
                     ]
                   }
                 },
-                "url-button-request": {
-                  "summary": "URL Button — Request",
+                "text": {
+                  "summary": "Text",
                   "value": {
                     "wa": [
                       {
                         "messaging_product": "whatsapp",
                         "recipient_type": "individual",
-                        "recipient": "919999999999",
-                        "sender": "919888888888",
+                        "recipient": "{{recipient1}}",
+                        "sender": "{{wasender}}",
+                        "type": "text",
+                        "text": {
+                          "body": "xx",
+                          "preview_url": true
+                        }
+                      }
+                    ]
+                  }
+                },
+                "url-button": {
+                  "summary": "URL Button",
+                  "value": {
+                    "wa": [
+                      {
+                        "messaging_product": "whatsapp",
+                        "recipient_type": "individual",
+                        "recipient": "{{recipient1}}",
+                        "sender": "{{wasender}}",
                         "type": "interactive",
                         "interactive": {
                           "type": "cta_url",
@@ -2066,15 +1217,15 @@
                     ]
                   }
                 },
-                "list-request": {
-                  "summary": "List — Request",
+                "list": {
+                  "summary": "List",
                   "value": {
                     "wa": [
                       {
                         "messaging_product": "whatsapp",
                         "recipient_type": "individual",
-                        "recipient": "919999999999",
-                        "sender": "919888888888",
+                        "recipient": "{{recipient1}}",
+                        "sender": "{{wasender}}",
                         "type": "interactive",
                         "interactive": {
                           "type": "list",
@@ -2096,8 +1247,7 @@
                                 "rows": [
                                   {
                                     "id": "xx",
-                                    "title": "xx",
-                                    "description": "xx"
+                                    "title": "xx"
                                   }
                                 ]
                               }
@@ -2108,15 +1258,15 @@
                     ]
                   }
                 },
-                "media-carousel-request": {
-                  "summary": "Media Carousel — Request",
+                "media-carousel": {
+                  "summary": "Media Carousel",
                   "value": {
                     "wa": [
                       {
                         "messaging_product": "whatsapp",
                         "recipient_type": "individual",
-                        "recipient": "919999999999",
-                        "sender": "919888888888",
+                        "recipient": "{{recipient1}}",
+                        "sender": "{{wasender}}",
                         "type": "interactive",
                         "interactive": {
                           "type": "carousel",
@@ -2126,10 +1276,10 @@
                           "action": {
                             "cards": [
                               {
-                                "card_index": "0",
+                                "card_index": "",
                                 "type": "cta_url",
                                 "header": {
-                                  "type": "image",
+                                  "type": "xx",
                                   "image": {
                                     "link": "xx"
                                   }
@@ -2142,7 +1292,16 @@
                                   "parameters": {
                                     "display_text": "xx",
                                     "url": "xx"
-                                  }
+                                  },
+                                  "buttons": [
+                                    {
+                                      "type": "quick_reply",
+                                      "quick_reply": {
+                                        "id": "xx",
+                                        "title": "xx"
+                                      }
+                                    }
+                                  ]
                                 }
                               }
                             ]
@@ -2152,15 +1311,15 @@
                     ]
                   }
                 },
-                "reply-request": {
-                  "summary": "Reply — Request",
+                "reply": {
+                  "summary": "Reply",
                   "value": {
                     "wa": [
                       {
                         "messaging_product": "whatsapp",
                         "recipient_type": "individual",
-                        "recipient": "919999999999",
-                        "sender": "919888888888",
+                        "recipient": "{{recipient1}}",
+                        "sender": "{{wasender}}",
                         "type": "interactive",
                         "interactive": {
                           "type": "button",
@@ -2198,292 +1357,227 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "messageId": {
-                        "type": "string"
-                      },
-                      "code": {
-                        "type": "integer"
-                      },
-                      "status": {
-                        "type": "string"
-                      },
-                      "recipient": {
-                        "type": "string"
-                      },
-                      "sender": {
-                        "type": "string"
-                      },
-                      "custref1": {
-                        "type": "string"
-                      },
-                      "custref2": {
-                        "type": "string"
-                      },
-                      "custref3": {
-                        "type": "string"
-                      },
-                      "custref4": {
-                        "type": "string"
-                      },
-                      "custref5": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "response": {
-                    "summary": "Response",
-                    "value": [
-                      {
-                        "messageId": "35NIvS1Ry8m1RWUylXbgESEOqRi",
-                        "code": 200,
-                        "status": "success",
-                        "recipient": "919999999999",
-                        "sender": "919888888888",
-                        "custref1": "custref1",
-                        "custref2": "custref2",
-                        "custref3": "",
-                        "custref4": "",
-                        "custref5": ""
-                      }
-                    ]
-                  }
-                }
-              }
-            }
+            "description": "OK"
           }
-        },
-        "tags": [
-          "Send Template Message"
-        ]
+        }
       }
     },
     "/oapi/wa/mediaupload": {
       "post": {
-        "operationId": "media-media-upload",
+        "tags": [
+          "Media"
+        ],
         "summary": "Media Upload",
-        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/media",
+        "operationId": "whatsapp-media-upload-post",
         "parameters": [
           {
             "name": "apikey",
             "in": "header",
-            "required": true,
-            "description": "API key generated for the TUC associated with the sending phone number.",
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "{{apikey}}"
           }
         ],
         "requestBody": {
-          "required": true,
           "content": {
             "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "phone_number": {
-                    "type": "string",
-                    "description": "WhatsApp phone number (with country code) for which media is being uploaded."
+                    "type": "string"
                   },
                   "file": {
                     "type": "string",
-                    "description": "Media file to upload (image, document, video, etc.), sent as multipart form data.",
                     "format": "binary"
                   }
-                },
-                "required": [
-                  "phone_number",
-                  "file"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "http_status": {
-                      "type": "integer"
-                    },
-                    "onextel_media_url": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "examples": {
-                  "sample-response-payload-response": {
-                    "summary": "Sample response payload — Response",
-                    "value": {
-                      "id": "27015499406910550",
-                      "status": "success",
-                      "http_status": 200,
-                      "onextel_media_url": "https://warcssm.1xtel.co/media/media/543e3517-9efc-4e72-8c0c-5027530f1cc7/titan20.jpeg"
-                    }
+                }
+              },
+              "examples": {
+                "media-upload": {
+                  "summary": "Media Upload",
+                  "value": {
+                    "phone_number": "{{wasender}}"
                   }
                 }
               }
             }
           }
         },
-        "tags": [
-          "Media"
-        ]
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
       }
     },
     "/oapi/wa/media": {
       "get": {
-        "operationId": "media-fetch-media-url",
+        "tags": [
+          "Media"
+        ],
         "summary": "Fetch Media URL",
-        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/media",
+        "operationId": "whatsapp-fetch-media-url-get",
         "parameters": [
           {
             "name": "apiKey",
             "in": "header",
-            "required": true,
-            "description": "API key generated for the TUC associated with the sending phone number.",
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "{{apikey}}"
           },
           {
             "name": "mediaId",
             "in": "query",
-            "required": true,
-            "description": "Media ID returned from the Media Upload endpoint.",
             "schema": {
               "type": "string"
             },
-            "example": "YOUR_MEDIA_ID"
+            "example": "{{mediaid}}"
           },
           {
             "name": "phoneNumber",
             "in": "query",
-            "required": true,
-            "description": "WhatsApp sender phone number associated with the media.",
             "schema": {
               "type": "string"
             },
-            "example": "919999999999"
+            "example": "{{wasender}}"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
-        },
-        "tags": [
-          "Media"
-        ]
+        }
       }
     },
     "/oapi/wa/download-media": {
       "get": {
-        "operationId": "media-download-media",
+        "tags": [
+          "Media"
+        ],
         "summary": "Download Media",
-        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/media",
+        "operationId": "whatsapp-download-media-get",
         "parameters": [
           {
             "name": "apiKey",
             "in": "header",
-            "required": true,
-            "description": "API key generated for the TUC associated with the sending phone number.",
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "{{apikey}}"
           },
           {
             "name": "mediaUrl",
             "in": "query",
-            "required": true,
-            "description": "Hosted media URL (e.g. the `onextel_media_url` value returned from Media Upload, or the URL returned from Fetch Media URL).",
             "schema": {
               "type": "string"
             },
-            "example": "YOUR_MEDIA_URL"
+            "example": "{{mediaurl}}"
           },
           {
             "name": "phoneNumber",
             "in": "query",
-            "required": true,
-            "description": "WhatsApp sender phone number associated with the media.",
             "schema": {
               "type": "string"
             },
-            "example": "919999999999"
+            "example": "{{wasender}}"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
-        },
-        "tags": [
-          "Media"
-        ]
+        }
       }
     },
     "/opt/out/wa": {
       "get": {
-        "operationId": "opt-in-opt-out-get-opt-out",
+        "tags": [
+          "Opt In/ Opt Out"
+        ],
         "summary": "Get Opt Out",
-        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/opt-in-opt-out",
+        "operationId": "whatsapp-get-opt-out-get",
         "parameters": [
           {
             "name": "apikey",
             "in": "header",
-            "required": true,
-            "description": "API key generated for the TUC associated with the sending phone number. Required on every request below.",
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "{{apikey}}"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
-        },
-        "tags": [
-          "Opt In Opt Out"
-        ]
+        }
       },
-      "post": {
-        "operationId": "opt-in-opt-out-add-opt-out",
-        "summary": "Add Opt Out",
-        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/opt-in-opt-out",
+      "delete": {
+        "tags": [
+          "Opt In/ Opt Out"
+        ],
+        "summary": "Remove Opt Out",
+        "operationId": "whatsapp-remove-opt-out-delete",
         "parameters": [
           {
             "name": "apikey",
             "in": "header",
-            "required": true,
-            "description": "API key generated for the TUC associated with the sending phone number. Required on every request below.",
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "{{apikey}}"
+          },
+          {
+            "name": "number",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{recipient1}}"
+          },
+          {
+            "name": "sender",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{wasender}}"
+          },
+          {
+            "name": "message_type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "example": "marketing"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Opt In/ Opt Out"
+        ],
+        "summary": "Add Opt Out",
+        "operationId": "whatsapp-add-opt-out-post",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{apikey}}"
           }
         ],
         "requestBody": {
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -2493,36 +1587,28 @@
                     "type": "array",
                     "items": {
                       "type": "string"
-                    },
-                    "description": "Array of recipient phone numbers to opt out."
+                    }
                   },
                   "sender": {
-                    "type": "string",
-                    "description": "Sender's registered WhatsApp number."
+                    "type": "string"
                   },
                   "message_types": {
                     "type": "array",
                     "items": {
                       "type": "string"
-                    },
-                    "description": "Message categories to opt out of. Values: `marketing`, `utility`."
+                    }
                   }
-                },
-                "required": [
-                  "numbers",
-                  "sender",
-                  "message_types"
-                ]
+                }
               },
               "examples": {
-                "sample-json-payload": {
-                  "summary": "Sample JSON payload",
+                "add-opt-out": {
+                  "summary": "Add Opt Out",
                   "value": {
                     "numbers": [
-                      "919999999991",
-                      "919999999992"
+                      "{{recipient1}}",
+                      "{{recipient2}}"
                     ],
-                    "sender": "919888888888",
+                    "sender": "{{wasender}}",
                     "message_types": [
                       "marketing",
                       "utility"
@@ -2535,110 +1621,97 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
-        },
-        "tags": [
-          "Opt In Opt Out"
-        ]
-      },
-      "delete": {
-        "operationId": "opt-in-opt-out-remove-opt-out",
-        "summary": "Remove Opt Out",
-        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/opt-in-opt-out",
-        "parameters": [
-          {
-            "name": "apikey",
-            "in": "header",
-            "required": true,
-            "description": "API key generated for the TUC associated with the sending phone number. Required on every request below.",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "number",
-            "in": "query",
-            "required": true,
-            "description": "Recipient phone number to remove from the opt-out list.",
-            "schema": {
-              "type": "string"
-            },
-            "example": "919999999991"
-          },
-          {
-            "name": "sender",
-            "in": "query",
-            "required": true,
-            "description": "Sender's registered WhatsApp number.",
-            "schema": {
-              "type": "string"
-            },
-            "example": "919888888888"
-          },
-          {
-            "name": "message_type",
-            "in": "query",
-            "required": true,
-            "description": "Message category to remove the opt-out for. Values: `marketing`, `utility`.",
-            "schema": {
-              "type": "string"
-            },
-            "example": "marketing"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        },
-        "tags": [
-          "Opt In Opt Out"
-        ]
+        }
       }
     },
     "/opt/in/wa": {
       "get": {
-        "operationId": "opt-in-opt-out-get-opt-in",
+        "tags": [
+          "Opt In/ Opt Out"
+        ],
         "summary": "Get Opt In",
-        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/opt-in-opt-out",
+        "operationId": "whatsapp-get-opt-in-get",
         "parameters": [
           {
             "name": "apikey",
             "in": "header",
-            "required": true,
-            "description": "API key generated for the TUC associated with the sending phone number. Required on every request below.",
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "{{apikey}}"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
-        },
-        "tags": [
-          "Opt In Opt Out"
-        ]
+        }
       },
-      "post": {
-        "operationId": "opt-in-opt-out-add-opt-in",
-        "summary": "Add Opt In",
-        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/opt-in-opt-out",
+      "delete": {
+        "tags": [
+          "Opt In/ Opt Out"
+        ],
+        "summary": "Remove Opt In",
+        "operationId": "whatsapp-remove-opt-in-delete",
         "parameters": [
           {
             "name": "apikey",
             "in": "header",
-            "required": true,
-            "description": "API key generated for the TUC associated with the sending phone number. Required on every request below.",
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "{{apikey}}"
+          },
+          {
+            "name": "number",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{recipient1}}"
+          },
+          {
+            "name": "sender",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{wasender}}"
+          },
+          {
+            "name": "message_type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "example": "marketing"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Opt In/ Opt Out"
+        ],
+        "summary": "Add Opt In",
+        "operationId": "whatsapp-add-opt-in-post",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{apikey}}"
           }
         ],
         "requestBody": {
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -2648,36 +1721,28 @@
                     "type": "array",
                     "items": {
                       "type": "string"
-                    },
-                    "description": "Array of recipient phone numbers to opt in."
+                    }
                   },
                   "sender": {
-                    "type": "string",
-                    "description": "Sender's registered WhatsApp number."
+                    "type": "string"
                   },
                   "message_types": {
                     "type": "array",
                     "items": {
                       "type": "string"
-                    },
-                    "description": "Message categories to opt into. Values: `marketing`, `utility`."
+                    }
                   }
-                },
-                "required": [
-                  "numbers",
-                  "sender",
-                  "message_types"
-                ]
+                }
               },
               "examples": {
-                "sample-json-payload": {
-                  "summary": "Sample JSON payload",
+                "add-opt-in": {
+                  "summary": "Add Opt In",
                   "value": {
                     "numbers": [
-                      "919999999991",
-                      "919999999992"
+                      "{{recipient1}}",
+                      "{{recipient2}}"
                     ],
-                    "sender": "919888888888",
+                    "sender": "{{wasender}}",
                     "message_types": [
                       "marketing",
                       "utility"
@@ -2690,66 +1755,9 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "OK"
           }
-        },
-        "tags": [
-          "Opt In Opt Out"
-        ]
-      },
-      "delete": {
-        "operationId": "opt-in-opt-out-remove-opt-in",
-        "summary": "Remove Opt In",
-        "description": "Full reference: https://onextel-09023014.mintlify.site/api-reference/whatsapp/opt-in-opt-out",
-        "parameters": [
-          {
-            "name": "apikey",
-            "in": "header",
-            "required": true,
-            "description": "API key generated for the TUC associated with the sending phone number. Required on every request below.",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "number",
-            "in": "query",
-            "required": true,
-            "description": "Recipient phone number to remove from the opt-in list.",
-            "schema": {
-              "type": "string"
-            },
-            "example": "919999999991"
-          },
-          {
-            "name": "sender",
-            "in": "query",
-            "required": true,
-            "description": "Sender's registered WhatsApp number.",
-            "schema": {
-              "type": "string"
-            },
-            "example": "919888888888"
-          },
-          {
-            "name": "message_type",
-            "in": "query",
-            "required": true,
-            "description": "Message category to remove the opt-in for. Values: `marketing`, `utility`.",
-            "schema": {
-              "type": "string"
-            },
-            "example": "marketing"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        },
-        "tags": [
-          "Opt In Opt Out"
-        ]
+        }
       }
     }
   }

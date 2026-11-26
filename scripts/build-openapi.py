@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-"""Build OpenAPI 3.1 specs from the hand-written API reference pages.
+"""Build the importable OpenAPI 3.1 specs in openapi/.
 
-The pages under api-reference/ are the source of truth. This script reads each
-page's endpoint lines (`POST /path`), <ParamField> entries and example payloads,
-and writes one importable spec per product to openapi/<product>.json, so
-customers can load the API into Postman, Swagger UI or Insomnia.
+WhatsApp, RCS and Omnichannel come from the Postman collection in
+collections/onextel-omnichannel.json, which is the reference for those APIs: every request becomes
+an operation and every request body becomes a named example. SMS (India), SMS
+(International) and RCS template creation aren't in the collection, so they come
+from their API reference pages. The specs carry only endpoints, headers, query
+parameters and example payloads, with no descriptions, so the pages stay the
+place for detail.
 
-Re-run after editing an API page:
+Re-run after updating the collection or an SMS page:
 
     python3 scripts/build-openapi.py
 """
@@ -20,51 +23,16 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "openapi"
 DEFAULT_SERVER = "https://api.onexaura.com"
 
+COLLECTION = ROOT / "collections" / "onextel-omnichannel.json"
+
 PRODUCTS = {
-    "whatsapp": {
-        "title": "OneXtel WhatsApp API",
-        "description": "Create and fetch WhatsApp templates, send template and session messages, "
-        "upload media and manage opt-in / opt-out lists.",
-        "pages": [
-            "whatsapp/templates-create",
-            "whatsapp/templates-fetch",
-            "whatsapp/send-template-message",
-            "whatsapp/send-session-messages",
-            "whatsapp/media",
-            "whatsapp/opt-in-opt-out",
-        ],
-    },
-    "rcs": {
-        "title": "OneXtel RCS API",
-        "description": "Create and fetch RCS templates, send RCS template and standalone messages, "
-        "upload media and manage opt-in / opt-out lists.",
-        "pages": [
-            "rcs/templates",
-            "rcs/send-template-message",
-            "rcs/send-messages",
-            "rcs/media",
-            "rcs/opt-in-opt-out",
-        ],
-    },
-    "sms": {
-        "title": "OneXtel SMS API (India)",
-        "description": "Send DLT-compliant SMS to Indian numbers.",
-        "pages": ["sms/send-sms-omni"],
-    },
-    "sms-international": {
-        "title": "OneXtel SMS API (International)",
-        "description": "Send SMS to destinations outside India.",
-        "pages": ["sms-international/send-sms"],
-    },
-    "omnichannel": {
-        "title": "OneXtel Omnichannel API",
-        "description": "Send with channel fallback, check message status and read message history.",
-        "pages": [
-            "omnichannel/fallback",
-            "omnichannel/message-status",
-            "omnichannel/message-history",
-        ],
-    },
+    "whatsapp": {"title": "OneXtel WhatsApp API", "folders": ["WhatsApp"]},
+    "rcs": {"title": "OneXtel RCS API", "folders": ["RCS"],
+            "pages": ["rcs/templates"], "page_paths": ["/rcs/templates"]},
+    "omnichannel": {"title": "OneXtel Omnichannel API", "folders": ["Fallback", "Status Check"]},
+    "sms": {"title": "OneXtel SMS API (India)", "pages": ["sms/send-sms-omni", "sms/url-shortener", "sms/get-status"]},
+    "sms-international": {"title": "OneXtel SMS API (International)",
+                          "pages": ["sms-international/send-sms"]},
 }
 
 SKIP_HEADERS = {"content-type", "accept"}
@@ -156,9 +124,9 @@ def dedupe(examples):
     return out
 
 
-def name_examples(examples):
+def name_examples(examples, keep_partial=False):
     named, counts = {}, {}
-    for label, data in dedupe(examples):
+    for label, data in (examples if keep_partial else dedupe(examples)):
         base = slug(label)
         counts[base] = counts.get(base, 0) + 1
         n = counts[base]
@@ -278,7 +246,7 @@ def build_operation(ops):
         "operationId": slug(first["page"].split("/")[-1] + " " + first["summary"]),
         "summary": " / ".join(summaries),
         "description": "Full reference: "
-        + ", ".join(f"https://onextel-09023014.mintlify.site/api-reference/{p}" for p in pages),
+        + ", ".join(f"https://onextel-09023014.mintlify.app/api-reference/{p}" for p in pages),
     }
     if parameters:
         out["parameters"] = parameters
@@ -332,22 +300,168 @@ def build_operation(ops):
     return out, servers
 
 
+def strip_descriptions(node):
+    """Keep the specs reference-only: drop every description except the one
+    OpenAPI requires on each response."""
+    if isinstance(node, dict):
+        out = {k: strip_descriptions(v) for k, v in node.items() if k != "description"}
+        for code, resp in node.get("responses", {}).items():
+            out["responses"][code]["description"] = "OK"
+        return out
+    if isinstance(node, list):
+        return [strip_descriptions(v) for v in node]
+    return node
+
+
+def loose_json(raw):
+    """Parse a Postman raw body: drops // and /* */ comments (commented-out
+    fields aren't sent) and trailing commas, and quotes bare {{variables}} and
+    <PLACEHOLDERS>."""
+    out, i, in_str = [], 0, False
+    while i < len(raw):
+        ch = raw[i]
+        if in_str:
+            out.append(ch)
+            if ch == "\\":
+                out.append(raw[i + 1])
+                i += 1
+            elif ch == '"':
+                in_str = False
+        elif ch == '"':
+            in_str = True
+            out.append(ch)
+        elif raw.startswith("//", i):
+            while i < len(raw) and raw[i] != "\n":
+                i += 1
+            continue
+        elif raw.startswith("/*", i):
+            i = raw.index("*/", i) + 2
+            continue
+        elif ch == "<":
+            j = raw.index(">", i) + 1
+            out.append(json.dumps(raw[i:j]))
+            i = j
+            continue
+        elif raw.startswith("{{", i):
+            j = raw.index("}}", i) + 2
+            out.append(json.dumps(raw[i:j]))
+            i = j
+            continue
+        else:
+            out.append(ch)
+        i += 1
+    text = re.sub(r",(\s*[}\]])", r"\1", "".join(out))
+    return json.loads(text)
+
+
+def collection_requests(folders):
+    data = json.loads(COLLECTION.read_text())
+
+    def walk(items, trail):
+        for item in items:
+            if "item" in item:
+                yield from walk(item["item"], trail + [item["name"]])
+            else:
+                yield trail, item
+
+    for top in data["item"]:
+        if top["name"] in folders:
+            yield from walk(top.get("item", []), [top["name"]])
+
+
+def collection_paths(folders):
+    grouped = {}
+    for trail, item in collection_requests(folders):
+        req = item["request"]
+        url = req["url"]
+        raw = url if isinstance(url, str) else url["raw"]
+        path = re.sub(r"^(\{\{domain\}\}|https?://[^/]+)", "", raw).split("?")[0]
+        grouped.setdefault((path, req["method"].lower()), []).append((trail, item))
+
+    paths, used_ids = {}, set()
+    for (path, method), entries in grouped.items():
+        trail0, item0 = entries[0]
+        folder = trail0[-1]
+        folders = list(dict.fromkeys(t[-1] for t, _ in entries))
+        summary = item0["name"] if len(entries) == 1 else " / ".join(folders)
+        op = {"tags": [folder], "summary": summary}
+        op_id = slug(f"{trail0[0]} {summary} {method}")
+        while op_id in used_ids:
+            op_id += "-2"
+        used_ids.add(op_id)
+        op["operationId"] = op_id
+
+        params, seen = [], set()
+        for _, item in entries:
+            req = item["request"]
+            for h in req.get("header", []):
+                if h.get("disabled") or h["key"].lower() in SKIP_HEADERS:
+                    continue
+                if ("header", h["key"].lower()) not in seen:
+                    seen.add(("header", h["key"].lower()))
+                    params.append({"name": h["key"], "in": "header", "schema": {"type": "string"},
+                                   "example": h.get("value", "")})
+            url = req["url"]
+            for q in (url.get("query", []) if isinstance(url, dict) else []):
+                if q.get("disabled") or ("query", q["key"]) in seen:
+                    continue
+                seen.add(("query", q["key"]))
+                params.append({"name": q["key"], "in": "query", "schema": {"type": "string"},
+                               "example": q.get("value", "")})
+        if params:
+            op["parameters"] = params
+
+        json_examples, form_examples, form_fields = [], [], {}
+        for _, item in entries:
+            body = item["request"].get("body") or {}
+            if body.get("mode") == "raw" and body.get("raw", "").strip():
+                json_examples.append((item["name"], loose_json(body["raw"])))
+            elif body.get("mode") == "formdata":
+                value = {}
+                for f in body["formdata"]:
+                    if f.get("disabled"):
+                        continue
+                    if f.get("type") == "file":
+                        form_fields[f["key"]] = {"type": "string", "format": "binary"}
+                    else:
+                        form_fields.setdefault(f["key"], {"type": "string"})
+                        value[f["key"]] = f.get("value", "")
+                form_examples.append((item["name"], value))
+        if json_examples:
+            schema = {}
+            for _, data in json_examples:
+                schema = merge_schema(schema, schema_for(data))
+            op["requestBody"] = {"content": {"application/json": {
+                "schema": schema, "examples": name_examples(json_examples, keep_partial=True)}}}
+        elif form_fields:
+            op["requestBody"] = {"content": {"multipart/form-data": {
+                "schema": {"type": "object", "properties": form_fields},
+                "examples": name_examples(form_examples, keep_partial=True)}}}
+        op["responses"] = {"200": {"description": "OK"}}
+        paths.setdefault(path, {})[method] = op
+    return paths
+
+
 def build(product, cfg):
     grouped = {}
-    for page in cfg["pages"]:
+    for page in cfg.get("pages", []):
         for op in parse_page(page):
+            if "page_paths" in cfg and op["path"] not in cfg["page_paths"]:
+                continue
             grouped.setdefault((op["path"], op["method"]), []).append(op)
 
-    paths, all_servers, op_ids = {}, set(), set()
+    paths, all_servers, op_ids = collection_paths(cfg.get("folders", [])), set(), set()
     for (path, method), ops in grouped.items():
         operation, servers = build_operation(ops)
         while operation["operationId"] in op_ids:
             operation["operationId"] += "-2"
         op_ids.add(operation["operationId"])
-        operation["tags"] = [ops[0]["page"].split("/")[-1].replace("-", " ").title()]
+        operation["tags"] = ["Template"] if ops[0]["path"] == "/rcs/templates" else [operation["summary"]]
         all_servers |= servers
         paths.setdefault(path, {})[method] = operation
 
+    if not cfg.get("pages"):
+        all_servers = set()
     verbs = {"get": "Get", "post": "Add to", "put": "Update", "delete": "Remove from"}
     ops_flat = [(m, o) for item in paths.values() for m, o in item.items()]
     summaries = [o["summary"] for _, o in ops_flat]
@@ -358,14 +472,9 @@ def build(product, cfg):
     server = next(iter(all_servers), DEFAULT_SERVER) if len(all_servers) <= 1 else DEFAULT_SERVER
     return {
         "openapi": "3.1.0",
-        "info": {
-            "title": cfg["title"],
-            "version": "1.0.0",
-            "description": cfg["description"]
-            + "\n\nGenerated from the OneXtel API reference by scripts/build-openapi.py.",
-        },
-        "servers": [{"url": server, "description": "Production"}],
-        "paths": paths,
+        "info": {"title": cfg["title"], "version": "1.0.0"},
+        "servers": [{"url": server}],
+        "paths": strip_descriptions(paths),
     }
 
 

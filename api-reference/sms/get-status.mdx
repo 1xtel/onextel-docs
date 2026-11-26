@@ -21,14 +21,14 @@ your integration.
 
 ## Endpoint
 
-Both methods are accepted:
+Both methods are accepted. A single request carries one `uuid` or a comma-separated list, up
+to **500** per request.
 
-| Method | Endpoint | Pass the API key and UUID as |
-| --- | --- | --- |
-| `GET` | `https://api.onexaura.com/get_status` | Query parameters |
-| `POST` | `https://api.onexaura.com/get_status` | A JSON body |
+```
+POST https://api.onexaura.com/get_status
+```
 
-A single request carries one `uuid` or a comma-separated list, up to **500** per request.
+Pass the API key and UUID as a JSON body.
 
 <ParamField body="key" type="string" required>
   Your OneXtel API key.
@@ -38,9 +38,7 @@ A single request carries one `uuid` or a comma-separated list, up to **500** per
   One message UUID, or several separated by commas.
 </ParamField>
 
-## Example request
-
-<CodeGroup>
+### Example request
 
 ```bash cURL (POST)
 curl --location 'https://api.onexaura.com/get_status' \
@@ -50,6 +48,26 @@ curl --location 'https://api.onexaura.com/get_status' \
   "uuid": "3DItarIKq8YPm07DoV"
 }'
 ```
+
+## Pull status via GET
+
+```
+GET https://api.onexaura.com/get_status
+```
+
+Pass the API key and UUID as query parameters.
+
+<ParamField query="key" type="string" required>
+  Your OneXtel API key.
+</ParamField>
+
+<ParamField query="uuid" type="string" required>
+  One message UUID, or several separated by commas.
+</ParamField>
+
+### Example request
+
+<CodeGroup>
 
 ```bash cURL (GET, single)
 curl --location 'https://api.onexaura.com/get_status?key=YOUR_API_KEY&uuid=3Cnp6Hzi2FczczKA5VZ'
