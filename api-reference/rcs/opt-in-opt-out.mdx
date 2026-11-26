@@ -3,10 +3,6 @@ title: "Opt In / Opt Out"
 description: "Manage RCS opt-in and opt-out lists for recipients, per sender and message type."
 ---
 
-import ImportRcs from '/snippets/import-rcs.mdx';
-
-<ImportRcs />
-
 Manage which recipients are opted in or opted out of receiving RCS messages, scoped by sender
 and message type (`promotional` or `transactional`). Use these endpoints to check, add, and
 remove numbers from each list.
@@ -77,7 +73,6 @@ curl --location 'https://api.onexaura.com/opt/out/rcs' \
 <ResponseField name="data[].tucid" type="string">
   The account the entry belongs to.
 </ResponseField>
-
 
 ### Add to opt-out list
 
@@ -208,7 +203,6 @@ curl --location 'https://api.onexaura.com/opt/in/rcs' \
 <ResponseField name="data[].tucid" type="string">
   The account the entry belongs to.
 </ResponseField>
-
 
 ### Add to opt-in list
 

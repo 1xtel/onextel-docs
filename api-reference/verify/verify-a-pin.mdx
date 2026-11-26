@@ -4,10 +4,6 @@ description: "Check the code the user typed against the stored hash."
 openapi: "POST /v1/pins/{pinId}/verify"
 ---
 
-import ImportVerify from '/snippets/import-verify.mdx';
-
-<ImportVerify />
-
 Submit the code exactly as the user typed it. OneXtel compares it against the stored hash in
 constant time, so the comparison itself leaks nothing about how close a wrong guess was.
 
