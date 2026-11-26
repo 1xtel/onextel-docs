@@ -177,6 +177,21 @@
             ]
           },
           {
+            "group": "SMS (International)",
+            "pages": [
+              "guides/sms-international/overview",
+              "guides/sms-international/send-sms",
+              "guides/sms-international/campaigns",
+              "guides/sms-international/reports",
+              "guides/sms-international/sender-ids",
+              "guides/sms-international/templates",
+              "guides/sms-international/api-keys",
+              "guides/sms-international/phonebook",
+              "guides/sms-international/notifications",
+              "guides/sms-international/profile-settings"
+            ]
+          },
+          {
             "group": "Partners",
             "pages": [
               "guides/partners/tsp-onboarding"

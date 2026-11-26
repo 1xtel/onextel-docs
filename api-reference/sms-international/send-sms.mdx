@@ -1,22 +1,17 @@
 ---
 title: "Send SMS — International"
-description: "Send SMS to destinations outside India via the SMS List API — single or multiple submission."
+sidebarTitle: "Send SMS"
+description: "Submit one or more international SMS in a single request with the SMS List API."
+keywords: ["international sms", "send sms", "jsmslist", "listsms", "bulk sms api"]
 ---
 
 import ImportSmsInternational from '/snippets/import-sms-international.mdx';
 
 <ImportSmsInternational />
 
-<Note>
-This API covers **international destinations (outside India)**. For SMS to Indian numbers, use
-the [India send endpoint](/api-reference/sms/send-sms-omni), which carries the DLT fields Indian
-traffic requires. See
-[How it compares](/api-reference/sms-international/overview#how-it-compares-to-india-sms).
-</Note>
-
 ## Endpoint
 
-```
+```text
 POST https://api.int.onexglobal.io/api/jsmslist
 ```
 
@@ -24,11 +19,9 @@ POST https://api.int.onexglobal.io/api/jsmslist
   `application/json`
 </ParamField>
 
-Authentication is the `key` field **inside the body**, not a header.
-
 ## Single submission
 
-Submit one SMS message inside the `listsms` array.
+Send one SMS by putting one object in the `listsms` array.
 
 ```bash
 curl --location 'https://api.int.onexglobal.io/api/jsmslist' \
@@ -48,8 +41,7 @@ curl --location 'https://api.int.onexglobal.io/api/jsmslist' \
 
 ## Multiple submission
 
-Submit several SMS messages in a single request by adding multiple objects to the `listsms` array.
-A single request may carry up to **2,500** message objects.
+Send several SMS in one request by adding one object per message to the `listsms` array.
 
 ```bash
 curl --location 'https://api.int.onexglobal.io/api/jsmslist' \
@@ -87,151 +79,39 @@ curl --location 'https://api.int.onexglobal.io/api/jsmslist' \
 
 ## Request parameters
 
-The request body must be in JSON format and include the parameters below.
+The request body must be JSON and include the parameters below.
 
 <ParamField body="key" type="string" required>
-  An API key, assigned to the user for authentication.
+  The API key assigned to you for authentication. Generate it in the portal under **API**. See [API keys](/guides/sms-international/api-keys).
 </ParamField>
 
 <ParamField body="listsms" type="array">
-  A list containing one or more SMS message objects to be sent. **Maximum 2,500 objects per
-  request.**
+  A list of one or more SMS message objects to send.
 </ParamField>
 
-### `listsms` object structure
+### `listsms` object
 
-Each object inside the `listsms` array represents an SMS message and contains the following fields:
+Each object in the `listsms` array is one SMS message.
 
 <ParamField body="from" type="string" required>
-  Sender ID or name that appears as the message originator. Accepts alphanumeric or numeric
-  values — OneXtel applies no validation to this field. See
-  [Sender IDs](#sender-ids) before you choose one.
+  The sender ID or name that appears as the message originator.
 </ParamField>
 
 <ParamField body="to" type="string" required>
-  Recipient's mobile number including country code (e.g., `918872725225`).
+  The recipient's mobile number, including the country code. For example, `918872725225`.
 </ParamField>
 
 <ParamField body="body" type="string" required>
-  The text content of the SMS message.
+  The text content of the SMS.
 </ParamField>
 
 <ParamField body="clientsmsid" type="string">
-  Client-side unique identifier for tracking the message. Echoed back as `CLIENTMSID` on the
-  delivery receipt.
+  Your own unique identifier for tracking the message. Returned as `CLIENTMSID` on the [delivery receipt](/api-reference/sms-international/dlr-callback).
 </ParamField>
-
-<ParamField body="custref1" type="string">
-  Custom reference value. Echoed back unchanged on both the submission response and the delivery
-  receipt. See [Reference IDs](#reference-ids).
-</ParamField>
-
-<ParamField body="custref2" type="string">
-  Second custom reference value.
-</ParamField>
-
-<ParamField body="custref3" type="string">
-  Third custom reference value.
-</ParamField>
-
-<ParamField body="custref4" type="string">
-  Fourth custom reference value.
-</ParamField>
-
-<ParamField body="custref5" type="string">
-  Fifth custom reference value.
-</ParamField>
-
-## Sender IDs
-
-**OneXtel enforces no rules on the `from` field.** Alphanumeric and numeric values are both
-accepted, and the API will not reject a sender ID for being the wrong shape, the wrong length, or
-unregistered.
-
-<Warning>
-A clean submission is not a promise that your sender ID survives. The destination operator decides
-what actually appears on the handset — several countries require the sender ID to be registered in
-advance, and an unregistered one may be replaced or the message rejected after it has already been
-accepted here. Nothing in the submission response will warn you.
-</Warning>
-
-Check what your destinations require before launch, not after — registration can take longer than
-the integration. See
-[Destination obligations](/api-reference/sms-international/overview#destination-obligations).
-
-## Reference IDs
-
-Every message can carry your own identifier so you can match a delivery receipt back to your own
-record. There are two mechanisms. They are **independent** — use either, or both on the same
-message, and each is echoed back only if you sent it.
-
-| | `clientsmsid` | `custref1`–`custref5` |
-| --- | --- | --- |
-| How many values | One | Up to five |
-| On the submission response | Returned as `clientsmsid` | Returned as `custref1`–`custref5` |
-| On the DLR | Returned as `CLIENTMSID` | Returned as `custref1`–`custref5` |
-| Use it for | A single correlation ID | Splitting campaign, segment, order, and batch across separate fields |
-
-Both behave the same way: send it and it comes back, on **success and failure alike**, on both
-the submission response and the delivery receipt.
-
-<Note>
-**Reference fields are only returned if you sent them.** A message submitted without `custref`
-fields comes back — and produces a receipt — without them, and the same is true of
-`clientsmsid`. Neither field is required, and neither excludes the other.
-</Note>
-
-### Sending custom references
-
-```bash
-curl --location 'https://api.int.onexglobal.io/api/jsmslist' \
---header 'Content-Type: application/json' \
---data '{
-  "key": "XXXXXX",
-  "listsms": [
-    {
-      "from": "XXXXX",
-      "to": "XXXXX",
-      "body": "Your verification code is XXXX. url",
-      "custref1": "1111",
-      "custref2": "111111",
-      "custref3": "11111111",
-      "custref4": "111111111",
-      "custref5": "1111111111"
-    }
-  ]
-}'
-```
-
-The response carries the same five values back:
-
-```json
-{
-  "smslist": {
-    "sms": [
-      {
-        "reason": "success",
-        "code": 0,
-        "messageid": "3IS8bmoxK0Y6bjYKVVohHjwUUt3",
-        "messagepartids": [],
-        "mobileno": "918872725225",
-        "status": "success",
-        "custref1": "1111",
-        "custref2": "111111",
-        "custref3": "11111111",
-        "custref4": "111111111",
-        "custref5": "1111111111"
-      }
-    ]
-  }
-}
-```
-
-So does the [delivery receipt](/api-reference/sms-international/dlr-callback).
 
 ## Response
 
-The API returns a JSON response under `smslist` → `sms`. Each SMS record includes details about the processing status.
+The API returns a JSON response under `smslist` → `sms`, with one record per submitted message showing its processing status.
 
 <CodeGroup>
 
@@ -270,24 +150,22 @@ The API returns a JSON response under `smslist` → `sms`. Each SMS record inclu
 
 </CodeGroup>
 
-### Response parameters — success
+### Success fields
 
 <ResponseField name="reason" type="string">
   Status description of the submission.
 </ResponseField>
 
 <ResponseField name="code" type="integer">
-  Numeric response code (0 = success).
+  Numeric response code. `0` means success.
 </ResponseField>
 
 <ResponseField name="messageid" type="string">
-  Unique internal message identifier.
+  Unique internal message identifier. The same value arrives as `MSGID` on the delivery receipt.
 </ResponseField>
 
 <ResponseField name="messagepartids" type="array">
-  IDs for multiple message parts. In practice this is returned empty — **part counts are not
-  currently exposed through the API or the callback.** To see how many parts a message was split
-  into, use the summary and detail reports in the portal.
+  IDs for the parts of a multipart message. Empty for a single-part message.
 </ResponseField>
 
 <ResponseField name="mobileno" type="string">
@@ -295,49 +173,32 @@ The API returns a JSON response under `smslist` → `sms`. Each SMS record inclu
 </ResponseField>
 
 <ResponseField name="status" type="string">
-  Submission status (`success`).
+  Submission status: `success`.
 </ResponseField>
 
-<ResponseField name="clientsmsid" type="string">
-  The `clientsmsid` from your submission, if you sent one.
-</ResponseField>
-
-<ResponseField name="custref1" type="string">
-  The first custom reference from your submission, if you sent one. `custref2` through `custref5`
-  follow the same pattern.
-</ResponseField>
-
-<Note>
-The success example above carries no `clientsmsid` because that submission did not send one — not
-because success responses omit it. See [Reference IDs](#reference-ids).
-</Note>
-
-### Response parameters — failure
+### Failure fields
 
 <ResponseField name="reason" type="string">
-  Cause of submission failure.
+  Cause of the submission failure.
 </ResponseField>
 
 <ResponseField name="code" type="integer">
-  Error code (`700` = invalid mobile number format).
+  Error code. `700` means the mobile number format is invalid.
 </ResponseField>
 
 <ResponseField name="mobileno" type="string">
-  Provided mobile number.
+  The mobile number you provided.
 </ResponseField>
 
 <ResponseField name="clientsmsid" type="string">
-  ID passed by the client for reference.
+  The `clientsmsid` you passed, for reference.
 </ResponseField>
 
 <ResponseField name="status" type="string">
-  Submission failed (`fail`).
+  Submission status: `fail`.
 </ResponseField>
 
-## Submission response codes
-
-These are the codes returned by the **submission** call — whether the platform accepted the
-message, not whether it was delivered.
+## Submission codes
 
 | Code | Description |
 | --- | --- |
@@ -345,14 +206,11 @@ message, not whether it was delivered.
 | `700` | Invalid mobile number |
 
 <Note>
-Delivery outcome is a separate set of codes, returned later on the
-[DLR callback](/api-reference/sms-international/dlr-callback) as `ERRORCODE` — see
-[Error codes](/api-reference/sms-international/error-codes). A `0` here means accepted for
-delivery, not delivered.
+  A `0` means OneXtel accepted the message for delivery, not that it was delivered. The delivery outcome arrives later on the [DLR callback](/api-reference/sms-international/dlr-callback).
 </Note>
 
 ## Related
 
 - [DLR callback](/api-reference/sms-international/dlr-callback)
-- [Error codes](/api-reference/sms-international/error-codes)
+- [Response codes](/api-reference/sms-international/error-codes)
 - [International SMS overview](/api-reference/sms-international/overview)

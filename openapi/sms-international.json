@@ -40,21 +40,6 @@
                         },
                         "clientsmsid": {
                           "type": "string"
-                        },
-                        "custref1": {
-                          "type": "string"
-                        },
-                        "custref2": {
-                          "type": "string"
-                        },
-                        "custref3": {
-                          "type": "string"
-                        },
-                        "custref4": {
-                          "type": "string"
-                        },
-                        "custref5": {
-                          "type": "string"
                         }
                       }
                     }
@@ -69,21 +54,6 @@
                     "type": "string"
                   },
                   "clientsmsid": {
-                    "type": "string"
-                  },
-                  "custref1": {
-                    "type": "string"
-                  },
-                  "custref2": {
-                    "type": "string"
-                  },
-                  "custref3": {
-                    "type": "string"
-                  },
-                  "custref4": {
-                    "type": "string"
-                  },
-                  "custref5": {
                     "type": "string"
                   }
                 },
@@ -137,24 +107,6 @@
                         "to": "9898989898",
                         "body": "Your verification otp is 192031",
                         "clientsmsid": "123456789"
-                      }
-                    ]
-                  }
-                },
-                "sending-custom-references": {
-                  "summary": "Sending custom references",
-                  "value": {
-                    "key": "XXXXXX",
-                    "listsms": [
-                      {
-                        "from": "XXXXX",
-                        "to": "XXXXX",
-                        "body": "Your verification code is XXXX. url",
-                        "custref1": "1111",
-                        "custref2": "111111",
-                        "custref3": "11111111",
-                        "custref4": "111111111",
-                        "custref5": "1111111111"
                       }
                     ]
                   }

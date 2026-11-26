@@ -1,116 +1,55 @@
 ---
-title: "International SMS Overview"
-description: "Base URL, authentication, reference IDs, and endpoint summary for the OneXtel International SMS List API."
+title: "International SMS overview"
+description: "Endpoint, authentication, and request flow for the OneXtel International SMS List API."
+keywords: ["international sms", "sms list api", "jsmslist", "api"]
 ---
 
 import ImportSmsInternational from '/snippets/import-sms-international.mdx';
 
 <ImportSmsInternational />
 
-The **SMS List API** delivers SMS to destinations outside India through the OneX Global platform.
-You submit message details as JSON and the platform forwards them to the recipients.
+The **SMS List API** sends SMS to international destinations. You submit message details as JSON, and OneXtel forwards each message to its recipient.
 
 <Note>
-This API is for **international destinations**. SMS to Indian numbers goes through a different
-API on a different host, because Indian traffic carries DLT registration fields — see
-[Send SMS — India](/api-reference/sms/send-sms-omni).
+  For SMS to Indian numbers, use the [India SMS API](/api-reference/sms/overview), which carries the DLT fields Indian traffic requires.
 </Note>
-
-<Tip>
-Check a request body before you send it with the [payload validator](/api-reference/payload-validator).
-It shows what the API would reject, without sending anything.
-</Tip>
 
 ## Endpoint
 
-```
-POST https://api.int.onexglobal.io/api/jsmslist
-```
-
-<ParamField header="Content-Type" type="string" required>
-  `application/json`
-</ParamField>
+| | |
+| --- | --- |
+| Full URL | `https://api.int.onexglobal.io/api/jsmslist` |
+| Endpoint | `/api/jsmslist` |
+| Method | `POST` |
+| Header | `Content-Type: application/json` |
 
 ## Authentication
 
-Authentication is a `key` value **inside the JSON request body** — not an HTTP header. This is
-the main difference integrators trip over when moving between the two SMS APIs.
+Authenticate with the `key` field **inside the JSON request body**, not in a header. Generate the key in the portal under **API**. See [API keys](/guides/sms-international/api-keys).
 
-<ParamField body="key" type="string" required>
-  API key assigned to your account.
-</ParamField>
+## How a message flows
 
-## How it compares to India SMS
-
-| | International | [India](/api-reference/sms/send-sms-omni) |
-| --- | --- | --- |
-| Host | `api.int.onexglobal.io` | `api.onexaura.com` |
-| Path | `/api/jsmslist` | `/send_sms` |
-| Authentication | `key` in the body | `apikey` header |
-| Message array | `listsms` | `sms` |
-| Batching | Up to 2,500 per request | Many messages per request |
-| DLT fields (`templateId`, `entityId`) | Not used | Required |
-| DLR field style | UPPERCASE | camelCase |
-
-<Tip>
-The two APIs are not interchangeable. Check which one your account is provisioned for before
-you build.
-</Tip>
-
-## Tracking your own reference IDs
-
-Every message can carry your own identifier, echoed back on both the submission response and the
-delivery receipt. There are two independent mechanisms — use either, or both — see
-[Reference IDs](/api-reference/sms-international/send-sms#reference-ids).
-
-| Field | Count | Echoed back in |
-| --- | --- | --- |
-| `clientsmsid` | One | Submission response, and DLR as `CLIENTMSID` |
-| `custref1`–`custref5` | Up to five | Submission response and DLR, under the same names |
-
-Either is returned whenever you send it, on success and failure alike.
-
-## Coverage
-
-OneXtel carries international SMS to destinations worldwide. There is no published country list —
-confirm a specific destination, and its commercial terms, with your account team before you build
-against it.
-
-## Destination obligations
-
-Requirements vary sharply by country, and several put an obligation on **you** rather than on
-OneXtel. Two common examples:
-
-| Destination | What it requires |
-| --- | --- |
-| UAE | Sender ID registration before traffic is accepted |
-| USA | A2P 10DLC registration of brand and campaign |
-
-This matters more than it looks, because **OneXtel does not validate the `from` field** — an
-unregistered sender ID submits cleanly and fails downstream. See
-[Sender IDs](/api-reference/sms-international/send-sms#sender-ids).
-
-Others apply elsewhere. There is no consolidated list — check the destinations you intend to send
-to with your account team, early, because registration can take longer than the integration does.
-
-## Testing
-
-There is no sandbox environment and no test key — integrate against your live API key.
-
-<Note>
-Anything you send while integrating is a real message on a live route. Send only to numbers you
-control, and keep test volumes small.
-</Note>
+<Steps>
+  <Step title="Submit">
+    `POST` one or more messages in the `listsms` array. See [Send SMS](/api-reference/sms-international/send-sms).
+  </Step>
+  <Step title="Read the submission response">
+    Each message comes back under `smslist` → `sms` with a `code`: `0` means the platform accepted it, `700` means the mobile number is invalid. Store the `messageid`.
+  </Step>
+  <Step title="Receive the delivery receipt">
+    When delivery reaches its final state, OneXtel sends a `POST` callback (DLR) to the URL configured for your account. Match it to your message with `MSGID` or `CLIENTMSID`. See [DLR callback](/api-reference/sms-international/dlr-callback).
+  </Step>
+</Steps>
 
 ## Endpoints at a glance
 
 | Endpoint | Method | Purpose |
 | --- | --- | --- |
 | [`/api/jsmslist`](/api-reference/sms-international/send-sms) | POST | Submit one or more SMS messages |
-| [DLR callback](/api-reference/sms-international/dlr-callback) | POST (inbound, to your URL) | Receive the final delivery state |
+| [DLR callback](/api-reference/sms-international/dlr-callback) | POST (to your URL) | Receive the final delivery state |
 
 ## Next steps
 
-- [Send SMS](/api-reference/sms-international/send-sms) — payloads, reference IDs, and responses
-- [DLR callback](/api-reference/sms-international/dlr-callback) — the receipt posted to your URL
-- [Error codes](/api-reference/sms-international/error-codes) — what each `ERRORCODE` means
+- [Send SMS](/api-reference/sms-international/send-sms): request payloads, parameters, and the submission response
+- [DLR callback](/api-reference/sms-international/dlr-callback): the delivery receipt posted to your URL
+- [Response codes](/api-reference/sms-international/error-codes): what each code means
