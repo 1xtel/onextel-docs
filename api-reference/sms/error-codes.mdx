@@ -22,7 +22,7 @@ shorter set — see
 | `101`–`143` | Handset, network, or operator | Sometimes — many are transient |
 | `201`–`227` | DLT / regulatory checks (India) | No — fix the registration |
 | `527` | Message assembly | No — fix the payload |
-| `970`–`995`, `900xxx` | OneXtel platform, before submission | No — fix the account, config, or content |
+| `970`–`995`, `999`, `900xxx` | OneXtel platform, before submission | No — fix the account, config, or content |
 
 <Note>
 A `9xx` or `900xxx` code means the message **never left the platform**, so it was never charged to an
@@ -32,9 +32,9 @@ in the portal.
 
 <Note>
 **This is the complete set**, checked against the platform's own lists in September 2026: 90
-three-digit codes, plus five newer platform checks that so far have only a six-digit code. The
-gaps in the three-digit numbering (`105`, `106`, `122`, `202`, `212`, `217`, `219`, `221`) are
-unused values, not omissions from this page.
+three-digit codes, plus five newer platform checks that so far have only a six-digit code, plus
+the generic platform code `999`. The gaps in the three-digit numbering (`105`, `106`, `122`,
+`202`, `212`, `217`, `219`, `221`) are unused values, not omissions from this page.
 </Note>
 
 ## Success
@@ -201,6 +201,18 @@ These five newer checks have a six-digit code only:
 | `900128` | Invalid or inactive sender ID | The sender ID isn't registered, or has been deactivated |
 | `900129` | Blacklisted country | The destination country is blocked on your account |
 | `900130` | Duplicate message dropped | The platform took this for a repeat of a message it had already accepted, and dropped it. Don't resend |
+
+## General platform failure — `999`
+
+| Code | Description |
+| --- | --- |
+| `999` | Platform error |
+
+<Note>
+`999` is a generic platform rejection with no more specific code assigned. If you see it
+repeatedly for the same kind of request, contact your account team with the `uuid` from the
+affected delivery reports.
+</Note>
 
 <Note>
 Several of these map directly to settings you control:

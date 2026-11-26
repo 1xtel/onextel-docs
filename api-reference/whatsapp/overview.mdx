@@ -53,6 +53,11 @@ curl --location 'https://api.onexaura.com/...' \
 | [Callbacks](/api-reference/whatsapp/callback-events) | — | — | Delivery, inbound, and click event webhooks |
 | [Error Codes](/api-reference/whatsapp/error-codes) | — | — | Meta Cloud API error codes, HTTP status, and retry guidance |
 
+One send request can reach many recipients: put up to 500 numbers in `recipient` to send one
+message to all of them (one to many), or add up to 500 message objects to the `wa` array to send
+different messages (many to many). See
+[Send to many recipients](/api-reference/whatsapp/send-template-message#send-to-many-recipients).
+
 <Note>
   Delivery receipts and inbound messages are pushed to your configured endpoint — see
   [Delivery Notification](/api-reference/whatsapp/callback-delivery-notification) and the

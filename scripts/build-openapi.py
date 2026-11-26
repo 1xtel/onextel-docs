@@ -30,7 +30,7 @@ PRODUCTS = {
     "rcs": {"title": "OneXtel RCS API", "folders": ["RCS"],
             "pages": ["rcs/templates"], "page_paths": ["/rcs/templates"]},
     "omnichannel": {"title": "OneXtel Omnichannel API", "folders": ["Fallback", "Status Check"]},
-    "sms": {"title": "OneXtel SMS API (India)", "pages": ["sms/send-sms-omni"]},
+    "sms": {"title": "OneXtel SMS API (India)", "pages": ["sms/send-sms-omni", "sms/url-shortener", "sms/get-status"]},
     "sms-international": {"title": "OneXtel SMS API (International)",
                           "pages": ["sms-international/send-sms"]},
 }

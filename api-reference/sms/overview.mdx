@@ -7,9 +7,10 @@ import ImportSms from '/snippets/import-sms.mdx';
 
 <ImportSms />
 
-SMS to Indian numbers is sent to `/send_sms`. You submit message details as a JSON payload and
-the platform delivers to the recipients. `/send_sms` carries SMS only: to send WhatsApp or RCS, or
-to fall back from one channel to another, use `/oapi/send_sms`, described in the
+SMS to Indian numbers is sent to `/send_sms`, by `POST` or `GET`. You submit message details and
+the platform delivers to the recipients, one-to-one, one-to-many, or many-to-many in a single
+call. `/send_sms` carries SMS only: to send WhatsApp or RCS, or to fall back from one channel to
+another, use `/oapi/send_sms`, described in the
 [OmniChannel API](/api-reference/omnichannel/overview).
 
 <Note>
@@ -65,14 +66,20 @@ Messages that fail these checks are rejected before they reach an operator — s
 
 | Endpoint | Method | Purpose |
 | --- | --- | --- |
-| [`/send_sms`](/api-reference/sms/send-sms-omni) | POST | Send SMS, with DLT fields, custom references, campaign tagging, and URL shortening |
+| [`/send_sms`](/api-reference/sms/send-sms-omni) | POST or GET | Send SMS, with DLT fields, custom references, campaign tagging, and URL shortening |
+| [`/surl`](/api-reference/sms/url-shortener) | GET | Shorten a URL without sending an SMS |
+| [`/get_status`](/api-reference/sms/get-status) | POST or GET | Pull the delivery status of a message by UUID |
 | [DLR callback](/api-reference/sms/dlr-callback) | POST (inbound, to your URL) | Receive the final delivery state |
-| [Message status](/api-reference/omnichannel/message-status) | POST | Poll for status instead of receiving it |
+| [Clicker callback](/api-reference/sms/clicker-callback) | POST (inbound, to your URL) | Receive link-click events |
+| [Message status](/api-reference/omnichannel/message-status) | POST | Poll for status instead of receiving it, across channels |
 
 ## Next steps
 
-- [Send SMS — India](/api-reference/sms/send-sms-omni) — payload, DLT fields, and responses
-- [DLR callback](/api-reference/sms/dlr-callback) — the receipt posted to your URL
+- [Send SMS — India](/api-reference/sms/send-sms-omni) — payload, DLT fields, and responses, by POST or GET
+- [DLR callback](/api-reference/sms/dlr-callback) — the delivery receipt posted to your URL
+- [Clicker callback](/api-reference/sms/clicker-callback) — the link-click event posted to your URL
+- [Pull message status](/api-reference/sms/get-status) — look up status instead of receiving it
+- [Standalone URL shortener](/api-reference/sms/url-shortener) — shorten a link outside a send
 - [SMS error codes](/api-reference/sms/error-codes) — what each `errorCode` means
 - [Plugins and connectors](/plugins/overview) — send SMS from CleverTap, MoEngage, WebEngage,
   Salesforce, Zoho CRM, Shopify or Optimove instead of calling this API directly

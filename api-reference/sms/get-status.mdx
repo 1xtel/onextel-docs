@@ -1,0 +1,118 @@
+---
+title: "Pull Message Status"
+description: "Look up the delivery status of a submitted SMS by its UUID, as an alternative to receiving the delivery report."
+---
+
+import ImportSms from '/snippets/import-sms.mdx';
+
+<ImportSms />
+
+Retrieve the delivery status of an SMS you've already sent, using the `uuid` (message ID)
+returned at submission. Use this when you'd rather poll for an outcome than wait for the
+[delivery report](/api-reference/sms/dlr-callback) to arrive.
+
+<Note>
+This endpoint is specific to the India SMS API — `key` and `uuid`, one record at a time or a
+comma-separated batch. [OmniChannel Message Status](/api-reference/omnichannel/message-status)
+covers WhatsApp, RCS and SMS together, with a different request shape (`messageId` or
+`mobileNumber`, with pagination). Either can look up an SMS; pick whichever request shape fits
+your integration.
+</Note>
+
+## Endpoint
+
+Both methods are accepted. A single request carries one `uuid` or a comma-separated list, up
+to **500** per request.
+
+```
+POST https://api.onexaura.com/get_status
+```
+
+Pass the API key and UUID as a JSON body.
+
+<ParamField body="key" type="string" required>
+  Your OneXtel API key.
+</ParamField>
+
+<ParamField body="uuid" type="string" required>
+  One message UUID, or several separated by commas.
+</ParamField>
+
+### Example request
+
+```bash cURL (POST)
+curl --location 'https://api.onexaura.com/get_status' \
+--header 'Content-Type: application/json' \
+--data '{
+  "key": "YOUR_API_KEY",
+  "uuid": "3DItarIKq8YPm07DoV"
+}'
+```
+
+## Pull status via GET
+
+```
+GET https://api.onexaura.com/get_status
+```
+
+Pass the API key and UUID as query parameters.
+
+<ParamField query="key" type="string" required>
+  Your OneXtel API key.
+</ParamField>
+
+<ParamField query="uuid" type="string" required>
+  One message UUID, or several separated by commas.
+</ParamField>
+
+### Example request
+
+<CodeGroup>
+
+```bash cURL (GET, single)
+curl --location 'https://api.onexaura.com/get_status?key=YOUR_API_KEY&uuid=3Cnp6Hzi2FczczKA5VZ'
+```
+
+```bash cURL (GET, bulk)
+curl --location 'https://api.onexaura.com/get_status?key=YOUR_API_KEY&uuid=UUID_1,UUID_2,UUID_3'
+```
+
+</CodeGroup>
+
+## Response
+
+```json
+{
+  "UUId": "3KaaATbUD5rSac7HTgm98ihFRUw",
+  "statusCode": "000",
+  "description": "Message delivered successfully",
+  "deliveryStatus": "DELIVERED",
+  "deliveredtimestamp": "2026-10-12 15:09:49"
+}
+```
+
+<ResponseField name="UUId" type="string">
+  The message UUID this result is for.
+</ResponseField>
+
+<ResponseField name="statusCode" type="string">
+  Outcome code. See [SMS error codes](/api-reference/sms/error-codes).
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Human-readable description of the outcome.
+</ResponseField>
+
+<ResponseField name="deliveryStatus" type="string">
+  Final delivery state — for example `DELIVERED`.
+</ResponseField>
+
+<ResponseField name="deliveredtimestamp" type="string">
+  When the message was delivered, when available.
+</ResponseField>
+
+## Related
+
+- [Send SMS — India](/api-reference/sms/send-sms-omni) — where the `uuid` comes from
+- [DLR callback](/api-reference/sms/dlr-callback) — receive the outcome instead of polling for it
+- [OmniChannel Message Status](/api-reference/omnichannel/message-status) — the channel-spanning equivalent

@@ -1,0 +1,69 @@
+---
+title: "Standalone URL Shortener"
+description: "Shorten a URL without sending an SMS, using the same shortener that powers SMS link tracking."
+---
+
+import ImportSms from '/snippets/import-sms.mdx';
+
+<ImportSms />
+
+Get a shortened link without sending a message — for use in a template you're drafting, or
+anywhere else you need a short link outside an SMS send.
+
+<Note>
+This is the standalone form of the shortener behind
+[`urlShortener`](/api-reference/sms/send-sms-omni#url-shortener) on the send API. Use that
+instead when the link is going straight into an SMS you're about to send.
+</Note>
+
+## Endpoint
+
+```
+GET https://api.onexaura.com/surl?url=LONGURL&apikey=APIKEY
+```
+
+<ParamField query="url" type="string" required>
+  The long URL to shorten.
+</ParamField>
+
+<ParamField query="apikey" type="string" required>
+  Your OneXtel API key. Can be passed as a query parameter, as shown, or as a header.
+</ParamField>
+
+## Example request
+
+<CodeGroup>
+
+```bash cURL (API key in query string)
+curl --location 'https://api.onexaura.com/surl?url=https://example.com/offers/spring&apikey=YOUR_API_KEY'
+```
+
+```bash cURL (API key in header)
+curl --location 'https://api.onexaura.com/surl?url=https://example.com/offers/spring' \
+--header 'apikey: YOUR_API_KEY'
+```
+
+</CodeGroup>
+
+<Note>
+The URL above is shown unencoded for readability. Encode reserved characters in your own long URL
+as your HTTP client requires.
+</Note>
+
+## Response
+
+```json
+{
+  "short_url": "onexaura.com/shu/00BLlM"
+}
+```
+
+<ResponseField name="short_url" type="string">
+  The generated short URL for the long URL you supplied.
+</ResponseField>
+
+## Related
+
+- [Send SMS — India](/api-reference/sms/send-sms-omni#url-shortener) — shorten a URL as part of a send, with click tracking
+- [Clicker callback](/api-reference/sms/clicker-callback) — notified when a shortened link is clicked
+- [SMS reports](/guides/sms/reports#clicker-data) — click activity on shortened links

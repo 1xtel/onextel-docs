@@ -15,6 +15,11 @@
     "light": "/images/Xsymbol.png",
     "dark": "/images/logo.png"
   },
+  "banner": {
+    "content": "**Beta documentation, for internal review.** Do not share this site with customers.",
+    "type": "warning",
+    "dismissible": false
+  },
   "navigation": {
     "tabs": [
       {
@@ -54,6 +59,8 @@
                 "group": "Onboarding",
                 "pages": [
                   "guides/whatsapp/activation",
+                  "guides/whatsapp/account-model",
+                  "guides/whatsapp/add-onextel-to-existing-number",
                   "guides/whatsapp/business-verification",
                   "guides/whatsapp/coexistence"
                 ]
@@ -228,6 +235,9 @@
               "api-reference/sms/overview",
               "api-reference/sms/send-sms-omni",
               "api-reference/sms/dlr-callback",
+              "api-reference/sms/clicker-callback",
+              "api-reference/sms/get-status",
+              "api-reference/sms/url-shortener",
               "api-reference/sms/error-codes"
             ]
           },

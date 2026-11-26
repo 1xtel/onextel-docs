@@ -12,8 +12,8 @@
   "paths": {
     "/send_sms": {
       "post": {
-        "operationId": "send-sms-omni-send-sms-india",
-        "summary": "Send SMS — India",
+        "operationId": "send-sms-omni-endpoint",
+        "summary": "Add to endpoint",
         "parameters": [
           {
             "name": "apikey",
@@ -206,7 +206,322 @@
           }
         },
         "tags": [
-          "Send SMS — India"
+          "Endpoint"
+        ]
+      },
+      "get": {
+        "operationId": "send-sms-omni-send-via-get",
+        "summary": "Send via GET",
+        "parameters": [
+          {
+            "name": "apikey",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "YOUR_API_KEY"
+          },
+          {
+            "name": "sender",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "ONEXTL"
+          },
+          {
+            "name": "recipient",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "919999999999"
+          },
+          {
+            "name": "messageBody",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "Your code is 123456"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "templateId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "entityId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "campaignName",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "SMS2026"
+          },
+          {
+            "name": "urlflag",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "example": "0"
+          },
+          {
+            "name": "custref1 … custref5",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          },
+                          "recipient": {
+                            "type": "string"
+                          },
+                          "messageId": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "campaignName": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "response-accepted": {
+                    "summary": "Response — Accepted",
+                    "value": {
+                      "status": "SUCCESS",
+                      "requestId": "3LEHfngZVkPpKMuOLeNg8a9svwE",
+                      "messages": [
+                        {
+                          "status": "SENT",
+                          "recipient": "919999999999",
+                          "messageId": "3LEHfn7qH426KqtcrpkEMn6vigq"
+                        }
+                      ],
+                      "campaignName": "SMS2026"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Send via GET"
+        ]
+      }
+    },
+    "/surl": {
+      "get": {
+        "operationId": "url-shortener-standalone-url-shortener",
+        "summary": "Standalone URL Shortener",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "https://example.com/offers/spring"
+          },
+          {
+            "name": "apikey",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "YOUR_API_KEY"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "short_url": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "response": {
+                    "summary": "Response",
+                    "value": {
+                      "short_url": "onexaura.com/shu/00BLlM"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Standalone URL Shortener"
+        ]
+      }
+    },
+    "/get_status": {
+      "post": {
+        "operationId": "get-status-endpoint",
+        "summary": "Add to endpoint",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string"
+                  },
+                  "uuid": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "key",
+                  "uuid"
+                ]
+              },
+              "examples": {
+                "example-request": {
+                  "summary": "Example request",
+                  "value": {
+                    "key": "YOUR_API_KEY",
+                    "uuid": "3DItarIKq8YPm07DoV"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Endpoint"
+        ]
+      },
+      "get": {
+        "operationId": "get-status-pull-status-via-get",
+        "summary": "Pull status via GET",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "YOUR_API_KEY"
+          },
+          {
+            "name": "uuid",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "UUID_1,UUID_2,UUID_3"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "UUId": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "string"
+                    },
+                    "deliveryStatus": {
+                      "type": "string"
+                    },
+                    "deliveredtimestamp": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "response": {
+                    "summary": "Response",
+                    "value": {
+                      "UUId": "3KaaATbUD5rSac7HTgm98ihFRUw",
+                      "statusCode": "000",
+                      "deliveryStatus": "DELIVERED",
+                      "deliveredtimestamp": "2026-10-12 15:09:49"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Pull status via GET"
         ]
       }
     }

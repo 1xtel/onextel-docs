@@ -155,12 +155,17 @@ hosts, so check it before saving.
 
     | Field | Value |
     | --- | --- |
-    | URL | `https://mo.onexaura.com/moengage/whatsapp/outbound` |
-    | WABA ID | From the OneXtel dashboard under **Channel → WhatsApp** |
+    | Sender name | Any name, shown when you pick the sender in a campaign |
+    | WhatsApp business number | Your registered WhatsApp Business number |
+    | API URL | `https://mo.onexaura.com/moengage/whatsapp/outbound` |
     | Authorization | The API key from step 1 |
-    | WABA Number | Your registered WhatsApp Business number |
+    | wabaid | Your WABA ID, from the OneXtel portal under **Channel → WhatsApp** |
 
     Click **Save**.
+
+    <Frame caption="OneXtel WhatsApp sender in MoEngage">
+      <img src="/images/plugins/moengage-whatsapp-sender.png" alt="MoEngage WhatsApp sender configuration with OneXtel selected among the WhatsApp connectors, showing the sender name, WhatsApp business number, API URL, Authorization and wabaid fields" />
+    </Frame>
   </Step>
   <Step title="Configure the delivery report callback">
     In OneXtel, go to **Configuration → Add New Callback**. Give it a title, set **Channel**
@@ -168,7 +173,12 @@ hosts, so check it before saving.
     used in MoEngage.
 
     Under **Request Configuration**, set **Type** to `Delivery Notification` and **HTTP
-    Method** to `POST`. Paste the callback URL copied from your MoEngage dashboard, then save.
+    Method** to `POST`. Paste the MoEngage delivery tracking URL, then save. MoEngage shows it
+    under **Enable delivery tracking** on the OneXtel sender, with a copy button.
+
+    <Frame caption="Callback Configuration — Add New Callback">
+      <img src="/images/plugins/moengage-rcs-callback-list.png" alt="OneXtel Config page on the Callback Configuration tab with the Add New Callback button highlighted" />
+    </Frame>
   </Step>
   <Step title="Configure the inbound callback">
     Add a second callback in OneXtel with the same channel, format type, and API key. Under
@@ -199,7 +209,14 @@ hosts, so check it before saving.
 ### Template sync
 
 MoEngage reads your WhatsApp templates from OneXtel through the connector — there is nothing to
-build by hand in MoEngage. When you sync or refresh templates on the OneXtel sender, MoEngage calls:
+build by hand in MoEngage. Click **Sync Template** under **Settings → WhatsApp → Approved
+templates**, and your approved OneXtel templates appear with **onextel** as the provider.
+
+<Frame caption="WhatsApp templates synced from OneXtel">
+  <img src="/images/plugins/moengage-whatsapp-templates.png" alt="MoEngage Approved templates tab listing WhatsApp templates synced from OneXtel, with category, Approved status, content, provider onextel and the Sync Template button" />
+</Frame>
+
+When you sync or refresh templates on the OneXtel sender, MoEngage calls:
 
 ```
 GET https://mo.onexaura.com/moengage/whatsapp/templates
@@ -225,6 +242,23 @@ with `{{n}}` variables.
 - **On a sender with RCS fallback**, a sync also starts the RCS fallback templates for WhatsApp
   templates created or changed in the last 7 days — see
   [Add RCS fallback](#add-rcs-fallback-optional).
+
+### Build the WhatsApp campaign
+
+Create a WhatsApp campaign in MoEngage as usual, and pick the OneXtel sender and an approved
+template. The campaign itself has no fallback setting: a sender with RCS fallback applies it to
+every campaign that uses it.
+
+<Frame caption="A WhatsApp campaign sent through the OneXtel sender">
+  <img src="/images/plugins/moengage-whatsapp-campaign-sender.png" alt="Sender info of a sent MoEngage WhatsApp campaign: service provider onextel, the sender name, the WhatsApp number, the template and template type Carousel" />
+</Frame>
+
+Delivery reports, reads and clicks come back from OneXtel and show on the campaign like those
+of any other WhatsApp provider.
+
+<Frame caption="Campaign results in MoEngage">
+  <img src="/images/plugins/moengage-whatsapp-campaign-stats.png" alt="MoEngage campaign analytics for a WhatsApp campaign sent through OneXtel, showing sent, delivered, read and clicked counts" />
+</Frame>
 
 ### Add RCS fallback (optional)
 
@@ -262,14 +296,18 @@ campaign on that sender gets the fallback; senders without it work exactly as ab
     | `wabaId` | Your WABA ID. It may be left empty (`apikey~~fallbackId~…`) when the sender's **WABA ID** field carries it |
     | `fallbackId` | The Fallback ID from the previous step |
     | `waitTime` | Seconds to wait for a WhatsApp delivery report before falling back, `1`–`86400`. Defaults to `30` |
-    | `rcsSenderProfile_messageType` | The RCS **sender profile name** from **RCS → Asset Management → Sender Profiles**, then `_` and `Promotional`, `Transactional` or `OTP` — for example `promo_onex_Promotional` |
+    | `rcsSenderProfile_messageType` | The RCS **sender profile name** from **RCS → Asset Management → Sender Profiles**, then `_` and `Promotional`, `Transactional` or `OTP` — for example `yourbrand_promo_Promotional` |
     | `rcsBotId` | Optional. The RCS bot's ID. With it, the connector creates the RCS fallback templates for you — see the next step |
 
     For example:
 
     ```
-    AbCd1234~1790923784894660~05dfa99b-c446-4c66-bcc6-9cae95254964~30~promo_onex_Promotional~6acddecc5636e4f2201f2e13
+    YOUR_API_KEY~YOUR_WABA_ID~YOUR_FALLBACK_ID~30~yourbrand_promo_Promotional~YOUR_RCS_BOT_ID
     ```
+
+    <Frame caption="WhatsApp sender with RCS fallback">
+      <img src="/images/plugins/moengage-whatsapp-fallback-sender.png" alt="MoEngage OneXtel WhatsApp sender whose Authorization field holds the tilde-separated API key, WABA ID, Fallback ID and wait time, with the delivery tracking URL and its copy button below" />
+    </Frame>
 
     <Warning>
     **Use the sender profile name, not the bot ID**, in the fifth value. OneXtel looks the
@@ -313,11 +351,19 @@ campaign on that sender gets the fallback; senders without it work exactly as ab
 
     | Channel | Type | Callback Format Type | Callback URL | Header `callback` |
     | --- | --- | --- | --- | --- |
-    | WhatsApp | Delivery Notification | Raw (Meta) | `https://mo.onexaura.com/moengage/whatsapp/dlr` | Your MoEngage WhatsApp DLR URL |
-    | RCS | Delivery Notification | Raw (RCS) | `https://mo.onexaura.com/moengage/rcs/dlr` | Your MoEngage RCS DLR URL |
+    | WhatsApp | Delivery Notification | Meta | `https://mo.onexaura.com/moengage/whatsapp/dlr` | Your MoEngage WhatsApp DLR URL |
+    | RCS | Delivery Notification | RCS | `https://mo.onexaura.com/moengage/rcs/dlr` | Your MoEngage RCS DLR URL |
 
     Tick `custref1` and `custref2` in both callbacks' field lists. If the key already has an RCS
     delivery callback for RCS campaigns, keep it — WhatsApp fallback receipts use the same one.
+
+    <Frame caption="WhatsApp delivery callback for a sender with RCS fallback: Callback Format Meta, the connector whatsapp/dlr URL, and your MoEngage WhatsApp DLR URL in the `callback` header">
+      <img src="/images/plugins/moengage-whatsapp-fallback-callback-wa.png" alt="OneXtel Edit Callback screen with Channel WhatsApp, Callback Format Meta, Type Delivery Notification, method POST, the connector whatsapp/dlr URL, a request preview that starts with custref1 to custref5, and a callback header row" />
+    </Frame>
+
+    <Frame caption="RCS delivery callback on the same API key: Callback Format RCS, the connector rcs/dlr URL, and your MoEngage RCS DLR URL in the `callback` header">
+      <img src="/images/plugins/moengage-whatsapp-fallback-callback-rcs.png" alt="OneXtel Edit Callback screen with Channel RCS, Callback Format RCS, Type Delivery Notification, method POST, the connector rcs/dlr URL, a request preview that starts with botId and custref1 to custref5, and a callback header row" />
+    </Frame>
 
     <Warning>
     **Without these two callbacks, MoEngage never hears the outcome.** The connector holds a
