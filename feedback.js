@@ -13,7 +13,7 @@
   if (window.onextelFeedback) return;
   window.onextelFeedback = true;
 
-  const FEEDBACK_ENDPOINT = "";
+  const FEEDBACK_ENDPOINT = "https://script.google.com/macros/s/AKfycbz-6hA-o8awODFzCVX_odJ5hyPUs5cetik9YELYNFtU9DPoq76PqXe-UqB8_9ifSJLw/exec";
   const LOCAL_KEY = "onextel-docs-feedback";
   const NAME_KEY = "onextel-docs-feedback-name";
   const BLOCKS =
