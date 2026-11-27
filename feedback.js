@@ -137,7 +137,7 @@
   let picking = false;
 
   const bubble = el("button", { type: "button", class: "oxf oxf-bubble", hidden: "" }, "Give feedback");
-  const launcher = el("button", { type: "button", class: "oxf oxf-launcher", "aria-haspopup": "dialog" });
+  const launcher = el("button", { type: "button", class: "oxf oxf-launcher", "aria-haspopup": "dialog" }, "Feedback");
   const panel = el("aside", { class: "oxf oxf-panel", hidden: "", role: "dialog", "aria-label": "Feedback on this page" });
   const pickHint = el("div", { class: "oxf oxf-pick-hint", hidden: "", role: "status" }, "Click the part of the page your feedback is about. Press Esc to cancel.");
   const status = el("p", { class: "oxf-status", role: "status" });
